@@ -18,7 +18,7 @@
 				{else}
 					<img class="pull-right" style="margin-right:50px; max-height:278px;"
 						 alt="{$result.title|escape:"htmlall"} Logo"
-						 src="{$serverroot}themes/Omicron/images/nomoviecover.jpg"/>
+						 src="{$smarty.const.WWW_THEMES}/shared/images/nomoviecover.jpg"/>
 				{/if}
 				<span class="h1" style="display:inline;">{$result.title|escape:"htmlall"}</span>
 				<h4>{if $result.genre != ''}{$result.genre|replace:"|":" / "}{/if}</h4>
@@ -46,7 +46,7 @@
 				</dl>
 			</div>
 			<form id="nzb_multi_operations_form" action="get">
-				<div class="well well-small">
+				<div class="well well-sm">
 					<div class="nzb_multi_operations">
 						{if isset($section) && $section != ''}View:
 							<a href="{$smarty.const.WWW_TOP}/{$section}?t={$category}">Covers</a>
@@ -86,7 +86,7 @@
 									   class="data table table-condensed table-striped table-responsive table-hover">
 									<tr>
 										<th>
-											<input id="chkSelectAll" type="checkbox" class="nzedb_check_all"/>
+											<input id="chkSelectAll" type="checkbox" class="square-all"/>
 											<label for="chkSelectAll" style="display:none;">Select All</label>
 										</th>
 										<th>Name<br/>
@@ -141,7 +141,7 @@
 										<tr class="{cycle values=",alt"}" id="guid{$mguid[$m@index]}">
 											<td class="check"><input id="chk{$mguid[$m@index]|substr:0:7}"
 																	 type="checkbox"
-																	 class="nzb_check"
+																	 class="square"
 																	 value="{$mguid[$m@index]}"/></td>
 											<td class="item">
 												<a title="View details"

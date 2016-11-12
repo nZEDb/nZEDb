@@ -460,14 +460,13 @@ DROP TABLE IF EXISTS missed_parts;
 CREATE TABLE missed_parts (
   id       INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
   numberid BIGINT UNSIGNED  NOT NULL,
-  group_id INT(11) UNSIGNED NOT NULL DEFAULT '0'
-  COMMENT 'FK to groups',
+  group_id INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to groups.id',
   attempts TINYINT(1)       NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   INDEX ix_missed_parts_attempts                  (attempts),
   INDEX ix_missed_parts_groupid_attempts          (group_id, attempts),
-  INDEX ix_missed_parts_numberid_groupid_attempts (numberid, group_id, attempts),
-  UNIQUE INDEX ix_missed_parts_numberid_groupid          (numberid, group_id)
+  INDEX ix_missed_parts_numberid_groupsid_attempts (numberid, group_id, attempts),
+  UNIQUE INDEX ix_missed_parts_numberid_groupsid          (numberid, group_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -578,7 +577,7 @@ CREATE TABLE predb (
   predate    DATETIME                  DEFAULT NULL,
   source     VARCHAR(50)      NOT NULL DEFAULT '',
   requestid  INT(10) UNSIGNED NOT NULL DEFAULT '0',
-  group_id   INT(10) UNSIGNED NOT NULL DEFAULT '0'   COMMENT 'FK to groups',
+  groups_id  INT(10) UNSIGNED NOT NULL DEFAULT '0'  COMMENT 'FK to groups',
   nuked      TINYINT(1)       NOT NULL DEFAULT '0'  COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
   nukereason VARCHAR(255)     NULL  COMMENT 'If this pre is nuked, what is the reason?',
   files      VARCHAR(50)      NULL  COMMENT 'How many files does this pre have ?',
@@ -589,7 +588,7 @@ CREATE TABLE predb (
   INDEX ix_predb_nfo       (nfo),
   INDEX ix_predb_predate   (predate),
   INDEX ix_predb_source    (source),
-  INDEX ix_predb_requestid (requestid, group_id),
+  INDEX ix_predb_requestid (requestid, groups_id),
   INDEX ix_predb_filename  (filename),
   INDEX ix_predb_searched  (searched)
 )
@@ -624,10 +623,8 @@ CREATE TABLE predb_imports (
   source     VARCHAR(50)
                COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   requestid  INT(10) UNSIGNED        NOT NULL DEFAULT '0',
-  group_id   INT(10) UNSIGNED        NOT NULL DEFAULT '0'
-    COMMENT 'FK to groups',
-  nuked      TINYINT(1)              NOT NULL DEFAULT '0'
-    COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
+  groups_id   INT(10) UNSIGNED        NOT NULL DEFAULT '0' COMMENT 'FK to groups',
+  nuked      TINYINT(1)              NOT NULL DEFAULT '0'  COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
   nukereason VARCHAR(255)
                COLLATE utf8_unicode_ci          DEFAULT NULL
   COMMENT 'If this pre is nuked, what is the reason?',
@@ -651,12 +648,13 @@ CREATE TABLE         releases (
   name              VARCHAR(255)                   NOT NULL DEFAULT '',
   searchname        VARCHAR(255)                   NOT NULL DEFAULT '',
   totalpart         INT                            DEFAULT '0',
-  group_id          INT UNSIGNED                   NOT NULL DEFAULT '0' COMMENT 'FK to groups',
+  groups_id         INT(11) UNSIGNED               NOT NULL DEFAULT '0' COMMENT 'FK to groups.id',
   size              BIGINT UNSIGNED                NOT NULL DEFAULT '0',
   postdate          DATETIME                       DEFAULT NULL,
   adddate           DATETIME                       DEFAULT NULL,
   updatetime        TIMESTAMP                      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   guid              VARCHAR(40)                    NOT NULL,
+  leftguid          CHAR(1)                        NOT NULL COMMENT 'The first letter of the release guid',
   fromname          VARCHAR(255)                   NULL,
   completion        FLOAT                          NOT NULL DEFAULT '0',
   categories_id     INT                            NOT NULL DEFAULT '0010',
@@ -692,11 +690,13 @@ CREATE TABLE         releases (
   proc_par2         TINYINT(1)                     NOT NULL DEFAULT '0',
   proc_nfo          TINYINT(1)                     NOT NULL DEFAULT '0',
   proc_files        TINYINT(1)                     NOT NULL DEFAULT '0',
+  proc_uid          TINYINT(1)                     NOT NULL DEFAULT '0',
   PRIMARY KEY                                 (id, categories_id),
   INDEX ix_releases_name                      (name),
-  INDEX ix_releases_group_id                  (group_id,passwordstatus),
+  INDEX ix_releases_groupsid                  (groups_id,passwordstatus),
   INDEX ix_releases_postdate_searchname       (postdate,searchname),
   INDEX ix_releases_guid                      (guid),
+  INDEX ix_releases_leftguid                  (leftguid ASC, predb_id),
   INDEX ix_releases_nzb_guid                  (nzb_guid),
   INDEX ix_releases_videos_id                 (videos_id),
   INDEX ix_releases_tv_episodes_id            (tv_episodes_id),
@@ -753,6 +753,16 @@ CREATE TABLE release_comments (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
+
+  DROP TABLE IF EXISTS release_unique;
+  CREATE TABLE release_unique (
+  releases_id   INT(11) UNSIGNED  NOT NULL COMMENT 'FK to releases.id.',
+  uniqueid BINARY(16)  NOT NULL DEFAULT '0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0' COMMENT 'Unique_ID from mediainfo.',
+  PRIMARY KEY (releases_id, uniqueid)
+)
+  ENGINE = MyISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS releaseextrafull;
@@ -1071,13 +1081,28 @@ CREATE TABLE user_excluded_categories (
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
 
+DROP TABLE IF EXISTS role_excluded_categories;
+CREATE TABLE role_excluded_categories
+(
+    id              INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
+    role            INT(11) NOT NULL,
+    categories_id   INT(11),
+    createddate     DATETIME NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE INDEX ix_roleexcat_rolecat (role, categories_id)
+)
+    ENGINE = MyISAM
+    DEFAULT CHARSET = utf8
+    COLLATE = utf8_unicode_ci
+    AUTO_INCREMENT = 1;
+
 
 DROP TABLE IF EXISTS user_movies;
 CREATE TABLE user_movies (
   id          INT(16) UNSIGNED               NOT NULL AUTO_INCREMENT,
-  user_id INT(16)                        NOT NULL,
+  user_id     INT(16)                        NOT NULL,
   imdbid      MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
-  categoryid  VARCHAR(64)                    NULL DEFAULT NULL,
+  categories  VARCHAR(64)                    NULL DEFAULT NULL COMMENT 'List of categories for user movies',
   createddate DATETIME                       NOT NULL,
   PRIMARY KEY (id),
   INDEX ix_usermovies_userid (user_id, imdbid)
@@ -1126,7 +1151,7 @@ CREATE TABLE user_series (
   id          INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id     INT(16)          NOT NULL,
   videos_id   INT(16)          NOT NULL COMMENT 'FK to videos.id',
-  categoryid  VARCHAR(64)      NULL DEFAULT NULL,
+  categories  VARCHAR(64)      NULL DEFAULT NULL COMMENT 'List of categories for user tv shows',
   createddate DATETIME         NOT NULL,
   PRIMARY KEY (id),
   INDEX ix_userseries_videos_id (user_id, videos_id)
@@ -1231,7 +1256,7 @@ CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW
   BEGIN
     IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}'
       THEN SET NEW.ishashed = 1;
-    ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\\['
+    ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\\s?\\['
       THEN SET NEW.isrequestid = 1;
     END IF;
   END; $$
@@ -1240,7 +1265,7 @@ CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW
   BEGIN
     IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}'
       THEN SET NEW.ishashed = 1;
-    ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\s?\\['
+    ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\\s?\\['
       THEN SET NEW.isrequestid = 1;
     END IF;
   END; $$

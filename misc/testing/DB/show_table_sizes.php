@@ -1,9 +1,9 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if ($argc === 1 || !is_numeric($argv[1])) {
 	exit($pdo->log->error("\nThis script will show table data, index and free space used. The argument needed is numeric.\n\n"

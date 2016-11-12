@@ -11,7 +11,7 @@ if (!isset($argv[1]) || $argv[1] !== 'yes') {
 	);
 }
 
-require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ReleaseImage;
 
@@ -41,8 +41,8 @@ $folders = [
 	nZEDb_RES . 'nzb'								=> [R],
 	nZEDb_LOGS										=> [R, W],
 	nZEDb_TMP										=> [R, W],
-	nZEDb_TMP . DS . 'unrar'						=> [R, W, E],
-	nZEDb_TMP . DS . 'yEnc'							=> [R, W, E],
+	nZEDb_TMP . 'unrar'								=> [R, W, E],
+	nZEDb_TMP . 'yEnc'								=> [R, W, E],
 	nZEDb_VERSIONS									=> [R],
 ];
 

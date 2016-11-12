@@ -1,15 +1,15 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ConsoleTools;
 use nzedb\NZB;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 if (!isset($argv[1]) || !isset($argv[2])) {
 	exit("ERROR: You must supply the level you want to reorganize it to, and the source directory  (You would use: 3 .../nZEDb/resources/nzb/ to move it to 3 levels deep)\n");
 }
 
-$pdo = new Settings();
+$pdo = new DB();
 $nzb = new NZB($pdo);
 $consoleTools = new ConsoleTools();
 

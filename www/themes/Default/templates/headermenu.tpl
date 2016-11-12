@@ -109,7 +109,7 @@
 					{/if}
 					{if $parentcat.id == {$catClass::TV_ROOT}}
 						<li class="dropdown">
-							<a title="Browse All {$parentcat.title}" href="{$smarty.const.WWW_TOP}/series">{$parentcat.title}</a>
+							<a title="Browse All {$parentcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">{$parentcat.title}</a>
 							<ul>
 								{foreach $parentcat.subcatlist as $subcat}
 									<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
@@ -153,15 +153,17 @@
 							</ul>
 						</li>
 					{/if}
+					{if $parentcat.id === "0"}
+						<li>
+							<a title="Miscellaneous" href="/browse?t={$catClass::OTHER_ROOT}">Other</a>
+							<ul>
+								<hr>
+								<li><a href="/browse?t={$catClass::OTHER_MISC}">Misc</a></li>
+								<li><a href="/browse?t={$catClass::OTHER_HASHED}">Hashed</a></li>
+							</ul>
+						</li>
+					{/if}
 				{/foreach}
-				<li>
-					<a title="Miscellaneous" href="/browse?t={$catClass::OTHER_ROOT}">Other</a>
-					<ul>
-						<hr>
-						<li><a href="/browse?t={$catClass::OTHER_MISC}">Misc</a></li>
-						<li><a href="/browse?t={$catClass::OTHER_HASHED}">Hashed</a></li>
-					</ul>
-				</li>
 			{/if}
 			<li><a title="Browse All" href="{$smarty.const.WWW_TOP}/browse">All</a>
 				<ul>

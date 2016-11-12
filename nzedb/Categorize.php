@@ -1,6 +1,8 @@
 <?php
 namespace nzedb;
 
+use app\models\Settings;
+
 /**
  * Categorizing of releases by name/group.
  *
@@ -52,8 +54,9 @@ class Categorize extends Category
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$this->categorizeForeign = ($this->pdo->getSetting('categorizeforeign') == "0") ? false : true;
-		$this->catWebDL = ($this->pdo->getSetting('catwebdl') == "0") ? false : true;
+		$this->categorizeForeign = (Settings::value('indexer.categorise.categorizeforeign') == "0")
+			? false : true;
+		$this->catWebDL = (Settings::value('indexer.categorise.catwebdl') == "0") ? false : true;
 		$this->regexes = new Regexes(['Settings' => $this->pdo, 'Table_Name' => 'category_regexes']);
 	}
 
@@ -79,7 +82,7 @@ class Categorize extends Category
 			case $this->byGroup(): // Note that in byGroup() some overrides occur...
 			//Try against all functions, if still nothing, return Cat Misc.
 			case $this->isPC():
-			case $this->isXXX():
+			case $this->isXxx():
 			case $this->isTV():
 			case $this->isMusic():
 			case $this->isMovie():
@@ -105,7 +108,14 @@ class Categorize extends Category
 	private function groupName()
 	{
 		if (!isset($this->groups[$this->groupID])) {
-			$group = $this->pdo->queryOneRow(sprintf('SELECT LOWER(name) AS name FROM groups WHERE id = %d', $this->groupID));
+			$group = $this->pdo->queryOneRow(
+				sprintf('
+					SELECT LOWER(name) AS name
+					FROM groups
+					WHERE id = %d',
+					$this->groupID
+				)
+			);
 			$this->groups[$this->groupID] = ($group === false ? false : $group['name']);
 		}
 
@@ -154,6 +164,7 @@ class Categorize extends Category
 					break;
 				case $group === 'alt.binaries.british.drama':
 					switch (true) {
+						case $this->isUHDTV():
 						case $this->isHDTV():
 						case $this->isSDTV():
 						case $this->isPC():
@@ -208,10 +219,14 @@ class Categorize extends Category
 
 					return false;
 				case preg_match('/alt\.binaries(\.(19\d0s|country|sounds?(\.country|\.19\d0s)?))?\.mp3(\.[a-z]+)?/i', $group):
-					if ($this->isMusic()) {
-						break;
+					switch (true) {
+						case $this->isMusic():
+						case $this->isXxx():
+							break;
+						default:
+							$this->tmpCat = Category::MUSIC_MP3;
+							break;
 					}
-					$this->tmpCat = Category::MUSIC_MP3;
 					break;
 				case preg_match('/alt\.binaries\.dvd(\-?r)?(\.(movies|))?$/i', $group):
 					if ($this->isMovie()) {
@@ -390,6 +405,8 @@ class Categorize extends Category
 							break;
 						case $this->isMovieSD(): // Need to check this BEFORE the HD check
 							break;
+						case $this->isMovieUHD():  // Check the movie isn't an UHD release before blindly assigning SD
+							break;
 						case $this->isMovieHD():  // Check the movie isn't an HD release before blindly assigning SD
 							break;
 						default:
@@ -530,7 +547,7 @@ class Categorize extends Category
 //			return false;
 //		}
 
-		if (preg_match('/Daily[-_\.]Show|Nightly News|^\[[a-zA-Z\.\-]+\].*[-_].*\d{1,3}[-_. ]((\[|\()(h264-)?\d{3,4}(p|i)(\]|\))\s?(\[AAC\])?|\[[a-fA-F0-9]{8}\]|(8|10)BIT|hi10p)(\[[a-fA-F0-9]{8}\])?|(\d\d-){2}[12]\d{3}|[12]\d{3}(\.\d\d){2}|\d+x\d+|\.e\d{1,3}\.|s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|[-._ ](\dx\d\d|C4TV|Complete[-._ ]Season|DSR|(D|H|P|S)DTV|EP[-._ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[-._ ]\d{1,2})([-._ ]|$)|TVRIP|TV[-._ ](19|20)\d\d|TrollHD/i', $this->releaseName)
+		if (preg_match('/Daily[-_\.]Show|Nightly News|^\[[a-zA-Z\.\-]+\].*[-_].*\d{1,3}[-_. ]((\[|\()(h264-)?\d{3,4}(p|i)(\]|\))\s?(\[AAC\])?|\[[a-fA-F0-9]{8}\]|(8|10)BIT|hi10p)(\[[a-fA-F0-9]{8}\])?|(\d\d-){2}[12]\d{3}|[12]\d{3}(\.\d\d){2}|\d+x\d+|\.e\d{1,3}\.|s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|[-._ ](\dx\d\d|C4TV|Complete[-._ ]Season|S\d{1,2}(.Complete)?|DSR|(D|H|P|S)DTV(19|20)\d\d|EP[-._ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[-._ ]\d{1,2})([-._ ]|$)|TVRIP|TV[-._ ](19|20)\d\d|TrollHD/i', $this->releaseName)
 			&& !preg_match('/[-._ ](flac|imageset|mp3|xxx)[-._ ]|[ .]exe$/i', $this->releaseName)
 		) {
 			switch (true) {
@@ -538,6 +555,7 @@ class Categorize extends Category
 				case $this->categorizeForeign && $this->isForeignTV():
 				case $this->isSportTV():
 				case $this->isDocumentaryTV():
+				case $this->isUHDTV():
 				case $this->catWebDL && $this->isWEBDL():
 				case $this->isAnimeTV():
 				case $this->isHDTV():
@@ -663,6 +681,15 @@ class Categorize extends Category
 		return false;
 	}
 
+	public function isUHDTV()
+	{
+		if (preg_match('/2160p/i', $this->releaseName)) {
+			$this->tmpCat = Category::TV_UHD;
+			return true;
+		}
+		return false;
+	}
+
 	public function isSDTV()
 	{
 		switch (true) {
@@ -695,6 +722,7 @@ class Categorize extends Category
 			switch (true) {
 				case $this->categorizeForeign && $this->isMovieForeign():
 				case $this->isMovieDVD():
+				case $this->isMovieUHD():
 				case $this->catWebDL && $this->isMovieWEBDL():
 				case $this->isMovieSD():
 				case $this->isMovie3D():
@@ -787,6 +815,15 @@ class Categorize extends Category
 			}
 		}
 
+		return false;
+	}
+
+	public function isMovieUHD()
+	{
+		if (preg_match('/2160p/i', $this->releaseName)) {
+			$this->tmpCat = Category::MOVIE_UHD;
+			return true;
+		}
 		return false;
 	}
 
@@ -902,13 +939,13 @@ class Categorize extends Category
 			case $this->isXxxPack():
 			case $this->isXxxSD():
 			case $this->catWebDL && $this->isXxxWEBDL():
+			case $this->isXxxUHD():
 			case $this->isXxx264():
 			case $this->isXxxXvid():
 			case $this->isXxxImageset():
 			case $this->isXxxWMV():
 			case $this->isXxxDVD():
 			case $this->isXxxOther():
-			case $this->isXxxSD():
 				return true;
 			default:
 				$this->tmpCat = Category::XXX_OTHER;
@@ -928,6 +965,15 @@ class Categorize extends Category
 				$this->tmpCat = Category::XXX_X264;
 				return true;
 			}
+		}
+		return false;
+	}
+
+	public function isXxxUHD()
+	{
+		if (preg_match('/^[\w-.]+(\d{2}\.\d{2}\.\d{2}).+(2160p)+[\w-.]+(M[PO][V4]-(KTR|GUSH|FaiLED|SEXORS|hUSHhUSH|YAPG))/i', $this->releaseName)) {
+			$this->tmpCat = Category::XXX_UHD;
+			return true;
 		}
 		return false;
 	}

@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b01aa8fb35f1294972df6c351d349b53",
-    "content-hash": "ab7c264abaa2e203d53eb9a5dd4639bb",
+    "hash": "60138937b0e7410f9071d121d50b92d7",
+    "content-hash": "b0b1823fecb04dc7b862227665c8bf34",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
-            "version": "v1.0.7",
+            "version": "v1.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/barracudanetworks/forkdaemon-php.git",
-                "reference": "9f9402909a4bd1ac98e5aacb6f15f19056f591f6"
+                "reference": "06462cffb0181514ce2559615f0e892731919187"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/barracudanetworks/forkdaemon-php/zipball/9f9402909a4bd1ac98e5aacb6f15f19056f591f6",
-                "reference": "9f9402909a4bd1ac98e5aacb6f15f19056f591f6",
+                "url": "https://api.github.com/repos/barracudanetworks/forkdaemon-php/zipball/06462cffb0181514ce2559615f0e892731919187",
+                "reference": "06462cffb0181514ce2559615f0e892731919187",
                 "shasum": ""
             },
             "require": {
@@ -41,20 +41,921 @@
                 "forking",
                 "php"
             ],
-            "time": "2016-01-12 19:40:56"
+            "time": "2016-06-21 18:44:21"
         },
         {
-            "name": "composer/installers",
-            "version": "v1.0.25",
+            "name": "bower-asset/animate.css",
+            "version": "3.5.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/composer/installers.git",
-                "reference": "36e5b5843203d7f1cf6ffb0305a97e014387bd8e"
+                "url": "https://github.com/daneden/animate.css.git",
+                "reference": "dac3dab7b59cb6072b5d0fe23eae3805e370a58c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/36e5b5843203d7f1cf6ffb0305a97e014387bd8e",
-                "reference": "36e5b5843203d7f1cf6ffb0305a97e014387bd8e",
+                "url": "https://api.github.com/repos/daneden/animate.css/zipball/dac3dab7b59cb6072b5d0fe23eae3805e370a58c",
+                "reference": "dac3dab7b59cb6072b5d0fe23eae3805e370a58c",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "./animate.css",
+                "bower-asset-ignore": [
+                    ".*",
+                    "*.yml",
+                    "Gemfile",
+                    "Gemfile.lock",
+                    "*.md"
+                ]
+            }
+        },
+        {
+            "name": "bower-asset/autosize-3.0.x",
+            "version": "3.0.17",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jackmoore/autosize.git",
+                "reference": "3838f1939045804b3166fd217ed59184758e8de3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jackmoore/autosize/zipball/3838f1939045804b3166fd217ed59184758e8de3",
+                "reference": "3838f1939045804b3166fd217ed59184758e8de3",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "dist/autosize.js",
+                "bower-asset-ignore": []
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Autosize is a small, stand-alone script to automatically adjust textarea height to fit text.",
+            "keywords": [
+                "form",
+                "textarea",
+                "ui"
+            ]
+        },
+        {
+            "name": "bower-asset/bootstrap",
+            "version": "v3.3.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twbs/bootstrap.git",
+                "reference": "0b9c4a4007c44201dce9a6cc1a38407005c26c86"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/0b9c4a4007c44201dce9a6cc1a38407005c26c86",
+                "reference": "0b9c4a4007c44201dce9a6cc1a38407005c26c86",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.9.1,<4.0"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "less/bootstrap.less",
+                    "dist/js/bootstrap.js"
+                ],
+                "bower-asset-ignore": [
+                    "/.*",
+                    "_config.yml",
+                    "CNAME",
+                    "composer.json",
+                    "CONTRIBUTING.md",
+                    "docs",
+                    "js/tests",
+                    "test-infra"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "The most popular front-end framework for developing responsive, mobile first projects on the web.",
+            "keywords": [
+                "css",
+                "framework",
+                "front-end",
+                "js",
+                "less",
+                "mobile-first",
+                "responsive",
+                "web"
+            ]
+        },
+        {
+            "name": "bower-asset/bootstrap-2.3.x",
+            "version": "v2.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twbs/bootstrap.git",
+                "reference": "b4c4072679943773a7582daa63f545ba818fa627"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/b4c4072679943773a7582daa63f545ba818fa627",
+                "reference": "b4c4072679943773a7582daa63f545ba818fa627",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.8.0,<2.1.0"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "./docs/assets/js/bootstrap.js",
+                    "./docs/assets/css/bootstrap.css"
+                ]
+            }
+        },
+        {
+            "name": "bower-asset/bootstrap-3.3.x",
+            "version": "v3.3.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twbs/bootstrap.git",
+                "reference": "0b9c4a4007c44201dce9a6cc1a38407005c26c86"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/0b9c4a4007c44201dce9a6cc1a38407005c26c86",
+                "reference": "0b9c4a4007c44201dce9a6cc1a38407005c26c86",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.9.1,<4.0"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "less/bootstrap.less",
+                    "dist/js/bootstrap.js"
+                ],
+                "bower-asset-ignore": [
+                    "/.*",
+                    "_config.yml",
+                    "CNAME",
+                    "composer.json",
+                    "CONTRIBUTING.md",
+                    "docs",
+                    "js/tests",
+                    "test-infra"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "The most popular front-end framework for developing responsive, mobile first projects on the web.",
+            "keywords": [
+                "css",
+                "framework",
+                "front-end",
+                "js",
+                "less",
+                "mobile-first",
+                "responsive",
+                "web"
+            ]
+        },
+        {
+            "name": "bower-asset/bootstrap-hover-dropdown-2.2.x",
+            "version": "v2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CWSpear/bootstrap-hover-dropdown.git",
+                "reference": "56c494fbb1f4ad54180c716cc07f4919e49b423a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CWSpear/bootstrap-hover-dropdown/zipball/56c494fbb1f4ad54180c716cc07f4919e49b423a",
+                "reference": "56c494fbb1f4ad54180c716cc07f4919e49b423a",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/bootstrap": ">=3.0.0,<4.0.0",
+                "bower-asset/jquery": ">=1.9.0"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "./bootstrap-hover-dropdown.js"
+            },
+            "description": "An unofficial Bootstrap plugin to enable Bootstrap dropdowns to activate on hover and provide a nice user experience.",
+            "keywords": [
+                "bootstrap",
+                "dropdowns",
+                "hover",
+                "twitter"
+            ]
+        },
+        {
+            "name": "bower-asset/bootstrap-progressbar-0.9.x",
+            "version": "v0.9.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/minddust/bootstrap-progressbar.git",
+                "reference": "e7ac2690384024feb89bd5122fea14dc4d819567"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/minddust/bootstrap-progressbar/zipball/e7ac2690384024feb89bd5122fea14dc4d819567",
+                "reference": "e7ac2690384024feb89bd5122fea14dc4d819567",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.9.1"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "./bootstrap-progressbar.js",
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "Gulpfile.js",
+                    "Rakefile",
+                    "bower_components",
+                    "node_modules",
+                    "resources",
+                    "tasks"
+                ]
+            },
+            "license": [
+                "MIT"
+            ]
+        },
+        {
+            "name": "bower-asset/chosen-1.5.x",
+            "version": "v1.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/harvesthq/bower-chosen.git",
+                "reference": "e0d29eab0d1ea12535cf1933eba4c47df099f846"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/harvesthq/bower-chosen/zipball/e0d29eab0d1ea12535cf1933eba4c47df099f846",
+                "reference": "e0d29eab0d1ea12535cf1933eba4c47df099f846",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.4.4"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "chosen.jquery.js",
+                    "chosen.css"
+                ],
+                "bower-asset-ignore": []
+            },
+            "license": [
+                {
+                    "type": "MIT",
+                    "url": "https://github.com/harvesthq/chosen/blob/master/LICENSE.md"
+                }
+            ],
+            "description": "Chosen is a JavaScript plugin that makes select boxes user-friendly. It is currently available in both jQuery and Prototype flavors.",
+            "keywords": [
+                "dropdown",
+                "form",
+                "input",
+                "multiselect",
+                "select",
+                "ui"
+            ]
+        },
+        {
+            "name": "bower-asset/colorbox-1.6.x",
+            "version": "1.6.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jackmoore/colorbox.git",
+                "reference": "bac78120c6ca9e63370cc317ab6f400129cd6608"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jackmoore/colorbox/zipball/bac78120c6ca9e63370cc317ab6f400129cd6608",
+                "reference": "bac78120c6ca9e63370cc317ab6f400129cd6608",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.3.2"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "jquery.colorbox.js",
+                "bower-asset-ignore": [
+                    "colorbox.jquery.json",
+                    "colorbox.ai",
+                    "content",
+                    "example1/index.html",
+                    "example2/index.html",
+                    "example3/index.html",
+                    "example4/index.html",
+                    "example5/index.html"
+                ]
+            },
+            "description": "jQuery lightbox and modal window plugin",
+            "keywords": [
+                "gallery",
+                "jquery-plugin",
+                "lightbox",
+                "modal",
+                "popup",
+                "ui"
+            ]
+        },
+        {
+            "name": "bower-asset/datatables-1.10.x",
+            "version": "1.10.12",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DataTables/DataTables.git",
+                "reference": "3a432c5db3546b2ef0c192f2ae367811cb5edb9b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DataTables/DataTables/zipball/3a432c5db3546b2ef0c192f2ae367811cb5edb9b",
+                "reference": "3a432c5db3546b2ef0c192f2ae367811cb5edb9b",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.7.0"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "media/js/jquery.dataTables.js",
+                    "media/css/jquery.dataTables.css",
+                    "media/images/sort_asc.png",
+                    "media/images/sort_asc_disabled.png",
+                    "media/images/sort_both.png",
+                    "media/images/sort_desc.png",
+                    "media/images/sort_desc_disabled.png"
+                ],
+                "bower-asset-ignore": [
+                    "/.*",
+                    "examples",
+                    "media/unit_testing",
+                    "composer.json",
+                    "dataTables.jquery.json",
+                    "package.json"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "keywords": [
+                "datatables",
+                "javascript",
+                "jquery",
+                "library",
+                "table"
+            ]
+        },
+        {
+            "name": "bower-asset/fastclick-1.0.x",
+            "version": "v1.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ftlabs/fastclick.git",
+                "reference": "9977a916739360ad4ffd7aa19b0016bf375e934b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ftlabs/fastclick/zipball/9977a916739360ad4ffd7aa19b0016bf375e934b",
+                "reference": "9977a916739360ad4ffd7aa19b0016bf375e934b",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "lib/fastclick.js",
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "component.json",
+                    "package.json",
+                    "Makefile",
+                    "tests",
+                    "examples"
+                ]
+            }
+        },
+        {
+            "name": "bower-asset/font-awesome-4.5.x",
+            "version": "v4.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FortAwesome/Font-Awesome.git",
+                "reference": "fddd2c240452e6c8990c4ef75e0265b455aa7968"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/fddd2c240452e6c8990c4ef75e0265b455aa7968",
+                "reference": "fddd2c240452e6c8990c4ef75e0265b455aa7968",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "less/font-awesome.less",
+                    "scss/font-awesome.scss"
+                ],
+                "bower-asset-ignore": [
+                    "*/.*",
+                    "*.json",
+                    "src",
+                    "*.yml",
+                    "Gemfile",
+                    "Gemfile.lock",
+                    "*.md"
+                ]
+            },
+            "license": [
+                "OFL-1.1",
+                "MIT",
+                "CC-BY-3.0"
+            ],
+            "description": "Font Awesome"
+        },
+        {
+            "name": "bower-asset/html5shiv-3.7.x",
+            "version": "3.7.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aFarkas/html5shiv.git",
+                "reference": "ed28c56c071bddfe7d635ad88995674957a016be"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aFarkas/html5shiv/zipball/ed28c56c071bddfe7d635ad88995674957a016be",
+                "reference": "ed28c56c071bddfe7d635ad88995674957a016be",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "dist/html5shiv.js"
+                ],
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "composer.json",
+                    "test",
+                    "build",
+                    "src",
+                    "build.xml"
+                ]
+            }
+        },
+        {
+            "name": "bower-asset/icheck-1.0.x",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fronteed/icheck.git",
+                "reference": "8a6eb37bd7dab1e843c1b630c91c6398ff409d05"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fronteed/icheck/zipball/8a6eb37bd7dab1e843c1b630c91c6398ff409d05",
+                "reference": "8a6eb37bd7dab1e843c1b630c91c6398ff409d05",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.7"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "./icheck.min.js"
+                ],
+                "bower-asset-ignore": [
+                    ".gitignore",
+                    "CHANGELOG.md",
+                    "README.md",
+                    "demo/"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Highly customizable checkboxes and radio buttons (jQuery & Zepto)",
+            "keywords": [
+                "accessibility",
+                "checkbox",
+                "checked",
+                "custom",
+                "disabled",
+                "field",
+                "form",
+                "icheck",
+                "indeterminate",
+                "input",
+                "radio",
+                "replacement",
+                "skins",
+                "ui"
+            ]
+        },
+        {
+            "name": "bower-asset/jquery",
+            "version": "2.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jquery/jquery-dist.git",
+                "reference": "f852e631ba85af7da4ad7594785e122504e7b233"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jquery/jquery-dist/zipball/f852e631ba85af7da4ad7594785e122504e7b233",
+                "reference": "f852e631ba85af7da4ad7594785e122504e7b233",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "jquery.js"
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "jQuery component",
+            "keywords": [
+                "component",
+                "jquery"
+            ]
+        },
+        {
+            "name": "bower-asset/jquery-1.9.x",
+            "version": "1.9.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jquery/jquery-dist.git",
+                "reference": "d71f6a53927ad02d728503385d15539b73d21ac8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jquery/jquery-dist/zipball/d71f6a53927ad02d728503385d15539b73d21ac8",
+                "reference": "d71f6a53927ad02d728503385d15539b73d21ac8",
+                "shasum": ""
+            },
+            "type": "bower-asset-library"
+        },
+        {
+            "name": "bower-asset/jquery-2.2.x",
+            "version": "2.2.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jquery/jquery-dist.git",
+                "reference": "c0185ab7c75aab88762c5aae780b9d83b80eda72"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jquery/jquery-dist/zipball/c0185ab7c75aab88762c5aae780b9d83b80eda72",
+                "reference": "c0185ab7c75aab88762c5aae780b9d83b80eda72",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "dist/jquery.js",
+                "bower-asset-ignore": [
+                    "package.json"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "keywords": [
+                "browser",
+                "javascript",
+                "jquery",
+                "library"
+            ]
+        },
+        {
+            "name": "bower-asset/jquery-migrate-1.4.x",
+            "version": "1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/appleboy/jquery-migrate.git",
+                "reference": "29077d39689bddad05036a537d49c4cf96488569"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/appleboy/jquery-migrate/zipball/29077d39689bddad05036a537d49c4cf96488569",
+                "reference": "29077d39689bddad05036a537d49c4cf96488569",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "jquery-migrate.js"
+            }
+        },
+        {
+            "name": "bower-asset/jquery.nicescroll-3.6.x",
+            "version": "v3.6.8-patch1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/inuyaksa/jquery.nicescroll.git",
+                "reference": "25737c1a8ecfaccf219a13142d300b64e52e6b58"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/inuyaksa/jquery.nicescroll/zipball/25737c1a8ecfaccf219a13142d300b64e52e6b58",
+                "reference": "25737c1a8ecfaccf219a13142d300b64e52e6b58",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.8.3"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "./jquery.nicescroll.js",
+                    "./zoomico.png"
+                ],
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "demo",
+                    "package.json"
+                ]
+            }
+        },
+        {
+            "name": "bower-asset/noty-2.3.x",
+            "version": "v2.3.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/needim/noty.git",
+                "reference": "6fe2cf81c7b8ecdbdafaa875b82b78cf65e2f100"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/needim/noty/zipball/6fe2cf81c7b8ecdbdafaa875b82b78cf65e2f100",
+                "reference": "6fe2cf81c7b8ecdbdafaa875b82b78cf65e2f100",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "js/noty/packaged/jquery.noty.packaged.js",
+                "bower-asset-ignore": []
+            },
+            "description": "noty is a jQuery plugin that makes it easy to create alert - success - error - warning - information - confirmation messages as an alternative the standard alert dialog. Each notification is added to a queue. (Optional)"
+        },
+        {
+            "name": "bower-asset/pace-1.0.x",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/HubSpot/pace.git",
+                "reference": "c6846cbf6b928e9903b569269fa9fbf32f2554f4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/HubSpot/pace/zipball/c6846cbf6b928e9903b569269fa9fbf32f2554f4",
+                "reference": "c6846cbf6b928e9903b569269fa9fbf32f2554f4",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "pace.js",
+                "bower-asset-ignore": [
+                    ".*",
+                    "Gruntfile.coffee",
+                    "bower_components",
+                    "docs",
+                    "node_modules",
+                    "package.json",
+                    "templates",
+                    "tests"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Automatic page load progress bar",
+            "keywords": [
+                "activity",
+                "ajax",
+                "automatic",
+                "bar",
+                "client-side",
+                "load",
+                "loading",
+                "pageload",
+                "progress",
+                "progress",
+                "spinner"
+            ]
+        },
+        {
+            "name": "bower-asset/pnotify-3.0.x",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sciactive/pnotify.git",
+                "reference": "2c6a12b5d8a6b55d21beae5b35c2a643fcfe4a90"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sciactive/pnotify/zipball/2c6a12b5d8a6b55d21beae5b35c2a643fcfe4a90",
+                "reference": "2c6a12b5d8a6b55d21beae5b35c2a643fcfe4a90",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.6"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "dist/pnotify.animate.js",
+                    "dist/pnotify.brighttheme.css",
+                    "dist/pnotify.buttons.css",
+                    "dist/pnotify.buttons.js",
+                    "dist/pnotify.callbacks.js",
+                    "dist/pnotify.confirm.js",
+                    "dist/pnotify.css",
+                    "dist/pnotify.js",
+                    "dist/pnotify.desktop.js",
+                    "dist/pnotify.history.css",
+                    "dist/pnotify.history.js",
+                    "dist/pnotify.mobile.css",
+                    "dist/pnotify.mobile.js",
+                    "dist/pnotify.nonblock.js"
+                ],
+                "bower-asset-ignore": [
+                    "build-tools/",
+                    "includes/",
+                    "devnote*.*",
+                    "index.html",
+                    "testing.html",
+                    "buildcustom.php",
+                    "package.json",
+                    "src/"
+                ]
+            },
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "JavaScript notification plugin."
+        },
+        {
+            "name": "bower-asset/respond-1.4.x",
+            "version": "1.4.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/scottjehl/Respond.git",
+                "reference": "20b7f4a192bb910c8c7e067b961de38519d334e4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/scottjehl/Respond/zipball/20b7f4a192bb910c8c7e067b961de38519d334e4",
+                "reference": "20b7f4a192bb910c8c7e067b961de38519d334e4",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "dest/respond.src.js",
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "test"
+                ]
+            },
+            "description": "Fast and lightweight polyfill for min/max-width CSS3 Media Queries (for IE 6-8, and more)"
+        },
+        {
+            "name": "bower-asset/responsive-tables-js-1.0.x",
+            "version": "v1.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/smasala/responsive-tables-js.git",
+                "reference": "10c8ea1f59acb8a00dc4af898d0cd54a527eef5d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/smasala/responsive-tables-js/zipball/10c8ea1f59acb8a00dc4af898d0cd54a527eef5d",
+                "reference": "10c8ea1f59acb8a00dc4af898d0cd54a527eef5d",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": "dev-default|*"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "responsivetables.js",
+                "bower-asset-ignore": ""
+            },
+            "description": "JavaScript solution for supporting responsive tables",
+            "keywords": [
+                "javascript",
+                "jquery",
+                "responsive",
+                "table"
+            ]
+        },
+        {
+            "name": "bower-asset/select2-4.0.x",
+            "version": "4.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/select2/select2.git",
+                "reference": "566c7846fbf8c3b7674346f26d0ee872c0a77629"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/select2/select2/zipball/566c7846fbf8c3b7674346f26d0ee872c0a77629",
+                "reference": "566c7846fbf8c3b7674346f26d0ee872c0a77629",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "dist/js/select2.js",
+                    "src/scss/core.scss"
+                ]
+            },
+            "description": "Select2 is a jQuery based replacement for select boxes. It supports searching, remote data sets, and infinite scrolling of results."
+        },
+        {
+            "name": "bower-asset/slimscroll-1.3.x",
+            "version": "v1.3.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rochal/jQuery-slimScroll.git",
+                "reference": "cf39d364e777ef95574c30c42d3b85cb2bf325d3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rochal/jQuery-slimScroll/zipball/cf39d364e777ef95574c30c42d3b85cb2bf325d3",
+                "reference": "cf39d364e777ef95574c30c42d3b85cb2bf325d3",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "jquery.slimscroll.js",
+                    "jquery.slimscroll.min.js"
+                ],
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "node_modules",
+                    "bower_components",
+                    "test",
+                    "tests"
+                ]
+            },
+            "description": "slimScroll is a small jQuery plugin that transforms any div into a scrollable area. slimScroll doesn't occupy any visual space as it only appears on a user initiated mouse-over.",
+            "keywords": [
+                "ecosystem:jquery",
+                "jquery-plugin",
+                "scroll",
+                "scrollable",
+                "scrollbar",
+                "scroller",
+                "scrolling",
+                "slimscroll",
+                "ui"
+            ]
+        },
+        {
+            "name": "bower-asset/tinymce-builded",
+            "version": "4.4.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/artursmirnov/tinymce_builded.git",
+                "reference": "b6c9e915a1f0e415725c7cad901165f016eb58f0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/artursmirnov/tinymce_builded/zipball/b6c9e915a1f0e415725c7cad901165f016eb58f0",
+                "reference": "b6c9e915a1f0e415725c7cad901165f016eb58f0",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "license": [
+                "GNU / Lesser GPL"
+            ],
+            "description": "Builded version of TinyMCE rich editor",
+            "keywords": [
+                "builded",
+                "editor",
+                "rich",
+                "tinymce",
+                "wysiwyg"
+            ]
+        },
+        {
+            "name": "composer/installers",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/composer/installers.git",
+                "reference": "d78064c68299743e0161004f2de3a0204e33b804"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/composer/installers/zipball/d78064c68299743e0161004f2de3a0204e33b804",
+                "reference": "d78064c68299743e0161004f2de3a0204e33b804",
                 "shasum": ""
             },
             "require": {
@@ -101,21 +1002,26 @@
                 "MODX Evo",
                 "Mautic",
                 "OXID",
+                "Plentymarkets",
+                "RadPHP",
                 "SMF",
                 "Thelia",
                 "WolfCMS",
                 "agl",
                 "aimeos",
                 "annotatecms",
+                "attogram",
                 "bitrix",
                 "cakephp",
                 "chef",
+                "cockpit",
                 "codeigniter",
                 "concrete5",
                 "croogo",
                 "dokuwiki",
                 "drupal",
                 "elgg",
+                "expressionengine",
                 "fuelphp",
                 "grav",
                 "installer",
@@ -132,16 +1038,74 @@
                 "piwik",
                 "ppi",
                 "puppet",
+                "reindex",
                 "roundcube",
                 "shopware",
                 "silverstripe",
                 "symfony",
                 "typo3",
                 "wordpress",
+                "yawik",
                 "zend",
                 "zikula"
             ],
-            "time": "2016-04-13 19:46:30"
+            "time": "2016-08-13 20:53:52"
+        },
+        {
+            "name": "fxp/composer-asset-plugin",
+            "version": "v1.2.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fxpio/composer-asset-plugin.git",
+                "reference": "60bc94db574103dfc73acb907fa79c6dfc86c96e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fxpio/composer-asset-plugin/zipball/60bc94db574103dfc73acb907fa79c6dfc86c96e",
+                "reference": "60bc94db574103dfc73acb907fa79c6dfc86c96e",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0",
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "composer/composer": "^1.0.0"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Fxp\\Composer\\AssetPlugin\\FxpAssetPlugin",
+                "branch-alias": {
+                    "dev-master": "1.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Fxp\\Composer\\AssetPlugin\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "François Pluchino",
+                    "email": "francois.pluchino@gmail.com"
+                }
+            ],
+            "description": "NPM/Bower Dependency Manager for Composer",
+            "homepage": "https://github.com/fxpio/composer-asset-plugin",
+            "keywords": [
+                "asset",
+                "bower",
+                "composer",
+                "dependency manager",
+                "nodejs",
+                "npm",
+                "package"
+            ],
+            "time": "2016-10-12 08:03:45"
         },
         {
             "name": "giantbomb/giantbomb",
@@ -149,12 +1113,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/amalfra/GiantBomb.git",
-                "reference": "6e5c37fdaff69bc2af089acd39fbc00b1d4f5985"
+                "reference": "2f80210e54e8310380221759b26117c1351b8031"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amalfra/GiantBomb/zipball/6e5c37fdaff69bc2af089acd39fbc00b1d4f5985",
-                "reference": "6e5c37fdaff69bc2af089acd39fbc00b1d4f5985",
+                "url": "https://api.github.com/repos/amalfra/GiantBomb/zipball/2f80210e54e8310380221759b26117c1351b8031",
+                "reference": "2f80210e54e8310380221759b26117c1351b8031",
                 "shasum": ""
             },
             "require": {
@@ -188,7 +1152,7 @@
                 "php",
                 "wrapper"
             ],
-            "time": "2014-05-10 11:57:09"
+            "time": "2016-06-15 06:37:08"
         },
         {
             "name": "google/recaptcha",
@@ -277,12 +1241,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/JPinkney/TVMaze-PHP-API-Wrapper.git",
-                "reference": "bf6b5bcf44d607bd2406b0638e86e6b9f1b909fe"
+                "reference": "03e60ddbb4a5516aee531be5f4fafc92922f8ae4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JPinkney/TVMaze-PHP-API-Wrapper/zipball/bf6b5bcf44d607bd2406b0638e86e6b9f1b909fe",
-                "reference": "bf6b5bcf44d607bd2406b0638e86e6b9f1b909fe",
+                "url": "https://api.github.com/repos/JPinkney/TVMaze-PHP-API-Wrapper/zipball/03e60ddbb4a5516aee531be5f4fafc92922f8ae4",
+                "reference": "03e60ddbb4a5516aee531be5f4fafc92922f8ae4",
                 "shasum": ""
             },
             "type": "library",
@@ -302,7 +1266,7 @@
                 }
             ],
             "description": "TVMaze-API-Wrapper",
-            "time": "2016-03-16 14:59:03"
+            "time": "2016-05-04 01:31:56"
         },
         {
             "name": "kbjr/Git.php",
@@ -332,16 +1296,16 @@
         },
         {
             "name": "moinax/tvdb",
-            "version": "v1.0.5",
+            "version": "v1.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Moinax/TvDb.git",
-                "reference": "772b24179b199bc1f17935c52613f95d318ad3cc"
+                "reference": "26f33df9e0ddf9b0b6ba9deeb43f1fa83b483085"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Moinax/TvDb/zipball/772b24179b199bc1f17935c52613f95d318ad3cc",
-                "reference": "772b24179b199bc1f17935c52613f95d318ad3cc",
+                "url": "https://api.github.com/repos/Moinax/TvDb/zipball/26f33df9e0ddf9b0b6ba9deeb43f1fa83b483085",
+                "reference": "26f33df9e0ddf9b0b6ba9deeb43f1fa83b483085",
                 "shasum": ""
             },
             "require": {
@@ -368,20 +1332,20 @@
             "keywords": [
                 "api"
             ],
-            "time": "2016-04-01 14:51:00"
+            "time": "2016-10-25 08:14:27"
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v5.2.14",
+            "version": "v5.2.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "e774bc9152de85547336e22b8926189e582ece95"
+                "reference": "1d85f9ef3ecfc42bbc4f3c70d5e37ca9a65f629a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/e774bc9152de85547336e22b8926189e582ece95",
-                "reference": "e774bc9152de85547336e22b8926189e582ece95",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/1d85f9ef3ecfc42bbc4f3c70d5e37ca9a65f629a",
+                "reference": "1d85f9ef3ecfc42bbc4f3c70d5e37ca9a65f629a",
                 "shasum": ""
             },
             "require": {
@@ -392,8 +1356,7 @@
                 "phpunit/phpunit": "4.7.*"
             },
             "suggest": {
-                "league/oauth2-client": "Needed for XOAUTH2 authentication",
-                "league/oauth2-google": "Needed for Gmail XOAUTH2"
+                "league/oauth2-google": "Needed for Google XOAUTH2 authentication"
             },
             "type": "library",
             "autoload": {
@@ -429,20 +1392,20 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2015-11-01 10:15:28"
+            "time": "2016-06-06 09:09:37"
         },
         {
             "name": "smarty/smarty",
-            "version": "v3.1.29",
+            "version": "v3.1.30",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "35480f10e7ce9b0fdaf23d3799d7b79463919b1e"
+                "reference": "ed2b7f1146cfda13df1eea8a5f707a1b771b6e7e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/35480f10e7ce9b0fdaf23d3799d7b79463919b1e",
-                "reference": "35480f10e7ce9b0fdaf23d3799d7b79463919b1e",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/ed2b7f1146cfda13df1eea8a5f707a1b771b6e7e",
+                "reference": "ed2b7f1146cfda13df1eea8a5f707a1b771b6e7e",
                 "shasum": ""
             },
             "require": {
@@ -484,28 +1447,28 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2015-12-21 01:57:06"
+            "time": "2016-08-07 18:46:49"
         },
         {
             "name": "unionofrad/lithium",
-            "version": "1.1.x-dev",
+            "version": "1.2.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/UnionOfRAD/lithium.git",
-                "reference": "9b942de7ba5f771d6ae8f17e2f6d7a7342a84663"
+                "reference": "49d2d46a63d6f2a94c28e392ee67b150aed4d524"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/9b942de7ba5f771d6ae8f17e2f6d7a7342a84663",
-                "reference": "9b942de7ba5f771d6ae8f17e2f6d7a7342a84663",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/49d2d46a63d6f2a94c28e392ee67b150aed4d524",
+                "reference": "49d2d46a63d6f2a94c28e392ee67b150aed4d524",
                 "shasum": ""
             },
             "require": {
                 "composer/installers": "1.*",
-                "php": ">=5.5.0"
+                "php": ">=5.5.14"
             },
             "require-dev": {
-                "unionofrad/li3_fixtures": "1.0.*@RC"
+                "unionofrad/li3_fixtures": "1.0.*"
             },
             "bin": [
                 "console/li3"
@@ -530,173 +1493,65 @@
                 "li3",
                 "lithium"
             ],
-            "time": "2016-01-25 12:29:04"
+            "time": "2016-09-19 11:17:21"
+        },
+        {
+            "name": "zeebinz/rarinfo",
+            "version": "v2.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zeebinz/rarinfo.git",
+                "reference": "0ee81ff312bf29257ff82420a8d1b1e02ad42c9d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zeebinz/rarinfo/zipball/0ee81ff312bf29257ff82420a8d1b1e02ad42c9d",
+                "reference": "0ee81ff312bf29257ff82420a8d1b1e02ad42c9d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "archiveinfo.php",
+                    "archivereader.php",
+                    "par2info.php",
+                    "pipereader.php",
+                    "rarinfo.php",
+                    "sfvinfo.php",
+                    "srrinfo.php",
+                    "szipinfo.php",
+                    "zipinfo.php"
+                ]
+            },
+            "authors": [
+                {
+                    "name": "zeebinz"
+                }
+            ],
+            "description": "PHP archive reader helper class",
+            "support": {
+                "source": "https://github.com/zeebinz/rarinfo/tree/v2.5.0",
+                "issues": "https://github.com/zeebinz/rarinfo/issues"
+            },
+            "time": "2016-10-15 16:33:21"
         }
     ],
     "packages-dev": [
-        {
-            "name": "cebe/markdown",
-            "version": "1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/cebe/markdown.git",
-                "reference": "54a2c49de31cc44e864ebf0500a35ef21d0010b2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/cebe/markdown/zipball/54a2c49de31cc44e864ebf0500a35ef21d0010b2",
-                "reference": "54a2c49de31cc44e864ebf0500a35ef21d0010b2",
-                "shasum": ""
-            },
-            "require": {
-                "lib-pcre": "*",
-                "php": ">=5.4.0"
-            },
-            "require-dev": {
-                "cebe/indent": "*",
-                "facebook/xhprof": "*@dev",
-                "phpunit/phpunit": "4.1.*"
-            },
-            "bin": [
-                "bin/markdown"
-            ],
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "cebe\\markdown\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Carsten Brandt",
-                    "email": "mail@cebe.cc",
-                    "homepage": "http://cebe.cc/",
-                    "role": "Creator"
-                }
-            ],
-            "description": "A super fast, highly extensible markdown parser for PHP",
-            "homepage": "https://github.com/cebe/markdown#readme",
-            "keywords": [
-                "extensible",
-                "fast",
-                "gfm",
-                "markdown",
-                "markdown-extra"
-            ],
-            "time": "2015-03-06 05:28:07"
-        },
-        {
-            "name": "unionofrad/li3_docs",
-            "version": "1.1.x-dev",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/niel/li3_docs.git",
-                "reference": "502a84a3eba182c6f3e163ec4031131ea4133fd4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/niel/li3_docs/zipball/502a84a3eba182c6f3e163ec4031131ea4133fd4",
-                "reference": "502a84a3eba182c6f3e163ec4031131ea4133fd4",
-                "shasum": ""
-            },
-            "require": {
-                "cebe/markdown": "1.*",
-                "composer/installers": "1.*",
-                "php": ">=5.3",
-                "unionofrad/lithium": "1.1.x-dev"
-            },
-            "type": "lithium-library",
-            "license": [
-                "BSD-3-clause"
-            ],
-            "authors": [
-                {
-                    "name": "Union of RAD"
-                },
-                {
-                    "name": "The Community"
-                }
-            ],
-            "description": "A documentation generator for Lithium projects.",
-            "homepage": "http://li3.me",
-            "keywords": [
-                "docblock",
-                "docs",
-                "documentation",
-                "documented",
-                "li3",
-                "lithium"
-            ],
-            "support": {
-                "source": "https://github.com/niel/li3_docs/tree/1.1"
-            },
-            "time": "2016-03-22 13:06:11"
-        },
-        {
-            "name": "unionofrad/li3_quality",
-            "version": "1.1.x-dev",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/UnionOfRAD/li3_quality.git",
-                "reference": "3a986b0b11ccd4be09a22206d6645aed8c8af1d2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/li3_quality/zipball/3a986b0b11ccd4be09a22206d6645aed8c8af1d2",
-                "reference": "3a986b0b11ccd4be09a22206d6645aed8c8af1d2",
-                "shasum": ""
-            },
-            "require": {
-                "composer/installers": "1.*",
-                "php": ">=5.5.0",
-                "unionofrad/lithium": "1.1.*"
-            },
-            "type": "lithium-library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-clause"
-            ],
-            "authors": [
-                {
-                    "name": "Union of RAD"
-                },
-                {
-                    "name": "The Community"
-                }
-            ],
-            "description": "This li₃ plugin adds code quality assurance to your toolbelt.",
-            "homepage": "http://li3.me",
-            "keywords": [
-                "coverage",
-                "li3",
-                "lithium",
-                "plugin",
-                "quality",
-                "syntax"
-            ],
-            "time": "2016-04-10 15:04:15"
-        },
         {
             "name": "unionofrad/manual",
             "version": "1.1.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/UnionOfRAD/manual.git",
-                "reference": "7117a85d03045bfe0b4854de6dada100056f7fef"
+                "reference": "5e7781e131916b2401245ae7d12e77a41ecc5d2b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/manual/zipball/7117a85d03045bfe0b4854de6dada100056f7fef",
-                "reference": "7117a85d03045bfe0b4854de6dada100056f7fef",
+                "url": "https://api.github.com/repos/UnionOfRAD/manual/zipball/5e7781e131916b2401245ae7d12e77a41ecc5d2b",
+                "reference": "5e7781e131916b2401245ae7d12e77a41ecc5d2b",
                 "shasum": ""
             },
             "require": {
@@ -720,7 +1575,7 @@
                 "source": "https://github.com/UnionOfRAD/manual/tree/1.1",
                 "issues": "https://github.com/UnionOfRAD/manual/issues"
             },
-            "time": "2016-01-04 20:29:49"
+            "time": "2016-05-31 20:16:51"
         }
     ],
     "aliases": [],
@@ -730,18 +1585,34 @@
         "joshpinkney/tv-maze-php-api": 20,
         "kbjr/git.php": 20,
         "unionofrad/lithium": 20,
-        "unionofrad/li3_docs": 20,
-        "unionofrad/manual": 20,
-        "unionofrad/li3_quality": 20
+        "unionofrad/manual": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
+        "ext-ctype": "*",
         "ext-curl": "*",
+        "ext-exif": "*",
+        "ext-filter": "*",
         "ext-gd": "*",
+        "ext-hash": "*",
+        "ext-iconv": "*",
+        "ext-imagick": "*",
         "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-mcrypt": "*",
         "ext-mysqlnd": "*",
-        "php": ">=5.5.0"
+        "ext-openssl": "*",
+        "ext-pcre": "*",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "ext-session": "*",
+        "ext-simplexml": "*",
+        "ext-sockets": "*",
+        "ext-spl": "*",
+        "ext-xmlwriter": "*",
+        "ext-zlib": "*",
+        "php": ">=5.6.9"
     },
     "platform-dev": []
 }

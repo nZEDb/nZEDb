@@ -1,6 +1,6 @@
 <?php
 // TODO: bunch of if/elses need converting to switches
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\Categorize;
 use nzedb\Category;
@@ -10,7 +10,7 @@ use nzedb\Groups;
 use nzedb\NameFixer;
 use nzedb\ReleaseCleaning;
 use nzedb\ReleaseFiles;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /*
  *
@@ -23,7 +23,7 @@ use nzedb\db\Settings;
  * release has been created
  *
  */
-$pdo = new Settings();
+$pdo = new DB();
 
 if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "full" || $argv[1] == "preid" || is_numeric($argv[1])))) {
 	exit($pdo->log->error(
@@ -72,19 +72,19 @@ function preName($argv, $argc)
 		$where = '';
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $full === true) {
-		$where = ' AND group_id = ' . $argv[2];
+		$where = ' AND groups_id = ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
 	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $full === true) {
-		$where = ' AND group_id IN ' . $argv[2];
+		$where = ' AND groups_id IN ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
 	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $all === true) {
-		$where = ' AND group_id IN ' . $argv[2];
+		$where = ' AND groups_id IN ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1';
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $all === true) {
-		$where = ' AND group_id = ' . $argv[2];
+		$where = ' AND groups_id = ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1 and predb_id = 0';
 	} else if (isset($argv[2]) && is_numeric($argv[2])) {
-		$where = ' AND group_id = ' . $argv[2];
+		$where = ' AND groups_id = ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
 	} else if ($full === true) {
 		$why = ' WHERE nzbstatus = 1 AND (isrenamed = 0 OR categories_id between ' .
@@ -96,15 +96,14 @@ function preName($argv, $argc)
 	}
 	resetSearchnames();
 	echo $pdo->log->header(
-		"SELECT id, name, searchname, fromname, size, group_id, categories_id FROM releases" . $why . $what .
-		$where . ";\n"
+		"SELECT id, name, searchname, fromname, size, groups_id, categories_id FROM releases" . $why . $what . $where . ";\n"
 	);
-	$res = $pdo->queryDirect("SELECT id, name, searchname, fromname, size, group_id, categories_id FROM releases" . $why . $what . $where);
+	$res = $pdo->queryDirect("SELECT id, name, searchname, fromname, size, groups_id, categories_id FROM releases" . $why . $what . $where);
 	$total = $res->rowCount();
 	if ($total > 0) {
 		$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 		foreach ($res as $row) {
-			$groupname = $groups->getByNameByID($row['group_id']);
+			$groupname = $groups->getNameByID($row['groups_id']);
 			$cleanerName = releaseCleaner($row['name'], $row['fromname'], $row['size'], $groupname, $usepre);
 			$preid = 0;
 			$predb = $predbfile = $increment = false;
@@ -157,7 +156,7 @@ function preName($argv, $argc)
 				if ($cleanName != $row['name'] && $cleanName != $row['searchname']) {
 					if (strlen(utf8_decode($cleanName)) <= 3) {
 					} else {
-						$determinedcat = $category->determineCategory($row["group_id"], $cleanName);
+						$determinedcat = $category->determineCategory($row["groups_id"], $cleanName);
 						if ($propername == true) {
 							$pdo->queryExec(
 								sprintf(
@@ -282,12 +281,12 @@ function catRelease($type, $where, $echooutput = false)
 	$cat = new Categorize(['Settings' => $pdo]);
 	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	$relcount = 0;
-	echo $pdo->log->primary("SELECT id, " . $type . ", group_id FROM releases " . $where);
-	$resrel = $pdo->queryDirect("SELECT id, " . $type . ", group_id FROM releases " . $where);
+	echo $pdo->log->primary("SELECT id, " . $type . ", groups_id FROM releases " . $where);
+	$resrel = $pdo->queryDirect("SELECT id, " . $type . ", groups_id FROM releases " . $where);
 	$total = $resrel->rowCount();
 	if ($total > 0) {
 		foreach ($resrel as $rowrel) {
-			$catId = $cat->determineCategory($rowrel['group_id'], $rowrel[$type]);
+			$catId = $cat->determineCategory($rowrel['groups_id'], $rowrel[$type]);
 			$pdo->queryExec(sprintf("UPDATE releases SET iscategorized = 1, categories_id = %d WHERE id = %d", $catId, $rowrel['id']));
 			$relcount++;
 			if ($echooutput) {

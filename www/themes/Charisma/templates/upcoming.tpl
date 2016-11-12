@@ -35,9 +35,26 @@
 							<a class="rndbtn badge badge-success" target="_blank"
 							   href="{$site->dereferrer_link}{$result->links->alternate}"
 							   title="View Rotten Tomatoes Details">Rotten</a>
-							<a class="rndbtn badge badge-imdb" target="_blank"
-							   href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result->alternate_ids->imdb}"
-							   title="View Imdb Details">IMDB</a>
+							{if !empty($result->alternate_ids)}
+								<a class="rndbtn badge badge-imdb" target="_blank"
+								   href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result->alternate_ids->imdb}"
+								   title="View Imdb Details">IMDB</a>
+								<a
+									target="_blank"
+									href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result->alternate_ids->imdb}/"
+									name="trakt{$result->alternate_ids->imdb}"
+									title="View trakt page">
+									<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/trakt.png">
+								</a>
+								{if !empty($cpurl) && !empty($cpapi)}
+									<a
+										id="imdb{$result->alternate_ids->imdb}"
+										class="sendtocouch"
+										title="Add to CouchPotato">
+										<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+									</a>
+								{/if}
+							{/if}
 						</div>
 					</div>
 				</td>
@@ -69,16 +86,10 @@
 						<a class="rndbtn btn btn-sm btn-success"
 						   href="{$smarty.const.WWW_TOP}/movies?imdb={$result->alternate_ids->imdb}">Download</a>
 					{else}
-						<a {if isset($userimdbs) && $userimdbs[$result->alternate_ids->imdb] != ""}style="display:none;"{/if}
-						   onclick="mymovie_add('{$result->alternate_ids->imdb}', this);return false;"
-						   class="rndbtn btn btn-sm btn-info" href="#">Add To My Movies</a>
+						<a {if !empty($userimdbs[$result->alternate_ids->imdb])}style="display:none;"{/if}
+						   class="rndbtn btn btn-sm btn-info" href="{$smarty.const.WWW_TOP}/mymovies/add/{$result->alternate_ids->imdb}?from={$smarty.server.REQUEST_URI|escape:"url"}" rel="add" name="movies{$result->alternate_ids->imdb}" title="Add to My Movies">Add to My Movies</a>
 					{/if}
-					<a style="display:{if $userimdbs[$result->alternate_ids->imdb] != ""}inline{else}none;{/if}"
-					   onclick="mymovie_del('{$result->alternate_ids->imdb}', this);return false;" href="#"
-					   class="rndbtn btn btn-sm btn-danger">Remove From My Movies</a>
 					<br/>
-
-
 				</td>
 			</tr>
 		{/foreach}

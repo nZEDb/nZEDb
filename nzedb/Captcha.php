@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
 use ReCaptcha\ReCaptcha;
 
 class Captcha
@@ -197,10 +197,10 @@ class Captcha
 			return true;
 		}
 
-		$enabled = $this->page->settings->getSetting(self::RECAPTCHA_SETTING_ENABLED);
+		$enabled = Settings::value(self::RECAPTCHA_SETTING_ENABLED);
 		if ($enabled || is_null($enabled)) { // Only disable if the setting exists and is truish.
-			$this->sitekey = $this->page->settings->getSetting(self::RECAPTCHA_SETTING_SITEKEY);
-			$this->secretkey = $this->page->settings->getSetting(self::RECAPTCHA_SETTING_SECRETKEY);
+			$this->sitekey = Settings::value(self::RECAPTCHA_SETTING_SITEKEY);
+			$this->secretkey = Settings::value(self::RECAPTCHA_SETTING_SECRETKEY);
 
 			if ($this->sitekey != false && $this->sitekey != '') {
 				if ($this->secretkey != false && $this->secretkey != '') {

@@ -1,7 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 
 class ReleaseComments
 {
@@ -15,7 +16,7 @@ class ReleaseComments
 	 */
 	public function __construct($settings = null)
 	{
-		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
+		$this->pdo = ($settings instanceof DB ? $settings : new DB());
 	}
 
 	// Returns the row associated to the id of a comment.
@@ -66,7 +67,7 @@ class ReleaseComments
 
 	public function addComment($id, $text, $userid, $host)
 	{
-		if ($this->pdo->getSetting('storeuserips') != "1") {
+		if (Settings::value('..storeuserips') != "1") {
 			$host = "";
 		}
 
@@ -92,10 +93,10 @@ class ReleaseComments
 	{
 		return $this->pdo->query(
 			sprintf("
-				SELECT release_comments.*, releases.guid
-				FROM release_comments
-				LEFT JOIN releases on releases.id = release_comments.releases_id
-				ORDER BY release_comments.createddate DESC %s",
+				SELECT rc.*, r.guid
+				FROM release_comments rc
+				LEFT JOIN releases r on r.id = rc.releases_id
+				ORDER BY rc.createddate DESC %s",
 				($start === false ? '' : " LIMIT " . $num . " OFFSET " . $start)
 			)
 		);

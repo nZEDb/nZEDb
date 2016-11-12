@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 class ReleaseExtra
@@ -16,7 +16,7 @@ class ReleaseExtra
 	 */
 	public function __construct($settings = null)
 	{
-		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
+		$this->pdo = ($settings instanceof DB ? $settings : new DB());
 	}
 
 	public function makeCodecPretty($codec)
@@ -108,6 +108,12 @@ class ReleaseExtra
 						}
 						if (isset($track['Overall_bit_rate'])) {
 							$overallbitrate = $track['Overall_bit_rate'];
+						}
+						if (isset($track['Unique_ID'])) {
+							if(preg_match('/\(0x(?P<hash>[0-9a-f]{32})\)/i', $track['Unique_ID'], $matches)){
+								$uniqueid = $matches['hash'];
+								$this->addUID($releaseID, $uniqueid);
+							}
 						}
 					} else if ($track['@attributes']['type'] == 'Video') {
 						$videoduration = $videoformat = $videocodec = $videowidth = $videoheight = $videoaspect = $videoframerate = $videolibrary = '';
@@ -210,6 +216,30 @@ class ReleaseExtra
 		}
 	}
 
+	/**
+	 * @param $releaseID
+	 * @param $uniqueid
+	 */
+	public function addUID($releaseID, $uniqueid)
+	{
+		$dupecheck = $this->pdo->queryOneRow("
+			SELECT releases_id
+			FROM release_unique
+			WHERE releases_id = {$releaseID}
+			OR (
+				releases_id = {$releaseID}
+				AND uniqueid = UNHEX('{$uniqueid}')
+			)"
+		);
+
+		if ($dupecheck === false) {
+			$this->pdo->queryExec("
+				INSERT INTO release_unique (releases_id, uniqueid)
+				VALUES ({$releaseID}, UNHEX('{$uniqueid}'))"
+			);
+		}
+	}
+
 	public function getFull($id)
 	{
 		return $this->pdo->queryOneRow(sprintf('SELECT * FROM releaseextrafull WHERE releases_id = %d', $id));
@@ -223,14 +253,12 @@ class ReleaseExtra
 	/**
 	 * @param $id
 	 * @param string $xml
-	 *
-	 * @return boolean|\PDOStatement
 	 */
 	public function addFull($id, $xml)
 	{
 		$ckid = $this->pdo->queryOneRow(sprintf('SELECT releases_id FROM releaseextrafull WHERE releases_id = %s', $id));
 		if (!isset($ckid['releases_id'])) {
-			return $this->pdo->queryExec(sprintf('INSERT INTO releaseextrafull (releases_id, mediainfo) VALUES (%d, %s)', $id, $this->pdo->escapeString($xml)));
+			$this->pdo->queryExec(sprintf('INSERT INTO releaseextrafull (releases_id, mediainfo) VALUES (%d, %s)', $id, $this->pdo->escapeString($xml)));
 		}
 	}
 }

@@ -1,5 +1,5 @@
 <h1>
-{if $isadmin}
+{if isset($isadmin)}
 	<a title="Edit AniDB data" href="{$smarty.const.WWW_TOP}/admin/anidb-edit.php?id={$animeAnidbid}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}">{$animeTitle} </a>
 
 {else}
@@ -33,7 +33,7 @@
 	<input type="button" class="nzb_multi_operations_download" value="Download NZBs" />
 	<input type="button" class="nzb_multi_operations_cart" value="Add to Cart" />
 	{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to my Queue" />{/if}
-	{if $isadmin}
+	{if isset($isadmin)}
 	&nbsp;&nbsp;
 	<input type="button" class="nzb_multi_operations_edit" value="Edit" />
 	<input type="button" class="nzb_multi_operations_delete" value="Del" />
@@ -66,7 +66,7 @@
 								{if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo rndbtn" rel="nfo">Nfo</a>{/if}
 							</div>
 
-							{if $isadmin}
+							{if isset($isadmin)}
 							<div class="admin">
 								<a class="rndbtn" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a> <a class="rndbtn confirm_action" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Del</a>
 							</div>

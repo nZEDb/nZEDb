@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use app\models\Settings;
 use nzedb\utility\Misc;
 
 /**
@@ -95,7 +96,7 @@ class SABnzbd
 		$this->serverurl = $page->serverurl;
 
 		// Set up properties.
-		switch ($page->settings->getSetting('sabintegrationtype')) {
+		switch (Settings::value('apps.sabnzbplus.integrationtype')) {
 			case self::INTEGRATION_TYPE_USER:
 				if (!empty($_COOKIE['sabnzbd_' . $this->uid . '__apikey']) && !empty($_COOKIE['sabnzbd_' . $this->uid . '__host'])) {
 					$this->url = $_COOKIE['sabnzbd_' . $this->uid . '__host'];
@@ -121,11 +122,11 @@ class SABnzbd
 				break;
 
 			case self::INTEGRATION_TYPE_SITEWIDE:
-				if (($page->settings->getSetting('sabapikey') != '') && ($page->settings->getSetting('saburl') != '')) {
-					$this->url = $page->settings->getSetting('saburl');
-					$this->apikey = $page->settings->getSetting('sabapikey');
-					$this->priority = $page->settings->getSetting('sabpriority');
-					$this->apikeytype = $page->settings->getSetting('sabapikeytype');
+				if ((Settings::value('apps.sabnzbplus.apikey') != '') && (Settings::value('apps.sabnzbplus.url') != '')) {
+					$this->url = Settings::value('apps.sabnzbplus.url');
+					$this->apikey = Settings::value('apps.sabnzbplus.apikey');
+					$this->priority = Settings::value('apps.sabnzbplus.priority');
+					$this->apikeytype = Settings::value('apps.sabnzbplus.apikeytype');
 				}
 				$this->integrated = self::INTEGRATION_TYPE_SITEWIDE;
 				$this->integratedBool = true;

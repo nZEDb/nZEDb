@@ -77,7 +77,7 @@ $config1 = LITHIUM_APP_PATH . DS . 'config' . DS . 'db-config.php';
 $config2 = nZEDb_ROOT . 'nzedb' . DS . 'config' . DS . 'config.php';
 $config = file_exists($config1) ? $config1 : $config2;
 
-if (file_exists($config)) {
+if (file_exists($config) && !defined('nZEDb_INSTALLER')) {
 	require_once $config;
 	switch (DB_SYSTEM) {
 		case 'mysql':
@@ -91,24 +91,27 @@ if (file_exists($config)) {
 	}
 
 	if (isset($adapter)) {
-		$host = $port = '';
 		if (empty(DB_SOCKET)) {
-			$host = DB_HOST;
-			$port = DB_PORT;
+			$host = empty(DB_PORT) ? DB_HOST : DB_HOST.':'.DB_PORT;
+		} else {
+			$host = DB_SOCKET;
 		}
+
 		Connections::add('default',
 			[
 				'type'       => 'database',
 				'adapter'    => $adapter,
 				'host'       => $host,
-				'port'       => $port,
 				'login'      => DB_USER,
 				'password'   => DB_PASSWORD,
 				'database'   => DB_NAME,
 				'encoding'   => 'UTF-8',
 				'persistent' => false,
-				'socket'	 => DB_SOCKET,
 			]
+		);
+
+		\nzedb\utility\Misc::setCoversConstant(
+			\app\models\Settings::value('site.main.coverspath')
 		);
 	}
 } else {

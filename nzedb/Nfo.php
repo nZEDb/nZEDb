@@ -1,7 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 use nzedb\processing\PostProcess;
 use nzedb\utility\Misc;
 //use nzedb\processing\tv\TvRage;
@@ -83,15 +84,19 @@ class Nfo
 		$options += $defaults;
 
 		$this->echo = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
-		$this->nzbs = ($this->pdo->getSetting('maxnfoprocessed') != '') ? (int)$this->pdo->getSetting('maxnfoprocessed') : 100;
-		$this->maxsize = ($this->pdo->getSetting('maxsizetoprocessnfo') != '') ? (int)$this->pdo->getSetting('maxsizetoprocessnfo') : 100;
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
+		$dummy = Settings::value('..maxnfoprocessed');
+		$this->nzbs = ($dummy != '') ? (int)$dummy : 100;
+		$dummy = Settings::value('..maxsizetoprocessnfo');
+		$this->maxsize = ($dummy != '') ? (int)$dummy : 100;
 		$this->maxsize = ($this->maxsize > 0 ? ('AND size < ' . ($this->maxsize * 1073741824)) : '');
-		$this->minsize = ($this->pdo->getSetting('minsizetoprocessnfo') != '') ? (int)$this->pdo->getSetting('minsizetoprocessnfo') : 100;
+		$dummy = Settings::value('..minsizetoprocessnfo');
+		$this->minsize = ($dummy != '') ? (int)$dummy : 100;
 		$this->minsize = ($this->minsize > 0 ? ('AND size > ' . ($this->minsize * 1048576)) : '');
-		$this->maxRetries = (int)($this->pdo->getSetting('maxnforetries') >= 0 ? -((int)$this->pdo->getSetting('maxnforetries') + 1) : self::NFO_UNPROC);
+		$dummy = Settings::value('..maxnforetries');
+		$this->maxRetries = ((int)$dummy >= 0 ? -((int)$dummy + 1) : self::NFO_UNPROC);
 		$this->maxRetries = ($this->maxRetries < -8 ? -8 : $this->maxRetries);
-		$this->tmpPath = (string)$this->pdo->getSetting('tmpunrarpath');
+		$this->tmpPath = (string)Settings::value('..tmpunrarpath');
 		if (!preg_match('/[\/\\\\]$/', $this->tmpPath)) {
 			$this->tmpPath .= DS;
 		}
@@ -243,7 +248,7 @@ class Nfo
 						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this])
 					]
 				);
-				$nzbContents->parseNZB($release['guid'], $release['id'], $release['group_id']);
+				$nzbContents->parseNZB($release['guid'], $release['id'], $release['groups_id']);
 			}
 			return true;
 		}
@@ -255,17 +260,16 @@ class Nfo
 	 * "AND r.nzbstatus = 1 AND r.nfostatus BETWEEN -8 AND -1 AND r.size < 1073741824 AND r.size > 1048576"
 	 * To use in a query.
 	 *
-	 * @param Settings $pdo
-	 *
 	 * @return string
 	 * @access public
 	 * @static
 	 */
-	public static function NfoQueryString(Settings &$pdo)
+	public static function NfoQueryString()
 	{
-		$maxSize = $pdo->getSetting('maxsizetoprocessnfo');
-		$minSize = $pdo->getSetting('minsizetoprocessnfo');
-		$maxRetries = (int)($pdo->getSetting('maxnforetries') >= 0 ? -((int)$pdo->getSetting('maxnforetries') + 1) : self::NFO_UNPROC);
+		$maxSize = Settings::value('..maxsizetoprocessnfo');
+		$minSize = Settings::value('..minsizetoprocessnfo');
+		$dummy = Settings::value('..maxnforetries');
+		$maxRetries = (int)($dummy >= 0 ? -((int)$dummy + 1) : self::NFO_UNPROC);
 		return (
 			sprintf(
 				'AND r.nzbstatus = %d AND r.nfostatus BETWEEN %d AND %d %s %s',
@@ -294,13 +298,13 @@ class Nfo
 	public function processNfoFiles($nntp, $groupID = '', $guidChar = '', $processImdb = 1, $processTv = 1)
 	{
 		$ret = 0;
-		$guidCharQuery = ($guidChar === '' ? '' : 'AND r.guid ' . $this->pdo->likeString($guidChar, false, true));
-		$groupIDQuery = ($groupID === '' ? '' : 'AND r.group_id = ' . $groupID);
+		$guidCharQuery = ($guidChar === '' ? '' : 'AND r.leftguid = ' . $this->pdo->escapeString($guidChar));
+		$groupIDQuery = ($groupID === '' ? '' : 'AND r.groups_id = ' . $groupID);
 		$optionsQuery = self::NfoQueryString($this->pdo);
 
 		$res = $this->pdo->query(
 			sprintf('
-				SELECT r.id, r.guid, r.group_id, r.name
+				SELECT r.id, r.guid, r.groups_id, r.name
 				FROM releases r
 				WHERE 1=1 %s %s %s
 				ORDER BY r.nfostatus ASC, r.postdate DESC
@@ -361,7 +365,7 @@ class Nfo
 			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo]);
 
 			foreach ($res as $arr) {
-				$fetchedBinary = $nzbContents->getNfoFromNZB($arr['guid'], $arr['id'], $arr['group_id'], $groups->getByNameByID($arr['group_id']));
+				$fetchedBinary = $nzbContents->getNfoFromNZB($arr['guid'], $arr['id'], $arr['groups_id'], $groups->getNameByID($arr['groups_id']));
 				if ($fetchedBinary !== false) {
 					// Insert nfo into database.
 					$cp = 'COMPRESS(%s)';

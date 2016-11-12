@@ -63,7 +63,7 @@
 </div>
 <br/>
 <form id="nzb_multi_operations_form" action="get">
-	<div class="well well-small">
+	<div class="well well-sm">
 		<div class="nzb_multi_operations">
 			With Selected:
 			<div class="btn-group">
@@ -82,7 +82,7 @@
 		        <button data-quality="720p" class="btn">720p</button>
 		        <button data-quality="1080p" class="btn">1080p</button>
 		    </div>
-			{if $isadmin}
+			{if isset($isadmin)}
 			<div class="pull-right">
 				Admin:
 				<div class="btn-group">
@@ -135,7 +135,7 @@
 		<div class="tab-content">
 			{foreach $seasons as $seasonnum => $season name=tv}
 			<div class="tab-pane{if $smarty.foreach.tv.first} active{/if}" id="{$seasonnum}">
-				<table class="tb_{$seasonnum} data highlight icons table table-striped" id="browsetable">
+				<table class="tb_{$seasonnum} data highlight icons table" id="browsetable">
 					<tr class="dont-filter">
 						<th>Ep</th>
 						<th>Name</th>
@@ -176,7 +176,7 @@
 							</div>
 						</td>
 						<td class="check"><input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" name="{$seasonnum}" value="{$result.guid}" /></td>
-						<td class="less"><a title="This series in {$result.category_name}" href="{$smarty.const.WWW_TOP}/series/{$show.id}?t={$result.categoryid}">{$result.category_name}</a></td>
+						<td class="less"><a title="This series in {$result.category_name}" href="{$smarty.const.WWW_TOP}/series/{$show.id}?t={$result.categories_id}">{$result.category_name}</a></td>
 						<td class="less mid" width="40" title="{$result.postdate}">{$result.postdate|timeago}</td>
 						<td class="less right">
 							{$result.size|fsize_format:"MB"}

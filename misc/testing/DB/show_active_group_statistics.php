@@ -1,9 +1,9 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 $count = $groups = 0;
 if (!isset($argv[1])) {
 	passthru("clear");
@@ -63,9 +63,9 @@ $releases = $pdo->queryDirect(
 		COALESCE(rel.num, 0) AS num_releases,
 		COALESCE(pre.num, 0) AS pre_matches,
 		COALESCE(ren.num, 0) AS renamed FROM groups
-		LEFT OUTER JOIN ( SELECT group_id, COUNT(id) AS num FROM releases GROUP BY group_id ) rel ON rel.group_id = groups.id
-		LEFT OUTER JOIN ( SELECT group_id, COUNT(id) AS num FROM releases WHERE predb_id > 0 GROUP BY group_id ) pre ON pre.group_id = groups.id
-		LEFT OUTER JOIN ( SELECT group_id, COUNT(id) AS num FROM releases WHERE iscategorized = 1 GROUP BY group_id ) ren ON ren.group_id = groups.id
+		LEFT OUTER JOIN ( SELECT groups_id, COUNT(id) AS num FROM releases GROUP BY groups_id ) rel ON rel.groups_id = groups.id
+		LEFT OUTER JOIN ( SELECT groups_id, COUNT(id) AS num FROM releases WHERE predb_id > 0 GROUP BY groups_id ) pre ON pre.groups_id = groups.id
+		LEFT OUTER JOIN ( SELECT groups_id, COUNT(id) AS num FROM releases WHERE iscategorized = 1 GROUP BY groups_id ) ren ON ren.groups_id = groups.id
 		WHERE active = 1 AND first_record_postdate %s %s %s", $order, $sort, $limit
 	)
 );

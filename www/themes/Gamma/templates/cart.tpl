@@ -9,7 +9,7 @@
 
 <form id="nzb_multi_operations_form" action="get">
 
-	<div class="well well-small">
+	<div class="well well-sm">
 		<div class="nzb_multi_operations">
 			With Selected:
 			<div class="btn-group">
@@ -19,7 +19,7 @@
 			</div>
 		</div>
 	</div>
-	<table style="width:100%;" class="data highlight table table-striped" id="browsetable">
+	<table style="width:100%;" class="data highlight table" id="browsetable">
 		<tr>
 			<th width="50"><input id="chkSelectAll" type="checkbox" class="nzb_check_all" /><label for="chkSelectAll" style="display:none;">Select All</label></th>
 			<th>name</th>
@@ -30,13 +30,13 @@
 		{foreach $results as $result}
 		<tr class="{cycle values=",alt"}">
 			<td class="check">
-				<input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" value="{$result.id}" />
+				<input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" value="{$result.guid}" />
 			</td>
 			<td>
 				<a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}">{$result.searchname|escape:"htmlall"|wordwrap:75:"\n":true}</a>
 			</td>
 			<td class="less" title="Added on {$result.createddate}">{$result.createddate|date_format}</td>
-			<td><a class="btn btn-mini btn-danger" title="Delete from your Download Basket" href="?delete={$result.id}">Delete</a></td>
+			<td><a class="btn btn-mini btn-danger" title="Delete from your Download Basket" href="?delete={$result.guid}">Delete</a></td>
 		</tr>
 		{/foreach}
 

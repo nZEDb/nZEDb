@@ -14,7 +14,10 @@ switch ($action) {
 	case 'submit':
 		if ($_POST["id"] == "") {
 			// Add a new group.
-			$groups->add($_POST);
+			$_POST["name"] = $groups->isValidGroup($_POST["name"]);
+			if ($_POST["name"] !== false) {
+				$groups->add($_POST);
+			}
 		} else {
 			// Update an existing group.
 			$groups->update($_POST);
@@ -29,10 +32,18 @@ switch ($action) {
 			$id          = $_GET["id"];
 			$group       = $groups->getByID($id);
 		} else {
-			$page->title                    = "Newsgroup Add";
-			$group                          = [
-				'id' => '', 'name' => '', 'description' => '', 'minfilestoformrelease' => 0, 'active' => 0, 'backfill' => 0,
-				'minsizetoformrelease' => 0, 'first_record' => 0, 'last_record' => 0, 'backfill_target' => 0
+			$page->title = "Newsgroup Add";
+			$group = [
+				'id'                    => '',
+				'name'                  => '',
+				'description'           => '',
+				'minfilestoformrelease' => 0,
+				'active'                => 0,
+				'backfill'              => 0,
+				'minsizetoformrelease'  => 0,
+				'first_record'          => 0,
+				'last_record'           => 0,
+				'backfill_target'       => 0
 			];
 		}
 		$page->smarty->assign('group', $group);

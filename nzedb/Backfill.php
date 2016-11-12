@@ -1,7 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 
 class Backfill
 {
@@ -102,7 +103,7 @@ class Backfill
 
 		$this->_echoCLI = ($options['Echo'] && nZEDb_ECHOCLI);
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->_nntp = ($options['NNTP'] instanceof NNTP
 			? $options['NNTP'] : new NNTP(['Settings' => $this->pdo])
@@ -117,11 +118,12 @@ class Backfill
 			}
 		}
 
-		$this->_compressedHeaders = ($this->pdo->getSetting('compressedheaders') == 1 ? true : false);
-		$this->_safeBackFillDate = ($this->pdo->getSetting('safebackfilldate') != '') ? (string)$this->pdo->getSetting('safebackfilldate') : '2008-08-14';
-		$this->_safePartRepair = ($this->pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill');
-		$this->_tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 1 ? true : false);
-		$this->_disableBackfillGroup = ($this->pdo->getSetting('disablebackfillgroup') == 1 ? true : false);
+		$this->_compressedHeaders = (Settings::value('..compressedheaders') == 1 ? true : false);
+		$this->_safeBackFillDate = (Settings::value('..safebackfilldate') != '') ?
+			(string)Settings::value('..safebackfilldate') : '2008-08-14';
+		$this->_safePartRepair = (Settings::value('..safepartrepair') == 1 ? 'update' : 'backfill');
+		$this->_tablePerGroup = (Settings::value('..tablepergroup') == 1 ? true : false);
+		$this->_disableBackfillGroup = (Settings::value('..disablebackfillgroup') == 1 ? true : false);
 	}
 
 	/**
@@ -142,11 +144,7 @@ class Backfill
 				$res = [$grp];
 			}
 		} else {
-			if ($type === 'normal' || $type === '') {
-				$res = $this->_groups->getActiveBackfill();
-			} else if ($type === 'date') {
-				$res = $this->_groups->getActiveByDateBackfill();
-			}
+			$res = $this->_groups->getActiveBackfill($type);
 		}
 
 		$groupCount = count($res);
@@ -286,13 +284,7 @@ class Backfill
 			}
 
 			if ($this->_disableBackfillGroup) {
-				$this->pdo->queryExec(
-					sprintf('
-					UPDATE groups
-					SET backfill = 0
-					WHERE id = %d',
-						$groupArr['id'])
-				);
+				$this->_groups->updateGroupStatus($groupArr['id'], 'backfill', 0);
 			}
 
 			if ($this->_echoCLI) {
@@ -320,9 +312,9 @@ class Backfill
 		}
 
 		// Set first and last, moving the window by max messages.
-		$last = (string)($groupArr['first_record'] - 1);
+		$last = ($groupArr['first_record'] - 1);
 		// Set the initial "chunk".
-		$first = (string)($last - $this->_binaries->messageBuffer + 1);
+		$first = ($last - $this->_binaries->messageBuffer + 1);
 
 		// Just in case this is the last chunk we needed.
 		if ($targetpost > $first) {
@@ -373,8 +365,8 @@ class Backfill
 				$done = true;
 			} else {
 				// Keep going: set new last, new first, check for last chunk.
-				$last = (string)($first - 1);
-				$first = (string)($last - $this->_binaries->messageBuffer + 1);
+				$last = ($first - 1);
+				$first = ($last - $this->_binaries->messageBuffer + 1);
 				if ($targetpost > $first) {
 					$first = $targetpost;
 				}

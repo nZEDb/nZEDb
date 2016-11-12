@@ -15,13 +15,14 @@
 	<!-- Newposterwall -->
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen"/>
 	<!-- Bootstrap 3.3.6 -->
-	<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/v3/css/bootstrap.min.css" rel="stylesheet"
+	<!-- Bootstrap 3.3.6 -->
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.3.x/dist/css/bootstrap.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<!-- Font Awesome Icons -->
-	<link href="{$smarty.const.WWW_THEMES}/shared/css/font-awesome.min.css" rel="stylesheet"
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome-4.5.x/css/font-awesome.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<!-- iCheck -->
-	<link href="{$smarty.const.WWW_THEMES}/{$theme}/plugins/iCheck/square/blue.css" rel="stylesheet" type="text/css" />
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/icheck-1.0.x/skins/square/blue.css" rel="stylesheet">
 	<!-- Normalize.css -->
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/normalize.css" rel="stylesheet" type="text/css"/>
 	<!-- Ionicons -->
@@ -35,12 +36,14 @@
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/dist/css/skins/skin-blue.min.css" rel="stylesheet"
 		  type="text/css"/>
 	<!-- Noty animation style -->
-	<link href="{$smarty.const.WWW_THEMES}/{$theme}/dist/css/animate.css" rel="stylesheet" type="text/css"/>
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/animate.css/animate.min.css" rel="stylesheet">
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 	<!--[if lt IE 9]>
-	<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-	<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/html5shiv-3.7.x/dist/html5shiv.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/respond-1.4.x/dest/respond.min.js"></script>
+	<!-- tinymce editor -->
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/tinymce-builded/js/tinymce/tinymce.min.js"></script>
 	<![endif]-->
 </head>
 	<!--
@@ -226,6 +229,7 @@
 											class="fa fa-envelope-o"></i><span> Contact</span> <span
 											class="fa arrow"></span></a></li>
 							{if ($loggedin)=="true"}
+							<li><a href="{$smarty.const.WWW_TOP}/forum"><i class="fa fa-forumbee"></i> Forum</a></li>
 							<li><a href="{$smarty.const.WWW_TOP}/search"><i class="fa fa-search"></i> Search</a></li>
 							<li><a href="{$smarty.const.WWW_TOP}/rss"><i class="fa fa-rss"></i> RSS Feeds</a></li>
 							<li><a href="{$smarty.const.WWW_TOP}/apihelp"><i class="fa fa-cloud"></i> API</a></li>
@@ -332,40 +336,59 @@
 	<!-- ./wrapper -->
 	<!-- REQUIRED JS SCRIPTS -->
 	<!-- jQuery 2.2.1 -->
-	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery-2.2.1.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-2.2.x/dist/jquery.min.js"
+			type="text/javascript" ></script>
 	<!-- Bootstrap 3.3.6 JS -->
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/v3/js/bootstrap.min.js"
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.3.x/dist/js/bootstrap.min.js"
 			type="text/javascript"></script>
-	<!-- iCheck -->
-	<script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/iCheck/icheck.min.js" type="text/javascript"></script>
+	<!-- icheck -->
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/icheck-1.0.x/icheck.min.js" type="text/javascript"></script>
 	<!-- Bootstrap hover on mouseover script -->
 	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/shared/js/bootstrap-hover-dropdown.min.js"></script>
+			src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-hover-dropdown-2.2.x/bootstrap-hover-dropdown.min.js"></script>
 	<!-- AdminLTE App -->
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/dist/js/app.min.js" type="text/javascript"></script>
 	<!-- jQuery migrate script -->
-	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/migrate/jquery-migrate-1.2.1.min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-migrate-1.4.x/jquery-migrate.min.js"></script>
 	<!-- SlimScroll script -->
-	<script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/slimscroll-1.3.x/jquery.slimscroll.min.js"></script>
 	<!-- Fastclick script -->
-	<script src="{$smarty.const.WWW_THEMES}/{$theme}/plugins/fastclick/fastclick.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/fastclick-1.0.x/lib/fastclick.js"></script>
 	<!-- notification plugin -->
 	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/shared/libs/noty/packaged/jquery.noty.packaged.js"></script>
+			src="{$smarty.const.WWW_THEMES}/shared/libs/noty-2.3.x/js/noty/packaged/jquery.noty.packaged.js"></script>
 	<!-- Custom functions -->
-	<script src="{$smarty.const.WWW_THEMES}/{$theme}/dist/js/functions.js" type="text/javascript"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/js/functions.js" type="text/javascript"></script>
 	<!-- data table plugin -->
 	<script type="text/javascript"
-			src='{$smarty.const.WWW_THEMES}/{$theme}/dist/js/jquery.dataTables.min.js'></script>
+			src='{$smarty.const.WWW_THEMES}/shared/libs/datatables-1.10.x/media/js/jquery.dataTables.min.js'></script>
 	<!-- nZEDb default scripts, needed for stuff to work -->
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/jquery.colorbox-min.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/jquery.autosize-min.js"></script>
-	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip2.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox-1.6.x/jquery.colorbox-min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/autosize-3.0.x/dist/autosize.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip2.js" type="text/javascript" ></script>
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 	<!-- Optionally, you can add Slimscroll and FastClick plugins.
 		  Both of these plugins are recommended to enhance the
 		  user experience. Slimscroll is required when using the
 		  fixed layout. -->
+	<script type="text/javascript">
+		tinyMCE.init({
+			selector: 'textarea#addMessage',
+			theme : "modern",
+			plugins: [
+				'advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker',
+				'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+				'save table contextmenu directionality emoticons template paste textcolor code'
+			],
+			theme_advanced_toolbar_location : "top",
+			theme_advanced_toolbar_align : "left",
+			toolbar: 'insertfile undo redo | styleselect | fontselect |sizeselect | fontsizeselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons | code',
+			fontsize_formats: "8pt 9pt 10pt 11pt 12pt 13pt 14pt 15pt 16pt 17pt 18pt 24pt 36pt",
+			mode : "exact",
+			relative_urls : false,
+			remove_script_host : false,
+			convert_urls : true
+		});
+	</script>
 	</body>
 </html>

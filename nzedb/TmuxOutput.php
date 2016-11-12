@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 /**
@@ -12,15 +12,18 @@ use nzedb\utility\Misc;
 class TmuxOutput extends Tmux
 {
 	/**
-	 * @var \nzedb\utility\Git
-	 */
-//	protected $_git;
-
-	/**
-	 * @var \nzedb\utility\Versions
+	 * @var \simpleXMLElement object
 	 */
 	protected $_vers;
 
+	/**
+	 * @var array Different colour masks settings used by Tmux display functions
+	 */
+	protected $_colourMasks;
+
+	/**
+	 * @var array The various Tmux runtime configuration variables
+	 */
 	private $runVar;
 
 	/**
@@ -30,12 +33,11 @@ class TmuxOutput extends Tmux
 
 
 	/**
-	 * @param Settings $pdo
+	 * @param DB $pdo
 	 */
-	public function __construct(Settings $pdo = null)
+	public function __construct(DB $pdo = null)
 	{
 		parent::__construct($pdo);
-//		$this->_git = new \nzedb\utility\Git(); // Do not remove the full namespace/ PHP gets confused for some reason without it.
 		$this->_vers = Misc::getValidVersionsFile();
 
 		$this->_setColourMasks();
@@ -68,31 +70,31 @@ class TmuxOutput extends Tmux
 
 		if ($this->runVar['settings']['backfilldays'] == "1") {
 			$buffer .= sprintf($this->tmpMasks[4],
-				   "Activated",
-				   sprintf(
-					   "%d(%d)",
-					   $this->runVar['counts']['now']['active_groups'],
-					   $this->runVar['counts']['now']['all_groups']
-				   ),
-				   sprintf(
-					   "%d(%d)",
-					   $this->runVar['counts']['now']['backfill_groups_days'],
-					   $this->runVar['counts']['now']['all_groups']
-				   )
+				"Activated",
+				sprintf(
+					"%d(%d)",
+					$this->runVar['counts']['now']['active_groups'],
+					$this->runVar['counts']['now']['all_groups']
+				),
+				sprintf(
+					"%d(%d)",
+					$this->runVar['counts']['now']['backfill_groups_days'],
+					$this->runVar['counts']['now']['all_groups']
+				)
 			);
 		} else {
 			$buffer .= sprintf($this->tmpMasks[4],
-				   "Activated",
-				   sprintf(
-					   "%d(%d)",
-					   $this->runVar['counts']['now']['active_groups'],
-					   $this->runVar['counts']['now']['all_groups']
-				   ),
-				   sprintf(
-					   "%d(%d)",
-					   $this->runVar['counts']['now']['backfill_groups_date'],
-					   $this->runVar['counts']['now']['all_groups']
-				   )
+				"Activated",
+				sprintf(
+					"%d(%d)",
+					$this->runVar['counts']['now']['active_groups'],
+					$this->runVar['counts']['now']['all_groups']
+				),
+				sprintf(
+					"%d(%d)",
+					$this->runVar['counts']['now']['backfill_groups_date'],
+					$this->runVar['counts']['now']['all_groups']
+				)
 			);
 		}
 
@@ -101,7 +103,7 @@ class TmuxOutput extends Tmux
 
 	protected function _getFormatMasks($compressed)
 	{
-		$index = $compressed == 1 ? 2.1 : 2.0;
+		$index = ($compressed == 1 ? '2.1' : '2.0');
 		return [
 			1 => &$this->_colourMasks[1],
 			2 => &$this->_colourMasks[$index],
@@ -118,55 +120,55 @@ class TmuxOutput extends Tmux
 		$version = $this->_vers->versions->git->tag;
 
 		$buffer .= sprintf($this->tmpMasks[2],
-					"Monitor $state v$version [" . $this->runVar['constants']['sqlpatch'] . "]: ",
-					$this->relativeTime($this->runVar['timers']['timer1'])
+			"Monitor $state v$version [" . $this->runVar['constants']['sqlpatch'] . "]: ",
+			$this->relativeTime($this->runVar['timers']['timer1'])
 		);
 
 		$buffer .= sprintf($this->tmpMasks[1],
-					"USP Connections:",
-					sprintf(
-						"%d active (%d total) - %s:%d",
-						$this->runVar['conncounts']['primary']['active'],
-						$this->runVar['conncounts']['primary']['total'],
-						$this->runVar['connections']['host'],
-						$this->runVar['connections']['port']
-					)
+			"USP Connections:",
+			sprintf(
+				"%d active (%d total) - %s:%d",
+				$this->runVar['conncounts']['primary']['active'],
+				$this->runVar['conncounts']['primary']['total'],
+				$this->runVar['connections']['host'],
+				$this->runVar['connections']['port']
+			)
 		);
 
 		if ($this->runVar['constants']['alternate_nntp']) {
 			$buffer .= sprintf($this->tmpMasks[1],
-					"USP Alternate:",
-					sprintf(
-						"%d active (%d total) - %s:%d)",
-						$this->runVar['conncounts']['alternate']['active'],
-						$this->runVar['conncounts']['alternate']['total'],
-						$this->runVar['connections']['host_a'],
-						$this->runVar['connections']['port_a']
-					)
+				"USP Alternate:",
+				sprintf(
+					"%d active (%d total) - %s:%d)",
+					$this->runVar['conncounts']['alternate']['active'],
+					$this->runVar['conncounts']['alternate']['total'],
+					$this->runVar['connections']['host_a'],
+					$this->runVar['connections']['port_a']
+				)
 			);
 		}
 
 		$buffer .= sprintf($this->tmpMasks[1],
-				"Newest Release:",
-				$this->runVar['timers']['newOld']['newestrelname']
+			"Newest Release:",
+			$this->runVar['timers']['newOld']['newestrelname']
 		);
 		$buffer .= sprintf($this->tmpMasks[1],
-				"Release Added:",
-				sprintf(
-					"%s ago",
-					(isset($this->runVar['timers']['newOld']['newestrelease'])
-						? $this->relativeTime($this->runVar['timers']['newOld']['newestrelease'])
-						: 0)
-				)
+			"Release Added:",
+			sprintf(
+				"%s ago",
+				(isset($this->runVar['timers']['newOld']['newestrelease'])
+					? $this->relativeTime($this->runVar['timers']['newOld']['newestrelease'])
+					: 0)
+			)
 		);
 		$buffer .= sprintf($this->tmpMasks[1],
-				"Predb Updated:",
-				sprintf(
-					"%s ago",
-					(isset($this->runVar['timers']['newOld']['newestpre'])
-						? $this->relativeTime($this->runVar['timers']['newOld']['newestpre'])
-						: 0)
-				)
+			"Predb Updated:",
+			sprintf(
+				"%s ago",
+				(isset($this->runVar['timers']['newOld']['newestpre'])
+					? $this->relativeTime($this->runVar['timers']['newOld']['newestpre'])
+					: 0)
+			)
 		);
 		$buffer .= sprintf($this->tmpMasks[1],
 				sprintf(
@@ -200,48 +202,61 @@ class TmuxOutput extends Tmux
 		$buffer = $this->_getTableCounts();
 		$buffer .= $this->_getPaths();
 
-		$buffer .= sprintf($this->tmpMasks[3], "PPA Lists", "Unmatched", "Matched");
+		$buffer .= sprintf($this->tmpMasks[3], "PP Lists", "Unmatched", "Matched");
 		$buffer .= $this->_getSeparator();
 
 		$buffer .= sprintf($this->tmpMasks[4],
-						   "NFO's",
-						   sprintf(
-							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['processnfo']),
-							   $this->runVar['counts']['diff']['processnfo']
-						   ),
-						   sprintf(
-							   "%s(%d%%)",
-							   number_format($this->runVar['counts']['now']['nfo']),
-							   $this->runVar['counts']['percent']['nfo']
-						   )
+		"Nfo",
+		sprintf(
+			"%s(%s)",
+			number_format($this->runVar['counts']['now']['processnfo']),
+			$this->runVar['counts']['diff']['processnfo']
+		),
+		sprintf(
+			"%s(%d%%)",
+			number_format($this->runVar['counts']['now']['nfo']),
+			$this->runVar['counts']['percent']['nfo']
+		)
 		);
 		$buffer .= sprintf($this->tmpMasks[4],
-						   "predb",
-						   sprintf(
-							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['predb'] -
-											 $this->runVar['counts']['now']['distinct_predb_matched']),
-							   $this->runVar['counts']['diff']['distinct_predb_matched']
-						   ),
-						   sprintf(
-							   "%s(%d%%)",
-							   number_format($this->runVar['counts']['now']['predb_matched']),
-							   $this->runVar['counts']['percent']['predb_matched']
-						   )
+			"PreDB",
+			sprintf(
+				"%s(%s)",
+				number_format($this->runVar['counts']['now']['predb'] -
+								 $this->runVar['counts']['now']['distinct_predb_matched']),
+				$this->runVar['counts']['diff']['distinct_predb_matched']
+			),
+			sprintf(
+				"%s(%d%%)",
+				number_format($this->runVar['counts']['now']['predb_matched']),
+				$this->runVar['counts']['percent']['predb_matched']
+			)
 		);
 		$buffer .= sprintf($this->tmpMasks[4],
-						   "requestID",
-						   sprintf(
-							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['requestid_inprogress']),
-							   $this->runVar['counts']['diff']['requestid_inprogress']
-						   ),
-						   sprintf(
-							   "%s(%d%%)",
-							   number_format($this->runVar['counts']['now']['requestid_matched']),
-							   $this->runVar['counts']['percent']['requestid_matched']
-						   )
+			"RequestID",
+			sprintf(
+				"%s(%s)",
+				number_format($this->runVar['counts']['now']['requestid_inprogress']),
+				$this->runVar['counts']['diff']['requestid_inprogress']
+			),
+			sprintf(
+				"%s(%d%%)",
+				number_format($this->runVar['counts']['now']['requestid_matched']),
+				$this->runVar['counts']['percent']['requestid_matched']
+			)
+		);
+		$buffer .= sprintf($this->tmpMasks[4],
+			"Renames",
+			sprintf(
+				"%s(%s)",
+				number_format($this->runVar['counts']['now']['processrenames']),
+				$this->runVar['counts']['diff']['processrenames']
+			),
+			sprintf(
+				"%s(%d%%)",
+				number_format($this->runVar['counts']['now']['renamed']),
+				$this->runVar['counts']['percent']['renamed']
+			)
 		);
 
 		$buffer .= PHP_EOL;
@@ -249,124 +264,124 @@ class TmuxOutput extends Tmux
 		$buffer .= $this->_getSeparator();
 
 		$buffer .= sprintf($this->tmpMasks[4],
-						   "Audio",
-						   sprintf(
-							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['processmusic']),
-							   $this->runVar['counts']['diff']['processmusic']
-						   ),
-						   sprintf(
-							   "%s(%d%%)",
-							   number_format($this->runVar['counts']['now']['audio']),
-							   $this->runVar['counts']['percent']['audio']
-						   )
+			"Audio",
+			sprintf(
+				"%s(%s)",
+				number_format($this->runVar['counts']['now']['processmusic']),
+				$this->runVar['counts']['diff']['processmusic']
+			),
+			sprintf(
+				"%s(%d%%)",
+				number_format($this->runVar['counts']['now']['audio']),
+				$this->runVar['counts']['percent']['audio']
+			)
 		);
 		$buffer .= sprintf($this->tmpMasks[4],
-						   "Books",
-						   sprintf(
-							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['processbooks']),
-							   $this->runVar['counts']['diff']['processbooks']
-						   ),
-						   sprintf(
-							   "%s(%d%%)",
-							   number_format($this->runVar['counts']['now']['books']),
-							   $this->runVar['counts']['percent']['books']
-						   )
+			"Books",
+			sprintf(
+				"%s(%s)",
+				number_format($this->runVar['counts']['now']['processbooks']),
+				$this->runVar['counts']['diff']['processbooks']
+			),
+			sprintf(
+				"%s(%d%%)",
+				number_format($this->runVar['counts']['now']['books']),
+				$this->runVar['counts']['percent']['books']
+			)
 		);
 		$buffer .= sprintf($this->tmpMasks[4],
-						   "Console",
-						   sprintf(
-							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['processconsole']),
-							   $this->runVar['counts']['diff']['processconsole']
-						   ),
-						   sprintf(
-							   "%s(%d%%)",
-							   number_format($this->runVar['counts']['now']['console']),
-							   $this->runVar['counts']['percent']['console']
-						   )
+			"Console",
+			sprintf(
+				"%s(%s)",
+				number_format($this->runVar['counts']['now']['processconsole']),
+				$this->runVar['counts']['diff']['processconsole']
+			),
+			sprintf(
+				"%s(%d%%)",
+				number_format($this->runVar['counts']['now']['console']),
+				$this->runVar['counts']['percent']['console']
+			)
 		);
 		$buffer .= sprintf($this->tmpMasks[4],
-						   "Misc",
-						   sprintf(
-							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['work']),
-							   $this->runVar['counts']['diff']['work']
-						   ),
-						   sprintf(
-							   "%s(%d%%)",
-							   number_format($this->runVar['counts']['now']['misc']),
-							   $this->runVar['counts']['percent']['misc']
-						   )
+			"Misc",
+			sprintf(
+				"%s(%s)",
+				number_format($this->runVar['counts']['now']['work']),
+				$this->runVar['counts']['diff']['work']
+			),
+			sprintf(
+				"%s(%d%%)",
+				number_format($this->runVar['counts']['now']['misc']),
+				$this->runVar['counts']['percent']['misc']
+			)
 		);
 		$buffer .= sprintf($this->tmpMasks[4],
-						   "Movie",
-						   sprintf(
-							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['processmovies']),
-							   $this->runVar['counts']['diff']['processmovies']
-						   ),
-						   sprintf(
-							   "%s(%d%%)",
-							   number_format($this->runVar['counts']['now']['movies']),
-							   $this->runVar['counts']['percent']['movies']
-						   )
+			"Movie",
+			sprintf(
+				"%s(%s)",
+				number_format($this->runVar['counts']['now']['processmovies']),
+				$this->runVar['counts']['diff']['processmovies']
+			),
+			sprintf(
+				"%s(%d%%)",
+				number_format($this->runVar['counts']['now']['movies']),
+				$this->runVar['counts']['percent']['movies']
+			)
 		);
 		$buffer .= sprintf($this->tmpMasks[4],
-						   "PC",
-						   sprintf(
-							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['processgames']),
-							   $this->runVar['counts']['diff']['processgames']
-						   ),
-						   sprintf(
-							   "%s(%d%%)",
-							   number_format($this->runVar['counts']['now']['pc']),
-							   $this->runVar['counts']['percent']['pc']
-						   )
+			"PC",
+			sprintf(
+				"%s(%s)",
+				number_format($this->runVar['counts']['now']['processgames']),
+				$this->runVar['counts']['diff']['processgames']
+			),
+			sprintf(
+				"%s(%d%%)",
+				number_format($this->runVar['counts']['now']['pc']),
+				$this->runVar['counts']['percent']['pc']
+			)
 		);
 		$buffer .= sprintf($this->tmpMasks[4],
-						   "TV",
-						   sprintf(
-							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['processtv']),
-							   $this->runVar['counts']['diff']['processtv']
-						   ),
-						   sprintf(
-							   "%s(%d%%)",
-							   number_format($this->runVar['counts']['now']['tv']),
-							   $this->runVar['counts']['percent']['tv']
-						   )
+			"TV",
+			sprintf(
+				"%s(%s)",
+				number_format($this->runVar['counts']['now']['processtv']),
+				$this->runVar['counts']['diff']['processtv']
+			),
+			sprintf(
+				"%s(%d%%)",
+				number_format($this->runVar['counts']['now']['tv']),
+				$this->runVar['counts']['percent']['tv']
+			)
 		);
 		$buffer .= sprintf($this->tmpMasks[4],
-						   "XXX",
-						   sprintf(
-							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['processxxx']),
-							   $this->runVar['counts']['diff']['processxxx']
-						   ),
-						   sprintf(
-							   "%s(%d%%)",
-							   number_format($this->runVar['counts']['now']['xxx']),
-							   $this->runVar['counts']['percent']['xxx']
-						   )
+			"XXX",
+			sprintf(
+				"%s(%s)",
+				number_format($this->runVar['counts']['now']['processxxx']),
+				$this->runVar['counts']['diff']['processxxx']
+			),
+			sprintf(
+				"%s(%d%%)",
+				number_format($this->runVar['counts']['now']['xxx']),
+				$this->runVar['counts']['percent']['xxx']
+			)
 		);
 
 		$buffer .= $this->_getSeparator();
 
 		$buffer .= sprintf($this->tmpMasks[4],
-						   "Total",
-						   sprintf(
-							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['total_work']),
-							   $this->runVar['counts']['diff']['total_work']
-						   ),
-						   sprintf(
-							   "%s(%s)",
-							   number_format($this->runVar['counts']['now']['releases']),
-							   $this->runVar['counts']['diff']['releases']
-						   )
+			"Total",
+			sprintf(
+				"%s(%s)",
+				number_format($this->runVar['counts']['now']['total_work']),
+				$this->runVar['counts']['diff']['total_work']
+			),
+			sprintf(
+				"%s(%s)",
+				number_format($this->runVar['counts']['now']['releases']),
+				$this->runVar['counts']['diff']['releases']
+			)
 		);
 		$buffer .= PHP_EOL;
 
@@ -434,40 +449,41 @@ class TmuxOutput extends Tmux
 		$buffer .= sprintf($this->tmpMasks[3], "Query Block", "Time", "Cumulative");
 		$buffer .= $this->_getSeparator();
 		$buffer .= sprintf($this->tmpMasks[4],
-						   "Combined",
-						   sprintf(
-							   "%d %d %d %d %d %d %d",
-							   $this->runVar['timers']['query']['tmux_time'],
-							   $this->runVar['timers']['query']['split_time'],
-							   $this->runVar['timers']['query']['init_time'],
-							   $this->runVar['timers']['query']['proc1_time'],
-							   $this->runVar['timers']['query']['proc2_time'],
-							   $this->runVar['timers']['query']['proc3_time'],
-							   $this->runVar['timers']['query']['tpg_time']
-						   ),
-						   sprintf(
-							   "%d %d %d %d %d %d %d",
-							   $this->runVar['timers']['query']['tmux_time'],
-							   $this->runVar['timers']['query']['split1_time'],
-							   $this->runVar['timers']['query']['init1_time'],
-							   $this->runVar['timers']['query']['proc11_time'],
-							   $this->runVar['timers']['query']['proc21_time'],
-							   $this->runVar['timers']['query']['proc31_time'],
-							   $this->runVar['timers']['query']['tpg1_time']
-						   )
+			"Combined",
+			sprintf(
+				"%d %d %d %d %d %d %d",
+				$this->runVar['timers']['query']['tmux_time'],
+				$this->runVar['timers']['query']['split_time'],
+				$this->runVar['timers']['query']['init_time'],
+				$this->runVar['timers']['query']['proc1_time'],
+				$this->runVar['timers']['query']['proc2_time'],
+				$this->runVar['timers']['query']['proc3_time'],
+				$this->runVar['timers']['query']['tpg_time']
+			),
+			sprintf(
+				"%d %d %d %d %d %d %d",
+				$this->runVar['timers']['query']['tmux_time'],
+				$this->runVar['timers']['query']['split1_time'],
+				$this->runVar['timers']['query']['init1_time'],
+				$this->runVar['timers']['query']['proc11_time'],
+				$this->runVar['timers']['query']['proc21_time'],
+				$this->runVar['timers']['query']['proc31_time'],
+				$this->runVar['timers']['query']['tpg1_time']
+			)
 		);
 
 		$pieces = explode(" ", $this->pdo->getAttribute(\PDO::ATTR_SERVER_INFO));
 		$buffer .= $this->pdo->log->primaryOver("\nThreads = ") .
-				   $this->pdo->log->headerOver($pieces[4]) .
-				   $this->pdo->log->primaryOver(', Opens = ') .
-				   $this->pdo->log->headerOver($pieces[14]) .
-				   $this->pdo->log->primaryOver(', Tables = ') .
-				   $this->pdo->log->headerOver($pieces[22]) .
-				   $this->pdo->log->primaryOver(', Slow = ') .
-				   $this->pdo->log->headerOver($pieces[11]) .
-				   $this->pdo->log->primaryOver(', QPS = ') .
-				   $this->pdo->log->header($pieces[28]);
+			$this->pdo->log->headerOver($pieces[4]) .
+			$this->pdo->log->primaryOver(', Opens = ') .
+			$this->pdo->log->headerOver($pieces[14]) .
+			$this->pdo->log->primaryOver(', Tables = ') .
+			$this->pdo->log->headerOver($pieces[22]) .
+			$this->pdo->log->primaryOver(', Slow = ') .
+			$this->pdo->log->headerOver($pieces[11]) .
+			$this->pdo->log->primaryOver(', QPS = ') .
+			$this->pdo->log->header($pieces[28])
+		;
 
 		return $buffer;
 	}
@@ -475,9 +491,10 @@ class TmuxOutput extends Tmux
 	protected function _getSeparator()
 	{
 		return sprintf($this->tmpMasks[3],
-					   "======================================",
-					   "=========================",
-					   "======================================");
+			"======================================",
+			"=========================",
+			"======================================"
+		);
 	}
 
 	protected function _getTableCounts()
@@ -485,25 +502,21 @@ class TmuxOutput extends Tmux
 		$buffer = sprintf($this->tmpMasks[3], "Collections", "Binaries", "Parts");
 		$buffer .= $this->_getSeparator();
 		$buffer .= sprintf($this->tmpMasks[5],
-			   number_format($this->runVar['counts']['now']['collections_table']),
-			   number_format($this->runVar['counts']['now']['binaries_table']),
-			   number_format($this->runVar['counts']['now']['parts_table'])
+			number_format($this->runVar['counts']['now']['collections_table']),
+			number_format($this->runVar['counts']['now']['binaries_table']),
+			number_format($this->runVar['counts']['now']['parts_table'])
 		);
 
 		return $buffer;
 	}
 
-	protected function _SetColourMasks()
+	protected function _setColourMasks()
 	{
-		$this->_colourMasks[1]   =
-			$this->pdo->log->headerOver("%-18s") . " " . $this->pdo->log->tmuxOrange("%-48.48s");
-		$this->_colourMasks[2.0] =
-			$this->pdo->log->alternateOver("%-20s") . " " . $this->pdo->log->tmuxOrange("%-33.33s");
-		$this->_colourMasks[2.1] =
-			$this->pdo->log->headerOver("%-20s") . " " . $this->pdo->log->tmuxOrange("%-33.33s");
-		$this->_colourMasks[3]   = $this->pdo->log->header("%-16.16s %25.25s %25.25s");
-		$this->_colourMasks[4] = $this->pdo->log->primaryOver("%-16.16s") .
-								 " " . $this->pdo->log->tmuxOrange("%25.25s %25.25s");
+		$this->_colourMasks[1] = $this->pdo->log->headerOver("%-18s") . " " . $this->pdo->log->tmuxOrange("%-48.48s");
+		$this->_colourMasks['2.0'] = $this->pdo->log->alternateOver("%-20s") . " " . $this->pdo->log->tmuxOrange("%-33.33s");
+		$this->_colourMasks['2.1'] = $this->pdo->log->headerOver("%-20s") . " " . $this->pdo->log->tmuxOrange("%-33.33s");
+		$this->_colourMasks[3] = $this->pdo->log->header("%-16.16s %25.25s %25.25s");
+		$this->_colourMasks[4] = $this->pdo->log->primaryOver("%-16.16s") . " " . $this->pdo->log->tmuxOrange("%25.25s %25.25s");
 		$this->_colourMasks[5] = $this->pdo->log->tmuxOrange("%-16.16s %25.25s %25.25s");
 	}
 }

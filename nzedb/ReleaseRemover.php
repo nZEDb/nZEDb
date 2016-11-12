@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /**
  * Handles removing of various unwanted releases.
@@ -125,7 +125,7 @@ class ReleaseRemover
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->consoleTools = ($options['ConsoleTools'] instanceof ConsoleTools ? $options['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->pdo->log]));
 		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['Settings' => $this->pdo]));
 		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
@@ -428,7 +428,7 @@ class ReleaseRemover
 			case ReleaseSearch::SPHINX:
 				$rs = new ReleaseSearch($this->pdo);
 				$execFT =
-					str_replace('=10000;', '=1000000;',
+					str_replace('=10000;', '=100000;',
 						$rs->getSearchSQL(
 							[
 								'searchname' => '-exes* -exec*',
@@ -482,7 +482,7 @@ class ReleaseRemover
 		switch (nZEDb_RELEASE_SEARCH_TYPE) {
 			case ReleaseSearch::SPHINX:
 				$rs = new ReleaseSearch($this->pdo);
-				$instbinFT = str_replace('=10000;', '=10000000;', $rs->getSearchSQL(['filename' => 'install<<bin']));
+				$instbinFT = str_replace('=10000;', '=100000;', $rs->getSearchSQL(['filename' => 'install<<bin']));
 				$ftJoin = $rs->getFullTextJoinString();
 				break;
 			default:
@@ -677,7 +677,7 @@ class ReleaseRemover
 		switch (nZEDb_RELEASE_SEARCH_TYPE) {
 			case ReleaseSearch::SPHINX:
 				$rs = new ReleaseSearch($this->pdo);
-				$sampleFT = str_replace('=10000;', '=10000000;', $rs->getSearchSQL(['name' => 'sample']));
+				$sampleFT = str_replace('=10000;', '=100000;', $rs->getSearchSQL(['name' => 'sample']));
 				$ftJoin = $rs->getFullTextJoinString();
 				break;
 			default:
@@ -844,7 +844,7 @@ class ReleaseRemover
 						$groupIDs = (substr($string, 0, -1));
 					}
 
-					$groupID = ' AND r.group_id in (' . $groupIDs . ') ';
+					$groupID = ' AND r.groups_id in (' . $groupIDs . ') ';
 				}
 				$this->method = 'Blacklist [' . $regex['id'] . ']';
 
@@ -959,7 +959,7 @@ class ReleaseRemover
 						$groupIDs = (substr($string, 0, -1));
 					}
 
-					$groupID = ' AND r.group_id in (' . $groupIDs . ') ';
+					$groupID = ' AND r.groups_id in (' . $groupIDs . ') ';
 				}
 
 				$this->method = 'Blacklist Files ' . $regex['id'];
@@ -1183,7 +1183,7 @@ class ReleaseRemover
 							break;
 					}
 					break;
-				case 'videos_id':
+				case 'videosid':
 					switch ($args[1]) {
 						case 'equals':
 							return ' AND videos_id = ' . $args[2];
@@ -1220,14 +1220,14 @@ class ReleaseRemover
 								break;
 							}
 
-							return ' AND group_id = ' . $group['id'];
+							return ' AND groups_id = ' . $group['id'];
 						case 'like':
 							$groups = $this->pdo->query('SELECT id FROM groups WHERE name ' . $this->formatLike($args[2], 'name'));
 							if (count($groups) === 0) {
 								$this->error = 'No groups were found with this pattern in your database: ' . $args[2] . PHP_EOL;
 								break;
 							}
-							$gQuery = ' AND group_id IN (';
+							$gQuery = ' AND groups_id IN (';
 							foreach ($groups as $group) {
 								$gQuery .= $group['id'] . ',';
 							}

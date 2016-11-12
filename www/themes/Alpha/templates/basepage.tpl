@@ -11,7 +11,7 @@
 		<meta name="keywords" content="{$page->meta_keywords}{if $site->metakeywords != ""},{$site->metakeywords}{/if}">
 		<meta name="description" content="{$page->meta_description}{if $site->metadescription != ""} - {$site->metadescription}{/if}">
 		<meta name="application-name" content="nZEDb-v{$site->version}">
-		<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+		<meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
 		<title>{$page->meta_title}{if $site->metatitle != ""} - {$site->metatitle}{/if}</title>
 		{if $loggedin=="true"}
 			<link rel="alternate"
@@ -21,10 +21,10 @@
 		{/if}
 
 		<!-- nZEDb core CSS -->
-		<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/v3/css/bootstrap.min.css"
+		<link href="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.3.x/dist/css/bootstrap.min.css"
 				rel="stylesheet"
 				media="screen">
-		<link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.css"
+		<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome-4.5.x/css/font-awesome.css"
 				rel="stylesheet"
 				media="screen">
 		<link href="{$smarty.const.WWW_THEMES}/shared/css/posterwall.css"
@@ -134,8 +134,8 @@
 
 		<!-- Additional nZEDb -->
 		<!--[if lt IE 9]>
-		<script src="{$smarty.const.WWW_THEMES}/shared/js/html5shiv.js"></script>
-		<script src="{$smarty.const.WWW_THEMES}/shared/js/respond.min.js"></script>
+		<script src="{$smarty.const.WWW_THEMES}/shared/libs/html5shiv-3.7.x/dist/html5shiv.js"></script>
+		<script src="{$smarty.const.WWW_THEMES}/shared/libs/respond-1.4.x/dest/respond.min.js"></script>
 		<![endif]-->
 		{literal}
 		<script>
@@ -170,44 +170,44 @@
 						<li class="dropdown">
 							<a href="#"
 									class="dropdown-toggle"
-									data-toggle="dropdown"><i class="icon-user"></i> Profile
+									data-toggle="dropdown"><i class="fa fa-user"></i> Profile
 								<b class="caret"></b></a>
 							<ul class="dropdown-menu pull-right">
-								<li><a href="{$smarty.const.WWW_TOP}/profile"><i class="icon-home"></i>
+								<li><a href="{$smarty.const.WWW_TOP}/profile"><i class="fa fa-home"></i>
 										My Profile</a></li>
 								{if $isadmin
 								}
 									<li>
-									<a href="{$smarty.const.WWW_TOP}/admin"><i class="icon-gears"></i>
+									<a href="{$smarty.const.WWW_TOP}/admin"><i class="fa fa-gears"></i>
 										Admin Panel</a></li>
 								{/if}
 								<li class="divider"></li>
 								<li>
-									<a href="{$smarty.const.WWW_TOP}/mymovies"><i class="icon-ticket"></i>
+									<a href="{$smarty.const.WWW_TOP}/mymovies"><i class="fa fa-ticket"></i>
 										My Movies</a></li>
 								<li>
-									<a href="{$smarty.const.WWW_TOP}/myshows"><i class="icon-desktop"></i>
+									<a href="{$smarty.const.WWW_TOP}/myshows"><i class="fa fa-desktop"></i>
 										My Shows</a></li>
 								<li class="divider"></li>
 								<li>
-									<a href="{$smarty.const.WWW_TOP}/cart"><i class="icon-shopping-cart"></i>
+									<a href="{$smarty.const.WWW_TOP}/cart"><i class="fa fa-shopping-cart"></i>
 										My Cart</a></li>
 								{if $sabintegrated}
 									<li>
-										<a href="{$smarty.const.WWW_TOP}/queue"><i class="icon-tasks"></i>
+										<a href="{$smarty.const.WWW_TOP}/queue"><i class="fa fa-tasks"></i>
 											My Queue</a></li>
 								{/if}
 							</ul>
 						</li>
 					{else}
-						<li><a href="{$smarty.const.WWW_TOP}/login"><i class="icon-signin"></i>
+						<li><a href="{$smarty.const.WWW_TOP}/login"><i class="fa fa-signin"></i>
 								Login</a></li>
 					{/if}
 					<li>
 						{if $loggedin=="true"}
-							<a href="{$smarty.const.WWW_TOP}/logout"><i class="icon-signout"></i> Logout</a>
+							<a href="{$smarty.const.WWW_TOP}/logout"><i class="fa fa-signout"></i> Logout</a>
 						{else}
-							<a href="{$smarty.const.WWW_TOP}/register"><i class="icon-sign-edit"></i>
+							<a href="{$smarty.const.WWW_TOP}/register"><i class="fa fa-sign-edit"></i>
 								Register</a>
 						{/if}
 					</li>
@@ -312,9 +312,9 @@
 	================================================== -->
 	<footer>
 		<div class="container text-center">
-			<p><i class="icon-certificate icon-2x" style="color:yellow;"></i>
-				<i class="icon-quote-left qoute"></i> {$site->footer}
-				<i class="icon-quote-right qoute"></i></p>
+			<p><i class="fa fa-certificate fa-2x" style="color:yellow;"></i>
+				<i class="fa fa-quote-left qoute"></i> {$site->footer}
+				<i class="fa fa-quote-right qoute"></i></p>
 
 			<p>Copyright &copy;
 				<a href="{$smarty.const.WWW_TOP}{$site->home_link}">{if $site->title == ''}nZEDb{else}{$site->title}{/if}</a>
@@ -339,13 +339,15 @@
 	<!-- JS and analytics only. -->
 	<!-- Bootstrap core JavaScript
 	================================================== -->
-	<script src="//code.jquery.com/jquery-1.9.1.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap/v3/js/bootstrap.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-1.9.x/jquery.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.3.x/dist/js/bootstrap.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/holder.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.pnotify.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.autosize-min.js"></script>
-	<script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.colorbox-min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/autosize-3.0.x/dist/autosize.min.js"></script>
+	<script src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox-1.6.x/jquery.colorbox-min.js"></script>
+	<!-- tinymce editor -->
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/tinymce-builded/js/tinymce/tinymce.min.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 	<script src="{$smarty.const.WWW_THEMES}/{$theme}/scripts/utils.js"></script>
 
@@ -404,6 +406,26 @@
 		<input type="hidden" name="UID" value="{$userdata.id}">
 		<input type="hidden" name="RSSTOKEN" value="{$userdata.rsstoken}">
 	{/if}
+
+	<script type="text/javascript">
+		tinyMCE.init({
+			selector: 'textarea#addMessage',
+			theme : "modern",
+			plugins: [
+				'advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker',
+				'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+				'save table contextmenu directionality emoticons template paste textcolor code'
+			],
+			theme_advanced_toolbar_location : "top",
+			theme_advanced_toolbar_align : "left",
+			toolbar: 'insertfile undo redo | styleselect | fontselect |sizeselect | fontsizeselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons | code',
+			fontsize_formats: "8pt 9pt 10pt 11pt 12pt 13pt 14pt 15pt 16pt 17pt 18pt 24pt 36pt",
+			mode : "exact",
+			relative_urls : false,
+			remove_script_host : false,
+			convert_urls : true
+		});
+	</script>
 
 	</body>
 </html>

@@ -67,6 +67,20 @@ define('SCRAPE_IRC_CATEGORY_IGNORE', '');
 define('SCRAPE_IRC_TITLE_IGNORE', '');
 
 /***********************************************************************************************************************
+ * This is a list of all the channels we fetch PRE's from.
+ **********************************************************************************************************************/
+define('SCRAPE_IRC_CHANNELS',
+	serialize(
+		array(
+			//'#Channel'                => 'Password',
+			'#nZEDbPRE'                 => null,
+			'#nZEDbPRE2'                => null,
+			'#PreNNTmux'                => null
+		)
+	)
+);
+
+/***********************************************************************************************************************
  * This is a list of all the sources we fetch PRE's from.
  * If you want to ignore a source, change it from false to true.
  **********************************************************************************************************************/
@@ -92,12 +106,7 @@ define('SCRAPE_IRC_SOURCE_IGNORE',
 			'#pre@corrupt'                => false,
 			'#scnzb'                      => false,
 			'#tvnzb'                      => false,
-			'omgwtfnzbs'                  => false,
-			'orlydb'                      => false,
-			'prelist'                     => false,
-			'srrdb'                       => false,
-			'u4all.eu'                    => false,
-			'zenet'                       => false
+			'srrdb'                       => false
 		)
 	)
 );

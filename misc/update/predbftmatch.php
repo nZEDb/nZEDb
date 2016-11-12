@@ -1,11 +1,11 @@
 <?php
-require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ConsoleTools;
 use nzedb\NameFixer;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1]))) {
 	exit($pdo->log->error(" This script tries to match a release name or searchname to a PreDB title by using Full Text Search Matching.\n"

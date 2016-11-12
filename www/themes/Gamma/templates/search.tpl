@@ -1,10 +1,14 @@
 <h2>Search</h2>
-<div class="btn btn-info pull-right"  style="text-decoration: none; font-family: Droid Sans,sans-serif;" onclick="if (jQuery(this).text() == 'Basic Search')
-				jQuery(this).text('Advanced Search');
-			else
-				jQuery(this).text('Basic Search');
-			jQuery('#sbasic,#sadvanced').toggle();
-		return false;">{if $sadvanced}Basic{else}Click For Advanced{/if} Search
+<div>
+	<div style="text-align: right;">
+		<a href="#" onclick="if (jQuery(this).text() == 'Advanced Search')
+					jQuery(this).text('Basic Search');
+				else
+					jQuery(this).text('Advanced Search');
+				jQuery('#sbasic,#sadvanced').toggle();
+				return false;">{if $sadvanced}Basic{else}Click For Advanced{/if} Search
+		</a>
+	</div>
 </div>
 <div class="navbar">
 	<div class="navbar-inner">
@@ -23,7 +27,7 @@
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
 	<div id="sadvanced" {if not $sadvanced}style="display:none"{/if}>
 		<div style="text-align: center;">
-			<table class="data table table-striped table-condensed table-responsive">
+			<table class="data table  table-condensed table-responsive">
 				<tr>
 					<th><label for="searchadvr">Release Name:</label></th>
 					<td><input class="searchadv" id="searchadvr" name="searchadvr" value="{$searchadvr|escape:'html'}"
@@ -114,7 +118,7 @@
 <form style="padding-top:10px;" id="nzb_multi_operations_form" method="get" action="{$smarty.const.WWW_TOP}/search">
 
 	<form id="nzb_multi_operations_form" action="get">
-		<div class="well well-small">
+		<div class="well well-sm">
 			<div class="nzb_multi_operations">
 				<table width="100%">
 					<tr>
@@ -133,8 +137,7 @@
 						</td>
 						<td width="33%">
 							<div class="pull-right">
-							<a class="btn btn-small" title="All releases in your shows as an RSS feed" href="{$smarty.const.WWW_TOP}/rss?t={$category[0]}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}&amp;uFilter={$search|escape:'html'}">Rss <i class="fa fa-rss"></i></a>
-							{if $isadmin}
+							{if isset($isadmin)}
 									Admin:
 									<div class="btn-group">
 										<input type="button" class="nzb_multi_operations_edit btn btn-small btn-warning" value="Edit" />
@@ -149,7 +152,7 @@
 			</div>
 		</div>
 
-<table style="100%" class="data highlight icons table table-striped" id="browsetable">
+<table style="100%" class="data highlight icons table" id="browsetable">
 
 	<tr>
 		<th style="padding-top:0px; padding-bottom:0px;">
@@ -244,7 +247,7 @@
 						{if $result.nfoid > 0}
 						<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo badge halffade" rel="nfo">Nfo</a>
 						{/if}
-						{if $result.preid > 0}
+						{if $result.predb_id > 0}
 						<span class="preinfo badge halffade" title="{$result.searchname}">Pre'd {$result.ctime|timeago}</span>
 						{/if}
 						{if $result.imdbid > 0}
@@ -328,7 +331,7 @@
 </table>
 <br/>
 {if $results|@count > 10}
-<div class="well well-small">
+<div class="well well-sm">
 	<div class="nzb_multi_operations">
 		<table width="100%">
 			<tr>
@@ -346,7 +349,7 @@
 					</div>
 				</td>
 				<td width="33%">
-					{if $isadmin}
+					{if isset($isadmin)}
 						<div class="pull-right">
 							Admin:
 							<div class="btn-group">

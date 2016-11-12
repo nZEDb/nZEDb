@@ -38,8 +38,8 @@
 			{if $xxx && $xxx.cover == 1}
 				<img class="shadow img-polaroid pull-right" style="margin-right:50px; margin-top:80px;"  src="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-cover.jpg" width="160" alt="{$xxx.title|escape:"htmlall"}"/>
 			{/if}
-			{if $isadmin}
-				<div class="well well-small pull-right">
+			{if isset($isadmin)}
+				<div class="well well-sm pull-right">
 					Admin :
 					<div class="btn-group">
 						<a href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$release.id}&amp;from={$smarty.server.REQUEST_URI}" class="btn btn-small btn-warning" >Edit</a>
@@ -346,7 +346,7 @@
 					<dd>{if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 2}Passworded Rar Archive{elseif $release.passwordstatus == 1}Contains Cab/Ace/Rar Inside Archive{else}Unknown{/if}</dd>
 				{/if}
 				<dt>Poster</dt>
-				<dd>{$release.fromname|escape:"htmlall"}</dd>
+				<dd><a title="Find releases by this poster" href="{$smarty.const.WWW_TOP}/search?searchadvr=&searchadvsubject=&searchadvposter={$release.fromname|escape:"htmlall"}&searchadvfilename=&searchadvdaysnew=&searchadvdaysold=&searchadvgroups=-1&searchadvcat=-1&searchadvsizefrom=-1&searchadvsizeto=-1&searchadvhasnfo=0&searchadvhascomments=0&search_type=adv">{$release.fromname|escape:"htmlall"}</a></dd>
 				<dt>Posted</dt>
 				<dd>{$release.postdate|date_format} ({$release.postdate|daysago} )</dd>
 				<dt>Added</dt>
@@ -359,14 +359,20 @@
 						<a id="guid{$release.guid}" class="icon icon_sabNZBinfo fa fa-share"  style="text-decoration: none; color: #008ab8;" href="#" title="Send to queue"></a>
 					{/if}
 					{if !empty($cpurl) && !empty($cpapi)}
-						<a class="sendtocouch fa fa-bed" target="blackhole" href="javascript:;" rel="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$release.imdbid}&title={$movie.title}" name="CP{$release.imdbid}" title="Add to CouchPotato"></a>
+						<a
+								id="imdb{$release.imdbid}"
+								href="javascript:;"
+								class="sendtocouch"
+								title="Add to CouchPotato">
+							<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+						</a>
 					{/if}
 				</dd>
 				<dt>Similar</dt>
 				<dd>
 					<a class="label" title="Search for similar Nzbs" href="{$smarty.const.WWW_TOP}/search/{$searchname|escape:"url"}">Search for similar</a>
 				</dd>
-				{if $isadmin}
+				{if isset($isadmin)}
 					<dt>Release Info</dt>
 					<dd>
 						{if isset($release.requestid) && $release.requestid != ""}
@@ -379,7 +385,7 @@
 		<div class="tab-pane" id="mediainfo">
 			{if $reVideo.releases_id|@count > 0 || $reAudio|@count > 0}
 				<td style="padding:0;">
-					<table style="width:100%;" class="innerdata highlight table table-striped">
+					<table style="width:100%;" class="innerdata highlight table">
 						<tr>
 							<th width="15%"></th>
 							<th>Property</th>
@@ -555,7 +561,7 @@
 			<div class="comments">
 				{if $comments|@count > 0}
 
-					<table style="margin-bottom:20px;" class="data Sortable table table-striped">
+					<table style="margin-bottom:20px;" class="data Sortable table">
 						<tr class="{cycle values=",alt"}">
 							<th width="150" style="text-align:right;">User </th>
 							<th>Comment</th>

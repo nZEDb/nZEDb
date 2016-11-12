@@ -29,7 +29,7 @@
 			</dl>
 		</div>
 		<form id="nzb_multi_operations_form" action="get">
-		<div class="well well-small">
+		<div class="well well-sm">
 			<div class="nzb_multi_operations">
 				With Selected:
 				<div class="btn-group">
@@ -42,7 +42,7 @@
 						<input class="span2"  id="filter-text" type="text" placeholder="Filter">
 					</div>
 				</div>
-				{if $isadmin}
+				{if isset($isadmin)}
 					<div class="pull-right">
 						Admin:
 						<div class="btn-group">
@@ -61,42 +61,42 @@
 				</th>
 				<th>name<br/>
 					<a title="Sort Descending" href="{$orderbyname_desc}">
-						<i class="icon-chevron-down icon-black"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbyname_asc}">
-						<i class="icon-chevron-up icon-black"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th>category<br/>
 					<a title="Sort Descending" href="{$orderbycat_desc}">
-						<i class="icon-chevron-down icon-black"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbycat_asc}">
-						<i class="icon-chevron-up icon-black"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th>posted<br/>
 					<a title="Sort Descending" href="{$orderbyposted_desc}">
-						<i class="icon-chevron-down icon-black"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbyposted_asc}">
-						<i class="icon-chevron-up icon-black"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th>size<br/>
 					<a title="Sort Descending" href="{$orderbysize_desc}">
-						<i class="icon-chevron-down icon-black"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbysize_asc}">
-						<i class="icon-chevron-up icon-black"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th>files<br/>
 					<a title="Sort Descending" href="{$orderbyfiles_desc}">
-						<i class="icon-chevron-down icon-black"></i>
+						<i class="fa fa-chevron-down"></i>
 					</a>
 					<a title="Sort Ascending" href="{$orderbyfiles_asc}">
-						<i class="icon-chevron-up icon-black"></i>
+						<i class="fa fa-chevron-up"></i>
 					</a>
 				</th>
 				<th>action</th>
@@ -123,9 +123,9 @@
 							<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"seourl"}">{$mname[$m@index]|escape:"htmlall"|replace:".":" "}</a>
 						</label>
 						{if $mpass[$m@index] == 2}
-							<i class="icon-lock"></i>
+							<i class="fa fa-lock"></i>
 						{elseif $mpass[$m@index] == 1}
-							<i class="icon-lock"></i>
+							<i class="fa fa-lock"></i>
 						{/if}
 						<div class="resextra">
 							<div class="btns">{strip}
@@ -138,15 +138,15 @@
 					<td class="less mid" title="{$mpostdate[$m@index]}">{$mpostdate[$m@index]|timeago}</td>
 					<td class="less right">{$msize[$m@index]|fsize_format:"MB"}</td>
 					<td class="less mid">
-						<a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]}</a>&nbsp;<i class="icon-th-list"></i>
+						<a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]}</a>&nbsp;<i class="fa fa-th-list"></i>
 					</td>
 					<td class="icons" style='width:100px;'>
 						<ul class="inline">
 							<li>
-								<a class="icon icon_nzb icon-download" style="text-decoration: none; color: #7ab800;" title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"url"}"></a>
+								<a class="icon icon_nzb fa fa-download" style="text-decoration: none; color: #7ab800;" title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"url"}"></a>
 							</li>
 							<li>
-								<a  href="#" class="icon icon_cart icon-shopping-cart" style="text-decoration: none; color: #5c5c5c;" title="Send to my Cart">
+								<a  href="#" class="icon icon_cart fa fa-shopping-cart" style="text-decoration: none; color: #5c5c5c;" title="Send to my Cart">
 								</a>
 							</li>
 							{if $sabintegrated}
@@ -164,7 +164,7 @@
 		<br/>
 		{$pager}
 		{if $results|@count > 10}
-			<div class="well well-small">
+			<div class="well well-sm">
 				<div class="nzb_multi_operations">
 					{if isset($section) && $section != ''}View: <a href="{$smarty.const.WWW_TOP}/{$section}?t={$category}">Covers</a> | <b>List</b><br />{/if}
 					With Selected:
@@ -176,10 +176,10 @@
 					<div class="btn-group pull-right">
 						<div class="input-append">
 							<input class="span2" id="filter-text" type="text">
-							<span class="add-on"><i class="icon-search"></i></span>
+							<span class="add-on"><i class="fa fa-search"></i></span>
 						</div>
 					</div>
-					{if $isadmin}
+					{if isset($isadmin)}
 						<div class="pull-right">
 							Admin:
 							<div class="btn-group">

@@ -9,7 +9,7 @@ if (!isset($argv[1])) {
 	);
 }
 
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\Binaries;
 use nzedb\NNTP;
@@ -45,7 +45,7 @@ foreach ($groups as $group) {
 	}
 
 	$postDate = $pdo->queryOneRow(
-		sprintf('SELECT UNIX_TIMESTAMP(postdate) AS postdate FROM releases WHERE group_id = %d ORDER BY postdate ASC LIMIT 1', $group['id'])
+		sprintf('SELECT UNIX_TIMESTAMP(postdate) AS postdate FROM releases WHERE groups_id = %d ORDER BY postdate ASC LIMIT 1', $group['id'])
 	);
 	if ($postDate === false) {
 		echo 'ERROR! Could not find any existing releases for group (' . $group['name'] . ')' . PHP_EOL;

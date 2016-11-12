@@ -115,7 +115,7 @@
 			{if $sabintegrated}
 				<input type="button" class="nzb_multi_operations_sab" value="Send to my Queue">
 			{/if}
-			{if $isadmin}
+			{if isset($isadmin)}
 				&nbsp;&nbsp;
 				<input type="button" class="nzb_multi_operations_edit" value="Edit">
 				<input type="button" class="nzb_multi_operations_delete" value="Del">
@@ -243,8 +243,8 @@
 								{if $result.reid > 0}
 									<span class="mediainfo rndbtn" title="{$result.guid}">Media</span>
 								{/if}
-								{if $result.preid > 0}
-									<span class="preinfo rndbtn" title="{$result.preid}">PreDB</span>
+								{if $result.predb_id > 0}
+									<span class="preinfo rndbtn" title="{$result.predb_id}">PreDB</span>
 								{/if}
 								{if $result.group_name != ""}
 									<a class="rndbtn" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}" title="Browse {$result.group_name}">{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":"a.b."}</a>
@@ -296,7 +296,7 @@
 				<input type="button" class="nzb_multi_operations_sab" value="Send to my Queue">
 			{/if}
 			<input type="button" class="nzb_multi_operations_cart" value="Add to Cart">
-			{if $isadmin}
+			{if isset($isadmin)}
 				&nbsp;&nbsp;
 				<input type="button" class="nzb_multi_operations_edit" value="Edit">
 				<input type="button" class="nzb_multi_operations_delete" value="Del">

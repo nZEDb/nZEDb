@@ -46,6 +46,13 @@
 			</tr>
 		{/if}
 		<tr>
+			<td>Excluded Categories</td>
+			<td>
+				{html_options style="height:105px;" multiple=multiple name="exccat[]" options=$catlist selected=$roleexccat}
+				<div class="hint">Use Ctrl and click to exclude multiple categories. This will prevent users with this role from <br/>seeing these categories in the menu or search results.</div>
+			</td>
+		</tr>
+		<tr>
 			<td></td>
 			<td>
 				<input type="submit" value="Save" />

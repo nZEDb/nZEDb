@@ -1,9 +1,9 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ReleaseCleaning;
 use nzedb\SphinxSearch;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 $message =
 	'Shows old searchname vs new searchname for releases in a group using the releaseCleaning class. (Good for testing new regex)' .
@@ -34,7 +34,7 @@ if ($argv[3] === 'true') {
 	$rename = true;
 }
 
-$pdo = new Settings();
+$pdo = new DB();
 
 $group = $pdo->queryOneRow(sprintf('SELECT id FROM groups WHERE name = %s', $pdo->escapeString($argv[1])));
 
@@ -42,7 +42,7 @@ if ($group === false) {
 	exit('No group with name ' . $argv[1] . ' found in the database.');
 }
 
-$releases = $pdo->query(sprintf('SELECT name, searchname, fromname, size, id FROM releases WHERE group_id = %d %s ORDER BY postdate LIMIT %d', $group['id'], $category, $argv[2]));
+$releases = $pdo->query(sprintf('SELECT name, searchname, fromname, size, id FROM releases WHERE groups_id = %d %s ORDER BY postdate LIMIT %d', $group['id'], $category, $argv[2]));
 
 if (count($releases) === 0) {
 	exit('No releases found in your database for group ' . $argv[1] . PHP_EOL);

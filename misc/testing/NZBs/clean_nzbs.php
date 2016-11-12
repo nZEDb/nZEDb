@@ -1,14 +1,15 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use app\models\Settings;
 use nzedb\ConsoleTools;
 use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 $dir = nZEDb_RES . "movednzbs/";
 
@@ -33,7 +34,7 @@ $couldbe = ($argv[1] === "true") ? "could be " : "";
 echo $pdo->log->header('Getting List of nzbs to check against db.');
 echo $pdo->log->header("Checked / {$couldbe}moved\n");
 
-$dirItr = new \RecursiveDirectoryIterator($pdo->getSetting('nzbpath'));
+$dirItr = new \RecursiveDirectoryIterator(Settings::value('..nzbpath'));
 $itr = new \RecursiveIteratorIterator($dirItr, \RecursiveIteratorIterator::LEAVES_ONLY);
 
 foreach ($itr as $filePath) {

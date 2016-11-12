@@ -2,7 +2,6 @@
 namespace nzedb;
 
 use nzedb\db\DB;
-use nzedb\db\Settings;
 
 class SphinxSearch
 {
@@ -63,7 +62,7 @@ class SphinxSearch
 	 * @param array $identifiers ['g' => Release GUID(mandatory), 'id' => ReleaseID(optional, pass false)]
 	 * @param \nzedb\db\Settings $pdo
 	 */
-	public function deleteRelease($identifiers, Settings $pdo)
+	public function deleteRelease($identifiers, DB $pdo)
 	{
 		if (!is_null($this->sphinxQL)) {
 			if ($identifiers['i'] === false) {
@@ -100,9 +99,9 @@ class SphinxSearch
 	 * Update Sphinx Relases index for given releaseid.
 	 *
 	 * @param int $releaseID
-	 * @param \nzedb\db\Settings $pdo
+	 * @param \nzedb\db\DB $pdo
 	 */
-	public function updateRelease($releaseID, Settings $pdo)
+	public function updateRelease($releaseID, DB $pdo)
 	{
 		if (!is_null($this->sphinxQL)) {
 			$new = $pdo->queryOneRow(

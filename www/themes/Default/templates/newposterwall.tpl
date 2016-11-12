@@ -108,11 +108,13 @@
 											<a class="divlink" target="_blank" title="View on Trakt"
 											   href="{$site->dereferrer_link}http://trakt.tv/search/imdb/tt{$result.imdbid}/"></a>
 										</div>
-										{if $cpapi != '' && $cpurl != ''}
+										{if !empty($cpapi) && !empty($cpurl)}
 											<div class="icon icon_cp">
-												<a class="divlink sendtocouch" target="_blank"
-												   title="Send to CouchPotato" href="javascript:;"
-												   rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.searchname|escape:"url"}"></a>
+												<a
+													id="imdb{$result.imdbid}"
+													class="divlink sendtocouch" target="_blank"
+													title="Send to CouchPotato">
+												</a>
 											</div>
 										{/if}
 									{elseif $type == 'XXX'}

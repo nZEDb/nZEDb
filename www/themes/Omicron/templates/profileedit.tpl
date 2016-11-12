@@ -1,6 +1,5 @@
 <div class="header">
 	<h2>Edit Profile > <strong>{$user.username|escape:"htmlall"}</strong></h2>
-
 	<div class="breadcrumb-wrapper">
 		<ol class="breadcrumb">
 			<li><a href="{$smarty.const.WWW_TOP}">Home</a></li>
@@ -13,8 +12,8 @@
 		<div class="box-content">
 			<div class="row">
 				<div class="col-xlg-12 portlets">
-					<div class="panel">
-						<div class="panel-content pagination2">
+					<div class="panel panel-default">
+						<div class="panel-body pagination2">
 							{if $error != ''}
 								<div class="alert alert-danger">{$error}</div>
 							{/if}
@@ -31,23 +30,11 @@
 											<tbody>
 											<tr valign="top">
 												<td>
-													<table class="table table-condensed table-striped responsive">
+													<table class="data table table-condensed table-striped table-responsive">
 														<tbody>
 														<tr class="bg-aqua-active">
 															<td colspan="2" style="padding-left: 8px;">
 																<strong>Profile</strong></td>
-														</tr>
-														<tr>
-															<th width="200">First Name</th>
-															<td><input id="firstname" class="form-control" name="firstname"
-																	   type="text"
-																	   value="{$user.firstname|escape:"htmlall"}"></td>
-														</tr>
-														<tr>
-															<th width="200">Last Name</th>
-															<td><input id="lastname" class="form-control" name="lastname"
-																	   type="text"
-																	   value="{$user.lastname|escape:"htmlall"}"></td>
 														</tr>
 														<tr>
 															<th width="200">E-Mail</th>
@@ -60,7 +47,6 @@
 															<td>
 																<input autocomplete="off" id="password" name="password"
 																	   type="password" class="form-control" value="">
-
 																<div class="hint">Only enter your password if you want
 																	to change it.
 																</div>
@@ -82,7 +68,7 @@
 														</tr>
 														</tbody>
 													</table>
-													<table class="table table-condensed table-striped responsive">
+													<table class="data table table-condensed table-striped table-responsive">
 														<tbody>
 														<tr class="bg-aqua-active">
 															<td colspan="2" style="padding-left: 8px;"><strong>Excluded
@@ -96,7 +82,7 @@
 														</tr>
 														</tbody>
 													</table>
-													<table class="table table-condensed table-striped responsive">
+													<table class="data table table-condensed table-striped table-responsive">
 														<tbody>
 														<tr class="bg-aqua-active">
 															<td colspan="2" style="padding-left: 8px;"><strong>UI
@@ -152,6 +138,18 @@
 														</tr>
 														</tbody>
 													</table>
+													<table class="data table table-condensed table-striped table-responsive">
+														<tbody>
+														<tr class="bg-aqua-active">
+															<td colspan="2" style="padding-left: 8px;"><strong>Site theme</strong></td>
+														</tr>
+														<tr>
+															<td>
+																{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
+															</td>
+														</tr>
+														</tbody>
+													</table>
 												</td>
 											</tr>
 											</tbody>
@@ -162,13 +160,16 @@
 											<tbody>
 											<tr valign="top">
 												<td>
-													These settings are only needed if you want to be able to push NZB's
-													to your downloader straight from the website. You don't need this
-													for automation software like Sonarr, Sickbeard and Couchpotato to
-													function.
-													<br/>
-													{if $page->settings->getSetting('sabintegrationtype') != 1}
-														<table class="table table-condensed table-striped responsive">
+													<br>
+													<div class="alert alert-info">
+														These settings are only needed if you want to be able to push NZB's
+														to your downloader straight from the website. You don't need this
+														for automation software like Sonarr, Sickbeard, SickRage, SickGear or Couchpotato to
+														function.
+													</div>
+													<br>
+													{if $page->getSettingValue('apps.sabnzbplus.integrationtype') != 1}
+														<table class="data table table-condensed table-striped table-responsive">
 															<tbody>
 															<tr class="bg-aqua-active">
 																<td colspan="2" style="padding-left: 8px;"><strong>Queue
@@ -186,8 +187,8 @@
 															</tbody>
 														</table>
 													{/if}
-													{if $user.queuetype == 1 && $page->settings->getSetting('sabintegrationtype') == 2}
-														<table class="table table-condensed table-striped responsive">
+													{if $user.queuetype == 1 && $page->getSettingValue('apps.sabnzbplus.integrationtype') == 2}
+														<table class="data table table-condensed table-striped table-responsive">
 															<tbody>
 															<tr class="bg-aqua-active">
 																<td colspan="2" style="padding-left: 8px;"><strong>SABnzbd</strong>
@@ -219,34 +220,11 @@
 																	</div>
 																</td>
 															</tr>
-															<tr>
-																<th width="200">Priority</th>
-																<td>{html_options id="sabpriority" name='sabpriority' values=$sabpriority_ids output=$sabpriority_names selected=$sabpriority_selected}</td>
-															</tr>
-															<tr>
-																<th width="200">Storage</th>
-																<td>{html_radios id="sabsetting" name='sabsetting' values=$sabsetting_ids output=$sabsetting_names selected=$sabsetting_selected separator='&nbsp;&nbsp;'}{if $sabsetting_selected == 2}&nbsp;&nbsp;[
-																		<a class="confirm_action"
-																		   href="?action=clearcookies">Clear Cookies</a>
-																		]{/if}
-																	<div class="hint">Where to store the SAB
-																		setting.<br/>&bull; <b>Cookie</b> will store the
-																		setting in your browsers coookies and will only
-																		work when using your current browser.<br/>&bull;
-																		<b>Site</b> will store the setting in your user
-																		account enabling it to work no matter where you
-																		are logged in from.<br/><span
-																				class="warning"><b>Please
-																				Note:</b></span> You should only store
-																		your full SAB api key with sites you trust.
-																	</div>
-																</td>
-															</tr>
 															</tbody>
 														</table>
 													{/if}
-													{if $user.queuetype == 2 && ($page->settings->getSetting('sabintegrationtype') == 0 || $page->settings->getSetting('sabintegrationtype') == 2)}
-														<table class="table table-condensed table-striped responsive">
+													{if $user.queuetype == 2 && ($page->getSettingValue('apps.sabnzbplus.integrationtype') == 0 || $page->getSettingValue('apps.sabnzbplus.integrationtype') == 2)}
+														<table class="data table table-condensed table-striped table-responsive">
 															<tbody>
 															<tr class="bg-aqua-active">
 																<td colspan="2" style="padding-left: 8px;"><strong>NZBget</strong>
@@ -259,7 +237,6 @@
 																		   type="text" value="{$user.nzbgeturl}"/></td>
 															</tr>
 															<tr>
-
 																<th width="200">Username / Password</th>
 																<td>
 																	<div class="form-inline">
@@ -276,58 +253,43 @@
 																			   value="{$user.nzbgetpassword}"/>
 																	</div>
 																</td>
-
 															</tr>
 															</tbody>
 														</table>
 													{/if}
 													<br/>
+													<table class="data table table-condensed table-striped table-responsive">
+														<tbody>
+														<tr class="bg-aqua-active">
+															<td colspan="2" style="padding-left: 8px;"><strong>Couchpotato</strong>
+															</td>
+														</tr>
+														<tr>
+															<th width="200">API / URL</th>
+															<td>
+																<div class="form-inline">
+																	<input id="cp_api"
+																		   placeholder="Couchpotato API key"
+																		   class="form-control"
+																		   name="cp_api" type="text"
+																		   value="{$cp_api_selected}"/>
+																	/
+																	<input id="cp_url"
+																		   placeholder="Couchpotato URL"
+																		   class="form-control"
+																		   name="cp_url" type="text"
+																		   value="{$cp_url_selected}"/>
+																</div>
+															</td>
+														</tr>
+														</tbody>
+													</table>
 												</td>
 											</tr>
 											</tbody>
 										</table>
 									</div>
 								</div>
-								<table class="table table-condensed table-striped responsive">
-									<tbody>
-									<tr class="bg-aqua-active">
-										<td colspan="2" style="padding-left: 8px;"><strong>Couchpotato</strong>
-										</td>
-									</tr>
-									<tr>
-
-										<th width="200">API / URL</th>
-										<td>
-											<div class="form-inline">
-												<input id="cp_api"
-													   placeholder="Couchpotato API key"
-													   class="form-control"
-													   name="cp_api" type="text"
-													   value="{$cp_api_selected}"/>
-												/
-												<input id="cp_url"
-													   placeholder="Couchpotato URL"
-													   class="form-control"
-													   name="cp_url" type="text"
-													   value="{$cp_url_selected}"/>
-											</div>
-										</td>
-
-									</tr>
-									</tbody>
-								</table>
-								<table class="data table table-condensed table-striped table-responsive">
-									<tbody>
-									<tr class="bg-aqua-active">
-										<td colspan="2" style="padding-left: 8px;"><strong>Site theme</strong></td>
-									</tr>
-									<tr>
-										<td>
-											{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
-										</td>
-									</tr>
-									</tbody>
-								</table>
 								<input type="submit" value="Save" class="btn btn-primary"/>
 							</form>
 						</div>

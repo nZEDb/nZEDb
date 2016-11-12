@@ -52,7 +52,7 @@
 	</div>
 </div>
 <form id="nzb_multi_operations_form" action="get">
-	<div class="well well-small">
+	<div class="well well-sm">
 		<div class="nzb_multi_operations">
 			With Selected:
 			<div class="btn-group">
@@ -81,7 +81,7 @@
 					<table style="width:100%;" class="data table table-condensed table-striped table-responsive table-hover"
 						   id="browsetable">
 						<tr>
-							<th><input id="chkSelectAll" type="checkbox" class="nzb_check_all"/></th>
+							<th><input id="chkSelectAll" type="checkbox" class="square-all"/></th>
 							<th>Name</th>
 							<th>Category</th>
 							<th>Posted</th>
@@ -91,7 +91,7 @@
 						{foreach $animeEpisodeTitles as $result}
 								<tr class="{cycle values=",alt"}" id="guid{$result.guid}">
 									<td class="check"><input id="chk{$result.guid|substr:0:7}"
-															 type="checkbox" class="nzb_check"
+															 type="checkbox" class="square"
 															 value="{$result.guid}"/></td>
 									<td>
 										<a title="View details"

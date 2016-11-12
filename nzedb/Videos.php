@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /**
  * Class Videos -- functions for site interaction
@@ -21,7 +21,7 @@ Class Videos
 			'Settings'     => null,
 		];
 		$options += $defaults;
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 	}
 
 	/**

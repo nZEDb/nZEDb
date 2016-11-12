@@ -1,11 +1,11 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ConsoleTools;
 use nzedb\Groups;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if (!isset($argv[1]) || $argv[1] != 'true') {
 	exit($pdo->log->error("\nThis script will move all collections, binaries, parts into tables per group.\n\n"
@@ -38,7 +38,7 @@ $parts_count = $pdo->queryOneRow("SELECT COUNT(*) AS cnt FROM parts");
 $i = 0;
 if ($collections_rows instanceof \Traversable) {
 	foreach ($collections_rows as $row) {
-		$groupName = $groups->getByNameByID($row['group_id']);
+		$groupName = $groups->getNameByID($row['group_id']);
 		echo $pdo->log->header("Processing ${groupName}");
 		//collection
 		$pdo->queryExec("INSERT IGNORE INTO collections_" . $row['group_id'] . " (subject, fromname, date, xref, totalfiles, group_id, collectionhash, dateadded, filecheck, filesize, releaseid) "

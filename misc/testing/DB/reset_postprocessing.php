@@ -1,12 +1,12 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\Category;
 use nzedb\ConsoleTools;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 $category = new Category();
-$pdo = new Settings();
+$pdo = new DB();
 $consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 $ran = false;
 

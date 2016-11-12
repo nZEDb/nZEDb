@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing\tv;
 
+use app\models\Settings;
 use nzedb\Category;
 use nzedb\processing\Videos;
 use nzedb\utility\Country;
@@ -50,13 +51,20 @@ abstract class TV extends Videos
 	public $siteColumns;
 
 	/**
+	 * @var string The TV categories_id lookup SQL language
+	 */
+	public $catWhere;
+
+	/**
 	 * @param array $options Class instances / Echo to CLI.
 	 */
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
 		$this->catWhere = 'categories_id BETWEEN ' . Category::TV_ROOT . ' AND ' . Category::TV_OTHER . ' AND categories_id  NOT IN (' . Category::TV_ANIME . ')';
-		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
+
+		$value = Settings::value('..maxrageprocessed');
+		$this->tvqty = ($value != '') ? $value : 75;
 		$this->imgSavePath = nZEDb_COVERS . 'tvshows' . DS;
 		$this->siteColumns = ['tvdb', 'trakt', 'tvrage', 'tvmaze', 'imdb', 'tmdb'];
 	}
@@ -153,8 +161,8 @@ abstract class TV extends Videos
 				LIMIT %d",
 				$status,
 				$this->catWhere,
-				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
-				($guidChar === '' ? '' : 'AND r.guid ' . $this->pdo->likeString($guidChar, false, true)),
+				($groupID === '' ? '' : 'AND r.groups_id = ' . $groupID),
+				($guidChar === '' ? '' : 'AND r.leftguid = ' . $this->pdo->escapeString($guidChar)),
 				($lookupSetting == 2 ? 'AND r.isrenamed = 1' : ''),
 				$this->tvqty
 			)
@@ -433,19 +441,19 @@ abstract class TV extends Videos
 	 */
 	public function getBySeasonEp($id, $series, $episode, $airdate = '')
 	{
-		if ($episode > 0) {
-			$queryString = sprintf('series = %d AND episode = %d', $series, $episode);
-		} else if (!empty($airdate) && $airdate !== '') {
-			$queryString = sprintf('DATE(firstaired) = %s', $this->pdo->escapeString(date('Y-m-d', strtotime($airdate))));
+		if (!empty($airdate)) {
+			$queryString = sprintf('DATE(tve.firstaired) = %s', $this->pdo->escapeString(date('Y-m-d', strtotime($airdate))));
+		} else if ($series > 0 && $episode > 0) {
+			$queryString = sprintf('tve.series = %d AND tve.episode = %d', $series, $episode);
 		} else {
 			return false;
 		}
 
 		$episodeArr = $this->pdo->queryOneRow(
 			sprintf("
-				SELECT id
-				FROM tv_episodes
-				WHERE videos_id = %d
+				SELECT tve.id
+				FROM tv_episodes tve
+				WHERE tve.videos_id = %d
 				AND %s",
 				$id,
 				$queryString

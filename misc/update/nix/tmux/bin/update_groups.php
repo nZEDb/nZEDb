@@ -1,12 +1,12 @@
 <?php
-require_once realpath(dirname(dirname(dirname(dirname(dirname(__DIR__))))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(dirname(dirname(__DIR__))))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ConsoleTools;
 use nzedb\NNTP;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 $start = TIME();
-$pdo = new Settings();
+$pdo = new DB();
 $consoleTools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 
 // Create the connection here and pass

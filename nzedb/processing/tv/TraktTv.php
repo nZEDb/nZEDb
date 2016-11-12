@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing\tv;
 
+use app\models\Settings;
 use nzedb\libraries\TraktAPI;
 use nzedb\ReleaseImage;
 use nzedb\utility\Time;
@@ -68,7 +69,7 @@ class TraktTv extends TV
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$this->clientId = $this->pdo->getSetting('trakttvclientkey');
+		$this->clientId = Settings::value('APIs..trakttvclientkey');
 		$this->requestHeaders = [
 			'Content-Type: application/json',
 			'trakt-api-version: 2',
@@ -157,7 +158,7 @@ class TraktTv extends TV
 
 					if (is_numeric($videoId) && $videoId > 0 && is_numeric($traktid) && $traktid > 0) {
 						// Now that we have valid video and trakt ids, try to get the poster
-						$this->getPoster($videoId, $traktid);
+						//$this->getPoster($videoId, $traktid);
 
 						$seasonNo = preg_replace('/^S0*/i', '', $release['season']);
 						$episodeNo = preg_replace('/^E0*/i', '', $release['episode']);
@@ -324,7 +325,7 @@ class TraktTv extends TV
 				}
 			}
 			if (isset($highest)) {
-				$fullShow = $this->client->showSummary($highest['show']['ids']['trakt'], 'full,images');
+				$fullShow = $this->client->showSummary($highest['show']['ids']['trakt'], 'full');
 				if ($this->checkRequiredAttr($fullShow, 'traktS')) {
 					$return = $this->formatShowInfo($fullShow);
 				}

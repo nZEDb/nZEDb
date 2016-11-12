@@ -19,7 +19,7 @@
  * @copyright 2015 nZEDb
  */
 
-require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\db\PreDb;
 use nzedb\utility\Misc;
@@ -79,7 +79,7 @@ $predb->executeDeleteShort();
 // Add any groups that do not currently exist
 $predb->executeAddGroups();
 
-// Fill the group_id
+// Fill the groups_id
 $predb->executeUpdateGroupID();
 
 echo $predb->log->info("Inserting records from temporary table into predb table");

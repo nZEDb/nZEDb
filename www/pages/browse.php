@@ -10,11 +10,11 @@ if (!$page->users->isLoggedIn()) {
 $releases = new Releases(['Settings' => $page->settings]);
 
 $category = -1;
-if (isset($_REQUEST["t"]) && ctype_digit($_REQUEST["t"])) {
+if (isset($_REQUEST["t"])) {
 	$category = $_REQUEST["t"];
 }
 
-$grp = "";
+$grp = -1;
 if (isset($_REQUEST["g"])) {
 	$grp = $_REQUEST["g"];
 }
@@ -23,7 +23,6 @@ $catarray = array();
 $catarray[] = $category;
 
 $page->smarty->assign('category', $category);
-$browsecount = $releases->getBrowseCount($catarray, -1, $page->userdata["categoryexclusions"], $grp);
 
 $offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
 $ordering = $releases->getBrowseOrdering();
@@ -32,7 +31,13 @@ $orderby = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_RE
 $results = array();
 $results = $releases->getBrowseRange($catarray, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"], $grp);
 
-$page->smarty->assign('pagertotalitems', $browsecount);
+if(isset($results[0]['_totalcount'])) {
+	$browsecount = $results[0]['_totalcount'];
+}
+
+if (isset($browsecount)) {
+	$page->smarty->assign('pagertotalitems', $browsecount);
+}
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP . "/browse?t=" . $category . "&amp;g=" . $grp . "&amp;ob=" . $orderby . "&amp;offset=");
@@ -42,9 +47,9 @@ $pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
 $covgroup = '';
-if ($category == -1 && $grp == "") {
+if ($category == -1 && $grp == -1) {
 	$page->smarty->assign("catname", "All");
-} elseif ($category != -1 && $grp == "") {
+} elseif ($category != -1 && $grp == -1) {
 	$cat = new Category(['Settings' => $releases->pdo]);
 	$cdata = $cat->getById($category);
 	if ($cdata) {
@@ -65,7 +70,7 @@ if ($category == -1 && $grp == "") {
 	} else {
 		$page->show404();
 	}
-} elseif ($grp != "") {
+} elseif ($grp != -1) {
 	$page->smarty->assign('catname', $grp);
 }
 

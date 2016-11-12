@@ -1,7 +1,7 @@
 <?php
 require_once 'smarty.php';
 
-use nzedb\db\Settings;
+use app\models\Settings;
 
 $page = new Page();
 
@@ -11,6 +11,7 @@ switch ($page->page) {
 	case 'ajax_preinfo':
 	case 'ajax_profile':
 	case 'ajax_release-admin':
+	case 'ajax_resetusergrabs-admin':
 	case 'ajax_rarfilelist':
 	case 'ajax_titleinfo':
 	case 'ajax_tvinfo':
@@ -43,6 +44,7 @@ switch ($page->page) {
 	case 'newposterwall':
 	case 'nfo':
 	case 'nzbgetqueuedata':
+	case 'post_edit':
 	case 'predb':
 	case 'profile':
 	case 'profileedit':
@@ -51,16 +53,18 @@ switch ($page->page) {
 	case 'sabqueuedata':
 	case 'search':
 	case 'sendtoqueue':
+	case 'sendtocouch':
 	case 'series':
 	case 'sitemap':
 	case 'sysinfo':
 	case 'terms-and-conditions':
+	case 'topic_delete':
 	case 'upcoming':
 	case 'xxx':
 	case 'xxxmodal':
 		// Don't show these pages if it's an API-only site.
-		if (!$page->users->isLoggedIn() && $page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
-			header("Location: " . $page->settings->getSetting('code'));
+		if (!$page->users->isLoggedIn() && Settings::value('..registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
+			header("Location: " . Settings::value('site.main.code'));
 			break;
 		}
 	case 'api':
@@ -69,7 +73,7 @@ switch ($page->page) {
 	case 'login':
 	case 'preinfo':
 	case 'rss':
-		include(nZEDb_WWW . 'pages/' . $page->page . '.php');
+		require_once(nZEDb_WWW . 'pages/' . $page->page . '.php');
 		break;
 	default:
 		$page->show404();

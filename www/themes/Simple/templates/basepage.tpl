@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7"><![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8"><![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9"><![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js"><!--<![endif]-->
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -100,7 +100,7 @@
 			<script src="//code.jquery.com/jquery-1.9.1.js"></script>
             {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_THEMES}{literal}/shared/js/jquery-1.9.1.js"><\/script>')</script>{/literal}
 			<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-            {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_THEMES}{literal}/shared/libs/bootstrap/v3/js/bootstrap.min.js"><\/script>')</script>{/literal}
+            {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_THEMES}{literal}/shared/libs/bootstrap-3.3.x/js/bootstrap.min.js"><\/script>')</script>{/literal}
             <!-- <script src="{$smarty.const.WWW_THEMES}/shared/js/subnav.js"></script> -->
             <script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.colorbox-min.js"></script>
             <script src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js"></script>

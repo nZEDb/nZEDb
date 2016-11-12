@@ -36,8 +36,12 @@ div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer;
 .icon_gamespot       { background-image:url('../../shared/img/icons/gamespot.png'); }
 .icon_ign            { background-image:url('../../shared/img/icons/ign.png'); }
 .icon_lastfm         { background-image:url('../../shared/img/icons/lastfm.png'); }
-.icon_nzb            { background-image:url('../../shared/img/icons/nzbup.png'); }
-.icon_nzb_clicked    { background-image:url('../../shared/img/icons/nzbdown.png'); }
+div.icon_nzb			{
+	background: url('../../shared/img/icons/nzbup.png') no-repeat;
+}
+div.icon_nzb_clicked	{
+	background: url('../../shared/img/icons/nzbdown.png') no-repeat;
+}
 .icon_nzb a          { text-decoration:none; padding-bottom:2px; padding-right:12px; }
 .icon_predbme        { background-image:url('../../shared/img/icons/predbme.png'); }
 .icon_ade            { background-image: url('../../shared/img/icons/ade.png');}
@@ -47,8 +51,12 @@ div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer;
 .icon_imdb           { background-image:url('../../shared/img/icons/imdb.png'); }
 .icon_imdb2          { content:url('../../shared/img/icons/imdb.png'); }
 .icon_imdb a         { text-decoration:none; padding-bottom:2px; padding-right:12px; }
-.icon_sab            { background-image:url('../../shared/img/icons/queueup.png'); }
-.icon_sab_clicked    { background-image:url('../../shared/img/icons/queuedown.png'); }
+.icon_sab            {
+	background: url('../../shared/img/icons/queueup.png')  no-repeat;
+}
+.icon_sab_clicked    {
+	background: url('../../shared/img/icons/queuedown.png') no-repeat;
+}
 .icon_trakt          { background-image:url('../../shared/img/icons/trakt.png'); }
 .icon_trakt2         { content:url('../../shared/img/icons/trakt.png'); }
 .icon_tvdb           { background-image:url('../../shared/img/icons/tvdb.png'); }

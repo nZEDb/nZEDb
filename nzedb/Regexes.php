@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 class Regexes
 {
@@ -23,7 +23,7 @@ class Regexes
 	/**
 	 * @var int
 	 */
-	protected $_categoryID = Category::OTHER_MISC;
+	protected $_categoriesID = Category::OTHER_MISC;
 
 	/**
 	 * @param array $options
@@ -36,7 +36,7 @@ class Regexes
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->tableName = $options['Table_Name'];
 	}
 
@@ -53,13 +53,13 @@ class Regexes
 			sprintf(
 				'INSERT INTO %s (group_regex, regex, status, description, ordinal%s) VALUES (%s, %s, %d, %s, %d%s)',
 				$this->tableName,
-				($this->tableName === 'category_regexes' ? ', category_id' : ''),
+				($this->tableName === 'category_regexes' ? ', categories_id' : ''),
 				trim($this->pdo->escapeString($data['group_regex'])),
 				trim($this->pdo->escapeString($data['regex'])),
 				$data['status'],
 				trim($this->pdo->escapeString($data['description'])),
 				$data['ordinal'],
-				($this->tableName === 'category_regexes' ? (', ' . $data['category_id']) : '')
+				($this->tableName === 'category_regexes' ? (', ' . $data['categories_id']) : '')
 			)
 		);
 	}
@@ -84,7 +84,7 @@ class Regexes
 				$data['status'],
 				trim($this->pdo->escapeString($data['description'])),
 				$data['ordinal'],
-				($this->tableName === 'category_regexes' ? (', category_id = ' . $data['category_id']) : ''),
+				($this->tableName === 'category_regexes' ? (', categories_id = ' . $data['categories_id']) : ''),
 				$data['id']
 			)
 		);
@@ -245,7 +245,7 @@ class Regexes
 
 		$rows = $this->pdo->query(
 			sprintf(
-				'SELECT name, searchname, id FROM releases WHERE group_id = %d LIMIT %d',
+				'SELECT name, searchname, id FROM releases WHERE groups_id = %d LIMIT %d',
 				$groupID,
 				$queryLimit
 			)
@@ -289,7 +289,7 @@ class Regexes
 			foreach ($this->_regexCache[$groupName]['regex'] as $regex) {
 
 				if ($this->tableName === 'category_regexes') {
-					$this->_categoryID = $regex['category_id'];
+					$this->_categoriesID = $regex['categories_id'];
 				}
 
 				$returnString = $this->_matchRegex($regex['regex'], $subject);
@@ -356,7 +356,7 @@ class Regexes
 							$returnString .= $value; // Concatenate the string to return.
 							break;
 						case 'category_regexes':
-							$returnString = $this->_categoryID; // Regex matched, so return the category ID.
+							$returnString = $this->_categoriesID; // Regex matched, so return the category ID.
 							break 2;
 					}
 				}

@@ -48,13 +48,15 @@
 		<div style="margin-top:10px;">
 			<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$release.imdbid}/" title="View at IMDB">IMDB</a>
 			{if $movie.tmdbid != ''}<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.themoviedb.org/movie/{$movie.tmdbid}" title="View at TMDb">TMDb</a>{/if}
-			<a
-				class="rndbtn sendtocouch" target="blackhole"
-				href="javascript:;"
-				rel="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$release.imdbid}&title={$movie.title}"
-				name="CP{$release.imdbid}" title="Add to CouchPotato">
-				CouchPotato
-			</a>
+			{if !empty($cpurl) && !empty($cpapi)}
+				<a
+					id="imdb{$release.imdbid}"
+					href="javascript:;"
+					class="sendtocouch"
+					title="Add to CouchPotato">
+					<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+				</a>
+			{/if}
 		</div>
 	</td></tr>
 	{/if}
@@ -421,7 +423,7 @@
 		</td>
 	</tr>
 	{/if}
-	<tr><th>Poster:</th><td>{$release.fromname|escape:"htmlall"}</td></tr>
+	<tr><th>Poster:</th><td><a title="Find releases by this poster" href="{$smarty.const.WWW_TOP}/search?searchadvr=&searchadvsubject=&searchadvposter={$release.fromname|escape:"htmlall"}&searchadvfilename=&searchadvdaysnew=&searchadvdaysold=&searchadvgroups=-1&searchadvcat=-1&searchadvsizefrom=-1&searchadvsizeto=-1&searchadvhasnfo=0&searchadvhascomments=0&search_type=adv">{$release.fromname|escape:"htmlall"}</a></td></tr>
 	<tr><th>Posted:</th><td title="{$release.postdate}">{$release.postdate} ({$release.postdate|daysago})</td></tr>
 	<tr><th>Added:</th><td title="{$release.adddate}">{$release.adddate} ({$release.adddate|daysago})</td></tr>
 	<tr id="guid{$release.guid}"><th>Download:</th><td>
@@ -442,7 +444,7 @@
 		</td>
 	</tr>
 	{/if}
-	{if $isadmin}
+	{if isset($isadmin)}
 	{/if}
 </table>
 

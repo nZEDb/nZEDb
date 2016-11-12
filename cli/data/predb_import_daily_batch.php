@@ -19,10 +19,10 @@
  * @copyright 2015 nZEDb
  */
 
-/* TODO better tune the queries for performance, including pre-fetching group_id and other data for
+/* TODO better tune the queries for performance, including pre-fetching groups_id and other data for
 	faster inclusion in the main query.
 */
-require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\db\PreDb;
 use nzedb\utility\Misc;
@@ -180,7 +180,7 @@ foreach ($data as $file) {
 			// Add any groups that do not currently exist
 			$predb->executeAddGroups();
 
-			// Fill the group_id
+			// Fill the groups_id
 			$predb->executeUpdateGroupID();
 
 			echo $predb->log->info("Inserting records from temporary table into predb table");

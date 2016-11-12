@@ -375,15 +375,15 @@
 				<td>
 					<input id="yydecoderpath" class="long" name="yydecoderpath" type="text" value="{$site->yydecoderpath}"/>
 					<div class="hint">
-						Leaving this empty will use PHP to decode yEnc, which is slow.
-						<br/>Putting the path to yydecode will use yydecode, which is faster than PHP. <a
-								style="color:#0082E1"
-								href="http://sourceforge.net/projects/yydecode/files/yydecode/0.2.10/">Download yydecode on
-							sourceforce.</a>
-						<br/>Putting in <strong style="color:#ac2925">simple_php_yenc_decode</strong> will use that
-						extension which is even faster <strong>(you must have the extension)</strong>. <a
-								style="color:#0082E1" href="https://github.com/kevinlekiller/simple_php_yenc_decode">View
-							simple_php_yenc_decode on github.</a>
+						If you use a binary to decode yEnc, put the full path (including
+						filename to	it here.
+						<br/>><a style="color:#0082E1" href="http://sourceforge.net/projects/yydecode/files/yydecode/0.2.10/">
+						Download yydecode from sourceforge.</a>
+						<br/>Leave this empty if you use either of the php extensions (<a style="color:#0082E1"
+						href="https://github.com/kevinlekiller/simple_php_yenc_decode">simple_php_yenc_decode.</a>)
+						we provide. They will be automatically detected and used if installed correctly.
+						<br/> The default is to use PHP code which is <strong>slow</strong>, so one of the
+						alternatives is recommended.
 					</div>
 				</td>
 			</tr>

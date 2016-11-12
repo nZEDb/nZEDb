@@ -1,6 +1,9 @@
 <?php
 require_once './config.php';
 
+use nzedb\Category;
+
+$category = new Category();
 $page = new AdminPage();
 
 // Get the user roles.
@@ -34,6 +37,9 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 				$_POST['downloadrequests'], $_POST['defaultinvites'], $_POST['isdefault'], $_POST['canpreview']
 			);
 			header("Location:" . WWW_TOP . "/role-list.php");
+
+			$_POST['exccat'] = (!isset($_POST['exccat']) || !is_array($_POST['exccat'])) ? [] : $_POST['exccat'];
+			$page->users->addRoleCategoryExclusions($_POST['id'], $_POST['exccat']);
 		}
 		break;
 
@@ -47,6 +53,8 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 }
 
 $page->smarty->assign('role', $role);
+$page->smarty->assign('roleexccat', $page->users->getRoleCategoryExclusion($_GET["id"]));
+$page->smarty->assign('catlist',$category->getForSelect(false));
 $page->smarty->assign('yesno_ids', [1, 0]);
 $page->smarty->assign('yesno_names', ['Yes', 'No']);
 

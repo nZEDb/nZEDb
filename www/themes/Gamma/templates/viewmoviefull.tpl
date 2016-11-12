@@ -29,7 +29,7 @@
 		</dl>
 		</div>
 		<form id="nzb_multi_operations_form" action="get">
-		<div class="well well-small">
+		<div class="well well-sm">
 			<div class="nzb_multi_operations">
 				With Selected:
 				<div class="btn-group">
@@ -48,7 +48,7 @@
 					<button data-quality="720p" class="btn">720p</button>
 					<button data-quality="1080p" class="btn">1080p</button>
 				</div>
-				{if $isadmin}
+				{if isset($isadmin)}
 				<div class="pull-right">
 					Admin:
 					<div class="btn-group">
@@ -59,7 +59,7 @@
 				{/if}
 			</div>
 		</div>
-		<table style="width:100%;" class="data highlight icons table table-striped" id="browsetable">
+		<table style="width:100%;" class="data highlight icons table" id="browsetable">
 			<tr class="dont-filter">
 				<th>
 					<input id="chkSelectAll" type="checkbox" class="nzb_check_all" />
@@ -169,7 +169,7 @@
 	<br/>
 	{$pager}
 	{if $results|@count > 10}
-		<div class="well well-small">
+		<div class="well well-sm">
 			<div class="nzb_multi_operations">
 				{if isset($section) && $section != ''}View: <a href="{$smarty.const.WWW_TOP}/{$section}?t={$category}">Covers</a> | <b>List</b><br />{/if}
 				With Selected:
@@ -190,7 +190,7 @@
 					<button data-quality="1080p" class="btn">1080p</button>
 					<button data-quality="complete Rbluray" class="BDISK">HDTV</button>
 				</div>
-				{if $isadmin}
+				{if isset($isadmin)}
 				<div class="pull-right">
 					Admin:
 					<div class="btn-group">

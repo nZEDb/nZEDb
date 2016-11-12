@@ -1,8 +1,10 @@
 <?php
 namespace nzedb\utility;
 
+use app\extensions\util\Versions;
+use app\models\Settings;
 use nzedb\ColorCLI;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 
 /*
@@ -15,6 +17,8 @@ class Misc
 	 *  Regex for detecting multi-platform path. Use it where needed so it can be updated in one location as required characters get added.
 	 */
 	const PATH_REGEX = '(?P<drive>[A-Za-z]:|)(?P<path>[\\/\w .-]+|)';
+
+	const VERSION_REGEX = '#(?P<all>v(?P<digits>(?P<major>\d+)\.(?P<minor>\d+)\.(?P<revision>\d+)(?:\.(?P<fix>\d+))?)(?:-(?P<suffix>(?:RC\d+|dev)))?)#';
 
 	/**
 	 * Checks all levels of the supplied path are readable and executable by current user.
@@ -123,10 +127,14 @@ class Misc
 		$defaults = [
 			'dir'   => false,
 			'ext'   => '',
+			'file'	=> true,
 			'path'  => '',
 			'regex' => '',
 		];
 		$options += $defaults;
+		if (!$options['dir'] && !$options['file']) {
+			return null;
+		}
 
 		// Replace windows style path separators with unix style.
 		$iterator = new \FilesystemIterator(
@@ -146,6 +154,8 @@ class Misc
 					break;
 				case (empty($options['regex']) || !preg_match($options['regex'], $file)):
 					break;
+				case (!$options['file'] && $fileInfo->isFile()):
+					break;
 				default:
 					$files[] = $file;
 			}
@@ -154,7 +164,25 @@ class Misc
 		return $files;
 	}
 
-	/**
+	public static function getThemesList()
+	{
+		$themes = scandir(nZEDb_THEMES);
+		$themelist[] = 'None';
+		foreach ($themes as $theme) {
+			if (strpos($theme, ".") === false &&
+				is_dir(nZEDb_THEMES . $theme) &&
+				ucfirst($theme) === $theme
+			) {
+				$themelist[] = $theme;
+			}
+		}
+
+		sort($themelist);
+		return $themelist;
+	}
+
+
+/**
 	 * Use cURL To download a web page into a string.
 	 *
 	 * @param array $options See details below.
@@ -256,9 +284,7 @@ class Misc
 
 	public static function getValidVersionsFile()
 	{
-		$versions = new Versions();
-
-		return $versions->getValidVersionsFile();
+		return (new Versions())->getValidVersionsFile();
 	}
 
 	/**
@@ -316,14 +342,11 @@ class Misc
 		return ($gzipped);
 	}
 
-	public static function isPatched(Settings $pdo = null)
+	public static function isPatched()
 	{
 		$versions = self::getValidVersionsFile();
 
-		if (!($pdo instanceof Settings)) {
-			$pdo = new Settings();
-		}
-		$patch = $pdo->getSetting(['section' => '', 'subsection' => '', 'name' => 'sqlpatch']);
+		$patch = Settings::value(['section' => '', 'subsection' => '', 'name' => 'sqlpatch']);
 		$ver = $versions->versions->sql->file;
 
 		// Check database patch version
@@ -444,7 +467,7 @@ class Misc
 	 */
 	public static function fileInfo($path)
 	{
-		$magicPath = (new Settings())->getSetting('apps.indexer.magic_file_path');
+		$magicPath = Settings::value('apps.indexer.magic_file_path');
 		if (self::hasCommand('file') && (!self::isWin() || !empty($magicPath))) {
 			$magicSwitch = empty($magicPath) ? '' : " -m $magicPath";
 			$output = self::runCmd('file' . $magicSwitch . ' -b "' . $path . '"');
@@ -577,6 +600,88 @@ class Misc
 	}
 
 	/**
+	 * Converts XML to an associative array with namespace preservation -- use if intending to JSON encode
+	 * @author Tamlyn from Outlandish.com
+	 *
+	 * @param \SimpleXMLElement $xml The SimpleXML parsed XML string data
+	 * @param array             $options
+	 *
+	 * @return array            The associate array of the XML namespaced file
+	 */
+	public static function xmlToArray(\SimpleXMLElement $xml, $options = array()) {
+		$defaults = array(
+			'namespaceSeparator' => ':',//you may want this to be something other than a colon
+			'attributePrefix' => '@',   //to distinguish between attributes and nodes with the same name
+			'alwaysArray' => array(),   //array of xml tag names which should always become arrays
+			'autoArray' => true,        //only create arrays for tags which appear more than once
+			'textContent' => '$',       //key used for the text content of elements
+			'autoText' => true,         //skip textContent key if node has no attributes or child nodes
+			'keySearch' => false,       //optional search and replace on tag and attribute names
+			'keyReplace' => false       //replace values for above search values (as passed to str_replace())
+		);
+		$options = array_merge($defaults, $options);
+		$namespaces = $xml->getDocNamespaces();
+		$namespaces[''] = null; //add base (empty) namespace
+
+		$attributesArray = $tagsArray = array();
+		foreach ($namespaces as $prefix => $namespace) {
+			//get attributes from all namespaces
+			foreach ($xml->attributes($namespace) as $attributeName => $attribute) {
+				//replace characters in attribute name
+				if ($options['keySearch']) $attributeName =
+					str_replace($options['keySearch'], $options['keyReplace'], $attributeName);
+				$attributeKey = $options['attributePrefix']
+					. ($prefix ? $prefix . $options['namespaceSeparator'] : '')
+					. $attributeName;
+				$attributesArray[$attributeKey] = (string)$attribute;
+			}
+			//get child nodes from all namespaces
+			foreach ($xml->children($namespace) as $childXml) {
+				//recurse into child nodes
+				$childArray = self::xmlToArray($childXml, $options);
+				list($childTagName, $childProperties) = each($childArray);
+
+				//replace characters in tag name
+				if ($options['keySearch']) $childTagName =
+					str_replace($options['keySearch'], $options['keyReplace'], $childTagName);
+				//add namespace prefix, if any
+				if ($prefix) $childTagName = $prefix . $options['namespaceSeparator'] . $childTagName;
+
+				if (!isset($tagsArray[$childTagName])) {
+					//only entry with this key
+					//test if tags of this type should always be arrays, no matter the element count
+					$tagsArray[$childTagName] =
+						in_array($childTagName, $options['alwaysArray']) || !$options['autoArray']
+							? array($childProperties) : $childProperties;
+				} elseif (
+					is_array($tagsArray[$childTagName]) && array_keys($tagsArray[$childTagName])
+					=== range(0, count($tagsArray[$childTagName]) - 1)
+				) {
+					//key already exists and is integer indexed array
+					$tagsArray[$childTagName][] = $childProperties;
+				} else {
+					//key exists so convert to integer indexed array with previous value in position 0
+					$tagsArray[$childTagName] = array($tagsArray[$childTagName], $childProperties);
+				}
+			}
+		}
+
+		//get text content of node
+		$textContentArray = array();
+		$plainText = trim((string)$xml);
+		if ($plainText !== '') $textContentArray[$options['textContent']] = $plainText;
+
+		//stick it all together
+		$propertiesArray = !$options['autoText'] || $attributesArray || $tagsArray || ($plainText === '')
+			? array_merge($attributesArray, $tagsArray, $textContentArray) : $plainText;
+
+		//return node as array
+		return array(
+			$xml->getName() => $propertiesArray
+		);
+	}
+
+	/**
 	 * Central function for sending site email.
 	 *
 	 * @param string $to
@@ -660,10 +765,8 @@ class Misc
 			}
 		}
 
-		$settings = new Settings();
-
-		$fromEmail = (PHPMAILER_FROM_EMAIL == '') ? $settings->getSetting('email') : PHPMAILER_FROM_EMAIL;
-		$fromName  = (PHPMAILER_FROM_NAME == '') ? $settings->getSetting('title') : PHPMAILER_FROM_NAME;
+		$fromEmail = (PHPMAILER_FROM_EMAIL == '') ? Settings::value('site.main.email') : PHPMAILER_FROM_EMAIL;
+		$fromName  = (PHPMAILER_FROM_NAME == '') ? Settings::value('site.main.title') : PHPMAILER_FROM_NAME;
 		$replyTo   = (PHPMAILER_REPLYTO == '') ? $from : PHPMAILER_REPLYTO;
 
 		if (PHPMAILER_BCC != '') {

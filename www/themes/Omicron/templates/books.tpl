@@ -24,7 +24,7 @@
 										<div class="nzb_multi_operations">
 											View: <strong>Covers</strong> | <a
 													href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
-											Check all: <input type="checkbox" class="nzedb_check_all"/> <br/>
+											Check all: <input type="checkbox" class="square-all"/> <br/>
 											With Selected:
 											<div class="btn-group">
 												<input type="button"
@@ -74,6 +74,7 @@
 														<a title="View details"
 														   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">
 															<img src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfo_id}.jpg{else}{$smarty.const.WWW_THEMES}/shared/img/no-cover.png{/if}"
+																 class="cover img-responsive"
 																 width="140" border="0"
 																 alt="{$result.author|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>{if !empty($mfailed[$m@index])} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 														</a>
@@ -104,7 +105,7 @@
 																<td id="guid{$mguid[$m@index]}">
 																	<label>
 																		<input type="checkbox"
-																			   class="nzb_check"
+																			   class="square"
 																			   value="{$mguid[$m@index]}"
 																			   id="chksingle"/>
 																	</label>
@@ -168,7 +169,7 @@
 											<div class="nzb_multi_operations">
 												View: <strong>Covers</strong> | <a
 														href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
-												Check all: <input type="checkbox" class="nzedb_check_all"/> <br/>
+												Check all: <input type="checkbox" class="square-all"/> <br/>
 												With Selected:
 												<div class="btn-group">
 													<input type="button"

@@ -1,16 +1,16 @@
 <?php
 /* This script runs the subject names through namecleaner to create a clean search name, it also recategorizes and runs the releases through namefixer.
  * Type php resetSearchname.php to see detailed info. */
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ConsoleTools;
 use nzedb\NameFixer;
 use nzedb\processing\ProcessReleases;
 use nzedb\ReleaseCleaning;
 use nzedb\SphinxSearch;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 $sphinx = new SphinxSearch();
 
 $show = 2;
@@ -19,7 +19,7 @@ if (isset($argv[2]) && $argv[2] === 'show') {
 }
 
 if (isset($argv[1]) && $argv[1] == "full") {
-	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.group_id = groups.id");
+	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.groups_id = groups.id");
 
 	if (count($res) > 0) {
 		echo $pdo->log->header("Going to recreate all search names, recategorize them and fix the names with namefixer, this can take a while.");
@@ -56,8 +56,8 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		exit($pdo->log->info("You have no releases in the DB."));
 	}
 } else if (isset($argv[1]) && $argv[1] == "limited") {
-	$pdo = new Settings();
-	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.group_id = groups.id WHERE isrenamed = 0");
+	$pdo = new DB();
+	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.groups_id = groups.id WHERE isrenamed = 0");
 
 	if (count($res) > 0) {
 		echo $pdo->log->header("Going to recreate search names that have not been fixed with namefixer, recategorize them, and fix them with namefixer, this can take a while.");
@@ -94,8 +94,8 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		exit($pdo->log->info("You have no releases in the DB."));
 	}
 } else if (isset($argv[1]) && $argv[1] == "reset") {
-	$pdo = new Settings();
-	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.group_id = groups.id");
+	$pdo = new DB();
+	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.groups_id = groups.id");
 
 	if (count($res) > 0) {
 		echo $pdo->log->header("Going to reset search names, this can take a while.");

@@ -1,7 +1,7 @@
 <h1>{$page->title}</h1>
 
 <h2>For
-	<a href="{$smarty.const.WWW_TOP}/details/{$rel.guid}/{$rel.searchname|escape:"htmlall"}">{$rel.searchname|escape:'htmlall'}</a>
+	<a href="{$smarty.const.WWW_TOP}/details/{$rel.guid}">{$rel.searchname|escape:'htmlall'}</a>
 </h2>
 
 <table style="width:100%;margin-bottom:10px;" class="data Sortable highlight">
@@ -19,7 +19,7 @@
 			<td width="20">{$smarty.foreach.iteration.index+1}</td>
 			<td>{$file.title|escape:'htmlall'}</td>
 
-			{assign var="icon" value='themes/Charisma/images/fileicons/'|cat:$file.ext|cat:".png"}
+			{assign var="icon" value='themes/shared/img/fileicons/'|cat:$file.ext|cat:".png"}
 			{if $file.ext == "" || !is_file("$icon")}
 				{assign var="icon" value='file'}
 			{else}
@@ -33,7 +33,7 @@
 			{/if}
 
 			<td><img title=".{$file.ext}" alt="{$file.ext}"
-					 src="{$smarty.const.WWW_TOP}/themes/Charisma/images/fileicons/{$icon}.png"/></td>
+					 src="{$smarty.const.WWW_THEMES}/shared/img/fileicons/{$icon}.png"/></td>
 			<td class="less right">{if $completion < 100}<span class="warning">{$completion}
 					%</span>{else}{$completion}%{/if}</td>
 			<td class="less right">{if $file.size < 100000}{$file.size|fsize_format:"KB"}{else}{$file.size|fsize_format:"MB"}{/if}</td>

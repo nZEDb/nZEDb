@@ -1,7 +1,7 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 // Check argument count.
 if (!isset($argv[1]) || !isset($argv[2]) || !isset($argv[3])) {
@@ -16,7 +16,7 @@ if (!isset($argv[1]) || !isset($argv[2]) || !isset($argv[3])) {
 	exit(1);
 }
 
-$pdo = new Settings();
+$pdo = new DB();
 
 function runQuery($pdo, $sql, $runQueries)
 {
@@ -277,7 +277,7 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "releases",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".releases (adddate, anidbid, bookinfo_id, categories_id, comments, completion, consoleinfo_id, fromname, grabs, group_id, guid, haspreview, id, imdbid, musicinfo_id, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, nzb_guid) " .
+			 ".releases (adddate, anidbid, bookinfo_id, categories_id, comments, completion, consoleinfo_id, fromname, grabs, groups_id, guid, haspreview, id, imdbid, musicinfo_id, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, nzb_guid) " .
 			 "SELECT adddate, anidbID, bookinfo_id, case categoryID when 7030 then 8020 when 7020 then 8010 when 7010 then 8030 when 6999 then 6070 when 2060 then 2050 when 2050 then 2060 when 7000 then 8000 when 6070 then 6999 when 8010 then 8050 else categoryID end, comments, completion, consoleinfo_id, fromname, grabs, group_id, guid, haspreview, ID, imdbID, musicinfo_id, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, UNHEX(gid) FROM " .
 			 $nn_schema . ".releases",
 			 $runQueries);
@@ -349,7 +349,7 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "user_movies",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".user_movies (user_id, imdbid, categoryid, createddate) " .
+			 ".user_movies (user_id, imdbid, categories, createddate) " .
 			 "SELECT userID, imdbID, categoryID, createddate FROM " . $nn_schema . ".usermovies",
 			 $runQueries);
 
@@ -385,7 +385,7 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "user_series",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".user_series (user_id, rageid, categoryid, createddate) " .
+			 ".user_series (user_id, rageid, categories, createddate) " .
 			 "SELECT userID, rageID, categoryID, createddate FROM " . $nn_schema . ".userseries",
 			 $runQueries);
 

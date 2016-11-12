@@ -141,8 +141,9 @@ Most of this guide is done from the command line (terminal).
 
 	# Install git.
 	sudo apt-get install git
-	# Create the project using composer
-	composer create-project --no-dev --keep-vcs nzedb/nzedb
+
+	# Create the project using git
+	git clone https://github.com/nZEDb/nZEDb.git
 
 	# Set the perms.
 	#sudo chmod 777 nZEDb
@@ -171,7 +172,7 @@ Most of this guide is done from the command line (terminal).
 	sudo chmod -R 775 /var/www/nZEDb/resources/nzb
 
 	#Install the third party libraries.
-	#composer install
+	composer install --no-dev --keep-vcs --prefer-source
 
 
 7. Install memcache / apc.
@@ -195,7 +196,7 @@ Most of this guide is done from the command line (terminal).
 		sudo service apache2 restart
 
 	# Configure /var/lib/php5
-		sudo chod o+r /var/lib/php5
+		sudo chmod o+r /var/lib/php5
 
 8. Run the installer.
 

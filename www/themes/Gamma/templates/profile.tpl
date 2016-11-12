@@ -136,7 +136,7 @@
 {if $userdata.role==2 && isset($downloadlist) && $downloadlist|@count > 0}
 <div style="padding-top:20px;">
 	<h3>Downloads for User and Host</h3>
-	<table class="data Sortable highlight table table-striped" id="downloadtable" style="margin-top:10px;">
+	<table class="data Sortable highlight table" id="downloadtable" style="margin-top:10px;">
 	<tr>
 		<th>date</th>
 		<th>hosthash</th>
@@ -166,13 +166,11 @@
 	<table style="margin-top:10px;" class="data Sortable table">
 		<tr>
 			<th>date</th>
-			<th>release</th>
 			<th>comment</th>
 		</tr>
 		{foreach $commentslist as $comment}
 		<tr>
 			<td width="80" title="{$comment.createddate}">{$comment.createddate|date_format}</td>
-			<td><a href="{$smarty.const.WWW_TOP}/details/{$comment.guid}/{$comment.searchname|escape:"seourl"}">{$comment.searchname}</a></td>
 			<td>{$comment.text|escape:"htmlall"|nl2br}</td>
 		</tr>
 		{/foreach}

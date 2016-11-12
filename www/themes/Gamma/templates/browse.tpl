@@ -20,7 +20,7 @@
 
 <form id="nzb_multi_operations_form" action="get">
 
-	<div class="well well-small">
+	<div class="well well-sm">
 		<div class="nzb_multi_operations">
 			<table width="100%">
 				<tr>
@@ -47,7 +47,7 @@
 					<td width="20%">
 						<div class="pull-right">
 						<a class="btn btn-small" title="All releases in your shows as an RSS feed" href="{$smarty.const.WWW_TOP}/rss?t={$category}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">Rss <i class="fa fa-rss"></i></a>
-						{if $isadmin}
+						{if isset($isadmin)}
 							Admin:
 							<div class="btn-group">
 								<input type="button" class="nzb_multi_operations_edit btn btn-small btn-warning" value="Edit" />
@@ -60,7 +60,7 @@
 			</table>
 		</div>
 	</div>
-	<table style="100%" class="data highlight icons table table-striped" id="browsetable">
+	<table style="100%" class="data highlight icons table" id="browsetable">
 		<tr>
 			<th style="padding-top:0px; padding-bottom:0px;">
 				<input id="chkSelectAll" type="checkbox" class="nzb_check_all" />
@@ -117,7 +117,7 @@
 			<th>action</th>
 		</tr>
 		{foreach $results as $result}
-		<tr class="{cycle values=",alt"}{if $lastvisit|strtotime<$result.adddate|strtotime} new{/if}" id="guid{$result.guid}">
+		<tr class="{cycle values=",alt"}" id="guid{$result.guid}">
 			{if (strpos($category, '60') !== false)}
 					<td class="check" width="25%"><input id="chk{$result.guid|substr:0:7}"
 					 type="checkbox" class="nzb_check"
@@ -137,7 +137,7 @@
 			{/if}
 			<td class="item">
 				<label for="chk{$result.guid|substr:0:7}">
-					<a class="title" title="View details"  href="{$smarty.const.WWW_TOP}/details/{$result.guid}"><h5>{$result.searchname|escape:"htmlall"|replace:".":" "}</h5></a>
+					<a class="title" title="View details"  href="{$smarty.const.WWW_TOP}/details/{$result.guid}"><h5>{$result.searchname|escape:"htmlall"|replace:".":" "} {if $lastvisit|strtotime < $result.adddate|strtotime} <a href="#" class="badge badge-success">New</a>{/if}</h5></a>
 				</label>
 				{if $result.passwordstatus == 2}
 				<i class="fa fa-lock"></i>
@@ -189,8 +189,8 @@
 						{if $result.reid > 0}
 						<span class="mediainfo badge badge-inverse halffade" title="{$result.guid}">Media</span>
 						{/if}
-						{if $result.preid > 0}
-						<span class="preinfo badge badge-inverse halffade" title="{$result.preid}">PreDB</span>
+						{if $result.predb_id > 0}
+						<span class="preinfo badge badge-inverse halffade" title="{$result.predb_id}">PreDB</span>
 						{/if}
 							{if !empty($result.failed)}
 								<span class="badge badge-inverse"><i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>
@@ -248,7 +248,7 @@
 	</table>
 
 	{if $results|@count > 10}
-	<div class="well well-small">
+	<div class="well well-sm">
 		<div class="nzb_multi_operations">
 			<table width="100%">
 				<tr>
@@ -274,7 +274,7 @@
 					</td>
 					<td width="20%">
 						<div class="pull-right">
-						{if $isadmin}
+						{if isset($isadmin)}
 							Admin:
 							<div class="btn-group">
 								<input type="button" class="nzb_multi_operations_edit btn btn-small btn-warning" value="Edit" />

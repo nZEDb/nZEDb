@@ -184,7 +184,7 @@
 		<table class="data table table-condensed table-striped table-responsive table-hover" id="browsetable">
 			<thead>
 			<tr>
-				<th><input id="chkSelectAll" type="checkbox" class="nzb_check_all"/></th>
+				<th><input id="chkSelectAll" type="checkbox" class="square-all"/></th>
 				<th>Name
 					<a title="Sort Descending" href="{$orderbyname_desc}">
 						<i class="fa-icon-caret-down text-muted"> </i>
@@ -206,7 +206,7 @@
 				<tr class="{cycle values=",alt"}{if $lastvisit|strtotime<$result.adddate|strtotime} new{/if}"
 					id="guid{$result.guid}">
 					<td class="check">
-						<input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check"
+						<input id="chk{$result.guid|substr:0:7}" type="checkbox" class="square"
 							   value="{$result.guid}">
 					</td>
 					<td class="item">
@@ -232,7 +232,7 @@
 								{if $result.videostatus > 0}
 									<a
 											class="model_prev label label-default"
-											href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
+											href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
 											title="This release has a video preview."
 											rel="preview"
 											><i class="icon-youtube-play"></i>
@@ -321,18 +321,25 @@
 							cmt{if $result.comments != 1}s{/if}</a>
 						<br>{$result.grabs} grab{if $result.grabs != 1}s{/if}
 					</td>
-					<td class="icon_nzb"><a
-								href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}"><i
-									class="fa fa-cloud-download text-muted"
-									title="Download NZB"></i></a>
-						<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments"><i
-									class="fa fa-comments-o text-muted"
-									title="Comments"></i></a>
-						<a href="#" class="icon_cart text-muted"><i
-									class="fa fa-shopping-basket" title="Send to my Download Basket"></i></a>
+					<td>
+						<a href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}" class="icon_nzb text-muted" style="background-image: none">
+								<i class="fa fa-cloud-download text-muted"
+									title="Download NZB">
+								</i>
+						</a>
+						<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/#comments">
+								<i class="fa fa-comments-o text-muted"
+									title="Comments">
+								</i>
+						</a>
+						<a href="#" class="icon_cart text-muted" style="background-image: none">
+								<i class="fa fa-shopping-basket" title="Send to my Download Basket"></i>
+						</a>
 						{if isset($sabintegrated)}
-							<a href="#" class="icon_sab text-muted"><i class="fa fa-share-o"
-																	   title="Send to my Queue"></i></a>
+							<a href="#" class="icon_sab text-muted" style="background-image: none">
+								<i class="fa fa-share-o" title="Send to my Queue">
+								</i>
+							</a>
 						{/if}
 					</td>
 				</tr>

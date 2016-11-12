@@ -142,16 +142,18 @@
 					</ul>
 				</li>
 			{/if}
+			{if $parentcat.id === "0"}
+				<li class="dropdown">
+					<a id="cat8" class="dropdown-toggle" data-toggle="dropdown" href="#">Other <b class="caret"></b></a>
+					<ul class="dropdown-menu" role="menu" aria-labelledby="cat3">
+						<li><a href="{$smarty.const.WWW_TOP}/browse?t={$catClass::OTHER_ROOT}">Other</a></li>
+						<hr>
+						<li><a href="{$smarty.const.WWW_TOP}/browse?t={$catClass::OTHER_MISC}">Misc</a></li>
+						<li><a href="{$smarty.const.WWW_TOP}/browse?t={$catClass::OTHER_HASHED}">Hashed</a></li>
+					</ul>
+				</li>
+			{/if}
 		{/foreach}
-		<li class="dropdown">
-			<a id="cat8" class="dropdown-toggle" data-toggle="dropdown" href="#">Other <b class="caret"></b></a>
-			<ul class="dropdown-menu" role="menu" aria-labelledby="cat3">
-				<li><a href="/browse?t={$catClass::OTHER_ROOT}">Other</a></li>
-				<hr>
-				<li><a href="/browse?t={$catClass::OTHER_MISC}">Misc</a></li>
-				<li><a href="/browse?t={$catClass::OTHER_HASHED}">Hashed</a></li>
-			</ul>
-		</li>
 	{/if}
 	<li class="dropdown">
 		<a id="dropAll" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" href="{$smarty.const.WWW_TOP}/browse">Browse <b class="caret"></b></a>

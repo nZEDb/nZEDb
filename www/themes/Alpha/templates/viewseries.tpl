@@ -20,8 +20,8 @@
 			</div>
 			<form id="col-xs-3 nzb_multi_operations_form" action="get">
 				View:
-				<span><i class="icon-th-list"></i></span>&nbsp;&nbsp;
-				<a href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="icon-align-justify"></i></a>
+				<span><i class="fa fa-th-list"></i></span>&nbsp;&nbsp;
+				<a href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="fa fa-align-justify"></i></a>
 				&nbsp;&nbsp;
 				{if $isadmin || $ismod}
 					Admin: <button type="button" class="btn btn-warning btn-sm nzb_multi_operations_edit">Edit</button>
@@ -102,7 +102,7 @@
 						</div>
 					</td>
 					<td class="check"><input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" name="{$seasonnum}" value="{$result.guid}"></td>
-					<td style="text-align:center;"><a title="This series in {$result.category_name}" href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}?t={$result.categoryid}">{$result.category_name}</a></td>
+					<td style="text-align:center;"><a title="This series in {$result.category_name}" href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}?t={$result.categories_id}">{$result.category_name}</a></td>
 					<td style="text-align:center;" title="{$result.postdate}">{$result.postdate|timeago}</td>
 					<td style="text-align:center;">{$result.size|fsize_format:"MB"}{if $result.completion > 0}<br>{if $result.completion < 100}<span class="warning">{$result.completion}%</span>{else}{$result.completion}%{/if}{/if}</td>
 					<td style="text-align:center;">

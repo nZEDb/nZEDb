@@ -7,6 +7,8 @@ INSERT INTO user_roles (id, name, apirequests, downloadrequests, defaultinvites,
   (5, 'Moderator', 1000, 1000, 1000, 0, 1),
   (6, 'Friend', 100, 100, 5, 0, 1);
 
-UPDATE user_roles SET id =  id - 1;
+# Adjust ID so that they start at 0.
+UPDATE user_roles SET id = id - 1;
 
-INSERT INTO category (id, title, parentid) VALUES (0,  'Other', NULL);
+# Add the 0 entry for categories, as doing so in the tsv would get it converted.
+INSERT INTO categories (id, title, parentid) VALUES (0,  'Other', NULL);

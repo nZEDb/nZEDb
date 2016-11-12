@@ -1,9 +1,9 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 $path = '';
 if (isset($argv[2])) {
@@ -31,8 +31,8 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 	} else {
 		$table = 'predb';
 	}
-	echo  $pdo->log->header("SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name FROM " . $table . " p LEFT OUTER JOIN groups g ON p.group_id = g.id INTO OUTFILE '" . $path . "' FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n';\n");
-	$pdo->queryExec("SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name FROM " . $table . " p LEFT OUTER JOIN groups g ON p.group_id = g.id INTO OUTFILE '" . $path . "' FIELDS TERMINATED BY '\t\t' LINES TERMINATED BY '\r\n'");
+	echo  $pdo->log->header("SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name FROM " . $table . " p LEFT OUTER JOIN groups g ON p.groups_id = g.id INTO OUTFILE '" . $path . "' FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n';\n");
+	$pdo->queryExec("SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name FROM " . $table . " p LEFT OUTER JOIN groups g ON p.groups_id = g.id INTO OUTFILE '" . $path . "' FIELDS TERMINATED BY '\t\t' LINES TERMINATED BY '\r\n'");
 } else if (isset($argv[1]) && ($argv[1] == 'local' || $argv[1] == 'remote') && isset($argv[2]) && is_file($argv[2])) {
 	if (!preg_match('/^\//', $path)) {
 		$path = require_once getcwd() . '/' . $argv[2];
@@ -77,7 +77,7 @@ SQL_ADD_GROUPS;
 
 	// Insert and update table
 	$sqlInsert = <<<SQL_INSERT
-INSERT INTO $table (title, nfo, size, files, filename, nuked, nukereason, category, predate, SOURCE, requestid, group_id)
+INSERT INTO $table (title, nfo, size, files, filename, nuked, nukereason, category, predate, SOURCE, requestid, groups_id)
   SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category, t.predate, t.source, t.requestid, IF(g.id IS NOT NULL, g.id, 0)
     FROM predb_imports AS t
 	LEFT OUTER JOIN groups g ON t.groupname = g.name ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo IS NULL, t.nfo, predb.nfo),
@@ -88,7 +88,7 @@ INSERT INTO $table (title, nfo, size, files, filename, nuked, nukereason, catego
 	  predb.nukereason = IF(t.nuked > 0, t.nukereason, predb.nukereason),
 	  predb.category = IF(predb.category IS NULL, t.category, predb.category),
 	  predb.requestid = IF(predb.requestid = 0, t.requestid, predb.requestid),
-	  predb.group_id = IF(g.id IS NOT NULL, g.id, 0);
+	  predb.groups_id = IF(g.id IS NOT NULL, g.id, 0);
 SQL_INSERT;
 	echo $pdo->log->primary($sqlInsert);
 	$pdo->queryExec($sqlInsert);

@@ -239,7 +239,14 @@
 														   id="guid{$release.guid}"></i> Send to
 														Queue
 														</button>{/if}
-													<p id="demo"></p>
+													{if !empty($cpurl) && !empty($cpapi)}
+														<button type="button"
+																id="imdb{$release.imdbid}"
+																href="javascript:;"
+																class="btn btn-primary btn-sm btn-info btn-transparent sendtocouch">
+																<i class="fa fa-bed"></i> Send to CouchPotato
+														</button>
+													{/if}
 												</div>
 											</div>
 											<div class="col-md-9 small-gutter-left">
@@ -507,7 +514,7 @@
 																</tr>
 																<tr>
 																	<th width="140">Poster</th>
-																	<td>{$release.fromname|escape:"htmlall"}</td>
+																	<td><a title="Find releases by this poster" href="{$smarty.const.WWW_TOP}/search?searchadvr=&searchadvsubject=&searchadvposter={$release.fromname|escape:"htmlall"}&searchadvfilename=&searchadvdaysnew=&searchadvdaysold=&searchadvgroups=-1&searchadvcat=-1&searchadvsizefrom=-1&searchadvsizeto=-1&searchadvhasnfo=0&searchadvhascomments=0&search_type=adv">{$release.fromname|escape:"htmlall"}</a></td>
 																</tr>
 																<tr>
 																	<th width="140">Posted</th>
@@ -523,21 +530,6 @@
 																		)
 																	</td>
 																</tr>
-																{if isset($isadmin)}
-																	<tr>
-																		<th width="140">Release
-																			Info
-																		</th>
-																		<td>{if $release.regexid != ""}Regex Id (
-																				<a href="{$smarty.const.WWW_TOP}/admin/regex-list.php?group={$release.group_name|escape:"url"}#{$release.regexid}">{$release.regexid}</a>
-																				)
-																			{/if}
-																			{if $release.gid != ""}
-																				Global Id ({$release.gid})
-																			{/if}
-																		</td>
-																	</tr>
-																{/if}
 																</tbody>
 															</table>
 														</td>
@@ -569,7 +561,7 @@
 							{foreach from=$similars item=similar}
 											<li>
 												<a title="View similar NZB details"
-												   href="{$smarty.const.WWW_TOP}/details/{$similar.guid}/{$similar.searchname|escape:"htmlall"}">{$similar.searchname|escape:"htmlall"}</a>
+												   href="{$smarty.const.WWW_TOP}/details/{$similar.guid}">{$similar.searchname|escape:"htmlall"}</a>
 												<br/>
 											</li>
 										{/foreach}

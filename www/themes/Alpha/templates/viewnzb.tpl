@@ -74,14 +74,14 @@
 							<br><strong>Subtitle Search:</strong>
 							<br><a target="_blank" href="http://www.opensubtitles.org/search/sublanguageid-all/moviename-{$movie.title|replace:" ":"+"}"title="Opensubtitles">OpenSubtitles</a> <a target="_blank" href="http://www.subtitleseeker.com/search/MOVIE_TITLES/{$movie.title}"title="SubtitleSeeker">SubtitleSeeker</a>
 							<span class="label label-default">
-							{if $cpurl != "" && $cpapi != ""}
+							{if !empty($cpurl) && !empty($cpapi)}
 								<a
-									class="sendtocouch"
-									target="blackhole"
+									id="imdb{$release.imdbid}"
 									href="javascript:;"
-									rel="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$release.imdbid}&title={$movie.title}"
-									name="CP{$release.imdbid}"
-									title="Add to CouchPotato">CouchPotato</a>
+									class="sendtocouch"
+									title="Add to CouchPotato">
+									<img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/couch.png">
+								</a>
 							{/if}
 							</span>
 						</div>
@@ -563,7 +563,7 @@
 {/if}
 <tr>
 	<th style="vertical-align:top">Poster:</th>
-	<td>{$release.fromname|escape:"htmlall"}
+	<td><a title="Find releases by this poster" href="{$smarty.const.WWW_TOP}/search?searchadvr=&searchadvsubject=&searchadvposter={$release.fromname|escape:"htmlall"}&searchadvfilename=&searchadvdaysnew=&searchadvdaysold=&searchadvgroups=-1&searchadvcat=-1&searchadvsizefrom=-1&searchadvsizeto=-1&searchadvhasnfo=0&searchadvhascomments=0&search_type=adv">{$release.fromname|escape:"htmlall"}</a></td>
 	</td>
 </tr>
 <tr>

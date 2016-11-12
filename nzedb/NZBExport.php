@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 /**
@@ -65,7 +65,7 @@ class NZBExport
 
 		$this->browser = $options['Browser'];
 		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $options['Echo']);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Setting'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Setting'] : new DB());
 		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['Settings' => $this->pdo]));
 		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
 	}
@@ -122,7 +122,7 @@ class NZBExport
 			$toDate = $params[2];
 		}
 
-		// Check if the group_id exists.
+		// Check if the groups_id exists.
 		if (isset($params[3]) && $params[3] !== 0) {
 			if (!is_numeric($params[3])) {
 				$this->echoOut('The group ID is not a number: ' . $params[3]);

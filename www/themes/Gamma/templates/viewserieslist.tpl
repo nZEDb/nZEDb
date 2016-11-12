@@ -27,7 +27,7 @@
 
 {if $serieslist|@count > 0}
 
-<table style="width:100%;" class="data highlight icons table table-striped" id="browsetable">
+<table style="width:100%;" class="data highlight icons table" id="browsetable">
 	{foreach $serieslist as $sletter => $series}
 		<tr>
 			<td style="padding-top:15px;" colspan="10"><a href="#top" class="top_link">Top</a><h2>{$sletter}...</h2></td>

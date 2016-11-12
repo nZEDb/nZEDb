@@ -1,9 +1,9 @@
 <?php
 namespace nzedb;
 
-use nzedb\Category;
-use nzedb\db\Settings;
+use app\models\Settings;
 use libs\AmazonProductAPI;
+use nzedb\db\DB;
 
 /*
  * Class for processing book info.
@@ -78,17 +78,20 @@ class Books
 		$options += $defaults;
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
-		$this->pubkey = $this->pdo->getSetting('amazonpubkey');
-		$this->privkey = $this->pdo->getSetting('amazonprivkey');
-		$this->asstag = $this->pdo->getSetting('amazonassociatetag');
-		$this->bookqty = ($this->pdo->getSetting('maxbooksprocessed') != '') ? $this->pdo->getSetting('maxbooksprocessed') : 300;
-		$this->sleeptime = ($this->pdo->getSetting('amazonsleep') != '') ? $this->pdo->getSetting('amazonsleep') : 1000;
+		$this->pubkey = Settings::value('APIs..amazonpubkey');
+		$this->privkey = Settings::value('APIs..amazonprivkey');
+		$this->asstag = Settings::value('APIs..amazonassociatetag');
+		$result = Settings::value('..maxbooksprocessed');
+		$this->bookqty = ($result != '') ? $result : 300;
+		$result = Settings::value('..amazonsleep');
+		$this->sleeptime = ($result != '') ? $result : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'book' . DS;
-		$this->bookreqids = ($this->pdo->getSetting('book_reqids') == null || $this->pdo->getSetting('book_reqids') == "") ? Category::BOOKS_EBOOK : $this->pdo->getSetting('book_reqids');
+		$result = Settings::value('..book_reqids');
+		$this->bookreqids = empty($bookreqids) ? Category::BOOKS_EBOOK : $result;
 		$this->renamed = '';
-		if ($this->pdo->getSetting('lookupbooks') == 2) {
+		if (Settings::value('..lookupbooks') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
 
@@ -250,7 +253,7 @@ class Books
 			g.name AS group_name,
 			rn.releases_id AS nfoid
 			FROM releases r
-			LEFT OUTER JOIN groups g ON g.id = r.group_id
+			LEFT OUTER JOIN groups g ON g.id = r.groups_id
 			LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
 			LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
 			INNER JOIN bookinfo boo ON boo.id = r.bookinfo_id

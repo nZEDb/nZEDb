@@ -1,7 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 
 /**
  * Class XXX
@@ -64,10 +65,11 @@ class XXX
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
-		$this->movieqty = ($this->pdo->getSetting('maxxxxprocessed') != '') ? $this->pdo->getSetting('maxxxxprocessed') : 100;
+		$dummy = Settings::value('..maxxxxprocessed');
+		$this->movieqty = ($dummy != '') ? $dummy : 100;
 		$this->showPasswords = Releases::showPasswords($this->pdo);
 		$this->debug = nZEDb_DEBUG;
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
@@ -212,7 +214,7 @@ class XXX
 			g.name AS group_name,
 			rn.releases_id AS nfoid
 			FROM releases r
-			LEFT OUTER JOIN groups g ON g.id = r.group_id
+			LEFT OUTER JOIN groups g ON g.id = r.groups_id
 			LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
 			INNER JOIN xxxinfo xxx ON xxx.id = r.xxxinfo_id
 			WHERE r.nzbstatus = 1

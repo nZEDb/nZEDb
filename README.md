@@ -1,3 +1,5 @@
+Stable: [![Build Status](https://travis-ci.org/nZEDb/nZEDb.svg?branch=0.x)](https://travis-ci.org/nZEDb/nZEDb)  Testing: [![Build Status](https://travis-ci.org/nZEDb/nZEDb.svg?branch=Latest-testing)](https://travis-ci.org/nZEDb/nZEDb)  Dev: [![Build Status](https://travis-ci.org/nZEDb/nZEDb.svg?branch=dev)](https://travis-ci.org/nZEDb/nZEDb)
+
 nZEDb automatically scans usenet, similar to the way google search bots scan the internet. It does this by collecting usenet headers and temporarily storing them in a database until they can be collated into posts/releases. It provides a web-based front-end providing search, browse, and programmable (API) functionality.
 
 This project is a fork of the open source usenet indexer newznab plus: https://github.com/anth0/nnplus
@@ -28,7 +30,7 @@ The overall speed of nZEDb is largely governed by performance of the database. A
 
 ### Software
 
-	PHP 5.5+ (and various modules)
+	PHP 5.6+ (and various modules)
 	MySQL 5.5+ (Postgres is not supported)
 	Python 2.7 or 3.0 (and various modules)(Optional. Most useful on Windows.)
 The installation guides have more detailed software requirements.
@@ -146,6 +148,6 @@ Zip file creation class => No license specified.
 
 simple_html_dom.php => MIT
 
-All external libraries will have their full licenses in their respectful folders.
+All external libraries will have their full licenses in their respective folders.
 
 Some licenses might have been missed in this document for various external software, they will be included in their respectful folders.

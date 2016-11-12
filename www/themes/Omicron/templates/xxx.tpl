@@ -21,7 +21,7 @@
 							<div class="nzb_multi_operations">
 								View: <strong>Covers</strong> | <a
 										href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
-								Check all: <input type="checkbox" class="nzedb_check_all"/> <br/>
+								Check all: <input type="checkbox" class="square-all"/> <br/>
 								With Selected:
 								<div class="btn-group">
 									<input type="button"
@@ -82,7 +82,7 @@
 													{foreach $msplits as $loop=>$m name="loop"}
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
-																class="cover"
+																class="cover img-responsive"
 																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}/covers/xxx/{$result.id}-cover.jpg{else}{$smarty.const.WWW_THEMES}/shared/img/no-cover.png{/if}"
 																width="100" border="0"
 																alt="{$result.title|escape:"htmlall"}"/>{if !empty($mfailed[$m@index])}
@@ -159,7 +159,7 @@
 															<i class="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]}Failed Download{if {$mfailed[$m@index]} != 1}s{/if}</span>
 													{/if}
 												</div>
-												<div class="col-md-9 small-gutter-left">
+												<div class="col-md-9 small-gutter-left table-responsive">
 																<span class="release-title"><a class="text-muted"
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
 
@@ -167,7 +167,7 @@
 													<div id="guid{$mguid[$m@index]}">
 														<label>
 															<input type="checkbox"
-																   class="nzb_check"
+																   class="square"
 																   value="{$mguid[$m@index]}"
 																   id="chksingle"/>
 														</label>
@@ -234,7 +234,7 @@
 													{foreach $msplits as $loop=>$m name="loop"}
 													{if $smarty.foreach.loop.first}
 													<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}"><img
-																class="cover"
+																class="cover img-responsive"
 																src="{if $result.cover == 1}{$smarty.const.WWW_TOP}/covers/xxx/{$result.id}-cover.jpg{else}{$smarty.const.WWW_THEMES}/shared/img/no-cover.png{/if}"
 																width="100" border="0"
 																alt="{$result.title|escape:"htmlall"}"/>{if !empty($mfailed[$m@index])}
@@ -311,7 +311,7 @@
 															<i class="fa fa-thumbs-o-up"></i> {$mgrabs[$m@index]} Grab{if {$mgrabs[$m@index]} != 1}s{/if} / <i class="fa fa-thumbs-o-down"></i> {$mfailed[$m@index]}Failed Download{if {$mfailed[$m@index]} != 1}s{/if}</span>
 													{/if}
 												</div>
-												<div class="col-md-9 small-gutter-left">
+												<div class="col-md-9 small-gutter-left table-responsive">
 																<span class="release-title"><a class="text-muted"
 																							   href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}">{$result.title|escape:"htmlall"}</a></span>
 
@@ -319,7 +319,7 @@
 													<div id="guid{$mguid[$m@index]}">
 														<label>
 															<input type="checkbox"
-																   class="nzb_check"
+																   class="square"
 																   value="{$mguid[$m@index]}"
 																   id="chksingle"/>
 														</label>
@@ -372,7 +372,7 @@
 							<div class="nzb_multi_operations">
 								View: <strong>Covers</strong> | <a
 										href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br/>
-								Check all: <input type="checkbox" class="nzedb_check_all"/> <br/>
+								Check all: <input type="checkbox" class="square-all"/> <br/>
 								With Selected:
 								<div class="btn-group">
 									<input type="button"

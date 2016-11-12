@@ -1,7 +1,9 @@
 <?php
 require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install.php');
 
-use nzedb\db\Settings;
+
+use app\extensions\util\Versions;
+use nzedb\db\DB;
 use nzedb\Install;
 
 $page = new InstallPage();
@@ -86,7 +88,8 @@ if ($page->isPostBack()) {
 	} else {
 		// Connect to the SQL server.
 		try {
-			$pdo = new Settings(
+			// HAS to be DB because settings table does not exist yet.
+			$pdo = new DB(
 				[
 					'checkVersion' => true,
 					'createDb'     => true,
@@ -181,21 +184,14 @@ if ($page->isPostBack()) {
 				}
 			}
 
-			$ver = new \nzedb\utility\Versions();
-			$patch = $ver->getSQLPatchFromFiles();
-			$pdo->setSetting(['..sqlpatch' => $patch]);
+			$ver = new Versions();
+			$patch = $ver->getSQLPatchFromFile();
 
 			if ($dbInstallWorked) {
-				$ver   = new \nzedb\utility\Versions();
-				$patch = $ver->getSQLPatchFromFiles();
 				if ($patch > 0) {
-					$updateSettings = $pdo->setSetting(
-										[
-											'section'    => '',
-											'subsection' => '',
-											'name'       => 'sqlpatch',
-											'value'      => $patch
-										]);
+					$updateSettings = $pdo->exec(
+						"UPDATE settings SET value = '$patch' WHERE section = '' AND subsection = '' AND name = 'sqlpatch'"
+					);
 				} else {
 					$updateSettings = false;
 				}

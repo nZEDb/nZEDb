@@ -1,9 +1,10 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use app\models\Settings;
 use nzedb\ConsoleTools;
 use nzedb\Groups;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /* This script will allow you to move from single collections/binaries/parts tables to TPG without having to run reset_truncate.
   Please STOP all update scripts before running this script.
@@ -13,10 +14,10 @@ use nzedb\db\Settings;
   php convert_to_tgp.php true delete        Convert c/b/p to tpg and TRUNCATE current collections/binaries/parts tables.
  */
 $debug = false;
-$pdo = new Settings();
+$pdo = new DB();
 $groups = new Groups(['Settings' => $pdo]);
 $consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
-$DoPartRepair = ($pdo->getSetting('partrepair') == '0') ? false : true;
+$DoPartRepair = (Settings::value('..partrepair') == '0') ? false : true;
 
 if ((!isset($argv[1])) || $argv[1] != 'true') {
 	exit($pdo->log->error("\nMandatory argument missing\n\n"

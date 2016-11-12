@@ -26,6 +26,13 @@
 					{/if}
 					 on<br>
 					<span title="{$result.createddate}">{$result.createddate|date_format}</span> ({$result.createddate|timeago})
+					{if $userdata.id == $result.user_id || $isadmin || $ismod}
+						<div>
+							<a class="label label-warning"
+							   href="{$smarty.const.WWW_TOP}/post_edit?id={$result.id}"
+							   title="Edit Post">Edit</a>
+						</div>
+					{/if}
 					{if $isadmin || $ismod}
 						<div>
 							<a class="label label-danger confirm_action" href="{$smarty.const.WWW_TOP}/admin/forum-delete.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Post">Delete</a>
@@ -33,7 +40,7 @@
 					{/if}
 
 				</td>
-				<td>{$result.message|escape:"htmlall"|nl2br|magicurl}</td>
+				<td>{$result.message}</td>
 			</tr>
 		{/foreach}
 		</tbody>
@@ -46,10 +53,11 @@
 		<fieldset>
 			<h3>Add Reply</h3>
 			<div class="form-group">
-				<label for="addReply">Message:</label>
-				<textarea class="form-control" maxlength="5000" id="addReply" name="addReply" rows="6"></textarea>
+				<label for="addMessage">Message:</label>
+				<textarea id="addMessage" name="addMessage" ></textarea>
 			</div>
-			<button class="btn btn-success forumreplysubmit" type="submit" value="submit">Submit</button>
+			<button class="btn btn-success" type="submit" value="submit">Submit</button>
+			<input class="btn btn-warning" value="Cancel" onclick="if(confirm('Are you SURE you wish to cancel?')) history.back();" />
 		</fieldset>
 	</form>
 

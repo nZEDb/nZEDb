@@ -1,14 +1,14 @@
 <?php
 /* Deletes releases in categories you have disabled here : http://localhost/admin/category-list.php */
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\Category;
 use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if (isset($argv[1]) && $argv[1] == "true") {
 

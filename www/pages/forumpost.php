@@ -1,16 +1,17 @@
 <?php
 
+use app\models\Settings;
 use nzedb\Forum;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$id = $_GET["id"] + 0;
+$id = $_GET["id"];
 
 $forum = new Forum(['Settings' => $page->settings]);
 if ($page->isPostBack()) {
-	$forum->add($id, $page->users->currentUserId(), "", $_POST["addReply"]);
+	$forum->add($id, $page->users->currentUserId(), "", $_POST["addMessage"]);
 	header("Location:" . WWW_TOP . "/forumpost/" . $id . "#last");
 	exit();
 }
@@ -26,7 +27,7 @@ $page->meta_keywords = "view,forum,post,thread";
 $page->meta_description = "View forum post";
 
 $page->smarty->assign('results', $results);
-$page->smarty->assign('privateprofiles', ($page->settings->getSetting('privateprofiles') == 1) ? true : false);
+$page->smarty->assign('privateprofiles', (Settings::value('..privateprofiles') == 1) ? true : false);
 
 $page->content = $page->smarty->fetch('forumpost.tpl');
 $page->render();

@@ -15,6 +15,9 @@
 		<th>Posted By</th>
 		<th>Last Update</th>
 		<th width="5%" class="mid">Replies</th>
+		{if isset($isadmin)}
+			<th style="padding-top:0px; padding-bottom:0px;">Action</th>
+		{/if}
 	</tr>
 
 	{foreach $results as $result}
@@ -22,7 +25,7 @@
 			<td style="cursor:pointer;" class="item" onclick="document.location='{$smarty.const.WWW_TOP}/forumpost/{$result.id}';">
 				<a title="View post" class="title" href="{$smarty.const.WWW_TOP}/forumpost/{$result.id}">{$result.subject|escape:"htmlall"|truncate:100:'...':true:true}</a>
 				<div class="hint">
-					{$result.message|escape:"htmlall"|truncate:200:'...':false:false}
+					{$result.message|truncate:200:'...':false:false}
 				</div>
 			</td>
 			<td>
@@ -38,6 +41,15 @@
 				<a href="{$smarty.const.WWW_TOP}/forumpost/{$result.id}#last" title="{$result.updateddate}">{$result.updateddate|date_format}</a> <div class="hint">({$result.updateddate|timeago})</div>
 			</td>
 			<td class="mid">{$result.replies}</td>
+			<td>
+				{if isset($isadmin)}
+					<div>
+						<a class="confirm_action btn btn-sm btn-danger"
+						   href="{$smarty.const.WWW_TOP}/topic_delete?id={$result.id}"
+						   title="Delete Topic">Delete Topic</a>
+					</div>
+				{/if}
+			</td>
 		</tr>
 	{/foreach}
 
@@ -61,7 +73,8 @@
 	<label for="addMessage">Message:</label><br/>
 	<textarea maxlength="5000" id="addMessage" name="addMessage" rows="6" cols="60"></textarea>
 	<br/>
-	<input class="forumpostsubmit" type="submit" value="submit"/>
+	<input type="submit" value="submit"/>
+	<input class="btn btn-warning" value="Cancel" onclick="if(confirm('Are you SURE you wish to cancel?')) history.back();" />
 </form>
 </div>
 

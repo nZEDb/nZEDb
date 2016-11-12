@@ -2,9 +2,10 @@
 
 namespace nzedb\processing\post;
 
+use app\models\Settings;
 use nzedb\Category;
 use nzedb\NZB;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 class AniDB
 {
@@ -50,9 +51,9 @@ class AniDB
 		$options += $defaults;
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
-		$qty = $this->pdo->getSetting('maxanidbprocessed');
+		$qty = Settings::value('..maxanidbprocessed');
 		$this->aniqty = !empty($qty) ? $qty : 100;
 
 		$this->status = 'NULL';
@@ -84,8 +85,8 @@ class AniDB
 
 			$this->padb = new \nzedb\db\populate\AniDB(
 				[
-				   'Echo'     => $this->echooutput,
-				   'Settings' => $this->pdo
+					'Echo'     => $this->echooutput,
+					'Settings' => $this->pdo
 				]
 			);
 
@@ -94,11 +95,11 @@ class AniDB
 				if ($matched === false) {
 					$this->pdo->queryExec(
 						sprintf('
-								UPDATE releases
-								SET anidbid = %d
-								WHERE id = %d',
-								$this->status,
-								$release['id']
+							UPDATE releases
+							SET anidbid = %d
+							WHERE id = %d',
+							$this->status,
+							$release['id']
 						)
 					);
 				}
@@ -156,16 +157,19 @@ class AniDB
 		) {
 			$matches['epno'] = (int)$matches['epno'];
 			if (in_array($matches['epno'], ['Movie', 'OVA'])) {
-				$matches['epno'] = (int)1;
+				$matches['epno'] = 1;
 			}
 		} else if (preg_match('/^(\[[a-zA-Z\.\-!?]+\][\s_]*)?(\[BD\])?(\[\d{3,4}[ip]\])?(?P<title>[\w\s_.+!?\'-\(\)]+)(New Edit|(Blu-?ray)?( ?Box)?( ?Set)?)?\s*[\(\[](BD|\d{3,4}[ipx])/i',
 			$cleanName,
 			$matches)
 		) {
-			$matches['epno'] = (int)1;
+			$matches['epno'] = 1;
 		} else {
 			if (nZEDb_DEBUG) {
-				$this->pdo->log->doEcho(PHP_EOL . "Could not parse searchname {$cleanName}.", true);
+				$this->pdo->log->doEcho(
+					PHP_EOL . "Could not parse searchname {$cleanName}.",
+					true
+				);
 			}
 			$this->status = self::PROC_EXTFAIL;
 		}
@@ -231,11 +235,11 @@ class AniDB
 				$updatedAni = $this->checkAniDBInfo($anidbId['anidbid'], $cleanArr['epno']);
 
 				if ($updatedAni === false) {
-					if ($this->updateTimeCheck($anidbId['anidbid']) === false) {
+					if ($this->updateTimeCheck($anidbId['anidbid']) !== false) {
 						$this->padb->populateTable('info', $anidbId['anidbid']);
 						$this->doRandomSleep();
 						$updatedAni = $this->checkAniDBInfo($anidbId['anidbid']);
-						$type       = 'Remote';
+						$type = 'Remote';
 					} else {
 						echo PHP_EOL .
 							$this->pdo->log->info("This AniDB ID was not found to be accurate locally, but has been updated too recently to check AniDB.") .
@@ -259,13 +263,15 @@ class AniDB
 				$matched = true;
 			} else {
 				if (nZEDb_DEBUG) {
-					$this->pdo->log->doEcho(PHP_EOL .
-					"Could not match searchname: {$release['searchname']}.",
-					true);
+					$this->pdo->log->doEcho(
+						PHP_EOL . "Could not match searchname: {$release['searchname']}.",
+						true
+					);
 				}
 				$this->status = self::PROC_NOMATCH;
 			}
 		}
+
 		return $matched;
 	}
 
@@ -291,7 +297,7 @@ class AniDB
 	 *
 	 * @param int $anidbId
 	 *
-	 * @return array|bool
+	 * @return bool|\PDOStatement Has it been 7 days since we last updated this AniDB ID or not?
 	 */
 	private function updateTimeCheck($anidbId)
 	{
@@ -299,7 +305,7 @@ class AniDB
 			sprintf("
 				SELECT anidbid
 				FROM anidb_info ai
-				WHERE DATEDIFF(NOW(), ai.updated) < 7
+				WHERE ai.updated < (NOW() - INTERVAL 7 DAY)
 				AND ai.anidbid = %d",
 				$anidbId
 			)
