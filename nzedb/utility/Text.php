@@ -93,9 +93,9 @@ class Text
 		return ($piece);
 	}
 
-	public static  function pathCombine(array $elements)
+	public static  function pathCombine(array $elements, $prefix = '')
 	{
-		return implode(DS, $elements);
+		return $prefix . implode(DS, $elements);
 	}
 
 	public static function stripBOM(&$text)
