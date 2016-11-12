@@ -57,59 +57,7 @@ class Verify extends \app\extensions\console\Command
 
 	public function settingstable()
 	{
-		$filepath = nZEDb_RES . Text::pathCombine(['db', 'schema', 'data', '10-settings.tsv']);
-		if (!file_exists($filepath)) {
-			throw new \InvalidArgumentException("Unable to find {$filepath}");
-		}
-		$settings = file($filepath);
-
-		if (!is_array($settings)) {
-			var_dump($settings);
-			throw new \InvalidArgumentException("Settings is not an array!");
-		}
-
-		$setting = [];
-		$dummy = array_shift($settings);
-		if ($dummy !== null) {
-			$this->primary("Verifying settings table...");
-			$this->info("(section, subsection, name):");
-			foreach ($settings as $line) {
-				$message = '';
-				switch (PHP_MAJOR_VERSION) {
-					case 7:
-						list(
-							$setting['section'],
-							$setting['subsection'],
-							$setting['name'],
-							) = explode("\t", $line);
-						break;
-					case 5:
-						list(
-							$setting['name'],
-							$setting['subsection'],
-							$setting['section']
-							) = explode("\t", $line);
-						break;
-					default:
-						throw new \RuntimeException("PHP version not recognised!");
-				}
-
-				$value = Settings::value(
-					[
-						'section'    => $setting['section'],
-						'subsection' => $setting['subsection'],
-						'name'       => $setting['name']
-					],
-					true);
-				if ($value === null) {
-					$message = "error";
-				}
-
-				if ($message != '') {
-					$this->out(" {$setting['section']}, {$setting['subsection']}, {$setting['name']}: " . "MISSING!");
-				}
-			}
-		}
+		$dummy = Settings::hasAllEntries($this);
 	}
 
 	/**
