@@ -70,7 +70,6 @@ class Verify extends \app\extensions\console\Command
 
 		$setting = [];
 		$dummy = array_shift($settings);
-		$fields = explode(",", $dummy);
 		if ($dummy !== null) {
 			$this->primary("Verifying settings table...");
 			$this->info("(section, subsection, name):");
