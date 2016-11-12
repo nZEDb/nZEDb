@@ -93,6 +93,11 @@ class Text
 		return ($piece);
 	}
 
+	public static  function pathCombine(array $elements)
+	{
+		return implode(DS, $elements);
+	}
+
 	public static function stripBOM(&$text)
 	{
 		$bom = pack("CCC", 0xef, 0xbb, 0xbf);
