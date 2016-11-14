@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-11-14 niel
+	Chg: Update Composer configuration to use our fork of Git.php.
 2016-11-12 niel
 	Add: Unit test and console command to check that the settings table has all entries from
 		settings.tsv.
