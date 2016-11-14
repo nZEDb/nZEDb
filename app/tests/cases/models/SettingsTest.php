@@ -27,7 +27,10 @@ class SettingsTest extends \lithium\test\Unit {
 
 	public function tearDown() {}
 
-
+	public function testHasAllEntries()
+	{
+		$this->assertTrue(Settings::hasAllEntries());
+	}
 }
 
 ?>

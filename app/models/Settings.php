@@ -16,8 +16,10 @@
  * @author    niel
  * @copyright 2016 nZEDb
  */
-
 namespace app\models;
+
+use nzedb\utility\Text;
+
 
 /**
  * Settings - model for settings table.
@@ -105,6 +107,71 @@ class Settings extends \lithium\data\Model
 	protected $_meta = [
 		'key' => ['section', 'subsection', 'name']
 	];
+
+	public static function hasAllEntries($console = null)
+	{
+		$filepath = Text::pathCombine(['db', 'schema', 'data', '10-settings.tsv'], nZEDb_RES);
+		if (!file_exists($filepath)) {
+			throw new \InvalidArgumentException("Unable to find {$filepath}");
+		}
+		$settings = file($filepath);
+
+		if (!is_array($settings)) {
+			var_dump($settings);
+			throw new \InvalidArgumentException("Settings is not an array!");
+		}
+
+		$setting = [];
+		$dummy = array_shift($settings);
+		$result = false;
+		if ($dummy !== null) {
+			if ($console !== null) {
+				$console->primary("Verifying settings table...");
+				$console->info("(section, subsection, name):");
+			}
+			$result = true;
+			foreach ($settings as $line) {
+				$message = '';
+				switch (PHP_MAJOR_VERSION) {
+					case 7:
+						list(
+							$setting['section'],
+							$setting['subsection'],
+							$setting['name'],
+							) = explode("\t", $line);
+						break;
+					case 5:
+						list(
+							$setting['name'],
+							$setting['subsection'],
+							$setting['section']
+							) = explode("\t", $line);
+						break;
+					default:
+						throw new \RuntimeException("PHP version not recognised!");
+				}
+
+				$value = Settings::value(
+					[
+						'section'    => $setting['section'],
+						'subsection' => $setting['subsection'],
+						'name'       => $setting['name']
+					],
+					true);
+				if ($value === null) {
+					$result = false;
+					$message = "error";
+				}
+
+				if ($message != '' && $console !== null) {
+					$console->out(" {$setting['section']}, {$setting['subsection']}, {$setting['name']}: "
+						. "MISSING!");
+				}
+			}
+		}
+
+		return $result;
+	}
 
 	public static function init()
 	{
