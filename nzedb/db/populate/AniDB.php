@@ -72,7 +72,7 @@ class AniDB
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
 		$anidbupdint = Settings::value('APIs.anidb.max_update_frequency');
-		$lastupdated = Settings::value('APIs.anidb.lastanidbupdate');
+		$lastupdated = Settings::value('APIs.anidb.last_full_update');
 
 		$this->imgSavePath = nZEDb_COVERS . 'anime' . DS;
 		$this->apiKey      = Settings::value('APIs..anidbkey');
