@@ -11,6 +11,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2016-11-14 niel
 	Chg: Update Composer configuration to use our fork of Git.php.
+	Fix: Added some patches to fix some known setting mistakes (caused be missed or missing patches)
 2016-11-12 niel
 	Add: Unit test and console command to check that the settings table has all entries from
 		settings.tsv.
