@@ -9,6 +9,14 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-11-12 niel
+	Add: Unit test and console command to check that the settings table has all entries from
+		settings.tsv.
+		 To run the tests do: ./zed test app/tests/ This runs ALL tests, although there is only
+		one currentyly ;-)
+		 To use the command do: ./zed verify settings_table
+		 This will list out any entries from 10-settings.tsv that cannot be found in your Db table.
+		Syntax for the latter command is tentative and may be changed in the future.
 2016-11-08 niel
 	Fix: Add missing use statement for Settings class.
 2016-11-07 b3rs3rk
