@@ -76,8 +76,6 @@ class Verify extends \app\extensions\console\Command
 			'classes'  => $this->_classes
 		]);
 
-		var_dump($this->request->args());
-
 		return $help->run(get_class($this));
 	}
 
