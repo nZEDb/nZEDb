@@ -9,6 +9,9 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-11-17 niel
+	Mrg: PR 2313, from  Wally73 - Update simple-expanded.sh. Removes update_theaters as Rotten
+		Tomoato's API is no longer freely available.
 2016-11-14 niel
 	Chg: Update Composer configuration to use our fork of Git.php.
 	Fix: Added some patches to fix some known setting mistakes (caused be missed or missing patches)
