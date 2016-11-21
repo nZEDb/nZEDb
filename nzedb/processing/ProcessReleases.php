@@ -420,6 +420,19 @@ class ProcessReleases
 		$minFilesSetting = Settings::value('.release.minfilestoformrelease');
 
 		foreach ($groupIDs as $groupID) {
+
+			$groupMinSizeSetting = $groupMinFilesSetting = 0;
+
+			$groupMinimums = $this->groups->getByID($groupID['id']);
+			if ($groupMinimums !== false) {
+				if (is_numeric($groupMinimums['minsizetoformrelease']) && $groupMinimums['minsizetoformrelease'] > 0) {
+					$groupMinSizeSetting = (int)$groupMinimums['minsizetoformrelease'];
+				}
+				if (is_numeric($groupMinimums['minfilestoformrelease']) && $groupMinimums['minfilestoformrelease'] > 0) {
+					$groupMinFilesSetting = (int)$groupMinimums['minfilestoformrelease'];
+				}
+			}
+
 			if ($this->pdo->queryOneRow(
 					sprintf(
 						'SELECT SQL_NO_CACHE id FROM %s c WHERE c.filecheck = %d AND c.filesize > 0 %s LIMIT 1',
@@ -429,22 +442,25 @@ class ProcessReleases
 					)
 				) !== false
 			) {
+
 				$deleteQuery = $this->pdo->queryExec(
 					sprintf('
-						DELETE c, b, p FROM %s c
-						LEFT JOIN %s b ON (c.id=b.collection_id)
-						LEFT JOIN %s p ON (b.id=p.binaryid)
-						LEFT JOIN groups g ON g.id = c.group_id
+						DELETE c, b, p
+						FROM %s c
+						LEFT JOIN %s b ON c.id = b.collection_id
+						LEFT JOIN %s p ON b.id = p.binaryid
 						WHERE c.filecheck = %d %s
 						AND c.filesize > 0
-						AND greatest(IFNULL(g.minsizetoformrelease, 0), %d) > 0
-						AND c.filesize < greatest(IFNULL(g.minsizetoformrelease, 0), %d)',
+						AND GREATEST(%d, %d) > 0
+						AND c.filesize < GREATEST(%d, %d)',
 						$group['cname'],
 						$group['bname'],
 						$group['pname'],
 						self::COLLFC_SIZED,
 						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : '',
+						$groupMinSizeSetting,
 						$minSizeSetting,
+						$groupMinSizeSetting,
 						$minSizeSetting
 					)
 				);
@@ -457,8 +473,8 @@ class ProcessReleases
 					$deleteQuery = $this->pdo->queryExec(
 						sprintf('
 							DELETE c, b, p FROM %s c
-							LEFT JOIN %s b ON (c.id=b.collection_id)
-							LEFT JOIN %s p ON (b.id=p.binaryid)
+							LEFT JOIN %s b ON c.id = b.collection_id
+							LEFT JOIN %s p ON b.id = p.binaryid
 							WHERE c.filecheck = %d %s
 							AND c.filesize > %d',
 							$group['cname'],
@@ -479,16 +495,17 @@ class ProcessReleases
 						DELETE c, b, p FROM %s c
 						LEFT JOIN %s b ON (c.id=b.collection_id)
 						LEFT JOIN %s p ON (b.id=p.binaryid)
-						JOIN groups g ON g.id = c.group_id
 						WHERE c.filecheck = %d %s
-						AND greatest(IFNULL(g.minfilestoformrelease, 0), %d) > 0
-						AND c.totalfiles < greatest(IFNULL(g.minfilestoformrelease, 0), %d)',
+						AND GREATEST(%d, %d) > 0
+						AND c.totalfiles < GREATEST(%d, %d)',
 						$group['cname'],
 						$group['bname'],
 						$group['pname'],
 						self::COLLFC_SIZED,
 						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : '',
+						$groupMinFilesSetting,
 						$minFilesSetting,
+						$groupMinFilesSetting,
 						$minFilesSetting
 					)
 				);
