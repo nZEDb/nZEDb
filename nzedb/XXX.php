@@ -1,7 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 
 /**
  * Class XXX
@@ -64,17 +65,24 @@ class XXX
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
-		$this->movieqty = ($this->pdo->getSetting('maxxxxprocessed') != '') ? $this->pdo->getSetting('maxxxxprocessed') : 100;
-		$this->showPasswords = Releases::showPasswords($this->pdo);
+		$dummy = Settings::value('..maxxxxprocessed');
+		$this->movieqty = ($dummy != '') ? $dummy : 100;
+		$this->showPasswords = Releases::showPasswords();
 		$this->debug = nZEDb_DEBUG;
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->imgSavePath = nZEDb_COVERS . 'xxx' . DS;
 		$this->cookie = nZEDb_TMP . 'xxx.cookie';
 
-		$this->catWhere = 'AND categoryid IN (6010, 6020, 6030, 6040, 6080, 6090) ';
+		$this->catWhere = 'AND categories_id IN (' .
+				Category::XXX_DVD . ', ' .
+				Category::XXX_WMV . ', ' .
+				Category::XXX_XVID . ', ' .
+				Category::XXX_X264 . ', ' .
+				Category::XXX_SD . ', ' .
+				Category::XXX_WEBDL . ') ';
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
@@ -131,44 +139,6 @@ class XXX
 	}
 
 	/**
-	 * Get count of movies for movies browse page.
-	 *
-	 * @param       $cat
-	 * @param       $maxAge
-	 * @param array $excludedCats
-	 *
-	 * @return int
-	 */
-	public function getXXXCount($cat, $maxAge = -1, $excludedCats = [])
-	{
-		$catsrch = '';
-		if (count($cat) > 0 && $cat[0] != -1) {
-			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
-		}
-
-		$res = $this->pdo->query(
-			sprintf("
-				SELECT COUNT(DISTINCT r.xxxinfo_id) AS num
-				FROM releases r
-				INNER JOIN xxxinfo xxx ON xxx.id = r.xxxinfo_id
-				WHERE r.nzbstatus = 1
-				AND xxx.title != ''
-				AND r.passwordstatus %s
-				AND %s %s %s %s ",
-				$this->showPasswords,
-				$this->getBrowseBy(),
-				$catsrch,
-				($maxAge > 0
-					? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
-					: ''
-				),
-				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : '')
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
-		);
-		return (isset($res[0]["num"]) ? $res[0]["num"] : 0);
-	}
-
-	/**
 	 * Get movie releases with covers for xxx browse page.
 	 *
 	 * @param       $cat
@@ -189,15 +159,17 @@ class XXX
 
 		$order = $this->getXXXOrder($orderBy);
 
-		$xxxmovies = $this->pdo->query(
+		$xxxmovies = $this->pdo->queryCalc(
 			sprintf("
-				SELECT xxx.id
+				SELECT SQL_CALC_FOUND_ROWS
+					xxx.id,
+					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
 				FROM xxxinfo xxx
 				LEFT JOIN releases r ON xxx.id = r.xxxinfo_id
 				WHERE r.nzbstatus = 1
 				AND xxx.title != ''
 				AND r.passwordstatus %s
-				AND %s %s %s %s
+				%s %s %s %s
 				GROUP BY xxx.id
 				ORDER BY %s %s %s",
 				$this->showPasswords,
@@ -207,18 +179,19 @@ class XXX
 						? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
 						: ''
 				),
-				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
+				(count($excludedCats) > 0 ? ' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 				$order[0],
 				$order[1],
 				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
 			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 
-		$xxxIDs = false;
+		$xxxIDs = $releaseIDs = false;
 
-		if (is_array($xxxmovies)) {
-			foreach ($xxxmovies AS $xxx => $id) {
+		if (is_array($xxxmovies['result'])) {
+			foreach ($xxxmovies['result'] as $xxx => $id) {
 				$xxxIDs[] = $id['id'];
+				$releaseIDs[] = $id['grp_release_id'];
 			}
 		}
 
@@ -229,7 +202,7 @@ class XXX
 				GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
 				GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
 				GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
-				GROUP_CONCAT(rn.releaseid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
+				GROUP_CONCAT(rn.releases_id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
 				GROUP_CONCAT(g.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
 				GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
 				GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
@@ -239,16 +212,16 @@ class XXX
 				GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
 			xxx.*, UNCOMPRESS(xxx.plot) AS plot,
 			g.name AS group_name,
-			rn.releaseid AS nfoid
+			rn.releases_id AS nfoid
 			FROM releases r
-			LEFT OUTER JOIN groups g ON g.id = r.group_id
-			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
+			LEFT OUTER JOIN groups g ON g.id = r.groups_id
+			LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
 			INNER JOIN xxxinfo xxx ON xxx.id = r.xxxinfo_id
 			WHERE r.nzbstatus = 1
 			AND xxx.id IN (%s)
 			AND xxx.title != ''
 			AND r.passwordstatus %s
-			AND %s %s %s %s
+			%s %s %s %s
 			GROUP BY xxx.id
 			ORDER BY %s %s",
 			(is_array($xxxIDs) ? implode(',', $xxxIDs) : -1),
@@ -259,11 +232,15 @@ class XXX
 				? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
 				: ''
 			),
-			(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : ''),
+			(count($excludedCats) > 0 ? ' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')' : ''),
 			$order[0],
 			$order[1]
 		);
-		return $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
+		$return = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
+		if (!empty($return)) {
+			$return[0]['_totalcount'] = (isset($xxxmovies['total']) ? $xxxmovies['total'] : 0);
+		}
+		return $return;
 	}
 
 	/**
@@ -310,12 +287,12 @@ class XXX
 			if (isset($_REQUEST[$bb]) && !empty($_REQUEST[$bb])) {
 				$bbv = stripslashes($_REQUEST[$bb]);
 				if ($bb == "genre") {
-					$bbv = $this->getgenreid($bbv);
+					$bbv = $this->getGenreID($bbv);
 				}
 				if ($bb == 'id') {
-					$browseBy .= 'xxx.' . $bb . '=' . $bbv . ' AND ';
+					$browseBy .= 'AND xxx.' . $bb . '=' . $bbv;
 				} else {
-					$browseBy .= 'xxx.' . $bb . ' ' . $this->pdo->likeString($bbv, true, true) . ' AND ';
+					$browseBy .= 'AND xxx.' . $bb . ' ' . $this->pdo->likeString($bbv, true, true);
 				}
 			}
 		}
@@ -722,9 +699,11 @@ class XXX
 		$ret = null;
 
 		if ($activeOnly) {
-			$res = $this->pdo->query("SELECT title FROM genres WHERE disabled = 0 AND type = 6000 ORDER BY title");
+			$res = $this->pdo->query("SELECT title FROM genres WHERE disabled = 0 AND type = " .
+					Category::XXX_ROOT . " ORDER BY title");
 		} else {
-			$res = $this->pdo->query("SELECT title FROM genres WHERE disabled = 1 AND type = 6000 ORDER BY title");
+			$res = $this->pdo->query("SELECT title FROM genres WHERE disabled = 1 AND type = " .
+					Category::XXX_ROOT . " ORDER BY title");
 		}
 
 		foreach ($res as $arr => $value) {
@@ -750,9 +729,9 @@ class XXX
 		}
 
 		if ($activeOnly) {
-			return $this->pdo->queryOneRow("SELECT title FROM genres WHERE disabled = 0 AND type = 6000" . $gid);
+			return $this->pdo->queryOneRow("SELECT title FROM genres WHERE disabled = 0 AND type = " . Category::XXX_ROOT . $gid);
 		} else {
-			return $this->pdo->queryOneRow("SELECT title FROM genres WHERE disabled = 1 AND type = 6000" . $gid);
+			return $this->pdo->queryOneRow("SELECT title FROM genres WHERE disabled = 1 AND type = " . Category::XXX_ROOT . $gid);
 		}
 	}
 

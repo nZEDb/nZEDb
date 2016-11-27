@@ -1,50 +1,50 @@
 <?php
 
+use app\models\Settings;
 use nzedb\Releases;
 use nzedb\NZB;
-$uid = 0;
+use nzedb\db\DB;
+use nzedb\utility\Misc;
 
-use nzedb\db\Settings;
+$uid = 0;
 
 // Page is accessible only by the rss token, or logged in users.
 if ($page->users->isLoggedIn()) {
 	$uid = $page->users->currentUserId();
 	$maxDownloads = $page->userdata["downloadrequests"];
 	$rssToken = $page->userdata['rsstoken'];
+	if ($page->users->isDisabled($page->userdata['username'])) {
+		Misc::showApiError(101);
+	}
 } else {
-	if ($page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
+	if (Settings::value('..registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
 		$res = $page->users->getById(0);
 	} else {
 		if ((!isset($_GET["i"]) || !isset($_GET["r"]))) {
-			header("X-DNZB-RCode: 400");
-			header("X-DNZB-RText: Bad request, please supply all parameters!");
-			$page->show403();
+			Misc::showApiError(200);
 		}
 
 		$res = $page->users->getByIdAndRssToken($_GET["i"], $_GET["r"]);
 		if (!$res) {
-			header("X-DNZB-RCode: 401");
-			header("X-DNZB-RText: Unauthorised, wrong user ID or rss key!");
-			$page->show403();
+			Misc::showApiError(100);
 		}
 	}
 	$uid = $res["id"];
 	$rssToken = $res['rsstoken'];
 	$maxDownloads = $res["downloadrequests"];
+	if ($page->users->isDisabled($res['username'])) {
+		Misc::showApiError(101);
+	}
 }
 
 // Check download limit on user role.
 $requests = $page->users->getDownloadRequests($uid);
 if ($requests > $maxDownloads) {
-	header("X-DNZB-RCode: 503");
-	header("X-DNZB-RText: User has exceeded maximum downloads for the day!");
-	$page->show503();
+	Misc::showApiError(501);
 }
 
 if (!isset($_GET['id'])) {
-	header("X-DNZB-RCode: 400");
-	header("X-DNZB-RText: Bad request! (parameter id is required)");
-	$page->show403();
+	Misc::showApiError(200, 'parameter id is required');
 }
 
 // Remove any suffixed id with .nzb which is added to help weblogging programs see nzb traffic.
@@ -55,9 +55,7 @@ $rel = new Releases(['Settings' => $page->settings]);
 if (isset($_GET["zip"]) && $_GET["zip"] == "1") {
 	$guids = explode(",", $_GET["id"]);
 	if ($requests['num'] + sizeof($guids) > $maxDownloads) {
-		header("X-DNZB-RCode: 503");
-		header("X-DNZB-RText: User has exceeded maximum downloads for the day!");
-		$page->show503();
+		Misc::showApiError(501);
 	}
 
 	$zip = $rel->getZipped($guids);
@@ -73,7 +71,7 @@ if (isset($_GET["zip"]) && $_GET["zip"] == "1") {
 		}
 
 		header("Content-type: application/octet-stream");
-		header("Content-disposition: attachment; filename=" .  date("Ymdhis") . ".nzb.zip");
+		header("Content-disposition: attachment; filename=" . date("Ymdhis") . ".nzb.zip");
 		exit($zip);
 	} else {
 		$page->show404();
@@ -82,9 +80,7 @@ if (isset($_GET["zip"]) && $_GET["zip"] == "1") {
 
 $nzbPath = (new NZB($page->settings))->getNZBPath($_GET["id"]);
 if (!file_exists($nzbPath)) {
-	header("X-DNZB-RCode: 404");
-	header("X-DNZB-RText: NZB file not found!");
-	$page->show404();
+	Misc::showApiError(300, 'NZB file not found!');
 }
 
 $relData = $rel->getByGuid($_GET["id"]);
@@ -96,9 +92,7 @@ if ($relData) {
 		$page->users->delCartByUserAndRelease($_GET["id"], $uid);
 	}
 } else {
-	header("X-DNZB-RCode: 404");
-	header("X-DNZB-RText: Release not found!");
-	$page->show404();
+	Misc::showApiError(300, 'Release not found!');
 }
 
 // Start reading output buffer.
@@ -106,22 +100,24 @@ ob_start();
 // De-gzip the NZB and store it in the output buffer.
 readgzfile($nzbPath);
 
+$cleanName = str_replace(array(',', ' ', '/'), '_', $relData["searchname"]);
+
 // Set the NZB file name.
-header("Content-Disposition: attachment; filename=" . str_replace(array(',', ' '), '_', $relData["searchname"]) . ".nzb");
+header("Content-Disposition: attachment; filename=" . $cleanName . ".nzb");
 // Get the size of the NZB file.
 header("Content-Length: " . ob_get_length());
 header("Content-Type: application/x-nzb");
 header("Expires: " . date('r', time() + 31536000));
 // Set X-DNZB header data.
-header("X-DNZB-Failure: " . $page->serverurl . 'failed/' . '?guid=' . $_GET['id'] . '&searchname=' . $relData["searchname"] . '&userid=' . $uid . '&rsstoken=' . $rssToken);
+header("X-DNZB-Failure: " . $page->serverurl . 'failed/' . '?guid=' . $_GET['id'] . '&userid=' . $uid . '&rsstoken=' . $rssToken);
 header("X-DNZB-Category: " . $relData["category_name"]);
 header("X-DNZB-Details: " . $page->serverurl . 'details/' . $_GET["id"]);
 if (!empty($relData['imdbid']) && $relData['imdbid'] > 0) {
 	header("X-DNZB-MoreInfo: http://www.imdb.com/title/tt" . $relData['imdbid']);
-} else if (!empty($relData['tvrage']) && $relData['tvrage'] > 0) {
-	header("X-DNZB-MoreInfo: http://www.tvrage.com/shows/id-" . $relData['tvrage']);
+} else if (!empty($relData['tvdb']) && $relData['tvdb'] > 0) {
+	header("X-DNZB-MoreInfo: http://www.thetvdb.com/?tab=series&id=" . $relData['tvdb']);
 }
-header("X-DNZB-Name: " . $relData["searchname"]);
+header("X-DNZB-Name: " . $cleanName);
 if ($relData['nfostatus'] == 1) {
 	header("X-DNZB-NFO: " . $page->serverurl . 'nfo/' . $_GET["id"]);
 }

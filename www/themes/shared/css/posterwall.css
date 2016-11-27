@@ -1,0 +1,863 @@
+body,h1,h2,h3,h4,h5,h6,img,input,form,fieldset{
+    margin:0;
+    padding:0;
+    outline:0;
+    border:0;
+}
+
+
+*{
+    outline:0;
+}
+
+
+body{
+    font-family:"Droid Sans",Arial,serif;
+    font-size:13px;
+    color:#000;
+    background-color:#d5d3be;
+}
+
+
+div.poster a img{
+    margin:0;
+    padding:0;
+    border:0;
+}
+
+
+div.poster a{
+    text-decoration:none;
+    color:#008fbb;
+}
+
+
+div.icons {
+    white-space:nowrap;
+    padding-left:0px;
+    padding-right:0px;
+    width:65px;
+    margin: 0 auto;
+}
+
+.icon_allmusic       { background-image:url('../img/icons/allmusic.png'); }
+.icon_allmusic2      { content:url('../img/icons/allmusic.png'); }
+.icon_amazon         { background-image:url('../img/icons/amazon.png'); }
+.icon_amazon2        { content:url('../img/icons/amazon.png'); }
+.icon_giantbomb      { background-image:url('../img/icons/giantbomb.png');}
+.icon_cart           { background-image:url('../img/icons/cartup.png'); }
+.icon_cart_clicked   { background-image:url('../img/icons/cartdown.png'); }
+.icon_couch          { background-image:url('../img/icons/couch.png'); }
+.icon_couch2         { content:url('../img/icons/couch.png'); }
+.icon_discogs        { background-image:url('../img/icons/discogs.png'); }
+.icon_gamespot       { background-image:url('../img/icons/gamespot.png'); }
+.icon_ign            { background-image:url('../img/icons/ign.png'); }
+.icon_lastfm         { background-image:url('../img/icons/lastfm.png'); }
+.icon_nzb            { background-image:url('../img/icons/nzbup.png'); }
+.icon_nzb_clicked    { background-image:url('../img/icons/nzbdown.png'); }
+.icon_nzb a          { text-decoration:none; padding-bottom:2px; padding-right:12px; }
+.icon_predbme        { background-image:url('../img/icons/predbme.png'); }
+.icon_imdb           { background-image:url('../img/icons/imdb.png'); }
+.icon_imdb2          { content:url('../img/icons/imdb.png'); }
+.icon_imdb a         { text-decoration:none; padding-bottom:2px; padding-right:12px; }
+.icon_sab            { background-image:url('../img/icons/sabup.png'); }
+.icon_sab_clicked    { background-image:url('../img/icons/sabdown.png'); }
+.icon_trakt          { background-image:url('../img/icons/trakt.png'); }
+.icon_trakt2         { content:url('../img/icons/trakt.png'); }
+.icon_tvrage         { background-image:url('../img/icons/tvrage.png'); }
+.icon_check          { background-image:url('../img/icons/check.png'); }
+.icon_cp             { background-image:url('../img/icons/couch.png'); }
+.icon_goodreads      { background-image:url('../img/icons/goodreads.png'); }
+.icon_shelfari       { background-image:url('../img/icons/shelfari.png'); }
+
+a.divlink {
+    display:block;
+    width:16px;
+    height:16px;
+    float:left;
+}
+
+h1{
+}
+
+
+h2{
+}
+
+
+h3{
+    margin:13px 0;
+    font-size:18px;
+    font-weight:normal;
+}
+
+
+h3 a{
+    color:#000;
+}
+
+
+h3 a.see-more{
+    display:block;
+    border-radius:8px;
+    color:#000;
+    padding:5px 7px;
+    display:block;
+    float:right;
+    font-size:12px;
+    font-weight:normal;
+    background-color:#d5d3be;
+}
+
+
+h3 a.see-more:hover{
+    color:#07637a;
+    ;
+}
+
+
+h3 a:hover{
+    text-decoration:underline;
+}
+
+
+input.placeholder{
+    color:#aaa!important;
+}
+
+
+::-moz-selection{
+    background:#4DBCE9;
+    color:#fff;
+    text-shadow:none;
+}
+
+
+::selection{
+    background:#4DBCE9;
+    color:#fff;
+    text-shadow:none;
+}
+
+
+br.clear{
+    clear:both;
+}
+
+
+.content{
+    margin:0 auto;
+}
+
+/*
+#main,.main{
+    overflow:hidden;
+}
+
+
+#main-wrapper,.main-wrapper{
+    background-color:#e8e8dc;
+    padding-bottom:20px;
+}
+
+
+#main-wrapper.alt,.main-wrapper.alt{
+    background-color:#d5d3be;
+}
+
+
+#main-wrapper.no-bottom,.main-wrapper.no-bottom{
+    padding-bottom:0;
+}
+
+
+#main-wrapper.less-top,.main-wrapper.less-top{
+    margin-top:-40px;
+}
+
+
+#main-wrapper.more-top,.main-wrapper.more-top{
+    padding-top:20px;
+}
+
+
+#main-wrapper.no-top,.main-wrapper.no-top{
+    margin-top:0;
+}
+
+
+#main-wrapper.less-bottom,.main-wrapper.less-bottom{
+    padding-bottom:10px;
+}
+
+
+#main-wrapper.top-border,.main-wrapper.top-border{
+    border-top:solid 2px #D5D3BE;
+}
+
+
+.main-wrapper.alt .recent-wrapper .recent-row,.main-wrapper.alt .recent-wrapper .recent-row.alt{
+    background-color:transparent;
+    border-bottom-color:#bbb9a6;
+}
+
+
+.main-wrapper.alt .recent-wrapper .recent-row:first-child{
+    border-top:solid 1px #bbb9a6;
+}
+
+
+.main-wrapper.alt .recent-wrapper .recent-row:hover{
+    background-color:#ebe9d4;
+}
+
+
+#main-wrapper.alt .title-overflow,.main-wrapper.alt .title-overflow{
+    background-image:url(https://trakt.us/images/title-overflow-alt.png);
+}
+*/
+
+.title-overflow{
+	background:url("../images/title-overflow.png") repeat-y 100% 0;
+	width:30px;
+	height:40px;
+	position:absolute;
+	top:0;
+	right:0;
+}
+
+.main-content {
+    background: none repeat scroll 0% 0% rgb(242, 242, 242);
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.one-column.no-padding{
+    padding:0;
+}
+
+.library-wrapper{
+    overflow:hidden;
+    max-width:100%;
+    padding:10px;
+    margin: 0px;
+}
+
+.library-console {
+    display:inline-block;
+    width: 130px;
+    height: 180px;
+}
+
+.library-games {
+    display:inline-block;
+    width: 130px;
+    height: 130px;
+}
+
+.library-music {
+    display:inline-block;
+    width: 250px;
+    height: 250px;
+}
+
+.library-wrapper .library-show{
+    display:inline-block;
+    margin:10px 10px 0 10px;
+}
+
+
+/*.library-wrapper .library-show .rank-wrapper{
+    position:absolute;
+    z-index:3;
+    text-align:center;
+    width:100%;
+    top:-10px;
+}*/
+
+
+.library-wrapper .library-show .rank-wrapper .rank{
+    background:rgba(0,0,0,0.8);
+    color:#fff;
+    padding:4px 8px;
+    border-radius:15px;
+    font-size:14px;
+    font-weight:bold;
+}
+
+
+.library-wrapper .library-show .remove-watched,.library-wrapper .library-show .remove-library,.library-wrapper .library-show .remove-watchlist,.library-wrapper .library-show .remove-seen,.library-wrapper .library-show .remove-checkin{
+    margin-left:126px;
+    display:none;
+}
+
+
+.library-wrapper .library-show.screen .remove-watched,.library-wrapper .library-show.screen .remove-library,.library-wrapper .library-show.screen .remove-watchlist,.library-wrapper .library-show.screen .remove-seen,.library-wrapper .library-show.screen .remove-checkin{
+    margin-left:155px;
+    display:none;
+}
+
+
+.episodes-listing-episode .remove-watchlist{
+    margin-left:204px;
+    display:none;
+}
+
+
+.library-wrapper .library-show:hover .remove-watched,.library-wrapper .library-show:hover .remove-library,.library-wrapper .library-show:hover .remove-watchlist,.episodes-listing-episode:hover .remove-watchlist,.library-wrapper .library-show:hover .remove-seen,.library-wrapper .library-show:hover .remove-checkin{
+    display:block;
+}
+
+
+.library-wrapper .library-show .poster{
+    position:relative;
+    border:solid 1px #d0d0c5;
+    transition:border-color .5s;
+    -moz-transition:border-color .5s;
+    -webkit-transition:border-color .5s;
+    -o-transition:border-color .5s;
+}
+
+
+.library-wrapper .library-show.with-rating-bar .poster{
+    padding-bottom:22px;
+}
+
+
+.library-wrapper .library-show.with-rating-bar .quick-icons.rating-pod{
+    top:228px;
+}
+
+
+.library-wrapper .library-show.screen.with-rating-bar .poster{
+    padding-bottom:23px;
+}
+
+
+.library-wrapper .library-show.screen.with-rating-bar .quick-icons.rating-pod{
+    top:121px;
+}
+
+
+.library-wrapper .library-show .poster:hover{
+    border-color:#000;
+}
+
+
+.library-wrapper .library-show .poster.screen-overlay{
+}
+
+
+.library-wrapper .library-show .poster.screen-overlay .poster-art{
+    opacity:0.5;
+    filter:url(filters.svg#grayscale);
+    filter:gray;
+    -webkit-filter:grayscale(1);
+}
+
+
+.library-wrapper .library-show .poster.screen-overlay .screen{
+    position:absolute;
+    z-index:2;
+    height:78px;
+    width:138px;
+    top:62px;
+    overflow:hidden;
+    -moz-box-shadow:0 0 10px 1px #666;
+    -webkit-box-shadow:0 0 10px 1px #666;
+    box-shadow:0 0 10px 1px #666;
+    -webkit-transform:rotate(-5deg);
+    -moz-transform:rotate(-5deg);
+    -o-transform:rotate(-5deg);
+    -ms-transform:rotate(-5deg);
+}
+
+
+.library-wrapper .library-show .poster.screen-overlay .screen img{
+    width:138px;
+    height:auto;
+}
+
+
+.library-wrapper .library-show img{
+    display: inline-block;
+    width:138px;
+    height:203px;
+}
+
+
+.library-wrapper .library-show.screen{
+    position:relative;
+}
+
+
+.library-wrapper .library-show.screen .poster{
+    height:95px;
+    overflow:hidden;
+}
+
+
+.library-wrapper .library-show.screen img{
+    display:block;
+    width:170px;
+    height:auto;
+}
+
+
+.library-wrapper .library-show .on{
+    font-size:11px;
+    padding:2px 5px;
+    line-height:13px;
+}
+
+
+.library-wrapper .library-show h4{
+    width:140px;
+    overflow:hidden;
+    position:relative;
+    white-space:nowrap;
+    font-size:12px;
+    margin-top:3px;
+}
+
+
+.library-wrapper .library-show.screen h4,.library-wrapper .library-show.screen h5,.library-wrapper .library-show.screen h6{
+    width:170px;
+}
+
+
+.library-wrapper .library-show h4 a{
+    color:#000;
+}
+
+
+.library-wrapper .library-show h4 a:hover{
+    color:#000;
+	text-decoration:none;
+}
+
+.library-wrapper .library-show h5{
+    width:140px;
+    overflow:hidden;
+    position:relative;
+    white-space:nowrap;
+    margin-top:1px;
+}
+
+
+.library-wrapper .library-show h5,.library-wrapper .library-show h5 a{
+    font-weight:normal;
+    font-size:12px;
+    color:#333;
+}
+
+
+.library-wrapper .library-show h5 strong{
+    color:#008FBB;
+}
+
+
+.library-wrapper .library-show .title{
+    display:block;
+    font-weight:bold;
+    color:#000;
+}
+
+
+.library-wrapper .library-show .plays-truncate{
+    width:140px;
+    overflow:hidden;
+    position:relative;
+    white-space:nowrap;
+}
+
+
+.library-wrapper .library-show .plays{
+    display:block;
+    color:#666;
+    font-size:12px;
+    font-weight:normal;
+    width:140px;
+    overflow:hidden;
+    position:relative;
+    white-space:nowrap;
+}
+
+
+.library-wrapper .library-show .plays a{
+    color:#666;
+}
+
+
+.library-wrapper .library-show .plays a strong{
+    color:#008FBB;
+}
+
+
+.library-wrapper .library-show h6{
+    color:#999;
+    font-size:11px;
+    font-style:italic;
+    padding-top:5px;
+    font-weight:normal;
+    width:140px;
+    overflow:hidden;
+    position:relative;
+    white-space:nowrap;
+}
+
+
+.library-wrapper .library-show h6 a{
+    font-weight:bold;
+    color:#999;
+}
+
+
+.library-wrapper .library-show .watched-added{
+    display:block;
+    color:#999;
+    font-size:10px;
+}
+
+
+.library-wrapper .library-show.actor .poster{
+    overflow:hidden;
+    height:203px;
+}
+
+
+.library-wrapper .library-show.actor img{
+    height:auto;
+}
+
+.library-wrapper .library-show:hover .library-info-icons,.episodes-listing-episode:hover .library-info-icons,.shout-list-item .poster:hover .library-info-icons,.screen-wrapper:hover .library-info-icons,.poster-wrapper:hover .library-info-icons{
+    opacity:1;
+}
+
+
+.library-wrapper .library-show:hover .quick-icons,.episodes-listing-episode:hover .quick-icons,.shout-list-item .poster:hover .quick-icons,.screen-wrapper:hover .quick-icons,.poster-wrapper:hover .quick-icons{
+    opacity:1!important;
+}
+
+.quick-icons{
+    position:absolute;
+    z-index:1;
+    opacity:0;
+    transition:opacity .5s;
+    -moz-transition:opacity .5s;
+    -webkit-transition:opacity .5s;
+    -o-transition:opacity .5s;
+}
+
+
+.quick-icons.general{
+    top:169px;
+    left:6px;
+    background-color:rgba(0,0,0,0.7);
+    width:128px;
+    height:30px;
+    -moz-border-radius:6px;
+    border-radius:6px;
+    text-align:center;
+}
+
+
+.episodes-listing-episode .quick-icons.general,.episode-row .screen-wrapper .quick-icons.general{
+    top:88px;
+    left:45px;
+}
+
+
+.library-show.screen .quick-icons.general{
+    top:60px;
+    left:21px;
+}
+
+
+.shout-list-item .screen .quick-icons.general{
+    top:44px;
+}
+
+
+.quick-icons span{
+    margin:5px 2px 0 2px;
+    cursor:pointer;
+    vertical-align:middle;
+    width:18px;
+    height:18px;
+    background-size:contain;
+    background-position:center center;
+    background-repeat:no-repeat;
+    display:inline-block;
+}
+
+
+.quick-icons.general span:first-child{
+    margin-left:0;
+}
+
+
+.quick-icons span.seen{
+    background-image:url(https://trakt.us/images/quick-icons/seen.png);
+    width:21px;
+}
+
+
+.quick-icons span.seen:hover,.quick-icons span.seen.current{
+    background-image:url(https://trakt.us/images/quick-icons/seen-on.png);
+}
+
+
+.quick-icons span.watchlist{
+    background-image:url(https://trakt.us/images/quick-icons/watchlist.png);
+    width:12px;
+}
+
+
+.quick-icons span.watchlist:hover,.quick-icons span.watchlist.current{
+    background-image:url(https://trakt.us/images/quick-icons/watchlist-on.png);
+}
+
+
+.quick-icons span.list{
+    background-image:url(https://trakt.us/images/quick-icons/list.png);
+}
+
+
+.quick-icons span.list:hover,.quick-icons span.list.current{
+    background-image:url(https://trakt.us/images/quick-icons/list-on.png);
+}
+
+
+.quick-icons span.collection{
+    background-image:url(https://trakt.us/images/quick-icons/collection.png);
+    width:12px;
+}
+
+
+.quick-icons span.collection:hover,.quick-icons span.collection.current{
+    background-image:url(https://trakt.us/images/quick-icons/collection-on.png);
+}
+
+
+.quick-icons span.add-to-list{
+    padding-left:0!important;
+    background-position:center center!important;
+}
+
+
+.quick-icons.rating-pod{
+    top:206px;
+    left:0;
+    width:155px;
+    height:30px;
+    text-align:center;
+    padding:0;
+}
+
+
+.episodes-listing-episode .quick-icons.rating-pod,.episode-row .screen-wrapper .quick-icons.rating-pod{
+    top:125px;
+    width:218px!important;
+}
+
+
+.library-show.screen .quick-icons.rating-pod{
+    top:98px;
+    width:170px;
+}
+
+
+.shout-list-item .screen .quick-icons.rating-pod{
+    top:80px;
+}
+
+
+.quick-icons.rating-pod span{
+    opacity:0.5;
+}
+
+
+.quick-icons.rating-pod span.unhover{
+    opacity:0.5!important;
+}
+
+
+.quick-icons.rating-pod span:hover,.quick-icons.rating-pod span.current,.quick-icons.rating-pod span.hover{
+    opacity:1;
+}
+
+
+.quick-icons.rating-pod span.simple.rate-love{
+    background-image:url(https://trakt.us/images/quick-icons/heart-love.png);
+}
+
+
+.quick-icons.rating-pod span.simple.rate-hate{
+    background-image:url(https://trakt.us/images/quick-icons/heart-hate.png);
+}
+
+
+.quick-icons.rating-pod span.advanced{
+    width:13px;
+    height:30px;
+    margin:0!important;
+    background-color:#333!important;
+    background-image:url(https://trakt.us/images/quick-icons/heart-love.png);
+    background-size:12px 12px;
+    float:left;
+}
+
+
+.episodes-listing-episode .quick-icons.rating-pod span.advanced,.episode-row .screen-wrapper .quick-icons.rating-pod span.advanced{
+    width:21px;
+    background-size:18px 18px;
+}
+
+
+.library-show.screen .quick-icons.rating-pod span.advanced{
+    width:16px;
+    background-size:14px 14px;
+}
+
+
+.quick-icons.rating-pod span.advanced:first-child{
+    margin-left:4px!important;
+}
+
+
+.rating-pod{
+    background-color:#333;
+    padding:5px 10px 5px 7px;
+    border-radius:0 0 6px 6px;
+    overflow:hidden;
+    margin:1px;
+    color:#ccc;
+    position:relative;
+}
+
+
+.rating-pod .percent{
+    float:left;
+    font-size:18px;
+    font-weight:bold;
+    background-position:100% 50%;
+    background-repeat:no-repeat;
+    padding-right:20px;
+    color:#fff;
+}
+
+
+.rating-pod .percent-sign{
+    font-weight:normal;
+    font-size:12px;
+    vertical-align:top;
+    padding-left:2px;
+    line-height:21px;
+}
+
+
+.rating-pod .votes{
+    float:right;
+    line-height:21px;
+    font-size:11px;
+    font-style:italic;
+}
+
+
+.instructions-wrapper{
+    color: rgb(255, 255, 255);
+    text-shadow: 0px -1px 1px rgb(17, 17, 17);
+    padding: 10px 10px 11px;
+    font-size: 16px;
+    border-radius: 4px 4px 0px 0px;
+    border-top: 1px solid rgb(119, 119, 119);
+    border-bottom: 1px solid rgb(51, 51, 51);
+    background-color: rgb(95, 95, 95);
+	position:relative;
+	}
+
+.main-title {
+    color: rgb(255, 255, 255);
+    text-shadow: 0px -1px 1px rgb(17, 17, 17);
+    padding: 10px 10px 11px;
+    font-size: 16px;
+    border-radius: 4px 4px 0px 0px;
+    border-top: 1px solid rgb(119, 119, 119);
+    border-bottom: 1px solid rgb(51, 51, 51);
+    background-color: rgb(95, 95, 95);
+    background-image: -moz-linear-gradient(center top , rgb(102, 102, 102), rgb(85, 85, 85));
+}
+
+.main-wrapper {
+    background: none repeat scroll 0% 0% rgb(208, 208, 208);
+    color: rgb(153, 153, 153);
+    padding: 9px;
+}
+
+
+
+h2{
+	font-weight:normal;
+	line-height:22px;
+	font-size:22px;
+	position:relative;
+	}
+
+
+h2{
+	font-weight:normal;
+	line-height:21px;
+	font-size:17px;
+	color:#000;
+	}
+
+
+h2 span{
+	font-weight:bold;
+	}
+
+
+h2 a:hover{
+	text-decoration:underline;
+	}
+
+
+h2 a.show{
+	font-weight:bold;
+	}
+
+
+h2 a.see-more{
+	float:right;
+	font-size:16px;
+	line-height:22px;
+	margin-left:20px;
+    color:#ddd;
+	}
+
+
+h2 .help-text{
+	float:right;
+	font-weight:normal;
+	color:#aaa;
+	font-style:italic;
+	font-size:14px;
+	line-height:22px;
+	}
+
+
+h2 .hide-watched{
+	font-size:13px;
+	padding-top:1px;
+	padding-bottom:1px;
+	}
+
+
+h2 .hide-watched:hover{
+	text-decoration:none;
+	}
+
+#npwSelectCategory {
+    background-color: Black;
+}

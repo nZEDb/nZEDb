@@ -3,6 +3,7 @@ require_once './config.php';
 
 use nzedb\Console;
 use nzedb\Genres;
+use nzedb\Category;
 
 $page    = new AdminPage();
 $console = new Console(['Settings' => $page->settings]);
@@ -56,7 +57,7 @@ if (isset($_REQUEST["id"])) {
 		default:
 			$page->title = "Console Edit";
 			$page->smarty->assign('console', $con);
-			$page->smarty->assign('genres', $gen->getGenres(Genres::CONSOLE_TYPE));
+			$page->smarty->assign('genres', $gen->getGenres(Category::GAME_ROOT));
 			break;
 	}
 }

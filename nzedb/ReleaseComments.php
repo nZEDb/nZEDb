@@ -1,7 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 
 class ReleaseComments
 {
@@ -15,7 +16,7 @@ class ReleaseComments
 	 */
 	public function __construct($settings = null)
 	{
-		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
+		$this->pdo = ($settings instanceof DB ? $settings : new DB());
 	}
 
 	// Returns the row associated to the id of a comment.
@@ -26,7 +27,7 @@ class ReleaseComments
 
 	public function getComments($id)
 	{
-		return $this->pdo->query(sprintf("SELECT release_comments.* FROM release_comments WHERE releaseid = %d ORDER BY createddate DESC", $id));
+		return $this->pdo->query(sprintf("SELECT release_comments.* FROM release_comments WHERE releases_id = %d ORDER BY createddate DESC", $id));
 	}
 
 	public function getCommentCount()
@@ -41,13 +42,13 @@ class ReleaseComments
 		$res = $this->getCommentById($id);
 		if ($res) {
 			$this->pdo->queryExec(sprintf("DELETE FROM release_comments WHERE id = %d", $id));
-			$this->updateReleaseCommentCount($res["releaseid"]);
+			$this->updateReleaseCommentCount($res["releases_id"]);
 		}
 	}
 
 	public function deleteCommentsForRelease($id)
 	{
-		$this->pdo->queryExec(sprintf("DELETE FROM release_comments WHERE releaseid = %d", $id));
+		$this->pdo->queryExec(sprintf("DELETE FROM release_comments WHERE releases_id = %d", $id));
 		$this->updateReleaseCommentCount($id);
 	}
 
@@ -59,14 +60,14 @@ class ReleaseComments
 			$comments = $this->getCommentsForUserRange($id, 0, $numcomments);
 			foreach ($comments as $comment) {
 				$this->deleteComment($comment["id"]);
-				$this->updateReleaseCommentCount($comment["releaseid"]);
+				$this->updateReleaseCommentCount($comment["releases_id"]);
 			}
 		}
 	}
 
 	public function addComment($id, $text, $userid, $host)
 	{
-		if ($this->pdo->getSetting('storeuserips') != "1") {
+		if (Settings::value('..storeuserips') != "1") {
 			$host = "";
 		}
 
@@ -75,7 +76,7 @@ class ReleaseComments
 
 		$comid = $this->pdo->queryInsert(
 			sprintf("
-				INSERT INTO release_comments (releaseid, text, user_id, createddate, host, username)
+				INSERT INTO release_comments (releases_id, text, user_id, createddate, host, username)
 				VALUES (%d, %s, %d, NOW(), %s, %s)",
 				$id,
 				$this->pdo->escapeString($text),
@@ -92,10 +93,10 @@ class ReleaseComments
 	{
 		return $this->pdo->query(
 			sprintf("
-				SELECT release_comments.*, releases.guid
-				FROM release_comments
-				LEFT JOIN releases on releases.id = release_comments.releaseid
-				ORDER BY release_comments.createddate DESC %s",
+				SELECT rc.*, r.guid
+				FROM release_comments rc
+				LEFT JOIN releases r on r.id = rc.releases_id
+				ORDER BY rc.createddate DESC %s",
 				($start === false ? '' : " LIMIT " . $num . " OFFSET " . $start)
 			)
 		);
@@ -107,7 +108,7 @@ class ReleaseComments
 		$this->pdo->queryExec(
 			sprintf("
 				UPDATE releases
-				SET comments = (SELECT COUNT(id) from release_comments WHERE release_comments.releaseid = %d)
+				SET comments = (SELECT COUNT(id) from release_comments WHERE release_comments.releases_id = %d)
 				WHERE releases.id = %d",
 				$relid,
 				$relid

@@ -1,7 +1,604 @@
-This file details which changes to the code are in which release version. It is a complement to the ChangeLog file which list *when* changes are made to the dev branch.
+This file details which changes to the code are in which release version. It is a complement to the
+ChangeLog file which list *when* changes are made to the dev branches.
 
 
-0.5.1 2015-11-03
+0.6.6.1 2016-11-08
+Fixed:
+	* Fix update_releases script not using app\models\Settings class.
+
+0.6.6.0 2016-11-07
+Added:
+	* Option for admins to delete topics in forum.
+	* Search for releases by poster, by clicking on poster name in releases details page.
+
+Changed:
+	* Brought in dev-move-to-settings-model branch. This is expected to cause problems as we
+	 iron out the final wrinkles. Indexing side should mostly be fine as it was previously
+	 merged some time ago. The web side is where we expect most problems to occur. Please keep
+	 an eye on your logs and let us know of *any* problems showing up.
+	* Add the Imagick PHP extension as a required dependency.
+	 ***NOTE*** If you do not already have this extension you *must* install it or PPA will
+	 cause errors. Do:
+		sudo apt-get install php5.6-imagick (or php7.0-imagick, depending on your PHP version).
+	* Switched to using ImageMagick (from GD) for handling image thumbnails, etc. during PPA.
+	* Replace duplicate categorySearch function in releases and exclude leading -99 improving query
+	 speed
+
+Fixed:
+	* Segfaults during PPA caused by broken sample images (fixes issue 2278).
+	* User and role category exclusions (fixes issue 2290).
+	* SQL patch to ensure the indexer, ppa, innerfileblacklist setting exists.
+	* Correct typo causing maxmusicprocessed setting lookup to fail.
+	* Fix speed and count accuracy issues with API/Browse functions (PR 2303).
+
+
+0.6.5.3 2016-10-17
+Changed:
+	* Remove images/covers support from Trakt (they will no longer serve images after 31st. October).
+	* Switch Smarty to bootstrap through lithium instead of just the libraries. Hopefully this will
+	 not cause more problems than it fixes.
+
+Fixed:
+	* Advanced search link in Gamma theme.
+	* Group info included in Extended API output.
+
+
+0.6.5.2 2016-10-13
+Changed:
+	* Switch Smarty to bootstrap through lithium instead of just the libraries. Hopefully this will
+	 not cause more problems than it fixes.
+
+
+0.6.5.1 2016-10-12
+Added:
+	* Add caching to getPagerCount function to reduce load on indexers with many API calls.
+
+Changed:
+	* Issue 2263 - Out of memory issue checking RAR files. Add limit checkings to the extra options.
+
+Fixed:
+	* Add missing setting for settings table.
+
+
+0.6.5.0 2016-10-03
+Added:
+	* TinyMCE editor support to forum and admin->content.
+	* Support for per role category exclusions to admin->role edit page(Closes issue #1639).
+
+Changed:
+	* Refactored scripts using nzedb\db\Settings class without actually using any of the class'
+	 additional features, to use the parent nzedb\db\DB class. This is to let me work on
+	 moving the scripts that DO need the additional features over to using app\models\Settings
+	 instead and properly separating business logic from the way models get used.
+	* Updated NzedbYenc adapter to support decodeIgnore in the extension, instead of falling
+	 back to the Php adapter.
+	 ***NOTE*** This changes the API for the function so all users of the extension will have to
+	 upgrade to at least v1.1.0, or the code will generate errors.
+		https://github.com/niel/php-yenc/releases
+	* Force php-yenc to use v1.2.2 or later, which fixes some issues with multi-part.
+	 ***NOTE*** If you are using the php-yenc extensions you will have to update
+	* Restore reporting of total rows to API response.
+	* Group audio releases by album (fixes issue #2239).
+	* Alter NzedbYenc adapter test to also check for version > 1.0.0 as that version is no longer
+	 compatible with the adapter's implementation.
+	* Refactor yydecode to use std I/O instead of files, improves performance (PR 2266).
+
+Fixed:
+	* Wrongly named autosize script in Alpha and Charisma themes (fixes issue #2268).
+	* Prevent TmdbAPI constructor from exiting hard. Instead it now returns null on failure (Fixes
+	 issue 2271).
+
+
+0.6.4.1 2016-09-08
+Added:
+	* Travis build icons on README for main three branches. Currently only the Installer are
+	 tested but we will expand the test suite to include more.
+
+Fixed:
+	* Content display for not logged in users in Charisma/Gamma/Gentele/Omicron themes.
+	* Prevent yEnc from configuring all adapters during install process, as that would require Db
+	 access which isn't available yet. Closes issue #2257.
+	* Have the yEnc adapters use the PHP adapter for decodeIgnore(). Slow but it what happened before.
+	* Wrap $this->release['group_name'] in an isset check before assignment to avoid missing index
+	 error reported in issue #2259.
+
+
+0.6.4.0 2016-09-05
+Changes:
+	* Refactored our yEnc code to use a single class. Lithium adapters are used for the available
+	 methods, the best available adapter is automatically configured as the default.
+	  No user configuration should be needed, except for the path to ydecode in the settings as
+	 before. simple_php_yen_decode can be removed from that setting for those using it, as the
+	 extension is automatically detected if available.
+	  For PHP 7.0 users, a new extension is available to replace simple_php_yenc_decode (which
+	 cannot be compiled for PHP 7+). This extension is also available for PHP 5.6.
+	  Those familiar with Zephir and able to compile the extension themselves, can do so from this
+	 repository: https://github.com/niel/php-yenc
+	  If you can not compile, and are a trusting soul, precompiled versions, in a .deb file, can be
+	 downloaded from:
+	    https://github.com/niel/php-yenc/releases/download/v1.0.0/php5.6-yenc_1.0.0-5_amd64.deb
+	    https://github.com/niel/php-yenc/releases/download/v1.0.0/php7.0-yenc_1.0.0-4_amd64.deb
+	  The deb package assumes that PHP 5/7 is installed with the php5.6-*/php7.0-* style of
+	 packaging it will not work correctly with the php5-*/php7-* style (extension should install,
+	 but the ini files to load it will be in the wrong locations, so you'll have to correct them).
+	* Update hint for yydecode setting in site-edit.
+
+Fixed:
+	* Sorting arrows on admin->user-list page.
+	* Update isTV regex to match full season releases (PR 2244).
+
+
+0.6.3.3 2016-08-24
+Fixed:
+	* Change rt_attr_string to rt_attr_uint as a dummy field. As attributes are pre-cached, strings
+	 could cause out of memory issues.
+     ***Note*** If using sphinx search the following is required to update the index:
+		sudo service sphinxsearch stop
+	  Edit /etc/sphinxsearch/sphinx.conf if you made any changes from the default
+		sudo mv /etc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf.1
+		sudo cp /var/www/nZEDb/misc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf
+		sudo service sphinxsearch start
+		php misc/sphinxsearch/populate_rt_indexes.php releases_rt
+
+
+0.6.3.2 2016-08-15
+Fixed:
+	* Fix incorrect column name in patch 447.
+
+
+0.6.3.1 2016-08-08
+Changes:
+	* Make themes more lower resolution/mobile devices friendly.
+	* Improve JSON Response from API/RSS by basing it off of XML Response (PR 2194).
+
+Fixed:
+	* Add required rt_att directive for sphinx v2.2.11
+		Note: if using sphinx search the following is required to update the index
+		sudo service sphinxsearch stop
+		sudo mv /etc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf.1
+		sudo cp /var/www/nZEDb/misc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf
+		sudo service sphinxsearch start
+		php misc/sphinxsearch/populate_rt_indexes.php releases_rt
+	* Undefined index genreid in Charisma/Gamma/Gentele/Omicron themes (Fixes issue 2209).
+	* Add missing glyphicons-halflings images to shared/img folder and adjust CSS of Gamma theme.
+	* Replace somehow reverted icon- with font-awesome versions in viewmoviefull and xxx tpl files in Alpha theme.
+	* Install's bootstrap process that prevent use of Settings table before it is created.
+	* User cart operations in themes.
+	* Adjustments to DbUpdate class to be sure Settings instance is there when needed.
+	* Add checks for tv attributes in XML_Response.php (Fixes issue 2225).
+
+
+0.6.3.0 2016-08-01
+Added:
+	* UHD subcategories to Movies, TV and XXX categories.
+	 ***Note*** run recategorize script to populate the new categories
+		php misc/testing/Release/recategorize.php all
+
+Changes:
+	* Update Omicron CSS/JS to AdminLTE 2.3.5
+	* Update profile edit pages in Charisma/Gentele/Omicron themes.
+	* Add group parameter support to api search function (Closes issue 2195).
+	* Use max headers iteration site setting if set (or max of 1,000,000 if not set) during
+	  multiprocessing safe binaries This will ensure we don't queue too many jobs in one loop if
+	  you are behind on updating and is consistant with other update binaries methods.
+
+Fixed:
+	* Reset user grabs and api requests in Charisma/Gamma/Gentele/Omicron themes (Fixes issue 2206).
+	* Remove searchname after the guid when calling release details page in
+	 Charisma/Gamma/Gentele/Omicron themes.
+	* Adding movies to my movies list from in theatre page in Charisma/Gentele/Omicron.
+	* Marking of new releases in Gamma theme browse page.
+	* Add work around for duplicate constants warning.
+	* Restore missing nzb download to api.php (Fixes issue 2212).
+	* Leftover r.group_id in requestid_threaded.py (Fixes issue 2213).
+	* Blank screen on fresh deployment (Issue 2214).
+	* RSS/API usenetdate format to conform with newznab api specification.
+	* Blank browse pages when browsing per category.
+	* Display of browsing categories on browse pages of every theme.
+	* Add lithium libraries bootstrap for Admin pages (Fixes issue 2215).
+	* Wrong order of inserted values in Groups update function (Closes issue 2217).
+
+
+0.6.2.4 2016-07-08
+Changes:
+	* Refactored all scripts to use the app/extensions/util/Versions class instead of the older
+	 nzedb\utility\Versions.
+
+
+0.6.2.3 2016-07-07
+Changes:
+	* Updated fxp/composer-asset-plugin dependency to v1.2.0
+
+Fixes:
+	* Create new bootstrap file (.../bootstrap.php) to enable nzedb and lithium's app libraries
+	 to load together. This fixes #2205.
+	  New files should use it as the base require_once instead of indexer.php. Old files will be
+	 converted over when it is convenient.
+
+
+0.6.2.2 2016-07-06
+Fixes:
+	* Other category not available on new installs, due to insert query still using 'category' table.
+	* Malformed RSS for my movies and my shows RSS.
+
+
+0.6.2.1 2016-07-04
+Fixes: Updated nzedb.xml file.
+
+0.6.2 2016-07-04
+**NOTE** we now only support PHP 5.6 and later versions.
+Added:
+	* Feature apixmlwrite (PR 2155).
+	* Support for Season only searches with fast TV query.
+	* Multiple channel support for IRCScraper.
+	* Gentele theme (PR 2156).
+	* Unique mediainfo ID matching (PR 2153).
+
+Changed:
+	* Update minimum PHP requirements to 5.6.10+
+	* Improved RSS query times.
+	* Made nzb-export comments reflect a more specific date format.
+	* Enabled third pre channel, remove bad sources from ircscraper_settings_example and IRCScraper class.
+	* AniDB site query optimization and code cleanup.
+	* Updated version of unionofrad/lithium library.
+	* Switch Charisma/Omicron to iCheck checkbox style and new Pnotify style.
+	* Updated version of barracudanetworks/forkdaemon-php library (adds unlimited child run support).
+	* Make fixReleaseNames predbft deterministic to prevent useless threads.
+	* Remove release searchname from Gamma profile page (comments part).
+	* Improve RSS query times.
+	* Change some dates in the output to not use RSS style as they are not RSS attributes.
+	* Make screen simple-expanded script executable.
+
+Fixed:
+	* Bug with TV API changes that causes unmatched Show/Sxx/Exx queries to return data.
+	* TV API query will wrongly return an tv_episodes_id value when no sxx/exx/airdate is passed.
+	* Several fixes to Capabilities handling.
+	* nzb-import using filenames as searchname now strips .gz as well as .nzb.
+	* Local lookup not working for airdates because Sxx/Exx is still being set as junk data.
+	* TV Processing returns alias for wrong show first instead of direct show title match.
+	* Fallback TV search now returns only specific episodes / also fix Season pack lookups.
+	* Revert Gamma to use customized utils.js and not the shared one (Closes issue 2166).
+	* No background images in Charisma/Omicron themes.
+	* Dev fixrelsinglerun (PR 2169).
+	* category_id not changed to categories_id for category regexes (Closes issue 2171).
+	* SQL injection in Movie.php (PR 2180).
+	* Initial default theme not set to Alpha, because of lower case first letter.
+	* TV menu link on Default and themes that use it as their base.
+	* Triggers in schema (Closes issue 2184).
+	* Forums on Charisma, Gamma, Gentele, and Omicron themes (Closes issue 2174).
+	* Fix Lithium Connections to send host:name in host field as Lithium expects (PR 2189).
+	* Links to colorbox images in Gamma theme.
+	* PreDB page layout in Gamma theme.
+	* Clean up duplicated and bad functions in Gamma theme's utils.js
+	* Problem introduced with TV API changes, that causes unmatched Show/Sxx/Exx queries to
+	 return data.
+	* Several issues with Capabilities.
+	* Importing NZB, using filename as searchname, now strips .gz as well as .nzb.
+	* Missed occurences of categoryid in UserMovies.php (Closes issue 2191).
+	* Wrong path to file extension icons in Gamma theme viewfilelist.tpl.
+
+
+0.6.1.3 2016-06-23
+Fixed:
+	* Category_id not changed to categories_id for category regexes. (Closees issue 2171).
+	* Local lookup not working for airdates because Sxx/Exx is still being set as junk data.
+	* Initial default theme not set to Alpha, because of lower case first letter.
+
+0.6.1.1 2016-06-08
+Fixed:
+	* Renamed 10-category.tsv to 10-categories.sql
+	* Corrected *_Other categories to x999 in 10-categories.sql
+
+
+0.6.1 2016-06-06
+**NOTE** PHP v5.5 reaches its end of life 2016-07-10. This (0.6.1) will be the last release to
+target it.
+ The next release will require PHP 5.6+
+Added:
+	* New release name format not matched by reqid - includes updated schema/new triggers (PR 2127).
+	* Couch Potato icon to Gamma theme (Closes Issue 2115).
+	* Option to specify the minimum file size using the API? (Closes Issue 234).
+	* Include PREDBURL (if PREDB info exists) in extended=1 API information (Closes Issue 2035).
+	* More verbose output for update git, db commands.
+	* Search Movies (PR 2125, Closes Issue 1581).
+	* Asset (CSS, JS, etc.) management library to reduce duplication of these resources and allow
+	for multiple versions to be used.
+
+Changed:
+	* Numerous SQL query improvements for speed.
+	* Comment out max_matches (deprecated since sphinx 2.2.3) and change sphinx.pid location to
+	proper /var/run/sphinxsearch/searchd.pid.
+	* Changing table 'category' to 'categories' along with references to categoryid => categories_id.
+	**NOTE** This involves changes to your releases table. It will take some time, potentially a
+	very long time, depending on the number of releases you have.
+	* Other changes to tables to bring them inline with lithium conventions. Shouldn't take as long.
+	* Broken NZB files are now detected in clean NZB script.
+	* NZBImport now sets the nzb_guid during the import.
+	* Removed autopatcher script functionality.
+	* Some of Alpha's icons to use font-awesome equivalents.
+
+Fixed:
+	* MySQL connect ignored unix socket if host/port were supplied. Now the socket takes precedent.
+	* Reinstated the LINES TERMINATED BY clause to loading data files to override default. This
+	prevented some data files being correctly loaded into the database.
+	* Update collection regex in a.b.mom.
+	* Yahoo search fix (PR 2121).
+	* TV categorization mismatches.
+	  ** NOTE *** - you will need to do the following to fix the categorization:
+		`php /var/www/nZEDb/misc/testing/Release/recategorize.php all`
+	this will take a while to complete.
+	* Reference to configuration file/location for IRC Scraper in tmux-edit.tpl.
+	* Fix Recaptcha settings (PR 2135).
+	* Prevent deadlocks on binaries and releases updates.
+	* WEB-DL shows as option in My TV shows when not used as a category (Closes Issue 2110).
+	* Remove derefferer use from CouchPotato url links in Gamma theme.
+	* PostProcess Additional tmux query not accurate with PP add queue.
+	* Profile edit included non theme names in its dropdown list.
+	* Buffer nzb creation fixes (Closes Issue 2139).
+	* Add 'artist - title' display to Gamma music page (Closes Issue 2149).
+	* Restore 'None' to themes drop-down list, in profile edit, so site default theme can be used.
+	* Couch Potato should send IMDB ID from page request not release guid.
+
+
+0.6.0.1 2016-05-07
+Fixed:
+	* Db entries in settings for ReCaptcha.
+
+0.6.0 2016-05-02 updated 2016-05-03
+Added:
+	* Support for Composer to handle the project and its dependencies (third party libraries).
+	 In particular this means after this update you will no longer use git pull to updates then
+	have to manually run update_db (that script has been removed). Instead you will have to install
+	Composer (one time only) https://getcomposer.org/doc/00-intro.md#downloading-the-composer-executable
+	 We recommend the global method, as we do not provide the composer.phar file in our repo.
+	 Then in nZEDb root dir run:
+	    composer install
+	 Once that is done (and in the future) run:
+		./zed update nzedb
+	 This will check and install all dependencies and then run the Db updater automatically.
+	 You may have to set permissions on .../app/libraries and .../resources/smarty/templates_c
+	* We are now using the lithium (li3) framework to handle a number of tasks. The ./zed
+	command is an alias to the frameworks li3 console command added in the nZEDb directory for
+	convenience (always use this directory to run such commands in your shell).
+	 I hope to replace many of our cli scripts with more console commands, to make them more
+	useful and easier to remember ;-)
+	* Console commands to replace some scripts. Usage: ./zed <command> <options> (without options
+	 to get help text).
+		update
+		version
+	* simple-expanded.sh Screen script. This is an updated version of the standard screen script
+	with common options already enabled (PR 2113, Thanks to Wally73).
+	* 'gn' case to nfo retrieval in api, to be in line with newznab api spec.
+
+Changed:
+	* Move location of Smarty's additional directories (cache, compile, and config) to the resources
+	directory. These may need you to set the permissions to 777.
+	* Moved nZEDb from .../nzedb/build to .../build/nzedb.xml Notice the filename case has changed.
+	* Removed some scripts:
+		.../misc/testing/DB/autopatcher.php     ... use './zed update nzedb' instead.
+		.../cli/update_db.php                   ... use './zed update nzedb' instead.
+		.../cli/versions.php                    ... use './zed version <option> instead.
+
+Fixed:
+	* Broken links for NFO display on Charisma/Omicron cover pages (Issue 2099).
+	* Prevent undefined index 'isadmin' on forumpost page in Gamma template.
+	* NFO display on coverpages in Light/Default themes (ssue #2099).
+	* Division by zero error when viewing filelist in Alpha and Default themes.
+	* Filelist display in all of the themes, reduce overhead in NZB class related to segments array.
+	* Links to detail pages in Gamma theme (remove release name).
+	* Update sphinx releases_rt index when release files are added.
+		*** NOTE *** - you will need to do the following to update the sphinx index:
+		1) stop sphinxsearch - `sudo service sphinxsearch stop`
+		2) clear old index - `sudo rm /var/lib/sphinxsearch/data/*`
+		3) start sphinxsearch - `sudo service sphinxsearch start`
+		4) populate the index - `php /var/www/nZEDb/misc/sphinxsearch/populate_rt_indexes.php releases_rt`
+	* Check for SD movies before HD ones, to prevent some being falsey matched (PR 2120).
+	* Update Scrutinizer file to hopefully fix 'failed install' errors.
+	* Reinstate the LINES TERMINATED BY clause to loading data files to override default behaviour
+	of only using '\n' instead of '\r\n' that we need (Issue 2104).
+
+
+0.5.5 2016-04-04
+Added:
+
+**IMPORTANT** Be aware that for the this update (April) the stable branch will no longer be the
+master branch. It has been renamed to 0.x. You HAVE to run the following commands to stay on
+stable code:
+	git checkout master
+	git branch -m 0.x
+	git fetch -p
+	git branch --set-upstream-to=origin/0.x
+
+Changed:
+	* Themes have been updated to use Category constants instead of number constants. Theme
+	 designers should never use the numbers directly, they are subject to change at any time.
+	* Charisma/Omicron themes - Move group browsing from user to left side menu.
+	* Move rss, rssdesc and search-filter.tpl files to themes/shared folder. Themes designers
+	 need not implement these templates. In fact for most, they SHOULD not implement them.
+	* Charisma/Gamma/Omicron themes - Replace custom filtering code with search-filter.
+	* Removing extraneous container tags from Alpha theme for Bootstrap v3 (PR 2074).
+	* Update jQuery to version 2.2.1, use jQuery migrate 1.4.0
+	* Gamma theme - Made menus dropdown on hover.
+	* Gamma theme - Bootstrap 3 compatible now.
+	* We now force each users' saburl entry to have a trailing slash.
+	* Rename the ID for posterwall's select dropdown to be more unique and move its style
+	 definition to the posterwall.css file.
+	* Change semantics for failed downloads.
+
+Fixed:
+	* Prevent unkown index '0' for null pagertotalitems result and force a zero value if missing.
+	* Gamma theme headermenu when not using coverviews.
+	* Some issues in the Default template (Issue 2011).
+	* Alpha theme. The Audio menu item does not work as intended (Issue 2026).
+	* "too few arguments" error in Tmux class.
+	* Charisma/Gamma/Omicron themes - Prevent undefined index userdata notice in headermenu.
+	* Gamma theme - RSS issues.
+	* Alpha theme - Console page, rows going outside the grey box element.
+	* Alpha theme - Positioning of View/Admin buttons on category browse pages (Closes PR 2063).
+	* Alpha theme - Replace form-search with proper form-inline.
+	* Charisma/Omicron themes - Replace form-search with proper form-inline.
+	* Admin - Incorrect constant name PC_GAME in predb.tpl, to correct PC_GAMES.
+	* Replaced Genres::CONSOLE_TYPE causing Console.php to fail.
+	* Alpha theme - View NZB comments block from spilling beyond its wrapping grey box.
+	* Book categories in Site Edit "type of books to lookup".
+	 ***NOTE*** You may need to reselect these to pp them correctly.
+	* Alpha theme - Posterwall had white on white characters in the dropdown list for category.
+	* NZBGet url error warning on empty NZBGet url on profile edit page.
+	* Wrong name for failed releases in template.
+	* Add back TV processing to NFO files processing (Issue 2080).
+	* Undefined index $covgroup in Alpha theme preventing cover|list view (Issue 2082).
+	* Default theme menus for cover/list views
+	* Alpha theme menus when coverview is not enabled
+	* Releases' table videos_id and tv_episodes_id need to default to 0 (Closes issue 2084).
+	* Mismatched braces in api which caused search problems (PR 2087, Closes issue 2069).
+
+
+0.5.4 2016-02-29
+Added:
+	* Created second directory for Smarty plugins (.../www/plugins) where we will keep our added
+	 plugins, to avoid issues when updating Smarty.
+
+Changed:
+	* Updated Smarty to version 3.1.29
+	* Change references of releasetitle to title in myshows-add page of Charisma/Omicron theme (PR 2054).
+	* Disable API access for disabled users (PR 2062).
+	* Remove unneccessary MYSQL_ATTR_INIT_COMMAND from PDO dsn options array. This was only
+	 needed before PHP 5.3.6 as 'charset' was ignored.
+
+Fixed:
+	* Prevent undefined index notices in full series and movies view, remove references to
+	 nzbvortex and nzbgetintegration (PR 2039).
+	* myshows-add.tpl (PR 2051, PR 2054).
+	* Missing jquery.qtip2.js in themes/shared/script.
+	* profileedit pages in Charisma/Gamma/Omicron templates
+	* Wrong paths to scripts in Omicron theme
+	* Regression that remove WWW_THEMES definition from Page class.
+	* Fix paths in Charisma theme (PR 2055).
+	* Replace deprecated HTML tag <center> with proper CSS (PR 2056).
+	* Correct path for images on opening page of Install.
+	* Long running queries for RemoveCrap WMV
+	* Update isISO categorization (PR 2040).
+	* Juggle Book category values so they match the existing ones of newznab's published API.
+
+
+0.5.3 2016-02-01
+Added:
+	* A function to return the CAT_OTHERS_GROUP, as array constants are not supported for PHP 5.5.
+		When 5.5 reaches EOL in July we can revisit this.
+
+Changed:
+	* Bring in dev-git-hooks changes. Adds whitespace checking/fixing to pre-commit hook (for
+	  devs only).
+	* Update getID3 library to version 1.9.11.
+	* Moved Other cats to 0000 range, books cat to 7000 range. This will allow 3rd. party apps to
+	  use the newznab category values with the API.
+
+Fixed:
+	* Fixed paths in  Charisma/Omicron themes (PR 2012).
+	* Added missing template file, to Default theme, which caused 500 error when clicking on movie
+	  title in covers view.
+	* Remove duplicate menu items for Login and Register in menu_items.tsv.
+	* In some cases, when not logged in, no theme is defined and certain links are broken with
+	  themes//style... appearing instead of a proper link.
+	* Several bad URLs in Charisma/Gamma/Omicron themes (missing '/' after the smarty constants).
+	* Fix wrong path to shared folder in Gamma theme.
+
+
+0.5.2 2016-01-04
+Added:
+	* Add Gamma template made by RickDB (adapted by Darius) (PR 1987).
+	* Adding noscript support to recaptcha (Default theme only, update custom themes that do not
+	  use it) (PR 2005).
+
+Changed:
+	* Add Trakt Support (PR 1985)
+	* TVDB and TVMaze scripts now support Airdate lookup.
+	* Change COUNT(*) queries to count the primary key columns to improve query performance.
+	* Re-work the count querying in PreDB class.
+	* Greatly improve CodecPoster accuracy and query speed.
+	* DNZB failures shouldn't send an easily corrupted searchname.  Now retrieves it from the DB by sent guid instead.
+	* Refactored our themes. This moves the themes_shared directory to themes/shared.
+		More importantly it now assumes a convention that themes should use Title cased names or
+	  they are not presented as available selections.
+		 Admins may rename the directory of any theme they want to omit from user choice to be
+	  fully lower-case (the change must be commited to prevent overwriting by next update).
+		 This change will be the basis for further improvements in time.
+	* Change grabs and group browse ordering in Gamma theme (PR 2007).
+
+Fixed:
+	* Column genre_id in gamesinfo table, not patched when schema was updated around patch 278.
+	* Omicron/Charisma movie cover links.
+	* Wrong paths in Omicron/Charisma templates (PR 1995).
+	* Paths to scripts in Charisma/Omicron themes (PR 1996).
+	* Provide a DNZB response code when no alternate match is found in DNZB query instead of just showing 404
+	* Attempt to fix issue with releases that have parts counters in the searchname not being sent to Sab properly
+	* Declare $client property in nzedb/processing/tv/TMDB.php (PR 1998).
+	* Fix wrong video sample extension in Gamma template (PR 2006).
+	* update_releases.php -> Call to undefined method finfo::close() (PR 2001).
+	* Fix missing table reference from queries in NameFixer (PR 2010).
+
+
+0.5.1 2015-12-07
+Added:
+	* Regexes for korean newsgroups (PR 1868).
+	* Regexes from request thread (PR 1948).
+	* French flag to "multi" releases (PR 1949).
+	* Add TVMaze and TMDB Scrapers (PR 1953).
+	* IMDB Icon to TV new poster wall.
+	* Make NFO file retrievable for a release via the API and update documentation.
+	* include NFOURL (if NFO exists) in extended=1 API information (Issue 1962).
+	* Add changes for API and pager to charisma and omicron templates (PR 1965).
+
+Changed:
+	* Improve games cover view query time.
+	* Improve movies cover view query time
+	* Releases that fail to parse for TV proc go into their own queue for review.
+	* SmartyTV class abstract errors / fix a few template issues.
+	* Cache counts for Movies, Music, Games.
+	* Speedup Music Cover Views and cleanup a lot of the queries.
+	* Speed up Books, Console, and XXX cover views.
+	* If TVDB cannot reach the API, catch the error and force local lookup.
+	* Improvement to Releases' queries.
+	* Re-work books cover view queries to improve performance.
+	* Re-work movies cover view queries to improve performance.
+	* Improve error reporting for API NFO.
+	* Update the alpha API description for NFO. Fixing bad copy paste.
+	* Improve NFO joining operations and reduce overhead.
+	* Remove option to postprocess [only] properly renamed releases from tmux (PR 1964).
+	* Update templates to font-awesome 4.5.0 (PR 1971).
+	* More speed ups to Music, Games, and XXX cover views.
+	* Alter Screen scripts to default to PHP rather than Python scripts (PR 1980).
+	* Remove update TV schedule from screen script (PR 1979).
+
+Fixed:
+	* Remerged Darius' original charisma/omicron themes into next-master. Hopefully this will fix the issues for master, but may need more work yet.
+	* Attempt to fix AEBN / ADM lookups (Issue 1914).
+	* Schema data for countries table using invalid column for private key.
+	* Collection regex errors (Issue 1954).
+	* Fix book related problems due to wrong var used (PR 1952).
+	* Bad logic for airdate shows after cleanup of TV parsing.
+	* First TV name processing Regex not enforcing the start of the string.
+	* Undefined offset and foreach errors in TMDB.
+	* TraktTv abstract errors from missing functions.
+	* Duplicate Alias Errors and cache alias lookups.
+	* Season Packs not showing up correctly in View Series.
+	* Handle XmlException for try/catch on TVDB lookup.
+	* Bad merge broke regex again.
+	* TV name parsing regex.
+	* If episode airdate not set insert null.
+	* Pager template should not round down. Using ceil round up for the last page is a better choice.
+	* Don't cache failed TV lookups when the Episode didn't find a match but the show did.
+	* Fix the dnzb failures part of search query in Releases.php (PR 1968).
+	* Security issues with DnzbFailures.
+	* Queries in DnzbFailures not working properly.
+	* XmlException errors in TVDB not being caught.
+	* Broken DF queries in Releases.
+	* Fix count of failed releases.
+	* Failed counts for cover views being lumped together instead of group_concat.
+	* Fix the full movie view in omicron/charisma templates (PR 1977).
+
+
+0.5.0-1 2015-11-03
 Added:
 
 Changed:
@@ -18,6 +615,7 @@ Fixed:
 	* Attempt to fix Issue 1844, Pager counts not reflecting release availability.
 	* Index name on user series.
 	* Release-edit redirecting to wrong page (Issue 1940).
+	* Collection regex errors.
 
 
 0.5.0 2015-11-02

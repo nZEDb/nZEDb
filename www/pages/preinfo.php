@@ -188,7 +188,7 @@ if (isset($_GET['type'])) {
 						SELECT p.*,
 						g.name AS groupname
 						FROM predb p
-						INNER JOIN groups g ON g.id = p.group_id
+						INNER JOIN groups g ON g.id = p.groups_id
 						WHERE requestid = %d
 						AND g.name = %s
 						%s %s %s
@@ -229,7 +229,7 @@ if (isset($_GET['type'])) {
 			if (isset($_GET['md5']) && strlen($_GET['md5']) === 32) {
 				$pdo = new DB;
 				$preData = $pdo->query(
-					sprintf('SELECT p.*, HEX(ph.hash) AS md5 FROM predb p INNER JOIN predb_hashes ph ON ph.pre_id = p.id WHERE hash = UNHEX(%s) %s %s %s LIMIT %d OFFSET %d',
+					sprintf('SELECT p.*, HEX(ph.hash) AS md5 FROM predb p INNER JOIN predb_hashes ph ON ph.predb_id = p.id WHERE hash = UNHEX(%s) %s %s %s LIMIT %d OFFSET %d',
 						$pdo->escapeString($_GET['md5']),
 						$newer,
 						$older,
@@ -246,7 +246,7 @@ if (isset($_GET['type'])) {
 			if (isset($_GET['sha1']) && strlen($_GET['sha1']) === 40) {
 				$pdo = new DB;
 				$preData = $pdo->query(
-					sprintf('SELECT p.*, HEX(ph.hash) AS sha1 FROM predb p INNER JOIN predb_hashes ph ON ph.pre_id = p.id WHERE hash = UNHEX(%s) %s %s %s LIMIT %d OFFSET %d',
+					sprintf('SELECT p.*, HEX(ph.hash) AS sha1 FROM predb p INNER JOIN predb_hashes ph ON ph.predb_id = p.id WHERE hash = UNHEX(%s) %s %s %s LIMIT %d OFFSET %d',
 						$pdo->escapeString($_GET['sha1']),
 						$newer,
 						$older,
@@ -302,7 +302,7 @@ if (isset($_GET['type'])) {
 					SELECT p.*,
 					g.name AS groupname
 					FROM predb p
-					INNER JOIN groups g ON g.id = p.group_id
+					INNER JOIN groups g ON g.id = p.groups_id
 					WHERE requestid = %d
 					AND g.name = %s
 					LIMIT 1',

@@ -2,7 +2,7 @@
 
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 class DnzbFailures
 {
@@ -26,7 +26,7 @@ class DnzbFailures
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->rc = new ReleaseComments(['Settings' => $this->pdo]);
 	}
 
@@ -82,11 +82,11 @@ class DnzbFailures
 		}
 
 		return $this->pdo->query("
-			SELECT r.*, concat(cp.title, ' > ', c.title) AS category_name
+			SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name
 			FROM releases r
 			RIGHT JOIN dnzb_failures df ON df.release_id = r.id
-			LEFT OUTER JOIN category c ON c.id = r.categoryid
-			LEFT OUTER JOIN category cp ON cp.id = c.parentid
+			LEFT OUTER JOIN categories c ON c.id = r.categories_id
+			LEFT OUTER JOIN categories cp ON cp.id = c.parentid
 			ORDER BY postdate DESC" . $limit
 		);
 	}
@@ -95,51 +95,54 @@ class DnzbFailures
 	 * Retrieve alternate release with same or similar searchname
 	 *
 	 * @param string $guid
-	 * @param string $searchname
 	 * @param string $userid
 	 * @return string
 	 */
-	public function getAlternate($guid, $searchname, $userid)
+	public function getAlternate($guid, $userid)
 	{
 		$rel = $this->pdo->queryOneRow(
 			sprintf('
-				SELECT id, categoryid
+				SELECT id, searchname, categories_id
 				FROM releases
 				WHERE guid = %s',
 				$this->pdo->escapeString($guid)
 			)
 		);
 
-		// Specifying LAST_INSERT_ID on releaseid will return the releaseid
-		// if the row was actually inserted and not updated
+		if ($rel === false) {
+			return false;
+		}
+
 		$insert = $this->pdo->queryInsert(
 			sprintf('
-				INSERT INTO dnzb_failures (release_id, userid, failed)
-				VALUES (LAST_INSERT_ID(%d), %d, 1)
-				ON DUPLICATE KEY UPDATE failed = failed + 1',
+				INSERT IGNORE INTO dnzb_failures (release_id, userid, failed)
+				VALUES (%d, %d, 1)',
 				$rel['id'],
 				$userid
 			)
 		);
 
 		// If we didn't actually insert the row, don't add a comment
-		if ((int)$insert > 0) {
+		if (is_numeric($insert) && $insert > 0) {
 			$this->postComment($rel['id'], $userid);
 		}
 
 		$alternate = $this->pdo->queryOneRow(
 			sprintf('
-				SELECT r.*
+				SELECT r.guid
 				FROM releases r
 				LEFT JOIN dnzb_failures df ON r.id = df.release_id
 				WHERE r.searchname %s
 				AND df.release_id IS NULL
-				AND r.categoryid = %d',
-				$this->pdo->likeString($searchname, true, true),
-				$rel['categoryid'],
-				$userid
+				AND r.categories_id = %d
+				AND r.id != %d
+				ORDER BY r.postdate DESC',
+				$this->pdo->likeString($rel['searchname'], true, true),
+				$rel['categories_id'],
+				$rel['id']
 			)
 		);
+
 		return $alternate;
 	}
 
@@ -149,7 +152,7 @@ class DnzbFailures
 	 *        update the failed count in dnzb_failures table
 	 *
 	 * @param $relid
-	 * @param $uid
+	 * @param string $uid
 	 */
 	public function postComment($relid, $uid)
 	{
@@ -161,13 +164,13 @@ class DnzbFailures
 			sprintf('
 				SELECT text
 				FROM release_comments
-				WHERE releaseid = %d',
+				WHERE releases_id = %d',
 				$relid
 			)
 		);
 
 		if ($check instanceof \Traversable) {
-			foreach ($check AS $dbl) {
+			foreach ($check as $dbl) {
 				if ($dbl['text'] == $text) {
 					$dupe = 1;
 					break;

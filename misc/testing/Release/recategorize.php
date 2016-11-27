@@ -1,12 +1,13 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\Categorize;
+use nzedb\Category;
 use nzedb\ColorCLI;
 use nzedb\ConsoleTools;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "misc" || preg_match('/\([\d, ]+\)/', $argv[1]) || is_numeric($argv[1])))) {
 	exit($pdo->log->error(
@@ -16,8 +17,8 @@ if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "misc" || preg_match(
 		. "but will not update the database.\n\n"
 		. "php $argv[0] all                     ...: To process all releases.\n"
 		. "php $argv[0] misc                    ...: To process all releases in misc categories.\n"
-		. "php $argv[0] 155                     ...: To process all releases in group_id 155.\n"
-		. "php $argv[0] '(155, 140)'            ...: To process all releases in group_ids 155 and 140.\n"
+		. "php $argv[0] 155                     ...: To process all releases with group id 155.\n"
+		. "php $argv[0] '(155, 140)'            ...: To process all releases with group ids 155 and 140.\n"
 	));
 }
 
@@ -27,13 +28,14 @@ function reCategorize($argv)
 {
 	global $pdo;
 	$where = '';
+	$othercats = Category::getCategoryOthersGroup();
 	$update = true;
 	if (isset($argv[1]) && is_numeric($argv[1])) {
-		$where = ' AND group_id = ' . $argv[1];
+		$where = ' AND groups_id = ' . $argv[1];
 	} else if (isset($argv[1]) && preg_match('/\([\d, ]+\)/', $argv[1])) {
-		$where = ' AND group_id IN ' . $argv[1];
+		$where = ' AND groups_id IN ' . $argv[1];
 	} else if (isset($argv[1]) && $argv[1] === 'misc') {
-		$where = ' AND categoryid IN (1090, 2020, 3050, 4040, 5050, 6050, 7010, 7020, 8050)';
+		$where = sprintf(' AND categories_id IN (%s)', $othercats);
 	}
 	if (isset($argv[2]) && $argv[2] === 'test') {
 		$update = false;
@@ -55,7 +57,7 @@ function reCategorize($argv)
 	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	$time = $consoletools->convertTime(TIME() - $timestart);
 	if ($update === true) {
-		echo $pdo->log->header("Finished re-categorizing " . number_format($chgcount) . " releases in " . $time . " , 	using the searchname.\n");
+		echo $pdo->log->header("Finished re-categorizing " . number_format($chgcount) . " releases in " . $time . " , using the searchname.\n");
 	} else {
 		echo $pdo->log->header("Finished re-categorizing in " . $time . " , using the searchname.\n"
 		. "This would have changed " . number_format($chgcount) . " releases but no updates were done.\n");
@@ -71,13 +73,13 @@ function categorizeRelease($where, $update = true, $echooutput = false)
 	$pdo->log = new ColorCLI();
 	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	$relcount = $chgcount = 0;
-	echo $pdo->log->primary("SELECT id, searchname, group_id, categoryid FROM releases " . $where);
-	$resrel = $pdo->queryDirect("SELECT id, searchname, group_id, categoryid FROM releases " . $where);
+	echo $pdo->log->primary("SELECT id, searchname, groups_id, categories_id FROM releases " . $where);
+	$resrel = $pdo->queryDirect("SELECT id, searchname, groups_id, categories_id FROM releases " . $where);
 	$total = $resrel->rowCount();
 	if ($total > 0) {
 		foreach ($resrel as $rowrel) {
-			$catId = $cat->determineCategory($rowrel['group_id'], $rowrel['searchname']);
-			if ($rowrel['categoryid'] != $catId) {
+			$catId = $cat->determineCategory($rowrel['groups_id'], $rowrel['searchname']);
+			if ($rowrel['categories_id'] != $catId) {
 				if ($update === true) {
 					$pdo->queryExec(
 						sprintf("
@@ -86,13 +88,13 @@ function categorizeRelease($where, $update = true, $echooutput = false)
 								videos_id = 0,
 								tv_episodes_id = 0,
 								imdbid = NULL,
-								musicinfoid = NULL,
-								consoleinfoid = NULL,
+								musicinfo_id = NULL,
+								consoleinfo_id = NULL,
 								gamesinfo_id = 0,
-								bookinfoid = NULL,
+								bookinfo_id = NULL,
 								anidbid = NULL,
 								xxxinfo_id = 0,
-								categoryid = %d
+								categories_id = %d
 							WHERE id = %d",
 							$catId,
 							$rowrel['id']

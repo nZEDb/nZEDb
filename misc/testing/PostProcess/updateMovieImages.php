@@ -1,10 +1,10 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
-$pdo = new Settings();
+$pdo = new DB();
 $covers = $updated = $deleted = 0;
 
 if ($argc == 1 || $argv[1] != 'true') {

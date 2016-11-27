@@ -2,16 +2,17 @@
 /* Argument 1 is optional string, group name. Or numeric, number of header max to download.
  * Argument 2 is optional int, max number of headers to download.
  */
-require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use app\models\Settings;
 use nzedb\Binaries;
 use nzedb\Groups;
 use nzedb\NNTP;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
-$maxHeaders = $pdo->getSetting('max.headers.iteration') ?: 1000000;
+$maxHeaders = Settings::value('max.headers.iteration') ?: 1000000;
 
 // Create the connection here and pass
 $nntp = new NNTP(['Settings' => $pdo]);

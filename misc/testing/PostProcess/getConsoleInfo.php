@@ -1,14 +1,22 @@
 <?php
 //This script will update all records in the consoleinfo table
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use nzedb\Category;
 use nzedb\Console;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$category = new Category();
+$pdo = new DB();
 $console = new Console(['Echo' => true, 'Settings' => $pdo]);
 
-$res = $pdo->queryDirect(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid IS NULL AND categoryid BETWEEN 1000 AND 1999 ORDER BY id DESC"));
+$res = $pdo->queryDirect(
+		sprintf(
+				"SELECT searchname, id FROM releases WHERE consoleinfo_id IS NULL AND categories_id
+				BETWEEN %s AND %s ORDER BY id DESC",
+				Category::GAME_ROOT,
+				Category::GAME_OTHER
+				));
 if ($res instanceof \Traversable) {
 	echo $pdo->log->header("Updating console info for " . number_format($res->rowCount()) . " releases.");
 

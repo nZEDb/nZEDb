@@ -1,9 +1,9 @@
 <?php
 namespace nzedb\processing\tv;
 
-use libs\Moinax\TVDB\Client;
-use libs\Moinax\TVDB\CurlException;
-use libs\Moinax\TVDB\XmlException;
+use Moinax\TvDb\Client;
+use Moinax\TvDb\CurlException;
+use Moinax\TvDb\XmlException;
 use nzedb\ReleaseImage;
 
 /**
@@ -16,7 +16,7 @@ class TVDB extends TV
 	const MATCH_PROBABILITY = 75;
 
 	/**
-	 * @var \libs\Moinax\TVDB\Client
+	 * @var \Moinax\TVDB\Client
 	 */
 	public $client;
 
@@ -147,7 +147,7 @@ class TVDB extends TV
 							$tvdbid = (int)$tvdbShow['tvdb'];
 						}
 
-					} else if ($this->echooutput) {
+					} else if ($this->echooutput && $tvdbid !== false) {
 						echo $this->pdo->log->primaryOver("Video ID for ") .
 							$this->pdo->log->headerOver($release['cleanname']) .
 							$this->pdo->log->primary(" found in local db, attempting episode match.");
@@ -157,8 +157,8 @@ class TVDB extends TV
 						// Now that we have valid video and tvdb ids, try to get the poster
 						$this->getPoster($videoId, $tvdbid);
 
-						$seasonNo = preg_replace('/^S0*/i', '', $release['season']);
-						$episodeNo = preg_replace('/^E0*/i', '', $release['episode']);
+						$seasonNo = (!empty($release['season']) ? preg_replace('/^S0*/i', '', $release['season']) : '');
+						$episodeNo = (!empty($release['episode']) ? preg_replace('/^E0*/i', '', $release['episode']) : '');
 
 						if ($episodeNo === 'all') {
 							// Set the video ID and leave episode 0
@@ -419,7 +419,7 @@ class TVDB extends TV
 			'type'      => (int)parent::TYPE_TV,
 			'title'     => (string)$show->name,
 			'summary'   => (string)$show->overview,
-			'started'   => (string)$show->firstAired,
+			'started'   => $show->firstAired->format('Y-m-d'),
 			'publisher' => (string)$show->network,
 			'source'    => (int)parent::SOURCE_TVDB,
 			'imdb'      => (int)(isset($imdb['imdbid']) ? $imdb['imdbid'] : 0),
@@ -428,7 +428,8 @@ class TVDB extends TV
 			'tvrage'    => 0,
 			'tvmaze'    => 0,
 			'tmdb'      => 0,
-			'aliases'   => (!empty($show->aliasNames) ? (array)$show->aliasNames : '')
+			'aliases'   => (!empty($show->aliasNames) ? (array)$show->aliasNames : ''),
+			'localzone' => "''"
 		];
 	}
 
@@ -447,7 +448,7 @@ class TVDB extends TV
 			'series'      => (int)$episode->season,
 			'episode'     => (int)$episode->number,
 			'se_complete' => (string)'S' . sprintf('%02d', $episode->season) . 'E' . sprintf('%02d', $episode->number),
-			'firstaired'  => (string)$episode->firstAired,
+			'firstaired'  => $episode->firstAired->format('Y-m-d'),
 			'summary'     => (string)$episode->overview
 		];
 	}

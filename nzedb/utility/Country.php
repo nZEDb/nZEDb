@@ -20,27 +20,27 @@
  */
 namespace nzedb\utility;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /**
  * Class Country
  *
  * @package nzedb\utility
  */
-Class Country
+class Country
 {
 	/**
 	 * Get a country code for a country name.
 	 *
 	 * @param string $country
 	 *
-	 * @param Settings $pdo
+	 * @param \nzedb\db\DB $pdo
 	 *
 	 * @return mixed
 	 */
 	public static function countryCode($country, $pdo)
 	{
-		$pdo = ($pdo instanceof Settings ? $pdo : new Settings());
+		$pdo = ($pdo instanceof DB ? $pdo : new DB());
 		if (!is_array($country) && strlen($country) > 2) {
 			$code = $pdo->queryOneRow(
 				sprintf('

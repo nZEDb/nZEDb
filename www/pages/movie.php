@@ -26,9 +26,17 @@ if (isset($_GET['modal']) && isset($_GET["id"]) && ctype_digit($_GET["id"])) {
 	$page->meta_description = "";
 	$page->smarty->registerPlugin('modifier', 'ss', 'stripslashes');
 
-	$page->content = $page->smarty->fetch('viewmovie.tpl');
-
-	echo $page->content;
+	if (isset($_GET['modal']))
+	{
+		$page->content = $page->smarty->fetch('viewmovie.tpl');
+		$page->smarty->assign('modal', true);
+		echo $page->content;
+	}
+	else
+	{
+		$page->content = $page->smarty->fetch('viewmoviefull.tpl');
+		$page->render();
+	}
 } else {
 	$page->render();
 }

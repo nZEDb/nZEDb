@@ -1,6 +1,8 @@
 <?php
 namespace nzedb\processing\tv;
 
+use app\models\Settings;
+use nzedb\Category;
 use nzedb\processing\Videos;
 use nzedb\utility\Country;
 use nzedb\utility\Text;
@@ -49,13 +51,20 @@ abstract class TV extends Videos
 	public $siteColumns;
 
 	/**
+	 * @var string The TV categories_id lookup SQL language
+	 */
+	public $catWhere;
+
+	/**
 	 * @param array $options Class instances / Echo to CLI.
 	 */
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$this->catWhere = 'categoryid BETWEEN 5000 AND 5999 AND categoryid NOT IN (5070)';
-		$this->tvqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
+		$this->catWhere = 'categories_id BETWEEN ' . Category::TV_ROOT . ' AND ' . Category::TV_OTHER . ' AND categories_id  NOT IN (' . Category::TV_ANIME . ')';
+
+		$value = Settings::value('..maxrageprocessed');
+		$this->tvqty = ($value != '') ? $value : 75;
 		$this->imgSavePath = nZEDb_COVERS . 'tvshows' . DS;
 		$this->siteColumns = ['tvdb', 'trakt', 'tvrage', 'tvmaze', 'imdb', 'tmdb'];
 	}
@@ -152,8 +161,8 @@ abstract class TV extends Videos
 				LIMIT %d",
 				$status,
 				$this->catWhere,
-				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
-				($guidChar === '' ? '' : 'AND r.guid ' . $this->pdo->likeString($guidChar, false, true)),
+				($groupID === '' ? '' : 'AND r.groups_id = ' . $groupID),
+				($guidChar === '' ? '' : 'AND r.leftguid = ' . $this->pdo->escapeString($guidChar)),
 				($lookupSetting == 2 ? 'AND r.isrenamed = 1' : ''),
 				$this->tvqty
 			)
@@ -168,7 +177,8 @@ abstract class TV extends Videos
 	 * @param     $releaseId
 	 * @param int $episodeId
 	 */
-	public function setVideoIdFound($videoId, $releaseId, $episodeId) {
+	public function setVideoIdFound($videoId, $releaseId, $episodeId)
+	{
 		$this->pdo->queryExec(
 			sprintf('
 				UPDATE releases
@@ -223,7 +233,7 @@ abstract class TV extends Videos
 
 		// Check if video already exists based on site ID info
 		// if that fails be sure we're not inserting duplicates by checking the title
-		foreach ($this->siteColumns AS $column) {
+		foreach ($this->siteColumns as $column) {
 			if ($show[$column] > 0) {
 				$videoId = $this->getVideoIDFromSiteID($column, $show[$column]);
 			}
@@ -239,27 +249,28 @@ abstract class TV extends Videos
 					INSERT INTO videos
 					(type, title, countries_id, started, source, tvdb, trakt, tvrage, tvmaze, imdb, tmdb)
 					VALUES (%d, %s, %s, %s, %d, %d, %d, %d, %d, %d, %d)',
-						$show['type'],
+					$show['type'],
 					$this->pdo->escapeString($show['title']),
 					$this->pdo->escapeString((isset($show['country']) ? $show['country'] : '')),
 					$this->pdo->escapeString($show['started']),
-						$show['source'],
-						$show['tvdb'],
-						$show['trakt'],
-						$show['tvrage'],
-						$show['tvmaze'],
-						$show['imdb'],
-						$show['tmdb']
+					$show['source'],
+					$show['tvdb'],
+					$show['trakt'],
+					$show['tvrage'],
+					$show['tvmaze'],
+					$show['imdb'],
+					$show['tmdb']
 				)
 			);
 			// Insert the supplementary show info
 			$this->pdo->queryInsert(
 				sprintf("
-					INSERT INTO tv_info (videos_id, summary, publisher)
-					VALUES (%d, %s, %s)",
+					INSERT INTO tv_info (videos_id, summary, publisher, localzone)
+					VALUES (%d, %s, %s, %s)",
 					$videoId,
 					$this->pdo->escapeString($show['summary']),
-					$this->pdo->escapeString($show['publisher'])
+					$this->pdo->escapeString($show['publisher']),
+					$this->pdo->escapeString($show['localzone'])
 				)
 			);
 			// If we have AKAs\aliases, insert those as well
@@ -292,8 +303,8 @@ abstract class TV extends Videos
 					VALUES (%d, %d, %d, %s, %s, %s, %s)
 					ON DUPLICATE KEY update se_complete = %s',
 					$videoId,
-						$episode['series'],
-						$episode['episode'],
+					$episode['series'],
+					$episode['episode'],
 					$this->pdo->escapeString($episode['se_complete']),
 					$this->pdo->escapeString($episode['title']),
 					($episode['firstaired'] != "" ? $this->pdo->escapeString($episode['firstaired']) : "null"),
@@ -327,7 +338,7 @@ abstract class TV extends Videos
 				LEFT JOIN tv_info tvi ON v.id = tvi.videos_id
 				SET v.countries_id = %s, v.tvdb = %s, v.trakt = %s, v.tvrage = %s,
 					v.tvmaze = %s, v.imdb = %s, v.tmdb = %s,
-					tvi.summary = %s, tvi.publisher = %s
+					tvi.summary = %s, tvi.publisher = %s, tvi.localzone = %s
 				WHERE v.id = %d',
 				sprintf($ifStringInfo, 'v.countries_id', $this->pdo->escapeString($show['country']), 'v.countries_id'),
 				sprintf($ifStringID, 'v.tvdb', $show['tvdb'], 'v.tvdb'),
@@ -338,6 +349,7 @@ abstract class TV extends Videos
 				sprintf($ifStringID, 'v.tmdb', $show['tmdb'], 'v.tmdb'),
 				sprintf($ifStringInfo, 'tvi.summary', $this->pdo->escapeString($show['summary']), 'tvi.summary'),
 				sprintf($ifStringInfo, 'tvi.publisher', $this->pdo->escapeString($show['publisher']), 'tvi.publisher'),
+				sprintf($ifStringInfo, 'tvi.localzone', $this->pdo->escapeString($show['localzone']), 'tvi.localzone'),
 				$videoId
 			)
 		);
@@ -371,7 +383,7 @@ abstract class TV extends Videos
 	/**
 	 * Sets the TV show's image column to found (1)
 	 *
-	 * @param $videoId
+	 * @param integer $videoId
 	 */
 	public function setCoverFound($videoId)
 	{
@@ -429,19 +441,19 @@ abstract class TV extends Videos
 	 */
 	public function getBySeasonEp($id, $series, $episode, $airdate = '')
 	{
-		if ($episode > 0) {
-			$queryString = sprintf('series = %d AND episode = %d', $series, $episode);
-		} else if (!empty($airdate) && $airdate !== '') {
-			$queryString = sprintf('DATE(firstaired) = %s', $this->pdo->escapeString(date('Y-m-d', strtotime($airdate))));
+		if (!empty($airdate)) {
+			$queryString = sprintf('DATE(tve.firstaired) = %s', $this->pdo->escapeString(date('Y-m-d', strtotime($airdate))));
+		} else if ($series > 0 && $episode > 0) {
+			$queryString = sprintf('tve.series = %d AND tve.episode = %d', $series, $episode);
 		} else {
 			return false;
 		}
 
 		$episodeArr = $this->pdo->queryOneRow(
 			sprintf("
-				SELECT id
-				FROM tv_episodes
-				WHERE videos_id = %d
+				SELECT tve.id
+				FROM tv_episodes tve
+				WHERE tve.videos_id = %d
 				AND %s",
 				$id,
 				$queryString
@@ -526,7 +538,7 @@ abstract class TV extends Videos
 	{
 		$showName = '';
 
-		$following = 	'[^a-z0-9](\d\d-\d\d|\d{1,3}x\d{2,3}|\(?(19|20)\d{2}\)?|(480|720|1080)[ip]|AAC2?|BD-?Rip|Blu-?Ray|D0?\d' .
+		$following = '[^a-z0-9](\d\d-\d\d|\d{1,3}x\d{2,3}|\(?(19|20)\d{2}\)?|(480|720|1080)[ip]|AAC2?|BD-?Rip|Blu-?Ray|D0?\d' .
 				'|DD5|DiVX|DLMux|DTS|DVD(-?Rip)?|E\d{2,3}|[HX][-_. ]?26[45]|ITA(-ENG)?|HEVC|[HPS]DTV|PROPER|REPACK|Season|Episode|' .
 				'S\d+[^a-z0-9]?((E\d+)[abr]?)*|WEB[-_. ]?(DL|Rip)|XViD)[^a-z0-9]?';
 
@@ -785,11 +797,17 @@ abstract class TV extends Videos
 			case 'tmdbE':
 				$required = ['name', 'season_number', 'episode_number', 'air_date', 'overview'];
 				break;
+			case 'traktS':
+				$required = ['title', 'ids', 'overview', 'first_aired', 'airs', 'country'];
+				break;
+			case 'traktE':
+				$required = ['title', 'season', 'number', 'overview', 'first_aired'];
+				break;
 		}
 
 		if (is_array($required)) {
 			foreach ($required as $req) {
-				if (!in_array($type, ['tmdbS', 'tmdbE'])){
+				if (!in_array($type, ['tmdbS', 'tmdbE', 'traktS', 'traktE'])) {
 					if (!isset($array->$req)) {
 						return false;
 					}

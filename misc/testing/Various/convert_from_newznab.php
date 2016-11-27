@@ -1,7 +1,7 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 // Check argument count.
 if (!isset($argv[1]) || !isset($argv[2]) || !isset($argv[3])) {
@@ -16,7 +16,7 @@ if (!isset($argv[1]) || !isset($argv[2]) || !isset($argv[3])) {
 	exit(1);
 }
 
-$pdo = new Settings();
+$pdo = new DB();
 
 function runQuery($pdo, $sql, $runQueries)
 {
@@ -206,9 +206,9 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "audio_data",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".audio_data (releaseid, audioid, audioformat, audiomode, audiobitratemode, audiobitrate, audiochannels, audiosamplerate, audiolibrary, audiolanguage, audiotitle) " .
-			 "SELECT releaseID, audioID, audioformat, audiomode, audiobitratemode, audiobitrate, audiochannels, audiosamplerate, audiolibrary, audiolanguage, audiotitle FROM " .
-			 $nn_schema . ".releaseaudio GROUP BY releaseID",
+			 ".audio_data (releases_id, audioid, audioformat, audiomode, audiobitratemode, audiobitrate, audiochannels, audiosamplerate, audiolibrary, audiolanguage, audiotitle) " .
+			 "SELECT releases_id, audioID, audioformat, audiomode, audiobitratemode, audiobitrate, audiochannels, audiosamplerate, audiolibrary, audiolanguage, audiotitle FROM " .
+			 $nn_schema . ".releaseaudio GROUP BY releases_id",
 			 $runQueries);
 
 // You lose all spotnab additions (sourceID, gid, cid, isvisible, issynced, username).
@@ -216,32 +216,32 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "release_comments",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".release_comments (createddate, host, id, releaseid, text, user_id) " .
-			 "SELECT createddate, host, ID, releaseID, text, userID FROM " . $nn_schema .
+			 ".release_comments (createddate, host, id, releases_id, text, user_id) " .
+			 "SELECT createddate, host, ID, releases_id, text, userID FROM " . $nn_schema .
 			 ".releasecomment",
 			 $runQueries);
 
 convertTable($pdo,
 			 $nZEDB_schema,
 			 "releaseextrafull",
-			 "INSERT INTO " . $nZEDB_schema . ".releaseextrafull (releaseid, mediainfo) " .
-			 "SELECT releaseID, mediainfo FROM " . $nn_schema . ".releaseextrafull",
+			 "INSERT INTO " . $nZEDB_schema . ".releaseextrafull (releases_id, mediainfo) " .
+			 "SELECT releases_id, mediainfo FROM " . $nn_schema . ".releaseextrafull",
 			 $runQueries);
 
 convertTable($pdo,
 			 $nZEDB_schema,
 			 "release_files",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".release_files (releaseid, name, size, createddate, passworded) " .
-			 "SELECT releaseID, name, size, createddate, passworded FROM " . $nn_schema .
-			 ".releasefiles group by releaseID",
+			 ".release_files (releases_id, name, size, createddate, passworded) " .
+			 "SELECT releases_id, name, size, createddate, passworded FROM " . $nn_schema .
+			 ".releasefiles group by releases_id",
 			 $runQueries);
 
 convertTable($pdo,
 			 $nZEDB_schema,
 			 "release_nfos",
-			 "INSERT INTO " . $nZEDB_schema . ".release_nfos (releaseid, nfo) " .
-			 "SELECT releaseID, nfo FROM " . $nn_schema . ".releasenfo group by releaseID",
+			 "INSERT INTO " . $nZEDB_schema . ".release_nfos (releases_id, nfo) " .
+			 "SELECT releases_id, nfo FROM " . $nn_schema . ".releasenfo group by releases_id",
 			 $runQueries);
 
 echo "Skipping releaseregex table: Not needed with nZEDb\n";
@@ -259,34 +259,34 @@ echo "Skipping releaseregex table: Not needed with nZEDb\n";
 //      *8000   Misc                    Books
 
 //      name                            nn+                     nZEDb
-//      Comics                          7030/7000       8020/8000
-//      EBook                           7020/7000       8010/8000
-//      Mags                            7010/7000       8030/8000
-//      Pack                            6050/6000       6070/6000
-//      Misc                            0                       7010/7000
+//      Comics                          7030/7000       7030/7000
+//      EBook                           7020/7000       7020/7000
+//      Mags                            7010/7000       7010/7000
+//      Pack                            6999/6000       6070/6000
+//      Misc                            0                       7999/7000
 //      Other                           0                       7000/null
-//      Other                           0                       1090/1000
-//  Other                               0                       3050/3000
+//      Other                           0                       1999/1000
+//  Other                               0                       3999/3000
 //      3D                                      2060/2000       2050/2000
 //      BluRay                          2050/2000       2060/2000
 //      Books                           7000/null       8000/null
-//      Other                           6070/6000       6050/6000
+//      Other                           6070/6000       6999/6000
 //      Other                           8010/8000       8050/8000
 
 convertTable($pdo,
 			 $nZEDB_schema,
 			 "releases",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".releases (adddate, anidbid, bookinfoid, categoryid, comments, completion, consoleinfoid, fromname, grabs, group_id, guid, haspreview, id, imdbid, musicinfoid, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, nzb_guid) " .
-			 "SELECT adddate, anidbID, bookinfoID, case categoryID when 7030 then 8020 when 7020 then 8010 when 7010 then 8030 when 6050 then 6070 when 2060 then 2050 when 2050 then 2060 when 7000 then 8000 when 6070 then 6050 when 8010 then 8050 else categoryID end, comments, completion, consoleinfoID, fromname, grabs, group_id, guid, haspreview, ID, imdbID, musicinfoID, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, UNHEX(gid) FROM " .
+			 ".releases (adddate, anidbid, bookinfo_id, categories_id, comments, completion, consoleinfo_id, fromname, grabs, groups_id, guid, haspreview, id, imdbid, musicinfo_id, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, nzb_guid) " .
+			 "SELECT adddate, anidbID, bookinfo_id, case categoryID when 7030 then 8020 when 7020 then 8010 when 7010 then 8030 when 6999 then 6070 when 2060 then 2050 when 2050 then 2060 when 7000 then 8000 when 6070 then 6999 when 8010 then 8050 else categoryID end, comments, completion, consoleinfo_id, fromname, grabs, group_id, guid, haspreview, ID, imdbID, musicinfo_id, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, UNHEX(gid) FROM " .
 			 $nn_schema . ".releases",
 			 $runQueries);
 
 convertTable($pdo,
 			 $nZEDB_schema,
 			 "release_subtitles",
-			 "INSERT INTO " . $nZEDB_schema . ".release_subtitles (releaseid, subsid, subslanguage) " .
-			 "SELECT releaseID, subsID, subslanguage FROM " . $nn_schema . ".releasesubs",
+			 "INSERT INTO " . $nZEDB_schema . ".release_subtitles (releases_id, subsid, subslanguage) " .
+			 "SELECT releases_id, subsID, subslanguage FROM " . $nn_schema . ".releasesubs",
 			 $runQueries);
 
 // You lose (definition).
@@ -294,8 +294,8 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "video_data",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".video_data (containerformat,overallbitrate,releaseid,videoaspect,videocodec,videoduration,videoformat,videoframerate,videoheight,videolibrary,videowidth) " .
-			 "SELECT containerformat,overallbitrate,releaseID,videoaspect,videocodec,videoduration,videoformat,videoframerate, videoheight, videolibrary, videowidth FROM " .
+			 ".video_data (containerformat,overallbitrate,releases_id,videoaspect,videocodec,videoduration,videoformat,videoframerate,videoheight,videolibrary,videowidth) " .
+			 "SELECT containerformat,overallbitrate,releases_id,videoaspect,videocodec,videoduration,videoformat,videoframerate, videoheight, videolibrary, videowidth FROM " .
 			 $nn_schema . ".releasevideo group by releaseID",
 			 $runQueries);
 
@@ -319,7 +319,7 @@ convertTable($pdo,
 convertTable($pdo,
 			 $nZEDB_schema,
 			 "users_releases",
-			 "INSERT INTO " . $nZEDB_schema . ".users_releases (user_id, releaseid, createddate) " .
+			 "INSERT INTO " . $nZEDB_schema . ".users_releases (user_id, releases_id, createddate) " .
 			 "SELECT userID, releaseID, createddate FROM " . $nn_schema . ".usercart",
 			 $runQueries);
 
@@ -334,7 +334,7 @@ convertTable($pdo,
 convertTable($pdo,
 			 $nZEDB_schema,
 			 "user_excluded_categories",
-			 "INSERT INTO " . $nZEDB_schema . ".user_excluded_categories (user_id, categoryid, createddate) " .
+			 "INSERT INTO " . $nZEDB_schema . ".user_excluded_categories (user_id, categories_id, createddate) " .
 			 "SELECT userID, categoryID, createddate FROM " . $nn_schema . ".userexcat",
 			 $runQueries);
 
@@ -349,7 +349,7 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "user_movies",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".user_movies (user_id, imdbid, categoryid, createddate) " .
+			 ".user_movies (user_id, imdbid, categories, createddate) " .
 			 "SELECT userID, imdbID, categoryID, createddate FROM " . $nn_schema . ".usermovies",
 			 $runQueries);
 
@@ -385,7 +385,7 @@ convertTable($pdo,
 			 $nZEDB_schema,
 			 "user_series",
 			 "INSERT INTO " . $nZEDB_schema .
-			 ".user_series (user_id, rageid, categoryid, createddate) " .
+			 ".user_series (user_id, rageid, categories, createddate) " .
 			 "SELECT userID, rageID, categoryID, createddate FROM " . $nn_schema . ".userseries",
 			 $runQueries);
 

@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing\tv;
 
+use app\models\Settings;
 use libs\Tmdb\TmdbAPI;
 use nzedb\ReleaseImage;
 
@@ -14,6 +15,11 @@ class TMDB extends TV
 	public $posterUrl;
 
 	/**
+	 * @var \libs\Tmdb\TmdbAPI
+	 */
+	public $client;
+
+	/**
 	 * Construct. Instantiate TMDB Class
 	 *
 	 * @param array $options Class instances.
@@ -23,7 +29,7 @@ class TMDB extends TV
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$this->client = new TmdbAPI($this->pdo->getSetting('tmdbkey'));
+		$this->client = new TmdbAPI(Settings::value('APIs..tmdbkey'));
 	}
 
 	/**
@@ -43,12 +49,12 @@ class TMDB extends TV
 	 * Main processing director function for TMDB
 	 * Calls work query function and initiates processing
 	 *
-	 * @param      $groupID
-	 * @param      $guidChar
-	 * @param      $process
-	 * @param bool $local
+	 * @param string  $groupID
+	 * @param string  $guidChar
+	 * @param         $process
+	 * @param boolean $local
 	 */
-	public function processSite ($groupID, $guidChar, $process, $local = false)
+	public function processSite($groupID, $guidChar, $process, $local = false)
 	{
 		$res = $this->getTvReleases($groupID, $guidChar, $process, parent::PROCESS_TMDB);
 
@@ -177,7 +183,7 @@ class TMDB extends TV
 						$this->setVideoNotFound(parent::PROCESS_TRAKT, $row['id']);
 						$this->titleCache[] = $release['cleanname'];
 					}
-				} else{
+				} else {
 					//Processing failed, set the episode ID to the next processing group
 					$this->setVideoNotFound(parent::PROCESS_TRAKT, $row['id']);
 					$this->titleCache[] = $release['cleanname'];
@@ -209,8 +215,8 @@ class TMDB extends TV
 	}
 
 	/**
-	 * @param $shows
-	 * @param $cleanName
+	 * @param        $shows
+	 * @param string $cleanName
 	 *
 	 * @return array|false
 	 */
@@ -219,7 +225,7 @@ class TMDB extends TV
 		$return = false;
 		$highestMatch = 0;
 
-		foreach ($shows AS $show) {
+		foreach ($shows as $show) {
 			if ($this->checkRequiredAttr($show->_data, 'tmdbS')) {
 				// Check for exact title match first and then terminate if found
 				if (strtolower($show->_data['name']) === strtolower($cleanName)) {
@@ -240,7 +246,7 @@ class TMDB extends TV
 		if (isset($highest)) {
 			$showAppends = $this->client->getTVShow($highest->_data['id'], 'append_to_response=alternative_titles,external_ids');
 			if (isset($showAppends->_data['alternative_titles']['results']) && is_array($showAppends->_data['alternative_titles']['results'])) {
-				foreach ($showAppends->_data['alternative_titles']['results'] AS $aka) {
+				foreach ($showAppends->_data['alternative_titles']['results'] as $aka) {
 					$highest->_data['alternative_titles'][] = $aka['title'];
 				}
 				$highest->_data['network'] = (isset($showAppends->_data['networks'][0]['name']) ? $showAppends->_data['networks'][0]['name'] : '');
@@ -332,7 +338,8 @@ class TMDB extends TV
 				'tvrage'    => (isset($show->_data['external_ids']['tvrage_id']) ? (int)$show->_data['external_ids']['tvrage_id'] : 0),
 				'tvmaze'    => 0,
 				'tmdb'      => (int)$show->_data['id'],
-				'aliases'   => (!empty($show->_data['alternative_titles']) ? (array)$show->_data['alternative_titles'] : '')
+				'aliases'   => (!empty($show->_data['alternative_titles']) ? (array)$show->_data['alternative_titles'] : ''),
+				'localzone' => "''"
 		];
 	}
 

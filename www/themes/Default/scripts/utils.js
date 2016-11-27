@@ -74,18 +74,18 @@ jQuery(function ($) {
         });
         return false;
     });
-    $('.sendtocouch').click(function(e){
-        e.preventDefault();
-        $.get($(this).attr('rel'));
 
-        $.pnotify({
-            title: 'ADDED TO COUCHPOTATO!',
-            text: 'Its now on your wanted list! ^_^',
-            type: 'info',
-            animate_speed: 'fast',
-            icon: 'icon-info-sign'
+    $('.sendtocouch').click(function (e) {
+        if ($(this).hasClass('icon_cp_clicked')) return false;
+        var id = $(this).attr('id').substring(4);
+        var cpurl = SERVERROOT + "sendtocouch/" + id;
+
+        $.post(cpurl, function(resp){
+            $(e.target).addClass('icon_cp_clicked').attr('title','Added to CouchPotato');
+            createGrowl('Added to CouchPotato');
         });
     });
+    
     $("table.data a.modal_nfo").colorbox({	 // NFO modal
         href: function () {
             return $(this).attr('href') + '&modal';

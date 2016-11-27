@@ -1,14 +1,15 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use app\models\Settings;
 use nzedb\ConsoleTools;
 use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 $dir = nZEDb_RES . "movednzbs/";
 
@@ -33,14 +34,15 @@ $couldbe = ($argv[1] === "true") ? "could be " : "";
 echo $pdo->log->header('Getting List of nzbs to check against db.');
 echo $pdo->log->header("Checked / {$couldbe}moved\n");
 
-$dirItr = new \RecursiveDirectoryIterator($pdo->getSetting('nzbpath'));
+$dirItr = new \RecursiveDirectoryIterator(Settings::value('..nzbpath'));
 $itr = new \RecursiveIteratorIterator($dirItr, \RecursiveIteratorIterator::LEAVES_ONLY);
 
 foreach ($itr as $filePath) {
 	$guid = stristr($filePath->getFilename(), '.nzb.gz', true);
 	if (is_file($filePath) && $guid) {
 		$nzbfile = Misc::unzipGzipFile($filePath);
-		if (!$nzbfile || !@simplexml_load_string($nzbfile)) {
+		$nzbContents = $nzb->nzbFileList($nzbfile, ['no-file-key' => false, 'strip-count' => true]);
+		if (!$nzbfile || !@simplexml_load_string($nzbfile) || count($nzbContents) === 0) {
 			if ($argv[1] === "move") {
 				rename($filePath, $dir . $guid . ".nzb.gz");
 			}

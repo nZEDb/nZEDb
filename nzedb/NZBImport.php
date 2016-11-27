@@ -1,7 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 use nzedb\Groups;
 
@@ -114,14 +115,15 @@ class NZBImport
 		$options += $defaults;
 
 		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $options['Echo']);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->binaries = ($options['Binaries'] instanceof Binaries ? $options['Binaries'] : new Binaries(['Settings' => $this->pdo, 'Echo' => $this->echoCLI]));
 		$this->category = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
 		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
 		$this->releaseCleaner = ($options['ReleaseCleaning'] instanceof ReleaseCleaning ? $options['ReleaseCleaning'] : new ReleaseCleaning($this->pdo));
 		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['settings' => $this->pdo]));
 
-		$this->crossPostt = ($this->pdo->getSetting('crossposttime') != '') ? $this->pdo->getSetting('crossposttime') : 2;
+		$dummy = Settings::value('..crossposttime');
+		$this->crossPostt = ($dummy != '') ? $dummy : 2;
 		$this->browser = $options['Browser'];
 		$this->retVal = '';
 		$this->groups = new Groups(['Settings' => $this->pdo]);
@@ -187,7 +189,10 @@ class NZBImport
 				}
 
 				// Try to insert the NZB details into the DB.
-				$inserted = $this->scanNZBFile($nzbXML, ($useNzbName ? str_ireplace('.nzb', '', basename($nzbFile)) : false));
+				$inserted = $this->scanNZBFile(
+					$nzbXML,
+					($useNzbName ? trim(preg_replace('/\.nzb(\.gz)?$/i', '', basename($nzbFile))) : false)
+				);
 
 				if ($inserted) {
 
@@ -287,12 +292,12 @@ class NZBImport
 			// Make a fake message array to use to check the blacklist.
 			$msg = ["Subject" => (string)$file->attributes()->subject, "From" => (string)$file->attributes()->poster, "Message-ID" => ""];
 
-			// Get the group names, group_id, check if it's blacklisted.
+			// Get the group names, groups_id, check if it's blacklisted.
 			$groupArr = [];
 			foreach ($file->groups->group as $group) {
 				$group = (string)$group;
 
-				// If group_id is -1 try to get a group_id.
+				// If groups_id is -1 try to get a groups_id.
 				if ($groupID === -1) {
 					if (array_key_exists($group, $this->allGroups)) {
 						$groupID = $this->allGroups[$group];
@@ -300,18 +305,21 @@ class NZBImport
 							$groupName = $group;
 						}
 					} else {
-						$groupID = $this->groups->add([
-							'name' => $group,
-							'description' => 'Added by NZBimport script.',
-							'backfill_target' => 0,
-							'first_record' => 0,
-							'last_record' => 0,
-							'active' => 0,
-							'backfill' => 0
-						]);
-						$this->allGroups[$group] = $groupID;
+						$group = $this->groups->isValidGroup($group);
+						if ($group !== false) {
+							$groupID = $this->groups->add([
+								'name' => $group,
+								'description' => 'Added by NZBimport script.',
+								'backfill_target' => 1,
+								'first_record' => 0,
+								'last_record' => 0,
+								'active' => 0,
+								'backfill' => 0
+							]);
+							$this->allGroups[$group] = $groupID;
 
-						$this->echoOut("Adding missing group: ($group)");
+							$this->echoOut("Adding missing group: ($group)");
+						}
 					}
 				}
 				// Add all the found groups to an array.
@@ -353,10 +361,10 @@ class NZBImport
 				'useFName'   => $useNzbName,
 				'postDate'   => (empty($postDate) ? date("Y-m-d H:i:s") : $postDate),
 				'from'       => (empty($posterName) ? '' : $posterName),
-				'group_id'    => $groupID,
+				'groups_id'  => $groupID,
 				'groupName'  => $groupName,
 				'totalFiles' => $totalFiles,
-				'totalSize'  => $totalSize
+				'totalSize'  => $totalSize,
 			]
 		);
 	}
@@ -416,15 +424,15 @@ class NZBImport
 					'name' => $escapedSubject,
 					'searchname' => $escapedSearchName,
 					'totalpart' => $nzbDetails['totalFiles'],
-					'group_id' => $nzbDetails['group_id'],
+					'groups_id' => $nzbDetails['groups_id'],
 					'guid' => $this->pdo->escapeString($this->relGuid),
 					'postdate' => $this->pdo->escapeString($nzbDetails['postDate']),
 					'fromname' => $escapedFromName,
 					'size' => $this->pdo->escapeString($nzbDetails['totalSize']),
-					'categoryid' => $this->category->determineCategory($nzbDetails['group_id'], $cleanName),
+					'categories_id' => $this->category->determineCategory($nzbDetails['groups_id'], $cleanName),
 					'isrenamed' => $renamed,
 					'reqidstatus' => 0,
-					'preid' => 0,
+					'predb_id' => 0,
 					'nzbstatus' => NZB::NZB_ADDED
 				]
 			);

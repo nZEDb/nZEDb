@@ -1,6 +1,7 @@
 <?php
 
 use nzedb\AniDB;
+use nzedb\Category;
 use nzedb\Releases;
 
 if (!$page->users->isLoggedIn()) {
@@ -12,8 +13,9 @@ $AniDB = new AniDB(['Settings' => $page->settings]);
 
 if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 
-	# force the category to 5070 as it should be for anime, as $catarray was NULL and we know the category for sure for anime
-	$releases = $Releases->searchbyAnidbId($_GET['id'], 0, 1000, '', array('5070'), -1);
+	# force the category to TV_ANIME as it should be for anime, as $catarray was NULL and we know the category for sure for anime
+	$releases = $Releases->searchbyAnidbId($_GET['id'], 0, 1000, '', [Category::TV_ANIME],
+	-1);
 	$anidb = $AniDB->getAnimeInfo($_GET['id']);
 
 	if (!$releases && !$anidb) {

@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 class Forum
 {
@@ -20,7 +20,7 @@ class Forum
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 	}
 
 	public function add($parentid, $userid, $subject, $message, $locked = 0, $sticky = 0, $replies = 0)
@@ -139,5 +139,29 @@ class Forum
 				$uid
 			)
 		);
+	}
+
+	/**
+	 * Edit forum post for user
+	 *
+	 * @param $id
+	 * @param $message
+	 * @param $uid
+	 */
+	public function editPost($id, $message, $uid)
+	{
+		$post = $this->getPost($id);
+		if ($post) {
+			$this->pdo->queryExec(sprintf('
+									UPDATE forum_posts
+									SET message = %s
+									WHERE id = %d
+									AND user_id = %d',
+				$this->pdo->escapeString($message),
+				$post['id'],
+				$uid
+			)
+			);
+		}
 	}
 }

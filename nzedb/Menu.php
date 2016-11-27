@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 class Menu
 {
@@ -11,11 +11,11 @@ class Menu
 	public $pdo;
 
 	/**
-	 * @param \nzedb\db\Settings $settings
+	 * @param \nzedb\db\DB $pdo
 	 */
-	public function __construct($settings = null)
+	public function __construct($pdo = null)
 	{
-		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
+		$this->pdo = ($pdo instanceof DB ? $pdo : new DB());
 	}
 
 	public function get($role, $serverurl)

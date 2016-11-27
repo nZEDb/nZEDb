@@ -1,0 +1,15 @@
+body{
+    /*min-height:700px;
+    min-width: 1250px;
+    /*background-color: #f7f7f7;*/
+
+}
+
+
+.descfull, .mlextra{
+	display:none
+}
+
+td.less {width:100px;}
+
+.preinfo  {cursor:pointer;}

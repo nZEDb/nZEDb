@@ -1,7 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 use nzedb\processing\PostProcess;
 use nzedb\utility\Misc;
 
@@ -94,7 +95,7 @@ class NZBContents
 		$options += $defaults;
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->nntp = ($options['NNTP'] instanceof NNTP ? $options['NNTP'] : new NNTP(['Echo' => $this->echooutput, 'Settings' => $this->pdo]));
 		$this->nfo = ($options['Nfo'] instanceof Nfo ? $options['Nfo'] : new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo]));
 		$this->pp = (
@@ -104,8 +105,8 @@ class NZBContents
 		);
 		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
 
-		$this->lookuppar2 = ($this->pdo->getSetting('lookuppar2') == 1 ? true : false);
-		$this->alternateNNTP = ($this->pdo->getSetting('alternate_nntp') == 1 ? true : false);
+		$this->lookuppar2 = (Settings::value('..lookuppar2') == 1 ? true : false);
+		$this->alternateNNTP = (Settings::value('..alternate_nntp') == 1 ? true : false);
 	}
 
 	/**
@@ -176,7 +177,7 @@ class NZBContents
 		$nzbFile = $this->LoadNZB($guid);
 		if ($nzbFile !== false) {
 			foreach ($nzbFile->file as $nzbContents) {
-				if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', (string)$nzbContents->attributes()->subject)) {
+				if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)/i', (string)$nzbContents->attributes()->subject)) {
 					if ($this->pp->parsePAR2((string)$nzbContents->segments->segment, $relID, $groupID, $this->nntp, $show) === true && $nameStatus === 1) {
 						$this->pdo->queryExec(sprintf('UPDATE releases SET proc_par2 = 1 WHERE id = %d', $relID));
 						return true;

@@ -1,19 +1,22 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\Binaries;
 use nzedb\NNTP;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /* This script will update the groups table to get the new article numbers for each group you have activated.
   It will also truncate the parts, binaries, collections, and missed_parts tables.
  */
 // TODO: Make this threaded so it goes faster.
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if (!isset($argv[1]) || $argv[1] != 'true') {
-	printf($pdo->log->setColor('Yellow') . "This script is used when you have switched UseNet Providers(USP) so you can pickup where you left off, rather than resetting all the groups.\nOnly use this script after you have updated your config.php file with your new USP info!!\nMake sure you " . $pdo->log->setColor('Red', 'Bold') . "DO NOT" . $pdo->log->setcolor('Yellow') . " have any update or postprocess scripts running when running this script!\n\n" . $pdo->log->setColor('Cyan') . "Usage: php change_USP_provider true\n");
+	printf($pdo->log->setColor('Yellow') .
+			"This script is used when you have switched UseNet Providers (USP) so you can pickup where you left off, rather than resetting all the groups.\nOnly use this script after you have updated your config.php file with your new USP info!!\nMake sure you " .
+			$pdo->log->setColor('Red', 'Bold') . "DO NOT" . $pdo->log->setcolor('Yellow') . " have any update or postprocess scripts running when running this script!\n\n" .
+			$pdo->log->setColor('Cyan') . "Usage: php change_usenet_provider true\n");
 	exit();
 }
 

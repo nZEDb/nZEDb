@@ -20,7 +20,7 @@
  */
 namespace nzedb\processing;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /**
  * Parent class for TV/Film and any similar classes to inherit from.
@@ -66,7 +66,7 @@ abstract class Videos
 		//date_default_timezone_set('UTC'); TODO: Make this a DTO instead and use as needed
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->titleCache = [];
 	}
 
@@ -82,7 +82,7 @@ abstract class Videos
 	abstract protected function processSite($groupID, $guidChar, $process, $local = false);
 
 	/**
-	 * Get video info from a Site ID and column.
+	 * Get video info from a Video ID and column.
 	 *
 	 * @param string  $siteColumn
 	 * @param integer $videoID
@@ -116,6 +116,20 @@ abstract class Videos
 			return isset($result['id']) ? (int)$result['id'] : false;
 		}
 		return false;
+	}
+
+	/**
+	 * Get TV show local timezone from a Video ID
+	 *
+	 * @param integer $videoID
+	 *
+	 * @return string Empty string if no query return or tz style timezone
+	 */
+	protected function getLocalZoneFromVideoID($videoID)
+	{
+		$result = $this->pdo->queryOneRow("SELECT localzone FROM tv_info WHERE videos_id = $videoID");
+
+		return (isset($result['localzone']) ? $result['localzone'] : '');
 	}
 
 	/**
@@ -206,15 +220,30 @@ abstract class Videos
 				sprintf("
 					SELECT v.id
 					FROM videos v
-					LEFT JOIN videos_aliases va ON v.id = va.videos_id
-					WHERE (v.title = %1\$s OR va.title = %1\$s)
+					WHERE v.title = %1\$s
 					AND v.type = %2\$d %3\$s",
 					$this->pdo->escapeString($title),
 					$type,
 					($source > 0 ? 'AND v.source = ' . $source : '')
 				)
 			);
+			// Try for an alias
+			if ($return === false) {
+				$return = $this->pdo->queryOneRow(
+					sprintf("
+						SELECT v.id
+						FROM videos v
+						INNER JOIN videos_aliases va ON v.id = va.videos_id
+						WHERE va.title = %1\$s
+						AND v.type = %2\$d %3\$s",
+						$this->pdo->escapeString($title),
+						$type,
+						($source > 0 ? 'AND v.source = ' . $source : '')
+					)
+				);
+			}
 		}
+
 		return $return;
 	}
 
@@ -236,16 +265,30 @@ abstract class Videos
 				sprintf("
 					SELECT v.id
 					FROM videos v
-					LEFT JOIN videos_aliases va ON v.id = va.videos_id
-					WHERE (v.title %1\$s
-					OR va.title %1\$s)
-					AND type = %2\$d %3\$s",
+					WHERE v.title %s
+					AND type = %d %s",
 					$this->pdo->likeString(rtrim($title, '%'), false, false),
 					$type,
 					($source > 0 ? 'AND v.source = ' . $source : '')
 				)
 			);
+			// Try for an alias
+			if ($return === false) {
+				$return = $this->pdo->queryOneRow(
+					sprintf("
+						SELECT v.id
+						FROM videos v
+						INNER JOIN videos_aliases va ON v.id = va.videos_id
+						WHERE va.title %s
+						AND type = %d %s",
+						$this->pdo->likeString(rtrim($title, '%'), false, false),
+						$type,
+						($source > 0 ? 'AND v.source = ' . $source : '')
+					)
+				);
+			}
 		}
+
 		return $return;
 	}
 

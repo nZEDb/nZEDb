@@ -20,7 +20,7 @@
  */
 namespace nzedb\db\populate;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 class PopulateTitles
@@ -67,7 +67,7 @@ class PopulateTitles
 		$this->mainTable = $options['main-table'];
 		$this->tempTable = $options['main-table'] . '_tmp';
 
-		if (isset($options['pdo']) && $options['pdo'] instanceof Settings) {
+		if (isset($options['pdo']) && $options['pdo'] instanceof DB) {
 			$this->pdo = $options['pdo'];
 		}
 	}
@@ -123,7 +123,7 @@ class PopulateTitles
 	protected function pdo()
 	{
 		if ($this->pdo === null) {
-			$this->pdo = new Settings();
+			$this->pdo = new DB();
 		}
 		return $this->pdo;
 	}

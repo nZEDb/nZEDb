@@ -20,8 +20,6 @@
  */
 namespace nzedb\config;
 
-require_once nZEDb_LIBS . 'autoloader.php';
-
 class Configure
 {
 	private $environments = [
@@ -42,17 +40,6 @@ class Configure
 	public function __construct($environment = 'indexer')
 	{
 		$this->loadEnvironment($environment);
-	}
-
-	private function loadEnvironment($environment)
-	{
-		if (array_key_exists($environment, $this->environments)) {
-			foreach ($this->environments[$environment] as $config => $throwException) {
-				$this->loadSettings($config, $throwException);
-			}
-		} else {
-			throw new \RuntimeException("Unknown environment passed to Configure class!");
-		}
 	}
 
 	public function loadSettings($filename, $throwException = true)
@@ -79,6 +66,7 @@ class Configure
 				if (is_file($settings_file)) {
 					require_once($settings_file);
 					if (php_sapi_name() == 'cli') {
+						// TODO put this version in the nzedb.xml file and load it. Hard coding is bad.
 						$current_settings_file_version = 4; // Update this when updating settings.example.php
 						if (!defined('nZEDb_SETTINGS_FILE_VERSION') ||
 							nZEDb_SETTINGS_FILE_VERSION != $current_settings_file_version
@@ -90,7 +78,7 @@ class Configure
 						}
 						unset($current_settings_file_version);
 					}
-				} else {
+				} else if (!defined('ITEMS_PER_PAGE')) {
 					define('ITEMS_PER_PAGE', '50');
 					define('ITEMS_PER_COVER_PAGE', '20');
 					define('nZEDb_ECHOCLI', true);
@@ -131,6 +119,17 @@ class Configure
 			define('nZEDb_SSL_VERIFY_PEER', '0');
 			define('nZEDb_SSL_VERIFY_HOST', '0');
 			define('nZEDb_SSL_ALLOW_SELF_SIGNED', '1');
+		}
+	}
+
+	private function loadEnvironment($environment)
+	{
+		if (array_key_exists($environment, $this->environments)) {
+			foreach ($this->environments[$environment] as $config => $throwException) {
+				$this->loadSettings($config, $throwException);
+			}
+		} else {
+			throw new \RuntimeException("Unknown environment passed to Configure class!");
 		}
 	}
 }

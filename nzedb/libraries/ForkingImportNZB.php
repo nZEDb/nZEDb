@@ -1,7 +1,7 @@
 <?php
 namespace nzedb\libraries;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /**
  * Class ForkingImportNZB
@@ -11,12 +11,17 @@ use nzedb\db\Settings;
 class ForkingImportNZB extends Forking
 {
 	/**
+	 * @var string Fully qualified path to PHP binary and our nzb-import script.
+	 */
+	public $importPath;
+
+	/**
 	 * @param array $options
 	 */
 	public function __construct(array $options = [])
 	{
 		$defaults = [
-			'settings' => new Settings(),
+			'settings' => new DB(),
 		];
 		$options += $defaults;
 

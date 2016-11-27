@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing;
 
+use app\models\Settings;
 use nzedb\Books;
 use nzedb\Category;
 use nzedb\Console;
@@ -12,18 +13,16 @@ use nzedb\Music;
 use nzedb\NameFixer;
 use nzedb\Nfo;
 use nzedb\Sharing;
-//use nzedb\processing\tv\TvRage;
 use nzedb\processing\tv\TVDB;
 use nzedb\processing\tv\TVMaze;
 use nzedb\processing\tv\TMDB;
+use nzedb\processing\tv\TraktTv;
 use nzedb\XXX;
 use nzedb\ReleaseFiles;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\processing\post\AniDB;
 use nzedb\processing\post\ProcessAdditional;
 use nzedb\utility;
-
-require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 
 class PostProcess
 {
@@ -105,7 +104,7 @@ class PostProcess
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 
 		// Class instances.
-		$this->pdo = (($options['Settings'] instanceof Settings) ? $options['Settings'] : new Settings());
+		$this->pdo = (($options['Settings'] instanceof DB) ? $options['Settings'] : new DB());
 		$this->groups = (($options['Groups'] instanceof Groups) ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->_par2Info = new \Par2Info();
 		$this->debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->pdo->log]));
@@ -114,14 +113,14 @@ class PostProcess
 		$this->releaseFiles = (($options['ReleaseFiles'] instanceof ReleaseFiles) ? $options['ReleaseFiles'] : new ReleaseFiles($this->pdo));
 
 		// Site settings.
-		$this->addpar2 = ($this->pdo->getSetting('addpar2') == 0) ? false : true;
-		$this->alternateNNTP = ($this->pdo->getSetting('alternate_nntp') == 1 ? true : false);
+		$this->addpar2 = (Settings::value('..addpar2') == 0) ? false : true;
+		$this->alternateNNTP = (Settings::value('..alternate_nntp') == 1 ? true : false);
 	}
 
 	/**
 	 * Go through every type of post proc.
 	 *
-	 * @param $nntp
+	 * @param \nzedb\NNTP $nntp
 	 *
 	 * @return void
 	 */
@@ -147,7 +146,7 @@ class PostProcess
 	 */
 	public function processAnime()
 	{
-		if ($this->pdo->getSetting('lookupanidb') != 0) {
+		if (Settings::value('..lookupanidb') != 0) {
 			(new AniDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processAnimeReleases();
 		}
 	}
@@ -159,7 +158,7 @@ class PostProcess
 	 */
 	public function processBooks()
 	{
-		if ($this->pdo->getSetting('lookupbooks') != 0) {
+		if (Settings::value('..lookupbooks') != 0) {
 			(new Books(['Echo' => $this->echooutput, 'Settings' => $this->pdo, ]))->processBookReleases();
 		}
 	}
@@ -171,7 +170,7 @@ class PostProcess
 	 */
 	public function processConsoles()
 	{
-		if ($this->pdo->getSetting('lookupgames') != 0) {
+		if (Settings::value('..lookupgames') != 0) {
 			(new Console(['Settings' => $this->pdo, 'Echo' => $this->echooutput]))->processConsoleReleases();
 		}
 	}
@@ -183,7 +182,7 @@ class PostProcess
 	 */
 	public function processGames()
 	{
-		if ($this->pdo->getSetting('lookupgames') != 0) {
+		if (Settings::value('..lookupgames') != 0) {
 			(new Games(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processGamesReleases();
 		}
 	}
@@ -200,7 +199,7 @@ class PostProcess
 	 */
 	public function processMovies($groupID = '', $guidChar = '', $processMovies = '')
 	{
-		$processMovies = (is_numeric($processMovies) ? $processMovies : $this->pdo->getSetting('lookupimdb'));
+		$processMovies = (is_numeric($processMovies) ? $processMovies : Settings::value('..lookupimdb'));
 		if ($processMovies > 0) {
 			(new Movie(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processMovieReleases($groupID, $guidChar, $processMovies);
 		}
@@ -213,7 +212,7 @@ class PostProcess
 	 */
 	public function processMusic()
 	{
-		if ($this->pdo->getSetting('lookupmusic') != 0) {
+		if (Settings::value('..lookupmusic') != 0) {
 			(new Music(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processMusicReleases();
 		}
 	}
@@ -229,8 +228,8 @@ class PostProcess
 	 */
 	public function processNfos(&$nntp, $groupID = '', $guidChar = '')
 	{
-		if ($this->pdo->getSetting('lookupnfo') == 1) {
-			$this->Nfo->processNfoFiles($nntp, $groupID, $guidChar, (int)$this->pdo->getSetting('lookupimdb'), (int)$this->pdo->getSetting('lookuptvrage'));
+		if (Settings::value('..lookupnfo') == 1) {
+			$this->Nfo->processNfoFiles($nntp, $groupID, $guidChar, (int)Settings::value('lookupimdb'), (int)Settings::value('lookuptvrage'));
 		}
 	}
 
@@ -247,20 +246,24 @@ class PostProcess
 	/**
 	 * Process all TV related releases which will assign their series/episode/rage data.
 	 *
-	 * @param string     $groupID   (Optional) ID of a group to work on.
-	 * @param string     $guidChar  (Optional) First letter of a release GUID to use to get work.
-	 * @param string|int $processTV (Optional) 0 Don't process, 1 process all releases,
-	 *                                         2 process renamed releases only, '' check site setting
+	 * @param string        $groupID   (Optional) ID of a group to work on.
+	 * @param string        $guidChar  (Optional) First letter of a release GUID to use to get work.
+	 * @param string|integer $processTV (Optional)
+	 *                                         0 Don't process,
+	 *                                         1 process all releases,
+	 *                                         2 process renamed releases only,
+	 *                                         '' check site setting
 	 *
 	 * @return void
 	 */
 	public function processTv($groupID = '', $guidChar = '', $processTV = '')
 	{
-		$processTV = (is_numeric($processTV) ? $processTV : $this->pdo->getSetting('lookuptvrage'));
+		$processTV = (is_numeric($processTV) ? $processTV : Settings::value('..lookuptvrage'));
 		if ($processTV > 0) {
 			(new TVDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processSite($groupID, $guidChar, $processTV);
 			(new TVMaze(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processSite($groupID, $guidChar, $processTV);
 			(new TMDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processSite($groupID, $guidChar, $processTV);
+			(new TraktTv(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processSite($groupID, $guidChar, $processTV);
 			//(new TvRage(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processSite($groupID, $guidChar, $processTV);
 		}
 	}
@@ -270,7 +273,7 @@ class PostProcess
 	 */
 	public function processXXX()
 	{
-		if ($this->pdo->getSetting('lookupxxx') == 1) {
+		if (Settings::value('..lookupxxx') == 1) {
 			(new XXX(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processXXXReleases();
 		}
 	}
@@ -312,7 +315,7 @@ class PostProcess
 
 		$query = $this->pdo->queryOneRow(
 			sprintf('
-				SELECT id, group_id, categoryid, name, searchname, UNIX_TIMESTAMP(postdate) AS post_date, id AS releaseid
+				SELECT id, groups_id, categories_id, name, searchname, UNIX_TIMESTAMP(postdate) AS post_date, id AS releases_id
 				FROM releases
 				WHERE isrenamed = 0
 				AND id = %d',
@@ -326,18 +329,18 @@ class PostProcess
 
 		// Only get a new name if the category is OTHER.
 		$foundName = true;
-		if (!in_array(
-			(int)$query['categoryid'],
+		if (in_array(
+			(int)$query['categories_id'],
 			[
-				Category::CAT_BOOKS_OTHER,
-				Category::CAT_GAME_OTHER,
-				Category::CAT_MOVIE_OTHER,
-				Category::CAT_MUSIC_OTHER,
-				Category::CAT_PC_PHONE_OTHER,
-				Category::CAT_TV_OTHER,
-				Category::CAT_OTHER_HASHED,
-				Category::CAT_XXX_OTHER,
-				Category::CAT_MISC
+				Category::BOOKS_UNKNOWN,
+				Category::GAME_OTHER,
+				Category::MOVIE_OTHER,
+				Category::MUSIC_OTHER,
+				Category::PC_PHONE_OTHER,
+				Category::TV_OTHER,
+				Category::OTHER_HASHED,
+				Category::XXX_OTHER,
+				Category::OTHER_MISC
 			]
 		)
 		) {
@@ -345,7 +348,7 @@ class PostProcess
 		}
 
 		// Get the PAR2 file.
-		$par2 = $nntp->getMessages($this->groups->getByNameByID($groupID), $messageID, $this->alternateNNTP);
+		$par2 = $nntp->getMessages($this->groups->getNameByID($groupID), $messageID, $this->alternateNNTP);
 		if ($nntp->isError($par2)) {
 			return false;
 		}
@@ -379,9 +382,9 @@ class PostProcess
 					if ($filesAdded < 11 &&
 						$this->pdo->queryOneRow(
 							sprintf('
-								SELECT releaseid
+								SELECT releases_id
 								FROM release_files
-								WHERE releaseid = %d
+								WHERE releases_id = %d
 								AND name = %s',
 								$relID,
 								$this->pdo->escapeString($file['name'])

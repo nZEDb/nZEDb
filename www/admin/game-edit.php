@@ -3,6 +3,7 @@ require_once './config.php';
 
 use nzedb\Games;
 use nzedb\Genres;
+use nzedb\Category;
 
 $page  = new AdminPage();
 $games = new Games(['Settings' => $page->settings]);
@@ -54,7 +55,7 @@ if (isset($_REQUEST["id"])) {
 		default:
 			$page->title = "Game Edit";
 			$page->smarty->assign('game', $game);
-			$page->smarty->assign('genres', $gen->getGenres(Genres::GAME_TYPE));
+			$page->smarty->assign('genres', $gen->getGenres(Category::PC_ROOT));
 			break;
 	}
 }

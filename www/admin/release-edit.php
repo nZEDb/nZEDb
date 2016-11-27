@@ -37,7 +37,7 @@ switch ($action) {
 		if (isset($_GET["id"])) {
 			$page->title = "Release Edit";
 			$id          = $_GET["id"];
-			$release     = $releases->getByID($id);
+			$release     = $releases->getById($id);
 			$page->smarty->assign('release', $release);
 		}
 		break;

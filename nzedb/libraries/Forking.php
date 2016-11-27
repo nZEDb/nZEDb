@@ -1,15 +1,17 @@
 <?php
 namespace nzedb\libraries;
 
+use app\models\Settings;
+use nzedb\Category;
 use nzedb\ColorCLI;
+use nzedb\MiscSorter;
+use nzedb\NameFixer;
 use nzedb\Nfo;
 use nzedb\NNTP;
 use nzedb\NZB;
 use nzedb\RequestID;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\processing\PostProcess;
-
-require_once(nZEDb_LIBS . 'forkdaemon-php' . DS . 'fork_daemon.php');
 
 /**
  * Class Forking
@@ -41,20 +43,21 @@ class Forking extends \fork_daemon
 			(defined('nZEDb_MULTIPROCESSING_LOG_TYPE') ? nZEDb_MULTIPROCESSING_LOG_TYPE : \fork_daemon::LOG_LEVEL_INFO)
 		);
 
-		$this->max_work_per_child_set(1);
 		if (defined('nZEDb_MULTIPROCESSING_MAX_CHILD_WORK')) {
 			$this->max_work_per_child_set(nZEDb_MULTIPROCESSING_MAX_CHILD_WORK);
+		} else {
+			$this->max_work_per_child_set(1);
 		}
 
-		$this->child_max_run_time_set(1800);
 		if (defined('nZEDb_MULTIPROCESSING_MAX_CHILD_TIME')) {
 			$this->child_max_run_time_set(nZEDb_MULTIPROCESSING_MAX_CHILD_TIME);
+		} else {
+			$this->child_max_run_time_set(1800);
 		}
 
 		// Use a single exit method for all children, makes things easier.
 		$this->register_parent_child_exit([0 => $this, 1 => 'childExit']);
 
-		$this->outputType = self::OUTPUT_REALTIME;
 		if (defined('nZEDb_MULTIPROCESSING_CHILD_OUTPUT_TYPE')) {
 			switch (nZEDb_MULTIPROCESSING_CHILD_OUTPUT_TYPE) {
 				case 0:
@@ -69,6 +72,8 @@ class Forking extends \fork_daemon
 				default:
 					$this->outputType = self::OUTPUT_REALTIME;
 			}
+		} else {
+			$this->outputType = self::OUTPUT_REALTIME;
 		}
 
 		$this->dnr_path = PHP_BINARY . ' ' . nZEDb_MULTIPROCESSING . '.do_not_run' . DS . 'switch.php "php  ';
@@ -93,7 +98,7 @@ class Forking extends \fork_daemon
 		$this->work = [];
 
 		// Init Settings here, as forking causes errors when it's destroyed.
-		$this->pdo = new Settings();
+		$this->pdo = new DB();
 
 		// Process extra work that should not be forked and done before forking.
 		$this->processStartWork();
@@ -143,11 +148,7 @@ class Forking extends \fork_daemon
 				$maxProcesses = $this->binariesMainMethod();
 				break;
 
-			case 'fixRelNames_nfo':
-			case 'fixRelNames_filename':
-			case 'fixRelNames_md5':
-			case 'fixRelNames_par2':
-			case 'fixRelNames_miscsorter':
+			case 'fixRelNames_standard':
 			case 'fixRelNames_predbft':
 				$maxProcesses = $this->fixRelNamesMainMethod();
 				break;
@@ -288,7 +289,7 @@ class Forking extends \fork_daemon
 				($this->workTypeOptions[0] === false ? '' : (', ' . $this->workTypeOptions[0] . ' AS max'))
 			)
 		);
-		return $this->pdo->getSetting('backfillthreads');
+		return Settings::value('..backfillthreads');
 	}
 
 	public function backFillChildWorker($groups, $identifier = '')
@@ -309,7 +310,7 @@ class Forking extends \fork_daemon
 		$this->register_child_run([0 => $this, 1 => 'safeBackfillChildWorker']);
 
 		$run = $this->pdo->query("SELECT (SELECT value FROM tmux WHERE setting = 'backfill_qty') AS qty, (SELECT value FROM tmux WHERE setting = 'backfill') AS backfill, (SELECT value FROM tmux WHERE setting = 'backfill_order') AS orderby, (SELECT value FROM tmux WHERE setting = 'backfill_days') AS days, (SELECT value FROM settings WHERE setting = 'maxmssgs') AS maxmsgs");
-		$threads = $this->pdo->getSetting('backfillthreads');
+		$threads = Settings::value('..backfillthreads');
 
 		$orderby = "ORDER BY a.last_record ASC";
 		switch ((int)$run[0]['orderby']) {
@@ -338,7 +339,8 @@ class Forking extends \fork_daemon
 		if ($run[0]['days'] == 1) {
 			$backfilldays = "backfill_target";
 		} elseif ($run[0]['days'] == 2) {
-			$backfilldays = round(abs(strtotime(date("Y-m-d")) - strtotime($this->pdo->getSetting('safebackfilldate'))) / 86400);
+			$backfilldays = round(abs(strtotime(date("Y-m-d")) -
+					strtotime(Settings::value('..safebackfilldate'))) / 86400);
 		}
 
 		$data = $this->pdo->queryOneRow(
@@ -407,7 +409,7 @@ class Forking extends \fork_daemon
 				$this->workTypeOptions[0]
 			)
 		);
-		return $this->pdo->getSetting('binarythreads');
+		return Settings::value('..binarythreads');
 	}
 
 	public function binariesChildWorker($groups, $identifier = '')
@@ -426,10 +428,17 @@ class Forking extends \fork_daemon
 	{
 		$this->register_child_run([0 => $this, 1 => 'safeBinariesChildWorker']);
 
-		$maxmssgs = $this->pdo->getSetting('maxmssgs');
-		$threads = $this->pdo->getSetting('binarythreads');
+		$maxheaders = Settings::value('max.headers.iteration') ?: 1000000;
+		$maxmssgs = Settings::value('..maxmssgs');
+		$threads = Settings::value('..binarythreads');
 
-		$groups = $this->pdo->query("SELECT g.name AS groupname, g.last_record AS our_last, a.last_record AS their_last FROM groups g INNER JOIN short_groups a ON g.active = 1 AND g.name = a.name ORDER BY a.last_record DESC");
+		$groups = $this->pdo->query("
+			SELECT g.name AS groupname, g.last_record AS our_last,
+				a.last_record AS their_last
+			FROM groups g
+			INNER JOIN short_groups a ON g.active = 1 AND g.name = a.name
+			ORDER BY a.last_record DESC"
+		);
 
 		if ($groups) {
 			$i = 1;
@@ -448,8 +457,8 @@ class Forking extends \fork_daemon
 					} else {
 						$queue[$i] = sprintf("part_repair  %s", $group['groupname']);
 						$i++;
-						$geteach = floor($count / $maxmssgs);
-						$remaining = $count - $geteach * $maxmssgs;
+						$geteach = floor(min($count, $maxheaders) / $maxmssgs);
+						$remaining = min($count, $maxheaders) - $geteach * $maxmssgs;
 						//echo "maxmssgs: " . $maxmssgs . " geteach: " . $geteach . " remaining: " . $remaining . PHP_EOL;
 						for ($j = 0; $j < $geteach; $j++) {
 							$queue[$i] = sprintf("get_range  binaries  %s  %s  %s  %s", $group['groupname'], $group['our_last'] + $j * $maxmssgs + 1, $group['our_last'] + $j * $maxmssgs + $maxmssgs, $i);
@@ -486,72 +495,46 @@ class Forking extends \fork_daemon
 	{
 		$this->register_child_run([0 => $this, 1 => 'fixRelNamesChildWorker']);
 
-		$join = "";
-		$where = "";
-		$groupby = "GROUP BY guidchar";
-		$orderby = "ORDER BY guidchar ASC";
-		$rowLimit = "LIMIT 16";
-		$extrawhere = "AND r.preid = 0 AND r.nzbstatus = 1";
-		$select = "DISTINCT LEFT(r.guid, 1) AS guidchar, COUNT(*) AS count";
-
-
-		$threads = $this->pdo->getSetting('fixnamethreads');
-		$maxperrun = $this->pdo->getSetting('fixnamesperrun');
+		$threads = Settings::value('..fixnamethreads');
+		$maxperrun = Settings::value('..fixnamesperrun');
 
 		if ($threads > 16) {
 			$threads = 16;
-		}
-		switch ($this->workTypeOptions[0]) {
-			case "md5":
-				$join = "LEFT OUTER JOIN release_files rf ON r.id = rf.releaseid AND rf.ishashed = 1";
-				$where = "r.ishashed = 1 AND r.dehashstatus BETWEEN -6 AND 0";
-				break;
-
-			case "nfo":
-				$where = "r.proc_nfo = 0 AND r.nfostatus = 1";
-				break;
-
-			case "filename":
-				$join = "INNER JOIN release_files rf ON r.id = rf.releaseid";
-				$where = "r.proc_files = 0";
-				break;
-
-			case "par2":
-				$where = "r.proc_par2 = 0";
-				break;
-
-			case "miscsorter":
-				$where = "r.nfostatus = 1 AND r.proc_nfo = 1 AND r.proc_sorter = 0 AND r.isrenamed = 0";
-				break;
-
-			case "predbft":
-				$extrawhere = "";
-				$where = "1=1";
-				$rowLimit = sprintf("LIMIT %s", $threads);
-				break;
+		} else if ($threads == 0) {
+			$threads = 1;
 		}
 
-		$datas = $this->pdo->query(sprintf("SELECT %s FROM releases r %s WHERE %s %s %s %s %s", $select, $join, $where, $extrawhere, $groupby, $orderby, $rowLimit));
+		$leftguids = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
 
-		if ($datas) {
-			$count = 0;
-			$queue = [];
-			foreach ($datas as $firstguid) {
-				if ($count >= $threads) {
-					$count = 0;
-				}
-				$count++;
-				if ($firstguid['count'] < $maxperrun) {
-					$limit = $firstguid['count'];
-				} else {
-					$limit = $maxperrun;
-				}
-				if ($limit > 0) {
-					$queue[$count] = sprintf("%s %s %s %s", $this->workTypeOptions[0], $firstguid['guidchar'], $limit, $count);
-				}
+		// Prevent PreDB FT from always running
+		if ($this->workTypeOptions[0] === 'predbft') {
+			$preCount = $this->pdo->queryOneRow(
+				sprintf("
+					SELECT COUNT(p.id) AS num
+					FROM predb p
+					WHERE LENGTH(p.title) >= 15
+					AND p.title NOT REGEXP '[\"\<\> ]'
+					AND p.searched = 0
+					AND p.predate < (NOW() - INTERVAL 1 DAY)"
+				)
+			);
+			if ($preCount['num'] > 0) {
+				$leftguids = array_slice($leftguids, 0, (int)ceil($preCount['num'] / $maxperrun));
+			} else {
+				$leftguids = array();
 			}
-			$this->work = $queue;
 		}
+
+		$count = 0;
+		$queue = [];
+		foreach ($leftguids as $leftguid) {
+			$count++;
+			if ($maxperrun > 0) {
+				$queue[$count] = sprintf("%s %s %s %s", $this->workTypeOptions[0], $leftguid, $maxperrun, $count);
+			}
+		}
+		$this->work = $queue;
+
 		return $threads;
 	}
 
@@ -573,7 +556,7 @@ class Forking extends \fork_daemon
 	{
 		$this->register_child_run([0 => $this, 1 => 'releasesChildWorker']);
 
-		$this->tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 1 ? true : false);
+		$this->tablePerGroup = (Settings::value('..tablepergroup') == 1 ? true : false);
 		if ($this->tablePerGroup === true) {
 
 			$groups = $this->pdo->queryDirect('SELECT id FROM groups WHERE (active = 1 OR backfill = 1)');
@@ -589,7 +572,7 @@ class Forking extends \fork_daemon
 			$this->work = $this->pdo->query('SELECT name FROM groups WHERE (active = 1 OR backfill = 1)');
 		}
 
-		return $this->pdo->getSetting('releasesthreads');
+		return Settings::value('releasesthreads');
 	}
 
 	public function releasesChildWorker($groups, $identifier = '')
@@ -646,18 +629,18 @@ class Forking extends \fork_daemon
 	 */
 	private function checkProcessAdditional()
 	{
-		$this->ppAddMinSize =
-			($this->pdo->getSetting('minsizetopostprocess') != '') ? (int)$this->pdo->getSetting('minsizetopostprocess') : 1;
+		$dummy = Settings::value('..minsizetopostprocess');
+		$this->ppAddMinSize = ($dummy != '') ? (int)$dummy : 1;
 		$this->ppAddMinSize = ($this->ppAddMinSize > 0 ? ('AND r.size > ' . ($this->ppAddMinSize * 1048576)) : '');
-		$this->ppAddMaxSize =
-			($this->pdo->getSetting('maxsizetopostprocess') != '') ? (int)$this->pdo->getSetting('maxsizetopostprocess') : 100;
+		$dummy = Settings::value('..maxsizetopostprocess');
+		$this->ppAddMaxSize = ($dummy != '') ? (int)$dummy : 100;
 		$this->ppAddMaxSize = ($this->ppAddMaxSize > 0 ? ('AND r.size < ' . ($this->ppAddMaxSize * 1073741824)) : '');
 		return (
 			$this->pdo->queryOneRow(
 				sprintf('
 					SELECT r.id
 					FROM releases r
-					LEFT JOIN category c ON c.id = r.categoryid
+					LEFT JOIN categories c ON c.id = r.categories_id
 					WHERE r.nzbstatus = %d
 					AND r.passwordstatus BETWEEN -6 AND -1
 					AND r.haspreview = -1
@@ -680,22 +663,22 @@ class Forking extends \fork_daemon
 			$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
 			$this->work = $this->pdo->query(
 				sprintf('
-					SELECT LEFT(r.guid, 1) AS id
+					SELECT leftguid AS id
 					FROM releases r
-					LEFT JOIN category c ON c.id = r.categoryid
+					LEFT JOIN categories c ON c.id = r.categories_id
 					WHERE r.nzbstatus = %d
 					AND r.passwordstatus BETWEEN -6 AND -1
 					AND r.haspreview = -1
 					AND c.disablepreview = 0
 					%s %s
-					GROUP BY LEFT(r.guid, 1)
+					GROUP BY leftguid
 					LIMIT 16',
 					NZB::NZB_ADDED,
 					$this->ppAddMaxSize,
 					$this->ppAddMinSize
 				)
 			);
-			$maxProcesses = $this->pdo->getSetting('postthreads');
+			$maxProcesses = Settings::value('..postthreads');
 		}
 		return $maxProcesses;
 	}
@@ -708,7 +691,7 @@ class Forking extends \fork_daemon
 	 */
 	private function checkProcessNfo()
 	{
-		if ($this->pdo->getSetting('lookupnfo') == 1) {
+		if (Settings::value('..lookupnfo') == 1) {
 			$this->nfoQueryString = Nfo::NfoQueryString($this->pdo);
 			return (
 				$this->pdo->queryOneRow(
@@ -730,15 +713,15 @@ class Forking extends \fork_daemon
 			$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
 			$this->work = $this->pdo->query(
 				sprintf('
-					SELECT LEFT(r.guid, 1) AS id
+					SELECT leftguid AS id
 					FROM releases r
 					WHERE 1=1 %s
-					GROUP BY LEFT(r.guid, 1)
+					GROUP BY leftguid
 					LIMIT 16',
 					$this->nfoQueryString
 				)
 			);
-			$maxProcesses = $this->pdo->getSetting('nfothreads');
+			$maxProcesses = Settings::value('..nfothreads');
 		}
 		return $maxProcesses;
 	}
@@ -749,7 +732,7 @@ class Forking extends \fork_daemon
 	 */
 	private function checkProcessMovies()
 	{
-		if ($this->pdo->getSetting('lookupimdb') > 0) {
+		if (Settings::value('..lookupimdb') > 0) {
 			return (
 				$this->pdo->queryOneRow(
 					sprintf('
@@ -757,11 +740,13 @@ class Forking extends \fork_daemon
 						FROM releases
 						WHERE nzbstatus = %d
 						AND imdbid IS NULL
-						AND categoryid BETWEEN 2000 AND 2999
+						AND categories_id BETWEEN %d AND %d
 						%s %s
 						LIMIT 1',
 						NZB::NZB_ADDED,
-						($this->pdo->getSetting('lookupimdb') == 2 ? 'AND isrenamed = 1' : ''),
+						Category::MOVIE_ROOT,
+						Category::MOVIE_OTHER,
+						(Settings::value('lookupimdb') == 2 ? 'AND isrenamed = 1' : ''),
 						($this->ppRenamedOnly ? 'AND isrenamed = 1' : '')
 					)
 				) === false ? false : true
@@ -778,21 +763,21 @@ class Forking extends \fork_daemon
 			$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
 			$this->work = $this->pdo->query(
 				sprintf('
-					SELECT LEFT(guid, 1) AS id, %d AS renamed
+					SELECT leftguid AS id, %d AS renamed
 					FROM releases
 					WHERE nzbstatus = %d
 					AND imdbid IS NULL
-					AND categoryid BETWEEN 2000 AND 2999
+					AND categories_id BETWEEN ' . Category::MOVIE_ROOT . ' AND ' . Category::MOVIE_OTHER . '
 					%s %s
-					GROUP BY LEFT(guid, 1)
+					GROUP BY leftguid
 					LIMIT 16',
 					($this->ppRenamedOnly ? 2 : 1),
 					NZB::NZB_ADDED,
-					($this->pdo->getSetting('lookupimdb') == 2 ? 'AND isrenamed = 1' : ''),
+					(Settings::value('..lookupimdb') == 2 ? 'AND isrenamed = 1' : ''),
 					($this->ppRenamedOnly ? 'AND isrenamed = 1' : '')
 				)
 			);
-			$maxProcesses = $this->pdo->getSetting('postthreadsnon');
+			$maxProcesses = Settings::value('postthreadsnon');
 		}
 		return $maxProcesses;
 	}
@@ -803,7 +788,8 @@ class Forking extends \fork_daemon
 	 */
 	private function checkProcessTV()
 	{
-		if ($this->pdo->getSetting('lookuptvrage') > 0) {
+		$lookuptv = Settings::value('..lookuptvrage');
+		if ($lookuptv > 0) {
 			return (
 				$this->pdo->queryOneRow(
 					sprintf('
@@ -812,11 +798,13 @@ class Forking extends \fork_daemon
 						WHERE nzbstatus = %d
 						AND size > 1048576
 						AND tv_episodes_id BETWEEN -2 AND 0
-						AND categoryid BETWEEN 5000 AND 5999
+						AND categories_id BETWEEN %d AND %d
 						%s %s
 						LIMIT 1',
 						NZB::NZB_ADDED,
-						($this->pdo->getSetting('lookuptvrage') == 2 ? 'AND isrenamed = 1' : ''),
+						Category::TV_ROOT,
+						Category::TV_OTHER,
+						($lookuptv == 2 ? 'AND isrenamed = 1' : ''),
 						($this->ppRenamedOnly ? 'AND isrenamed = 1' : '')
 					)
 				) === false ? false : true
@@ -833,22 +821,24 @@ class Forking extends \fork_daemon
 			$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
 			$this->work = $this->pdo->query(
 				sprintf('
-					SELECT LEFT(guid, 1) AS id, %d AS renamed
+					SELECT leftguid AS id, %d AS renamed
 					FROM releases
 					WHERE nzbstatus = %d
 					AND tv_episodes_id BETWEEN -2 AND 0
 					AND size > 1048576
-					AND categoryid BETWEEN 5000 AND 5999
+					AND categories_id BETWEEN %d AND %d
 					%s %s
-					GROUP BY LEFT(guid, 1)
+					GROUP BY leftguid
 					LIMIT 16',
 					($this->ppRenamedOnly ? 2 : 1),
 					NZB::NZB_ADDED,
-					($this->pdo->getSetting('lookuptvrage') == 2 ? 'AND isrenamed = 1' : ''),
+					Category::TV_ROOT,
+					Category::TV_OTHER,
+					(Settings::value('lookuptvrage') == 2 ? 'AND isrenamed = 1' : ''),
 					($this->ppRenamedOnly ? 'AND isrenamed = 1' : '')
 				)
 			);
-			$maxProcesses = $this->pdo->getSetting('postthreadsnon');
+			$maxProcesses = Settings::value('postthreadsnon');
 		}
 		return $maxProcesses;
 	}
@@ -863,7 +853,7 @@ class Forking extends \fork_daemon
 		$sharing = $this->pdo->queryOneRow('SELECT enabled FROM sharing');
 		if ($sharing !== false && $sharing['enabled'] == 1) {
 			$nntp = new NNTP(['Settings' => $this->pdo]);
-			if (($this->pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === true) {
+			if ((Settings::value('..alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === true) {
 				(new PostProcess(['Settings' => $this->pdo, 'ColorCLI' => $this->_colorCLI]))->processSharing($nntp);
 			}
 			return true;
@@ -896,17 +886,17 @@ class Forking extends \fork_daemon
 			sprintf('
 				SELECT DISTINCT(g.id)
 				FROM groups g
-				INNER JOIN releases r ON r.group_id = g.id
+				INNER JOIN releases r ON r.groups_id = g.id
 				WHERE (g.active = 1 OR g.backfill = 1)
 				AND r.nzbstatus = %d
-				AND r.preid = 0
+				AND r.predb_id = 0
 				AND r.isrequestid = 1
 				AND r.reqidstatus = %d',
 				NZB::NZB_ADDED,
 				RequestID::REQID_UPROC
 			)
 		);
-		return $this->pdo->getSetting('reqidthreads');
+		return Settings::value('..reqidthreads');
 	}
 
 	public function requestIDChildWorker($groups, $identifier = '')
@@ -924,7 +914,7 @@ class Forking extends \fork_daemon
 	{
 		$this->register_child_run([0 => $this, 1 => 'updatePerGroupChildWorker']);
 		$this->work = $this->pdo->query('SELECT id FROM groups WHERE (active = 1 OR backfill = 1)');
-		return $this->pdo->getSetting('releasesthreads');
+		return Settings::value('..releasesthreads');
 	}
 
 	public function updatePerGroupChildWorker($groups, $identifier = '')
@@ -1030,6 +1020,16 @@ class Forking extends \fork_daemon
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////// All class vars here /////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * @var ColorCLI
+	 */
+	public $_colorCLI;
+
+	/**
+	 * @var int The type of output
+	 */
+	protected $outputType;
 
 	/**
 	 * Path to do not run folder.

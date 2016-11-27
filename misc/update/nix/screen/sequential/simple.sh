@@ -47,7 +47,7 @@ then
 	LASTOPTIMIZE1=`date +%s`
 	echo "Optimizing DB..."
 	$PHP ${NZEDB_PATH}/optimise_db.php space
-	$PHP ${NZEDB_PATH}/update_tvschedule.php
+	#$PHP ${NZEDB_PATH}/update_tvschedule.php
 	$PHP ${NZEDB_PATH}/update_theaters.php
 fi
 

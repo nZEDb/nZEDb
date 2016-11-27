@@ -1,8 +1,8 @@
 <?php
 // Shitty script to check time/date in php mysql and system...
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 $n = PHP_EOL;
@@ -16,7 +16,7 @@ if (!nzedb\utility\Misc::isWin()) {
 
 $system = ' not supported on windows.';
 
-$pdo = new Settings();
+$pdo = new DB();
 $MySQL = $pdo->queryOneRow('SELECT NOW() AS time, @@system_time_zone AS tz');
 if (!Misc::isWin()) {
 	$system = exec('date');

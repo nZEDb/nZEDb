@@ -1,11 +1,11 @@
 <?php
 //This script will update all records in the gamesinfo table
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\Games;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 $game = new Games(['Echo' => true, 'Settings' => $pdo]);
 
 $res = $pdo->query(

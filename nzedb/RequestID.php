@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 abstract class RequestID
 {
@@ -12,6 +12,9 @@ abstract class RequestID
 	const REQID_NOLL = -1; // Request ID was not found via local lookup.
 	const REQID_UPROC = 0; // Release has not been processed.
 	const REQID_FOUND = 1; // Request ID found and release was updated.
+
+	const IS_REQID_TRUE = 1; // releases.isrequestid is 1
+	const IS_REQID_FALSE = 0; // releases.isrequestid is 0
 
 	/**
 	 * @var Groups
@@ -109,16 +112,15 @@ abstract class RequestID
 		];
 		$options += $defaults;
 
-		$this->echoOutput   = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo          = ($options['Settings'] instanceof Settings ? $options['Settings'] :
-			new Settings());
-		$this->category     = ($options['Categorize'] instanceof Categorize ?
+		$this->echoOutput = ($options['Echo'] && nZEDb_ECHOCLI);
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
+		$this->category = ($options['Categorize'] instanceof Categorize ?
 			$options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
-		$this->groups       = ($options['Groups'] instanceof Groups ? $options['Groups'] :
+		$this->groups = ($options['Groups'] instanceof Groups ? $options['Groups'] :
 			new Groups(['Settings' => $this->pdo]));
 		$this->consoleTools = ($options['ConsoleTools'] instanceof ConsoleTools ?
 			$options['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->pdo->log]));
-		$this->sphinx       = ($options['SphinxSearch'] instanceof SphinxSearch ?
+		$this->sphinx = ($options['SphinxSearch'] instanceof SphinxSearch ?
 			$options['SphinxSearch'] : new SphinxSearch());
 	}
 
@@ -229,7 +231,7 @@ abstract class RequestID
 							$requestID):
 			case preg_match('/\[\s*(\d+)\s*\]/', $this->_release['name'], $requestID):
 			case preg_match('/^REQ\s*(\d{4,6})/i', $this->_release['name'], $requestID):
-			case preg_match('/^(\d{4,6})-\d{1}\[/', $this->_release['name'], $requestID):
+			case preg_match('/^(\d{4,6})-\d{1}\s?\[/', $this->_release['name'], $requestID):
 			case preg_match('/(\d{4,6}) -/', $this->_release['name'], $requestID):
 				if ((int)$requestID[1] > 0) {
 					return (int)$requestID[1];

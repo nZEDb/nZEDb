@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /**
  * Class UserSeries
@@ -25,7 +25,7 @@ class UserSeries
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 	}
 
 	/**
@@ -41,7 +41,7 @@ class UserSeries
 	{
 		return $this->pdo->queryInsert(
 			sprintf(
-				"INSERT INTO user_series (user_id, videos_id, categoryid, createddate) VALUES (%d, %d, %s, NOW())",
+				"INSERT INTO user_series (user_id, videos_id, categories, createddate) VALUES (%d, %d, %s, NOW())",
 				$uID,
 				$videoId,
 				(!empty($catID) ? $this->pdo->escapeString(implode('|', $catID)) : "NULL")
@@ -151,7 +151,7 @@ class UserSeries
 	{
 		$this->pdo->queryExec(
 			sprintf(
-				"UPDATE user_series SET categoryid = %s WHERE user_id = %d AND videos_id = %d",
+				"UPDATE user_series SET categories = %s WHERE user_id = %d AND videos_id = %d",
 				(!empty($catID) ? $this->pdo->escapeString(implode('|', $catID)) : "NULL"),
 				$uID,
 				$videoId

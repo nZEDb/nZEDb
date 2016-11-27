@@ -1,7 +1,16 @@
 build:
+    dependencies:
+        before:
+       # Overwrites inferred commands
+        override:
+            - 'composer install --no-interaction --no-dev --prefer-source --no-scripts --ignore-platform-reqs'
+
     environment:
+        memcached:            true
         php:
-            version: 5.5.14
+            version: 7.0.8
+            ini:
+                 memory_limit:     "4096M"
 checks:
     php:
         avoid_closing_tag: false
@@ -76,7 +85,4 @@ coding_style:
                 true_false_null: undefined
 
 filter:
-    excluded_paths:
-        - libs/*
-        - resources/*
-        - vendor/*
+    excluded_paths: [app/libraries/*, libraries/*, libs/*, resources/*]

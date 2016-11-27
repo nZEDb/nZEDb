@@ -3,6 +3,7 @@ require_once './config.php';
 
 use nzedb\Genres;
 use nzedb\Music;
+use nzedb\Category;
 
 $page  = new AdminPage();
 $music = new Music(['Settings' => $page->settings]);
@@ -57,7 +58,7 @@ if (isset($_REQUEST["id"])) {
 		default:
 			$page->title = "Music Edit";
 			$page->smarty->assign('music', $mus);
-			$page->smarty->assign('genres', $gen->getGenres(Genres::MUSIC_TYPE));
+			$page->smarty->assign('genres', $gen->getGenres(Category::MUSIC_ROOT));
 			break;
 	}
 }

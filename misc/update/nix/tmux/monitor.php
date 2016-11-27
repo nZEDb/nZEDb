@@ -1,13 +1,14 @@
 <?php
-require_once realpath(dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use app\models\Settings;
 use nzedb\Category;
 use nzedb\TmuxOutput;
 use nzedb\TmuxRun;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
-$pdo = new Settings();
+$pdo = new DB();
 $tRun = new TmuxRun($pdo);
 $tOut = new TmuxOutput($pdo);
 
@@ -40,7 +41,7 @@ $tRun->runPane('scraper', $runVar);
 $runVar['panes'] = $tRun->getListOfPanes($runVar['constants']);
 
 //totals per category in db, results by parentID
-$catcntqry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid";
+$catcntqry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM categories c, releases r WHERE r.categories_id = c.id GROUP BY c.parentid";
 
 //create timers and set to now
 $runVar['timers']['timer1'] = $runVar['timers']['timer2'] = $runVar['timers']['timer3'] =
@@ -81,12 +82,11 @@ while ($runVar['counts']['iterations'] > 0) {
 	$runVar['timers']['query']['tmux_time'] = (time() - $timer01);
 
 	$runVar['settings']['book_reqids'] = (!empty($runVar['settings']['book_reqids'])
-		? $runVar['settings']['book_reqids'] : Category::CAT_PARENT_BOOKS);
+		? $runVar['settings']['book_reqids'] : Category::BOOKS_ROOT);
 
 	//get usenet connection info
 	$runVar['connections'] = $tOut->getConnectionsInfo($runVar['constants']);
 
-	$runVar['modsettings']['clean'] = ($runVar['settings']['post_non'] == 2 ? ' clean ' : ' ');
 	$runVar['constants']['pre_lim'] = ($runVar['counts']['iterations'] > 1 ? '7' : '');
 
 	//assign scripts
@@ -181,7 +181,14 @@ while ($runVar['counts']['iterations'] > 0) {
 		$runVar['timers']['query']['proc11_time'] = (time() - $timer01);
 
 		$timer05 = time();
-		$proc2qry = $tRun->proc_query(2, $runVar['settings']['book_reqids'], $runVar['settings']['request_hours'], $db_name);
+		$proc2qry = $tRun->proc_query(
+			2,
+			$runVar['settings']['book_reqids'],
+			$runVar['settings']['request_hours'],
+			$db_name,
+			$runVar['settings']['maxsize_pp'],
+			$runVar['settings']['minsize_pp']
+		);
 		$proc2res = $pdo->queryOneRow(($proc2qry !== false ? $proc2qry : ''), $tRun->rand_bool($runVar['counts']['iterations']));
 		$runVar['timers']['query']['proc2_time'] = (time() - $timer05);
 		$runVar['timers']['query']['proc21_time'] = (time() - $timer01);
@@ -206,19 +213,14 @@ while ($runVar['counts']['iterations'] > 0) {
 			} else {
 				if ($tables instanceof \Traversable) {
 					foreach ($tables as $row) {
-						$tbl   = $row['name'];
+						$tbl = $row['name'];
 						$stamp = 'UNIX_TIMESTAMP(MIN(dateadded))';
 
 						switch (true) {
 							case strpos($tbl, 'collections_') !== false:
-								$runVar['counts']['now']['collections_table'] += getTableRowCount($psTableRowCount,
-																								  $tbl);
-								$added = $pdo->queryOneRow(
-									sprintf('SELECT %s AS dateadded FROM %s',
-											$stamp,
-											$tbl
-									)
-								);
+								$runVar['counts']['now']['collections_table'] +=
+									getTableRowCount($psTableRowCount, $tbl);
+								$added = $pdo->queryOneRow(sprintf('SELECT %s AS dateadded FROM %s', $stamp, $tbl));
 								if (isset($added['dateadded']) && is_numeric($added['dateadded']) &&
 									$added['dateadded'] < $age
 								) {
@@ -226,18 +228,18 @@ while ($runVar['counts']['iterations'] > 0) {
 								}
 								break;
 							case strpos($tbl, 'binaries_') !== false:
-								$runVar['counts']['now']['binaries_table'] += getTableRowCount($psTableRowCount,
-																							   $tbl);
+								$runVar['counts']['now']['binaries_table'] +=
+									getTableRowCount($psTableRowCount, $tbl);
 								break;
 							// This case must come before the 'parts_' one.
 							case strpos($tbl, 'missed_parts_') !== false:
-								$runVar['counts']['now']['missed_parts_table'] += getTableRowCount($psTableRowCount,
-																								   $tbl);
+								$runVar['counts']['now']['missed_parts_table'] +=
+									getTableRowCount($psTableRowCount, $tbl);
 
 								break;
 							case strpos($tbl, 'parts_') !== false:
-								$runVar['counts']['now']['parts_table'] += getTableRowCount($psTableRowCount,
-																							$tbl);
+								$runVar['counts']['now']['parts_table'] +=
+									getTableRowCount($psTableRowCount, $tbl);
 								break;
 							default:
 						}
@@ -278,6 +280,9 @@ while ($runVar['counts']['iterations'] > 0) {
 		foreach ($runVar['settings'] as $settingkey => $setting) {
 			if (strpos($settingkey, 'process') == 0 && $setting == 0) {
 				$runVar['counts']['now'][$settingkey] = $runVar['counts']['start'][$settingkey] = 0;
+			}
+			if ($settingkey == 'fix_names' && $setting == 0) {
+				$runVar['counts']['now']['processrenames'] = $runVar['counts']['start']['processrenames'] = 0;
 			}
 		}
 
@@ -368,7 +373,7 @@ while ($runVar['counts']['iterations'] > 0) {
 		$tRun->runPane('notrunning', $runVar);
 	}
 
-	$exit = $pdo->getSetting('tmux.run.exit');
+	$exit = Settings::value('tmux.running.exit');
 	if ($exit == 0) {
 		$runVar['counts']['iterations']++;
 		sleep(10);

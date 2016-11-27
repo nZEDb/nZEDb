@@ -1,10 +1,11 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use nzedb\Category;
 use nzedb\Games;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if (isset($argv[1]) && $argv[1] === "true") {
 	getOddGames($pdo->log);
@@ -17,11 +18,11 @@ function getOddGames()
 {
 	global $pdo;
 	$res = $pdo->query('
-				SELECT searchname, id, categoryid
+				SELECT searchname, id, categories_id
 				FROM releases
 				WHERE nzbstatus = 1
 				AND gamesinfo_id = 0
-				AND categoryid BETWEEN 4010 AND 4020
+				AND categories_id BETWEEN ' . Category::PC_0DAY . ' AND ' . Category::PC_ISO . '
 				ORDER BY postdate DESC LIMIT 150'
 	);
 
@@ -58,10 +59,10 @@ function getOddGames()
 						$gameId = $gameCheck['id'];
 					}
 					if ($gameId != -2 && $gameId != 0) {
-						$arr['categoryid'] = 4050;
+						$arr['categories_id'] = Category::PC_GAMES;
 					}
 
-					$pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d, categoryid = %d WHERE id = %d', $gameId, $arr['categoryid'], $arr['id']));
+					$pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d, categories_id = %d WHERE id = %d', $gameId, $arr['categories_id'], $arr['id']));
 				} else {
 					// Could not parse release title.
 					$pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d', -2, $arr['id']));

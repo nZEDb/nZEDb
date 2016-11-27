@@ -63,9 +63,6 @@ $page->smarty->assign('sequential_names', ['Disabled', 'Basic Sequential', 'Comp
 $page->smarty->assign('binaries_ids', [0, 1, 2]);
 $page->smarty->assign('binaries_names',
 					  ['Disabled', 'Simple Threaded Update', 'Complete Threaded Update']);
-$page->smarty->assign('post_non_ids', [0, 1, 2]);
-$page->smarty->assign('post_non_names',
-					  ['Disabled', 'All Available Releases', 'Properly Renamed Releases']);
 
 $page->content = $page->smarty->fetch('tmux-edit.tpl');
 $page->render();

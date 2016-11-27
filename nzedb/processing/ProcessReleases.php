@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing;
 
+use app\models\Settings;
 use nzedb\Categorize;
 use nzedb\Category;
 use nzedb\ConsoleTools;
@@ -13,7 +14,7 @@ use nzedb\ReleaseImage;
 use nzedb\Releases;
 use nzedb\RequestIDLocal;
 use nzedb\RequestIDWeb;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 class ProcessReleases
 {
@@ -123,7 +124,7 @@ class ProcessReleases
 
 		$this->echoCLI = ($options['Echo'] && nZEDb_ECHOCLI);
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->consoleTools = ($options['ConsoleTools'] instanceof ConsoleTools ? $options['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->pdo->log]));
 		$this->groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
@@ -131,17 +132,21 @@ class ProcessReleases
 		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['Settings' => $this->pdo, 'Groups' => $this->groups]));
 		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
-		$this->tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 0 ? false : true);
-		$this->collectionDelayTime = ($this->pdo->getSetting('delaytime') != '' ? (int)$this->pdo->getSetting('delaytime') : 2);
-		$this->crossPostTime = ($this->pdo->getSetting('crossposttime') != '' ? (int)$this->pdo->getSetting('crossposttime') : 2);
-		$this->releaseCreationLimit = ($this->pdo->getSetting('maxnzbsprocessed') != '' ? (int)$this->pdo->getSetting('maxnzbsprocessed') : 1000);
-		$this->completion = ($this->pdo->getSetting('releasecompletion') != '' ? (int)$this->pdo->getSetting('releasecompletion') : 0);
-		$this->processRequestIDs = (int)$this->pdo->getSetting('lookup_reqids');
+		$this->tablePerGroup = (Settings::value('..tablepergroup') == 0 ? false : true);
+		$dummy = Settings::value('..delaytime');
+		$this->collectionDelayTime = ($dummy != '' ? (int)$dummy : 2);
+		$dummy = Settings::value('..crossposttime');
+		$this->crossPostTime = ($dummy != '' ? (int)$dummy : 2);
+		$dummy = Settings::value('..maxnzbsprocessed');
+		$this->releaseCreationLimit = ($dummy != '' ? (int)$dummy : 1000);
+		$dummy = Settings::value('..releasecompletion');
+		$this->completion = ($dummy != '' ? (int)$dummy : 0);
+		$this->processRequestIDs = (int)Settings::value('lookup_reqids');
 		if ($this->completion > 100) {
 			$this->completion = 100;
 			echo $this->pdo->log->error(PHP_EOL . 'You have an invalid setting for completion. It cannot be higher than 100.');
 		}
-		$this->collectionTimeout = intval($this->pdo->getSetting('collection_timeout'));
+		$this->collectionTimeout = intval(Settings::value('indexer.processing.collection_timeout'));
 	}
 
 	/**
@@ -170,9 +175,11 @@ class ProcessReleases
 			$this->pdo->log->doEcho($this->pdo->log->header("Starting release update process (" . date('Y-m-d H:i:s') . ")"), true);
 		}
 
-		if (!file_exists($this->pdo->getSetting('nzbpath'))) {
+		if (!file_exists(Settings::value('..nzbpath'))) {
 			if ($this->echoCLI) {
-				$this->pdo->log->doEcho($this->pdo->log->error('Bad or missing nzb directory - ' . $this->pdo->getSetting('nzbpath')), true);
+				$this->pdo->log->doEcho(
+					$this->pdo->log->error('Bad or missing nzb directory - ' . Settings::value('..nzbpath')),
+					true);
 			}
 
 			return 0;
@@ -183,8 +190,6 @@ class ProcessReleases
 		$this->deleteUnwantedCollections($groupID);
 
 		$DIR = nZEDb_MISC;
-		$PYTHON = shell_exec('which python3 2>/dev/null');
-		$PYTHON = (empty($PYTHON) ? 'python -OOu' : 'python3 -OOu');
 
 		$totalReleasesAdded = 0;
 		do {
@@ -202,7 +207,7 @@ class ProcessReleases
 				if ($this->echoCLI) {
 					$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Request ID Threaded lookup."));
 				}
-				passthru("$PYTHON ${DIR}update/python/requestid_threaded.py");
+				passthru("${DIR}update/nix/multiprocessing/requestid.php");
 				if ($this->echoCLI) {
 					$this->pdo->log->doEcho(
 						$this->pdo->log->primary(
@@ -255,7 +260,7 @@ class ProcessReleases
 	public function resetCategorize($where = '')
 	{
 		$this->pdo->queryExec(
-			sprintf('UPDATE releases SET categoryid = %d, iscategorized = 0 %s', Category::CAT_MISC, $where)
+			sprintf('UPDATE releases SET categories_id = %d, iscategorized = 0 %s', Category::OTHER_MISC, $where)
 		);
 	}
 
@@ -272,13 +277,13 @@ class ProcessReleases
 	{
 		$cat = new Categorize(['Settings' => $this->pdo]);
 		$categorized = $total = 0;
-		$releases = $this->pdo->queryDirect(sprintf('SELECT id, %s, group_id FROM releases %s', $type, $where));
+		$releases = $this->pdo->queryDirect(sprintf('SELECT id, %s, groups_id FROM releases %s', $type, $where));
 		if ($releases && $releases->rowCount()) {
 			$total = $releases->rowCount();
 			foreach ($releases as $release) {
-				$catId = $cat->determineCategory($release['group_id'], $release[$type]);
+				$catId = $cat->determineCategory($release['groups_id'], $release[$type]);
 				$this->pdo->queryExec(
-					sprintf('UPDATE releases SET categoryid = %d, iscategorized = 1 WHERE id = %d', $catId, $release['id'])
+					sprintf('UPDATE releases SET categories_id = %d, iscategorized = 1 WHERE id = %d', $catId, $release['id'])
 				);
 				$categorized++;
 				if ($this->echoCLI) {
@@ -323,7 +328,7 @@ class ProcessReleases
 		if ($this->echoCLI) {
 			$count = $this->pdo->queryOneRow(
 				sprintf(
-					'SELECT COUNT(*) AS complete FROM %s c WHERE filecheck = %d %s',
+					'SELECT COUNT(id) AS complete FROM %s c WHERE filecheck = %d %s',
 					$group['cname'],
 					self::COLLFC_COMPPART,
 					$where
@@ -410,9 +415,9 @@ class ProcessReleases
 
 		$minSizeDeleted = $maxSizeDeleted = $minFilesDeleted = 0;
 
-		$maxSizeSetting = $this->pdo->getSetting('maxsizetoformrelease');
-		$minSizeSetting = $this->pdo->getSetting('minsizetoformrelease');
-		$minFilesSetting = $this->pdo->getSetting('minfilestoformrelease');
+		$maxSizeSetting = Settings::value('..maxsizetoformrelease');
+		$minSizeSetting = Settings::value('.release.minsizetoformrelease');
+		$minFilesSetting = Settings::value('.release.minfilestoformrelease');
 
 		foreach ($groupIDs as $groupID) {
 			if ($this->pdo->queryOneRow(
@@ -601,7 +606,7 @@ class ProcessReleases
 						$preMatch = $preDB->matchPre($cleanedName);
 						if ($preMatch !== false) {
 							$cleanedName = $preMatch['title'];
-							$preID = $preMatch['preid'];
+							$preID = $preMatch['predb_id'];
 							$properName = true;
 						}
 					}
@@ -611,15 +616,15 @@ class ProcessReleases
 							'name' => $cleanRelName,
 							'searchname' => $this->pdo->escapeString(utf8_encode($cleanedName)),
 							'totalpart' => $collection['totalfiles'],
-							'group_id' => $collection['group_id'],
-							'guid' => $this->pdo->escapeString($this->releases->createGUID($cleanRelName)),
+							'groups_id' => $collection['group_id'],
+							'guid' => $this->pdo->escapeString($this->releases->createGUID()),
 							'postdate' => $this->pdo->escapeString($collection['date']),
 							'fromname' => $fromName,
 							'size' => $collection['filesize'],
-							'categoryid' => $categorize->determineCategory($collection['group_id'], $cleanedName),
+							'categories_id' => $categorize->determineCategory($collection['group_id'], $cleanedName),
 							'isrenamed' => ($properName === true ? 1 : 0),
 							'reqidstatus' => ($isReqID === true ? 1 : 0),
-							'preid' => ($preID === false ? 0 : $preID),
+							'predb_id' => ($preID === false ? 0 : $preID),
 							'nzbstatus' => NZB::NZB_NONE
 						]
 					);
@@ -698,10 +703,10 @@ class ProcessReleases
 				SELECT SQL_NO_CACHE CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title,
 					r.name, r.id, r.guid
 				FROM releases r
-				INNER JOIN category c ON r.categoryid = c.id
-				INNER JOIN category cp ON cp.id = c.parentid
+				INNER JOIN categories c ON r.categories_id = c.id
+				INNER JOIN categories cp ON cp.id = c.parentid
 				WHERE %s nzbstatus = 0",
-				(!empty($groupID) ? ' r.group_id = ' . $groupID . ' AND ' : ' ')
+				(!empty($groupID) ? ' r.groups_id = ' . $groupID . ' AND ' : ' ')
 			)
 		);
 
@@ -749,7 +754,7 @@ class ProcessReleases
 	 */
 	public function processRequestIDs($groupID = '', $limit = 5000, $local = true)
 	{
-		if ($local === false && $this->pdo->getSetting('lookup_reqids') == 0) {
+		if ($local === false && Settings::value('..lookup_reqids') == 0) {
 			return;
 		}
 
@@ -820,8 +825,8 @@ class ProcessReleases
 		$this->categorizeRelease(
 			$type,
 			(!empty($groupID)
-				? 'WHERE categoryid = ' . Category::CAT_MISC . ' AND iscategorized = 0 AND group_id = ' . $groupID
-				: 'WHERE categoryid = ' . Category::CAT_MISC . ' AND iscategorized = 0')
+				? 'WHERE categories_id = ' . Category::OTHER_MISC . ' AND iscategorized = 0 AND group_id = ' . $groupID
+				: 'WHERE categories_id = ' . Category::OTHER_MISC . ' AND iscategorized = 0')
 		);
 
 		if ($this->echoCLI) {
@@ -875,7 +880,7 @@ class ProcessReleases
 				$this->pdo->log->header("Process Releases -> Delete finished collections." . PHP_EOL) .
 				$this->pdo->log->primary(sprintf(
 					'Deleting collections/binaries/parts older than %d hours.',
-					$this->pdo->getSetting('partretentionhours')
+					Settings::value('..partretentionhours')
 				))
 			);
 		}
@@ -890,7 +895,7 @@ class ProcessReleases
 				$group['cname'],
 				$group['bname'],
 				$group['pname'],
-				$this->pdo->getSetting('partretentionhours'),
+				Settings::value('..partretentionhours'),
 				(!empty($groupID) && $this->tablePerGroup === false ? ' AND c.group_id = ' . $groupID : '')
 			)
 		);
@@ -911,7 +916,7 @@ class ProcessReleases
 
 		// Cleanup orphaned collections, binaries and parts
 		// this really shouldn't happen, but just incase - so we only run 1/200 of the time
-		if (mt_rand(0, 200) <= 1 ) {
+		if (mt_rand(0, 200) <= 1) {
 			// CBP collection orphaned with no binaries or parts.
 			if ($this->echoCLI) {
 				echo (
@@ -1082,17 +1087,17 @@ class ProcessReleases
 			$groupIDs = [['id' => $groupID]];
 		}
 
-		$maxSizeSetting = $this->pdo->getSetting('maxsizetoformrelease');
-		$minSizeSetting = $this->pdo->getSetting('minsizetoformrelease');
-		$minFilesSetting = $this->pdo->getSetting('minfilestoformrelease');
+		$maxSizeSetting = Settings::value('..maxsizetoformrelease');
+		$minSizeSetting = Settings::value('.release.minsizetoformrelease');
+		$minFilesSetting = Settings::value('.release.minfilestoformrelease');
 
 		foreach ($groupIDs as $groupID) {
 			$releases = $this->pdo->queryDirect(
 				sprintf("
 					SELECT SQL_NO_CACHE r.guid, r.id
 					FROM releases r
-					INNER JOIN groups g ON g.id = r.group_id
-					WHERE r.group_id = %d
+					INNER JOIN groups g ON g.id = r.groups_id
+					WHERE r.groups_id = %d
 					AND greatest(IFNULL(g.minsizetoformrelease, 0), %d) > 0
 					AND r.size < greatest(IFNULL(g.minsizetoformrelease, 0), %d)",
 					$groupID['id'],
@@ -1112,7 +1117,7 @@ class ProcessReleases
 					sprintf('
 						SELECT SQL_NO_CACHE id, guid
 						FROM releases
-						WHERE group_id = %d
+						WHERE groups_id = %d
 						AND size > %d',
 						$groupID['id'],
 						$maxSizeSetting
@@ -1130,8 +1135,8 @@ class ProcessReleases
 				sprintf("
 					SELECT SQL_NO_CACHE r.id, r.guid
 					FROM releases r
-					INNER JOIN groups g ON g.id = r.group_id
-					WHERE r.group_id = %d
+					INNER JOIN groups g ON g.id = r.groups_id
+					WHERE r.groups_id = %d
 					AND greatest(IFNULL(g.minfilestoformrelease, 0), %d) > 0
 					AND r.totalpart < greatest(IFNULL(g.minfilestoformrelease, 0), %d)",
 					$groupID['id'],
@@ -1181,11 +1186,11 @@ class ProcessReleases
 		}
 
 		// Releases past retention.
-		if ($this->pdo->getSetting('releaseretentiondays') != 0) {
+		if (Settings::value('..releaseretentiondays') != 0) {
 			$releases = $this->pdo->queryDirect(
 				sprintf(
 					'SELECT SQL_NO_CACHE id, guid FROM releases WHERE postdate < (NOW() - INTERVAL %d DAY)',
-					$this->pdo->getSetting('releaseretentiondays')
+					Settings::value('..releaseretentiondays')
 				)
 			);
 			if ($releases instanceof \Traversable) {
@@ -1197,7 +1202,7 @@ class ProcessReleases
 		}
 
 		// Passworded releases.
-		if ($this->pdo->getSetting('deletepasswordedrelease') == 1) {
+		if (Settings::value('..deletepasswordedrelease') == 1) {
 			$releases = $this->pdo->queryDirect(
 				sprintf(
 					'SELECT SQL_NO_CACHE id, guid FROM releases WHERE passwordstatus = %d',
@@ -1213,7 +1218,7 @@ class ProcessReleases
 		}
 
 		// Possibly passworded releases.
-		if ($this->pdo->getSetting('deletepossiblerelease') == 1) {
+		if (Settings::value('..deletepossiblerelease') == 1) {
 			$releases = $this->pdo->queryDirect(
 				sprintf(
 					'SELECT SQL_NO_CACHE id, guid FROM releases WHERE passwordstatus = %d',
@@ -1265,7 +1270,7 @@ class ProcessReleases
 		if (count($disabledCategories) > 0) {
 			foreach ($disabledCategories as $disabledCategory) {
 				$releases = $this->pdo->queryDirect(
-					sprintf('SELECT SQL_NO_CACHE id, guid FROM releases WHERE categoryid = %d', $disabledCategory['id'])
+					sprintf('SELECT SQL_NO_CACHE id, guid FROM releases WHERE categories_id = %d', $disabledCategory['id'])
 				);
 				if ($releases instanceof \Traversable) {
 					foreach ($releases as $release) {
@@ -1280,8 +1285,8 @@ class ProcessReleases
 		$categories = $this->pdo->queryDirect('
 			SELECT SQL_NO_CACHE c.id AS id,
 			CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END AS minsize
-			FROM category c
-			INNER JOIN category cp ON cp.id = c.parentid
+			FROM categories c
+			INNER JOIN categories cp ON cp.id = c.parentid
 			WHERE c.parentid IS NOT NULL'
 		);
 
@@ -1292,7 +1297,7 @@ class ProcessReleases
 						sprintf('
 							SELECT SQL_NO_CACHE r.id, r.guid
 							FROM releases r
-							WHERE r.categoryid = %d
+							WHERE r.categories_id = %d
 							AND r.size < %d LIMIT 1000',
 							$category['id'],
 							$category['minsize']
@@ -1317,7 +1322,7 @@ class ProcessReleases
 						SELECT SQL_NO_CACHE id, guid
 						FROM releases
 						INNER JOIN (SELECT id AS mid FROM musicinfo WHERE musicinfo.genre_id = %d) mi
-						ON musicinfoid = mid',
+						ON musicinfo_id = mid',
 						$genre['id']
 					)
 				);
@@ -1331,15 +1336,15 @@ class ProcessReleases
 		}
 
 		// Misc other.
-		if ($this->pdo->getSetting('miscotherretentionhours') > 0) {
+		if (Settings::value('..miscotherretentionhours') > 0) {
 			$releases = $this->pdo->queryDirect(
 				sprintf('
 					SELECT SQL_NO_CACHE id, guid
 					FROM releases
-					WHERE categoryid = %d
+					WHERE categories_id = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
-					Category::CAT_MISC,
-					$this->pdo->getSetting('miscotherretentionhours')
+					Category::OTHER_MISC,
+					Settings::value('..miscotherretentionhours')
 				)
 			);
 			if ($releases instanceof \Traversable) {
@@ -1351,15 +1356,15 @@ class ProcessReleases
 		}
 
 		// Misc hashed.
-		if ($this->pdo->getSetting('mischashedretentionhours') > 0) {
+		if (Settings::value('..mischashedretentionhours') > 0) {
 			$releases = $this->pdo->queryDirect(
 				sprintf('
 					SELECT SQL_NO_CACHE id, guid
 					FROM releases
-					WHERE categoryid = %d
+					WHERE categories_id = %d
 					AND adddate <= NOW() - INTERVAL %d HOUR',
-					Category::CAT_OTHER_HASHED,
-					$this->pdo->getSetting('mischashedretentionhours')
+					Category::OTHER_HASHED,
+					Settings::value('..mischashedretentionhours')
 				)
 			);
 			if ($releases instanceof \Traversable) {
@@ -1424,7 +1429,7 @@ class ProcessReleases
 	 */
 	private function maxQueryFormulator($groupName, $difference)
 	{
-		$maxID = $this->pdo->queryOneRow(sprintf('SELECT IFNULL(MAX(id),0) AS max FROM %s', $groupName ));
+		$maxID = $this->pdo->queryOneRow(sprintf('SELECT IFNULL(MAX(id),0) AS max FROM %s', $groupName));
 		return empty($maxID['max']) || $maxID['max'] < $difference ? 0 : $maxID['max'] - $difference;
 	}
 
@@ -1640,6 +1645,7 @@ class ProcessReleases
 	 */
 	private function processStuckCollections(array $group, $where)
 	{
+		$lastRun = Settings::value('indexer.processing.last_run_time');
 		$obj = $this->pdo->queryExec(
 			sprintf("
 				DELETE c, b, p FROM %s c
@@ -1647,8 +1653,8 @@ class ProcessReleases
 				LEFT JOIN %s p ON (b.id=p.binaryid)
 				WHERE
 					c.added <
-					DATE_SUB((SELECT value FROM settings WHERE setting = 'last_run_time'), INTERVAL %d HOUR)
-				%s",
+					DATE_SUB({$this->pdo->escapeString($lastRun)}, INTERVAL %d HOUR)
+					%s",
 				$group['cname'],
 				$group['bname'],
 				$group['pname'],

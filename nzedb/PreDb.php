@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /**
  * Class for inserting names/categories etc from PreDB sources into the DB,
@@ -47,7 +47,7 @@ class PreDb
 		$options += $defaults;
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 	}
 
 	/**
@@ -68,17 +68,17 @@ class PreDb
 		}
 
 		if ($this->dateLimit !== false && is_numeric($this->dateLimit)) {
-			$datesql = sprintf('AND DATEDIFF(NOW(), adddate) <= %d', $this->dateLimit);
+			$datesql = sprintf('AND adddate > (NOW() - INTERVAL %d DAY)', $this->dateLimit);
 		}
 
 		$res = $this->pdo->queryDirect(
-						sprintf('
-							SELECT p.id AS preid, r.id AS releaseid
-							FROM predb p
-							INNER JOIN releases r ON p.title = r.searchname
-							WHERE r.preid < 1 %s',
-							$datesql
-						)
+			sprintf('
+				SELECT p.id AS predb_id, r.id AS releases_id
+				FROM predb p
+				INNER JOIN releases r ON p.title = r.searchname
+				WHERE r.predb_id < 1 %s',
+				$datesql
+			)
 		);
 
 		if ($res !== false) {
@@ -88,7 +88,7 @@ class PreDb
 			if ($res instanceof \Traversable) {
 				foreach ($res as $row) {
 					$this->pdo->queryExec(
-						sprintf('UPDATE releases SET preid = %d WHERE id = %d', $row['preid'], $row['releaseid'])
+						sprintf('UPDATE releases SET predb_id = %d WHERE id = %d', $row['predb_id'], $row['releases_id'])
 					);
 
 					if ($this->echooutput) {
@@ -130,7 +130,7 @@ class PreDb
 		if ($titleCheck !== false) {
 			return [
 				'title' => $cleanerName,
-				'preid' => $titleCheck['id']
+				'predb_id' => $titleCheck['id']
 			];
 		}
 
@@ -142,7 +142,7 @@ class PreDb
 		if ($fileCheck !== false) {
 			return [
 				'title' => $fileCheck['title'],
-				'preid' => $fileCheck['id']
+				'predb_id' => $fileCheck['id']
 			];
 		}
 
@@ -164,15 +164,16 @@ class PreDb
 	{
 		$namefixer = new NameFixer(['Echo' => $this->echooutput, 'ConsoleTools' => $this->pdo->log, 'Settings' => $this->pdo]);
 		$consoletools = new ConsoleTools(['ColorCLI' => $this->pdo->log]);
+		$othercats = Category::getCategoryOthersGroup();
 		$updated = $checked = 0;
 
 		$tq = '';
 		if ($time == 1) {
-			$tq = 'AND r.adddate > (NOW() - INTERVAL 3 HOUR) ORDER BY rf.releaseid, rf.size DESC';
+			$tq = 'AND r.adddate > (NOW() - INTERVAL 3 HOUR) ORDER BY rf.releases_id, rf.size DESC';
 		}
 		$ct = '';
 		if ($cats == 1) {
-			$ct = 'AND r.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050)';
+			$ct = sprintf('AND r.categories_id IN (%s)', $othercats);
 		}
 
 		if ($this->echooutput) {
@@ -185,14 +186,14 @@ class PreDb
 		$regex = "AND (r.ishashed = 1 OR rf.ishashed = 1)";
 
 		if ($cats === 3) {
-			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id, '
+			$query = sprintf('SELECT r.id AS releases_id, r.name, r.searchname, r.categories_id, r.groups_id, '
 				. 'dehashstatus, rf.name AS filename FROM releases r '
-				. 'LEFT OUTER JOIN release_files rf ON r.id = rf.releaseid '
-				. 'WHERE nzbstatus = 1 AND dehashstatus BETWEEN -6 AND 0 AND preid = 0 %s', $regex);
+				. 'LEFT OUTER JOIN release_files rf ON r.id = rf.releases_id '
+				. 'WHERE nzbstatus = 1 AND dehashstatus BETWEEN -6 AND 0 AND predb_id = 0 %s', $regex);
 		} else {
-			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id, '
+			$query = sprintf('SELECT r.id AS releases_id, r.name, r.searchname, r.categories_id, r.groups_id, '
 				. 'dehashstatus, rf.name AS filename FROM releases r '
-				. 'LEFT OUTER JOIN release_files rf ON r.id = rf.releaseid '
+				. 'LEFT OUTER JOIN release_files rf ON r.id = rf.releases_id '
 				. 'WHERE nzbstatus = 1 AND isrenamed = 0 AND dehashstatus BETWEEN -6 AND 0 %s %s %s', $regex, $ct, $tq);
 		}
 
@@ -239,35 +240,41 @@ class PreDb
 				$search = "LIKE '%" . $search[0] . "%'";
 			}
 			$search = 'WHERE title ' . $search;
-			$count = $this->pdo->queryOneRow(sprintf('SELECT COUNT(*) AS cnt FROM predb %s', $search));
-			$count = $count['cnt'];
-		} else {
-			$count = $this->getCount();
 		}
 
-		$parr = $this->pdo->query(
-			sprintf('
-				SELECT p.*, r.guid
-				FROM predb p
-				LEFT OUTER JOIN releases r ON p.id = r.preid %s
-				ORDER BY p.predate DESC LIMIT %d OFFSET %d',
-				$search,
-				$offset2,
-				$offset
-			)
+		$count = $this->getCount($search);
+
+		$sql = sprintf('
+			SELECT p.*, r.guid
+			FROM predb p
+			LEFT OUTER JOIN releases r ON p.id = r.predb_id %s
+			ORDER BY p.predate DESC
+			LIMIT %d
+			OFFSET %d',
+			$search,
+			$offset2,
+			$offset
 		);
+		$parr = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 		return ['arr' => $parr, 'count' => $count];
 	}
 
 	/**
 	 * Get count of all PRE's.
 	 *
+	 * @param string $search
+	 *
 	 * @return int
 	 */
-	public function getCount()
+	public function getCount($search = '')
 	{
-		$count = $this->pdo->queryOneRow('SELECT COUNT(*) AS cnt FROM predb');
-		return ($count === false ? 0 : $count['cnt']);
+		$count = $this->pdo->query("
+			SELECT COUNT(id) AS cnt
+			FROM predb {$search}",
+			true,
+			nZEDb_CACHE_EXPIRY_MEDIUM
+		);
+		return ($count === false ? 0 : $count[0]['cnt']);
 	}
 
 	/**

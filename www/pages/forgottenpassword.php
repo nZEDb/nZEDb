@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Settings;
 use nzedb\utility\Misc;
 use nzedb\Captcha;
 
@@ -25,20 +26,21 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 			$page->users->updatePassResetGuid($ret["id"], '');
 			$newPassword = $page->users->generatePassword();
 			$page->users->updatePassword($ret["id"], $newPassword);
-			Misc::sendEmail($ret["email"], ($page->settings->getSetting('title') . " Password Reset"),
-				"Your password has been reset to $newPassword", $page->settings->getSetting('email')
+			Misc::sendEmail($ret["email"], (Settings::value('site.main.title') . " Password Reset"),
+				"Your password has been reset to $newPassword", Settings::value('site.main.email')
 			);
 
 			/** Provide the password in a message to so the user does not have to check their e-mail.
 			 * The theme needs to implement this for it to be seen. Using code something like:
-			 * 	{if $notice != ''}
-			 * 		<div class="alert alert-info">{$notice}</div>
-			 * 	{/if}
+			 * {if $notice != ''}
+			 * <div class="alert alert-info">{$notice}</div>
+			 * {/if}
 			 *
 			 * We do not include it in the supplied themes, as this is a potential security problem.
 			 */
-			$onscreen = "Your password has been reset to <strong>" .  $newPassword ."</strong> and sent to your e-mail address.";
-			$page->smarty->assign('notice',  $onscreen);
+			$onscreen = "Your password has been reset to <strong>" . $newPassword .
+				"</strong> and sent to your e-mail address.";
+			$page->smarty->assign('notice', $onscreen);
 			$confirmed = "true";
 			break;
 		}
@@ -63,10 +65,10 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 					// Send the email
 					Misc::sendEmail(
 						$ret["email"],
-						($page->settings->getSetting('title') . " Forgotten Password Request"),
+						(Settings::value('site.main.title') . " Forgotten Password Request"),
 						("Someone has requested a password reset for this email address.<br>To reset the password use <a href=\"" .
 							$page->serverurl . "forgottenpassword?action=reset&guid=$guid\">this link</a>\n"),
-						$page->settings->getSetting('email')
+						Settings::value('site.main.email')
 					);
 					$sent = "true";
 					break;

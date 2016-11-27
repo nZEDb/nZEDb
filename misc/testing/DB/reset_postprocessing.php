@@ -1,10 +1,12 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use nzedb\Category;
 use nzedb\ConsoleTools;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$category = new Category();
+$pdo = new DB();
 $consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 $ran = false;
 
@@ -39,8 +41,8 @@ if (isset($argv[1]) && $argv[1] === "all") {
 				$pdo->queryExec(
 					sprintf("
 						UPDATE releases
-						SET consoleinfoid = NULL, gamesinfo_id = 0, imdbid = NULL, musicinfoid = NULL,
-							bookinfoid = NULL, videos_id = 0, tv_episodes_id = 0, xxxinfo_id = 0, passwordstatus = -1, haspreview = -1,
+						SET consoleinfo_id = NULL, gamesinfo_id = 0, imdbid = NULL, musicinfo_id = NULL,
+							bookinfo_id = NULL, videos_id = 0, tv_episodes_id = 0, xxxinfo_id = 0, passwordstatus = -1, haspreview = -1,
 							jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1
 						WHERE id = %d",
 						$releases['id']
@@ -58,10 +60,10 @@ if (isset($argv[1]) && ($argv[1] === "consoles" || $argv[1] === "all")) {
 	}
 	if (isset($argv[2]) && $argv[2] === "true") {
 		echo $pdo->log->header("Resetting all Console postprocessing");
-		$where = ' WHERE consoleinfoid IS NOT NULL';
+		$where = ' WHERE consoleinfo_id IS NOT NULL';
 	} else {
 		echo $pdo->log->header("Resetting all failed Console postprocessing");
-		$where = " WHERE consoleinfoid IN (-2, 0) AND categoryid BETWEEN 1000 AND 1999";
+		$where = " WHERE consoleinfo_id IN (-2, 0) AND categories_id BETWEEN " . Category::GAME_ROOT . " AND " . Category::GAME_OTHER;
 	}
 
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
@@ -73,7 +75,7 @@ if (isset($argv[1]) && ($argv[1] === "consoles" || $argv[1] === "all")) {
 	$concount = 0;
 	if ($qry instanceof \Traversable) {
 		foreach ($qry as $releases) {
-			$pdo->queryExec("UPDATE releases SET consoleinfoid = NULL WHERE id = " . $releases['id']);
+			$pdo->queryExec("UPDATE releases SET consoleinfo_id = NULL WHERE id = " . $releases['id']);
 			$consoletools->overWritePrimary("Resetting Console Releases:  " . $consoletools->percentString(++$concount, $total));
 		}
 	}
@@ -89,7 +91,7 @@ if (isset($argv[1]) && ($argv[1] === "games" || $argv[1] === "all")) {
 		$where = ' WHERE gamesinfo_id != 0';
 	} else {
 		echo $pdo->log->header("Resetting all failed Games postprocessing");
-		$where = " WHERE gamesinfo_id IN (-2, 0) AND categoryid = 4050";
+		$where = " WHERE gamesinfo_id IN (-2, 0) AND categories_id = " . Category::PC_GAMES;
 	}
 
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
@@ -117,7 +119,7 @@ if (isset($argv[1]) && ($argv[1] === "movies" || $argv[1] === "all")) {
 		$where = ' WHERE imdbid IS NOT NULL';
 	} else {
 		echo $pdo->log->header("Resetting all failed Movie postprocessing");
-		$where = " WHERE imdbid IN (-2, 0) AND categoryid BETWEEN 2000 AND 2999";
+		$where = " WHERE imdbid IN (-2, 0) AND categories_id BETWEEN " . Category::MOVIE_ROOT . " AND " . Category::MOVIE_OTHER;
 	}
 
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
@@ -142,10 +144,10 @@ if (isset($argv[1]) && ($argv[1] === "music" || $argv[1] === "all")) {
 	}
 	if (isset($argv[2]) && $argv[2] === "true") {
 		echo $pdo->log->header("Resetting all Music postprocessing");
-		$where = ' WHERE musicinfoid IS NOT NULL';
+		$where = ' WHERE musicinfo_id IS NOT NULL';
 	} else {
 		echo $pdo->log->header("Resetting all failed Music postprocessing");
-		$where = " WHERE musicinfoid IN (-2, 0) AND categoryid BETWEEN 3000 AND 3999";
+		$where = " WHERE musicinfo_id IN (-2, 0) AND categories_id BETWEEN " . Category::MUSIC_ROOT . " AND " . Category::MUSIC_OTHER;
 	}
 
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
@@ -153,7 +155,7 @@ if (isset($argv[1]) && ($argv[1] === "music" || $argv[1] === "all")) {
 	$concount = 0;
 	if ($qry instanceof \Traversable) {
 		foreach ($qry as $releases) {
-			$pdo->queryExec("UPDATE releases SET musicinfoid = NULL WHERE id = " . $releases['id']);
+			$pdo->queryExec("UPDATE releases SET musicinfo_id = NULL WHERE id = " . $releases['id']);
 			$consoletools->overWritePrimary("Resetting Music Releases:  " . $consoletools->percentString(++$concount, $total));
 		}
 	}
@@ -194,10 +196,11 @@ if (isset($argv[1]) && ($argv[1] === "tv" || $argv[1] === "all")) {
 	}
 	if (isset($argv[2]) && $argv[2] === "true") {
 		echo $pdo->log->header("Resetting all TV postprocessing");
-		$where = ' WHERE videos_id != 0 AND tv_episodes_id != 0 AND categoryid BETWEEN 5000 AND 5999';
+		$where = ' WHERE videos_id != 0 AND tv_episodes_id != 0 AND categories_id BETWEEN ' .
+				Category::TV_ROOT . ' AND ' . Category::TV_OTHER;
 	} else {
 		echo $pdo->log->header("Resetting all failed TV postprocessing");
-		$where = " WHERE tv_episodes_id < 0 AND categoryid BETWEEN 5000 AND 5999";
+		$where = ' WHERE tv_episodes_id < 0 AND categories_id BETWEEN ' . Category::TV_ROOT . ' AND ' . Category::TV_OTHER;
 	}
 
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
@@ -223,10 +226,10 @@ if (isset($argv[1]) && ($argv[1] === "anime" || $argv[1] === "all")) {
 	}
 	if (isset($argv[2]) && $argv[2] === "true") {
 		echo $pdo->log->header("Resetting all Anime postprocessing");
-		$where = ' WHERE categoryid = 5070';
+		$where = ' WHERE categories_id = ' . Category::TV_ANIME;
 	} else {
-		echo $pdo->log->header("Resetting all failed Anime postprocessing");
-		$where = " WHERE anidbid BETWEEN -2 AND -1 AND categoryid = 5070";
+		echo $pdo->log->header('Resetting all failed Anime postprocessing');
+		$where = ' WHERE anidbid BETWEEN -2 AND -1 AND categories_id = ' . Category::TV_ANIME;
 	}
 
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
@@ -251,10 +254,11 @@ if (isset($argv[1]) && ($argv[1] === "books" || $argv[1] === "all")) {
 	}
 	if (isset($argv[2]) && $argv[2] === "true") {
 		echo $pdo->log->header("Resetting all Book postprocessing");
-		$where = ' WHERE bookinfoid IS NOT NULL';
+		$where = ' WHERE bookinfo_id IS NOT NULL';
 	} else {
 		echo $pdo->log->header("Resetting all failed Book postprocessing");
-		$where = " WHERE bookinfoid IN (-2, 0) AND categoryid BETWEEN 8000 AND 8999";
+		$where = ' WHERE bookinfo_id IN (-2, 0) AND categories_id BETWEEN ' . Category::BOOKs_ROOT .
+				' AND ' . Category::BOOKS_OTHER;
 	}
 
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
@@ -262,7 +266,7 @@ if (isset($argv[1]) && ($argv[1] === "books" || $argv[1] === "all")) {
 	$concount = 0;
 	if ($qry instanceof \Traversable) {
 		foreach ($qry as $releases) {
-			$pdo->queryExec("UPDATE releases SET bookinfoid = NULL WHERE id = " . $releases['id']);
+			$pdo->queryExec("UPDATE releases SET bookinfo_id = NULL WHERE id = " . $releases['id']);
 			$consoletools->overWritePrimary("Resetting Book Releases:  " . $consoletools->percentString(++$concount, $total));
 		}
 	}
@@ -278,7 +282,8 @@ if (isset($argv[1]) && ($argv[1] === "xxx" || $argv[1] === "all")) {
 		$where = ' WHERE xxxinfo_id != 0';
 	} else {
 		echo $pdo->log->header("Resetting all failed XXX postprocessing");
-		$where = " WHERE xxxinfo_id IN (-2, 0) AND categoryid BETWEEN 6000 AND 6040";
+		$where = ' WHERE xxxinfo_id IN (-2, 0) AND categories_id BETWEEN ' . Category::XXX_ROOT .
+				' AND ' . Category::XXX_OTHER;
 	}
 
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);

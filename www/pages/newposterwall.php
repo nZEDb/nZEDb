@@ -104,7 +104,7 @@ if (!$error) {
 			$getnewestanime = $releases->getNewestAnime();
 			$page->smarty->assign('newest', $getnewestanime);
 			$page->smarty->assign('goto', 'anime');
-			break;			
+			break;
 
 		case 'Recent':
 			$recent = $releases->getRecentlyAdded();

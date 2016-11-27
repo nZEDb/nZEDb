@@ -1,5 +1,5 @@
 <?php
-require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ReleaseSearch;
 use nzedb\SphinxSearch;
@@ -31,7 +31,7 @@ function populate_rt($table, $max)
 			$query = (
 				'SELECT r.id, r.name, r.searchname, r.fromname, IFNULL(GROUP_CONCAT(rf.name SEPARATOR " "),"") filename
 				FROM releases r
-				LEFT JOIN release_files rf ON(r.id=rf.releaseid)
+				LEFT JOIN release_files rf ON(r.id=rf.releases_id)
 				WHERE r.id > %d
 				GROUP BY r.id
 				ORDER BY r.id ASC
@@ -54,7 +54,7 @@ function populate_rt($table, $max)
 
 	$lastId = $minId - 1;
 	echo "[Starting to populate sphinx RT index $table with $total releases.]\n";
-	for ($i = $minId; $i <= ($total + $max) ; $i += $max) {
+	for ($i = $minId; $i <= ($total + $max + $minId); $i += $max) {
 
 		$rows = $pdo->queryDirect(sprintf($query, $lastId, $max));
 		if (!$rows) {

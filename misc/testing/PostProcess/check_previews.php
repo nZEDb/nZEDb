@@ -2,16 +2,16 @@
 // --------------------------------------------------------------
 //          Scan for releases missing previews on disk
 // --------------------------------------------------------------
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ConsoleTools;
 use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 $row = $pdo->queryOneRow("SELECT value FROM settings WHERE setting = 'coverspath'");
 if ($row !== false) {
@@ -44,8 +44,8 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "check")) {
 					$pdo->queryExec(
 						sprintf("
 							UPDATE releases
-							SET consoleinfoid = NULL, gamesinfo_id = 0, imdbid = NULL, musicinfoid = NULL,
-								bookinfoid = NULL, videos_id = 0, tv_episodes_id = 0, xxxinfo_id = 0,
+							SET consoleinfo_id = NULL, gamesinfo_id = 0, imdbid = NULL, musicinfo_id = NULL,
+								bookinfo_id = NULL, videos_id = 0, tv_episodes_id = 0, xxxinfo_id = 0,
 								passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0,
 								audiostatus = 0, nfostatus = -1
 							WHERE id = %s",

@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /**
  * Class Videos -- functions for site interaction
@@ -13,14 +13,15 @@ Class Videos
 	/**
 	 * @param array $options
 	 */
-	public function __construct(array $options = []) {
+	public function __construct(array $options = [])
+	{
 		$defaults = [
 			'Echo'         => false,
 			'Logger'       => null,
 			'Settings'     => null,
 		];
 		$options += $defaults;
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 	}
 
 	/**
@@ -128,7 +129,7 @@ Class Videos
 			$tsql .= sprintf("AND v.title LIKE %s", $this->pdo->escapeString("%" . $showname . "%"));
 		}
 
-		$qry = 	sprintf("
+		$qry = sprintf("
 			SELECT v.*,
 				us.id AS userseriesid
 			FROM

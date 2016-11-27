@@ -1,14 +1,10 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 class Genres
 {
-	const CONSOLE_TYPE = Category::CAT_PARENT_GAME;
-	const MUSIC_TYPE   = Category::CAT_PARENT_MUSIC;
-	const GAME_TYPE    = Category::CAT_PARENT_PC;
-
 	const STATUS_ENABLED = 0;
 	const STATUS_DISABLED = 1;
 
@@ -27,7 +23,7 @@ class Genres
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 	}
 
 	public function getGenres($type = '', $activeonly = false)
@@ -69,10 +65,10 @@ class Genres
 		}
 
 		if ($activeonly) {
-			$sql = sprintf("SELECT COUNT(*) AS num FROM genres g WHERE 1 %s AND g.disabled != 1", $typesql
+			$sql = sprintf("SELECT COUNT(id) AS num FROM genres g WHERE 1 %s AND g.disabled != 1", $typesql
 			);
 		} else {
-			$sql = sprintf("SELECT COUNT(*) AS num FROM genres g WHERE 1 %s", $typesql);
+			$sql = sprintf("SELECT COUNT(id) AS num FROM genres g WHERE 1 %s", $typesql);
 		}
 
 		$res = $this->pdo->queryOneRow($sql);

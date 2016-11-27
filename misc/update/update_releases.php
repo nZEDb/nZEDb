@@ -1,12 +1,15 @@
 <?php
-require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use app\models\Settings;
+use nzedb\Category;
 use nzedb\ConsoleTools;
 use nzedb\NNTP;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 use nzedb\processing\ProcessReleases;
 
-$pdo = new Settings();
+$category = new Category();
+$pdo = new DB();
 
 if (isset($argv[2]) && $argv[2] === 'true') {
 	// Create the connection here and pass
@@ -15,7 +18,8 @@ if (isset($argv[2]) && $argv[2] === 'true') {
 		exit($pdo->log->error("Unable to connect to usenet."));
 	}
 }
-if ($pdo->getSetting('tablepergroup') === 1) {
+
+if (Settings::value('..tablepergroup') === 1) {
 	exit($pdo->log->error("You are using 'tablepergroup', you must use .../misc/update/nix/multiprocessing/releases.php"));
 }
 
@@ -37,7 +41,7 @@ if (isset($argv[1]) && isset($argv[2])) {
 	} else if ($argv[1] == 5 && ($argv[2] == 'true' || $argv[2] == 'false')) {
 		echo $pdo->log->header("Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.");
 		$timestart = TIME();
-		$relcount = $releases->categorizeRelease('name', 'WHERE iscategorized = 0 AND categoryID = 7010');
+		$relcount = $releases->categorizeRelease('name', "WHERE iscategorized = 0 AND categories_id = " . Category::OTHER_MISC);
 		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo $pdo->log->primary("\n" . 'Finished categorizing ' . $relcount . ' releases in ' . $time . " seconds, using the usenet subject.");
 	} else if ($argv[1] == 6 && $argv[2] == 'true') {
@@ -50,7 +54,15 @@ if (isset($argv[1]) && isset($argv[2])) {
 	} else if ($argv[1] == 6 && $argv[2] == 'false') {
 		echo $pdo->log->header("Categorizing releases in misc sections using the searchname. This can take a while, be patient.");
 		$timestart = TIME();
-		$relcount = $releases->categorizeRelease('searchname', 'WHERE categoryID IN (1090, 2020, 3050, 5050, 6050, 7010)');
+		$relcount = $releases->categorizeRelease('searchname',
+				sprintf("WHERE categories_id IN (%s, %s, %s, %s, %s, %s)",
+					Category::GAME_OTHER,
+					Category::MOVIE_OTHER,
+					Category::MUSIC_OTHER,
+					Category::TV_OTHER,
+					Category::XXX_OTHER,
+					Category::OTHER_MISC
+				));
 		$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo $pdo->log->primary("\n" . 'Finished categorizing ' . $relcount . ' releases in ' . $time . " seconds, using the search name.");

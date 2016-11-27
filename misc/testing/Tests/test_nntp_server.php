@@ -1,6 +1,6 @@
 <?php
 // To troubleshoot what's actually on usenet.
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\Binaries;
 use nzedb\ColorCLI;

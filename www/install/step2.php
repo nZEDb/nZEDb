@@ -1,7 +1,9 @@
 <?php
 require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install.php');
 
-use nzedb\db\Settings;
+
+use app\extensions\util\Versions;
+use nzedb\db\DB;
 use nzedb\Install;
 
 $page = new InstallPage();
@@ -86,7 +88,8 @@ if ($page->isPostBack()) {
 	} else {
 		// Connect to the SQL server.
 		try {
-			$pdo = new Settings(
+			// HAS to be DB because settings table does not exist yet.
+			$pdo = new DB(
 				[
 					'checkVersion' => true,
 					'createDb'     => true,
@@ -153,12 +156,12 @@ if ($page->isPostBack()) {
 
 		try {
 			$DbSetup->processSQLFile(); // Setup default schema
-			$DbSetup->loadTables(); // Load default data files
 			$DbSetup->processSQLFile( // Process any custom stuff.
-					[
-						 'filepath' =>	nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-data.sql'
-					]
+				[
+					'filepath' => nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-data.sql'
+				]
 			);
+			$DbSetup->loadTables(); // Load default data files
 		} catch (\PDOException $err) {
 			$cfg->error = true;
 			$cfg->emessage = "Error inserting: (" . $err->getMessage() . ")";
@@ -167,7 +170,7 @@ if ($page->isPostBack()) {
 		if (!$cfg->error) {
 			// Check one of the standard tables was created and has data.
 			$dbInstallWorked = false;
-			$reschk = $pdo->query("SELECT COUNT(*) AS num FROM tmux");
+			$reschk = $pdo->query("SELECT COUNT(id) AS num FROM tmux");
 			if ($reschk === false) {
 				$cfg->dbCreateCheck = false;
 				$cfg->error = true;
@@ -181,21 +184,14 @@ if ($page->isPostBack()) {
 				}
 			}
 
-			$ver = new \nzedb\utility\Versions();
-			$patch = $ver->getSQLPatchFromFiles();
-			$pdo->setSetting(['..sqlpatch' => $patch]);
+			$ver = new Versions();
+			$patch = $ver->getSQLPatchFromFile();
 
 			if ($dbInstallWorked) {
-				$ver   = new \nzedb\utility\Versions();
-				$patch = $ver->getSQLPatchFromFiles();
 				if ($patch > 0) {
-					$updateSettings = $pdo->setSetting(
-										[
-											'section'    => '',
-											'subsection' => '',
-											'name'       => 'sqlpatch',
-											'value'      => $patch
-										]);
+					$updateSettings = $pdo->exec(
+						"UPDATE settings SET value = '$patch' WHERE section = '' AND subsection = '' AND name = 'sqlpatch'"
+					);
 				} else {
 					$updateSettings = false;
 				}

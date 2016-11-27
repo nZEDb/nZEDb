@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 /**
  * Handles removing of various unwanted releases.
@@ -125,7 +125,7 @@ class ReleaseRemover
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->consoleTools = ($options['ConsoleTools'] instanceof ConsoleTools ? $options['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->pdo->log]));
 		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['Settings' => $this->pdo]));
 		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
@@ -347,10 +347,10 @@ class ReleaseRemover
 			WHERE r.nfostatus = 0
 			AND r.iscategorized = 1
 			AND r.rarinnerfilecount = 0
-			AND r.categoryid NOT IN (%d)
+			AND r.categories_id NOT IN (%d)
 			AND r.searchname REGEXP '^[a-zA-Z0-9]{15,}$'
 			%s",
-			Category::CAT_OTHER_HASHED,
+			Category::OTHER_HASHED,
 			$this->crapTime
 		);
 
@@ -375,10 +375,10 @@ class ReleaseRemover
 			WHERE r.nfostatus = 0
 			AND r.iscategorized = 1
 			AND r.rarinnerfilecount = 0
-			AND r.categoryid NOT IN (%d, %d)
+			AND r.categories_id NOT IN (%d, %d)
 			AND r.searchname REGEXP '[a-zA-Z0-9]{25,}'
 			%s",
-			Category::CAT_MISC, Category::CAT_OTHER_HASHED, $this->crapTime
+			Category::OTHER_MISC, Category::OTHER_HASHED, $this->crapTime
 		);
 
 		if ($this->checkSelectQuery() === false) {
@@ -402,10 +402,10 @@ class ReleaseRemover
 			WHERE r.nfostatus = 0
 			AND r.iscategorized = 1
 			AND r.rarinnerfilecount = 0
-			AND r.categoryid NOT IN (%d)
+			AND r.categories_id NOT IN (%d)
 			AND r.searchname REGEXP '^[a-zA-Z0-9]{0,5}$'
 			%s",
-			Category::CAT_MISC, $this->crapTime
+			Category::OTHER_MISC, $this->crapTime
 		);
 
 		if ($this->checkSelectQuery() === false) {
@@ -427,7 +427,15 @@ class ReleaseRemover
 		switch (nZEDb_RELEASE_SEARCH_TYPE) {
 			case ReleaseSearch::SPHINX:
 				$rs = new ReleaseSearch($this->pdo);
-				$execFT = str_replace('=10000;', '=1000000;', $rs->getSearchSQL(['filename' => '-exes* -exec* exe']));
+				$execFT =
+					str_replace('=10000;', '=100000;',
+						$rs->getSearchSQL(
+							[
+								'searchname' => '-exes* -exec*',
+								'filename' => 'exe'
+							]
+						)
+				);
 				$ftJoin = $rs->getFullTextJoinString();
 				break;
 			default:
@@ -438,19 +446,19 @@ class ReleaseRemover
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
 			FROM releases r %s
-			STRAIGHT_JOIN release_files rf ON r.id = rf.releaseid
+			STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id
 			WHERE r.searchname NOT REGEXP %s
 			AND rf.name %s
-			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d) %s %s",
+			AND r.categories_id NOT IN (%d, %d, %d, %d, %d, %d) %s %s",
 			$ftJoin,
 			$this->pdo->escapeString('\.exe[sc]'),
-			$this->pdo->likeString('.exe', true, true),
-			Category::CAT_PC_0DAY,
-			Category::CAT_PC_GAMES,
-			Category::CAT_PC_ISO,
-			Category::CAT_PC_MAC,
-			Category::CAT_MISC,
-			Category::CAT_OTHER_HASHED,
+			$this->pdo->likeString('.exe', true, false),
+			Category::PC_0DAY,
+			Category::PC_GAMES,
+			Category::PC_ISO,
+			Category::PC_MAC,
+			Category::OTHER_MISC,
+			Category::OTHER_HASHED,
 			$execFT,
 			$this->crapTime
 		);
@@ -474,7 +482,7 @@ class ReleaseRemover
 		switch (nZEDb_RELEASE_SEARCH_TYPE) {
 			case ReleaseSearch::SPHINX:
 				$rs = new ReleaseSearch($this->pdo);
-				$instbinFT = str_replace('=10000;', '=10000000;', $rs->getSearchSQL(['filename' => 'install<<bin']));
+				$instbinFT = str_replace('=10000;', '=100000;', $rs->getSearchSQL(['filename' => 'install<<bin']));
 				$ftJoin = $rs->getFullTextJoinString();
 				break;
 			default:
@@ -485,7 +493,7 @@ class ReleaseRemover
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
 			FROM releases r %s
-			STRAIGHT_JOIN release_files rf ON r.id = rf.releaseid
+			STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id
 			WHERE rf.name %s %s",
 			$ftJoin,
 			$this->pdo->likeString('install.bin', true, true),
@@ -523,7 +531,7 @@ class ReleaseRemover
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
 			FROM releases r %s
-			STRAIGHT_JOIN release_files rf ON r.id = rf.releaseid
+			STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id
 			WHERE rf.name %s %s %s",
 			$ftJoin,
 			$this->pdo->likeString('password.url', true, true),
@@ -569,7 +577,7 @@ class ReleaseRemover
 			AND r.searchname NOT %s
 			AND r.searchname NOT %s
 			AND r.nzbstatus = 1
-			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d) %s %s",
+			AND r.categories_id NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d) %s %s",
 			// Matches passwort / passworded / etc also.
 			$ftJoin,
 			$this->pdo->likeString('passwor', true, true),
@@ -579,15 +587,15 @@ class ReleaseRemover
 			$this->pdo->likeString('recovery', true, true),
 			$this->pdo->likeString('reset', true, true),
 			$this->pdo->likeString('unlocker', true, true),
-			Category::CAT_PC_GAMES,
-			Category::CAT_PC_0DAY,
-			Category::CAT_PC_ISO,
-			Category::CAT_PC_MAC,
-			Category::CAT_PC_PHONE_ANDROID,
-			Category::CAT_PC_PHONE_IOS,
-			Category::CAT_PC_PHONE_OTHER,
-			Category::CAT_MISC,
-			Category::CAT_OTHER_HASHED,
+			Category::PC_GAMES,
+			Category::PC_0DAY,
+			Category::PC_ISO,
+			Category::PC_MAC,
+			Category::PC_PHONE_ANDROID,
+			Category::PC_PHONE_IOS,
+			Category::PC_PHONE_OTHER,
+			Category::OTHER_MISC,
+			Category::OTHER_HASHED,
 			$passFT,
 			$this->crapTime
 		);
@@ -612,18 +620,18 @@ class ReleaseRemover
 			FROM releases r
 			WHERE r.totalpart = 1
 			AND r.size < 2097152
-			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s",
-			Category::CAT_MUSIC_MP3,
-			Category::CAT_BOOKS_COMICS,
-			Category::CAT_BOOKS_EBOOK,
-			Category::CAT_BOOKS_FOREIGN,
-			Category::CAT_BOOKS_MAGAZINES,
-			Category::CAT_BOOKS_TECHNICAL,
-			Category::CAT_BOOKS_OTHER,
-			Category::CAT_PC_0DAY,
-			Category::CAT_PC_GAMES,
-			Category::CAT_MISC,
-			Category::CAT_OTHER_HASHED,
+			AND r.categories_id NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s",
+			Category::MUSIC_MP3,
+			Category::BOOKS_COMICS,
+			Category::BOOKS_EBOOK,
+			Category::BOOKS_FOREIGN,
+			Category::BOOKS_MAGAZINES,
+			Category::BOOKS_TECHNICAL,
+			Category::BOOKS_UNKNOWN,
+			Category::PC_0DAY,
+			Category::PC_GAMES,
+			Category::OTHER_MISC,
+			Category::OTHER_HASHED,
 			$this->crapTime
 		);
 
@@ -669,7 +677,7 @@ class ReleaseRemover
 		switch (nZEDb_RELEASE_SEARCH_TYPE) {
 			case ReleaseSearch::SPHINX:
 				$rs = new ReleaseSearch($this->pdo);
-				$sampleFT = str_replace('=10000;', '=10000000;', $rs->getSearchSQL(['name' => 'sample']));
+				$sampleFT = str_replace('=10000;', '=100000;', $rs->getSearchSQL(['name' => 'sample']));
 				$ftJoin = $rs->getFullTextJoinString();
 				break;
 			default:
@@ -683,24 +691,24 @@ class ReleaseRemover
 			WHERE r.totalpart > 1
 			AND r.size < 40000000
 			AND r.name %s
-			AND r.categoryid IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s %s",
+			AND r.categories_id IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s %s",
 			$ftJoin,
 			$this->pdo->likeString('sample', true, true),
-			Category::CAT_TV_ANIME,
-			Category::CAT_TV_DOCUMENTARY,
-			Category::CAT_TV_FOREIGN,
-			Category::CAT_TV_HD,
-			Category::CAT_TV_OTHER,
-			Category::CAT_TV_SD,
-			Category::CAT_TV_SPORT,
-			Category::CAT_TV_WEBDL,
-			Category::CAT_MOVIE_3D,
-			Category::CAT_MOVIE_BLURAY,
-			Category::CAT_MOVIE_DVD,
-			Category::CAT_MOVIE_FOREIGN,
-			Category::CAT_MOVIE_HD,
-			Category::CAT_MOVIE_OTHER,
-			Category::CAT_MOVIE_SD,
+			Category::TV_ANIME,
+			Category::TV_DOCUMENTARY,
+			Category::TV_FOREIGN,
+			Category::TV_HD,
+			Category::TV_OTHER,
+			Category::TV_SD,
+			Category::TV_SPORT,
+			Category::TV_WEBDL,
+			Category::MOVIE_3D,
+			Category::MOVIE_BLURAY,
+			Category::MOVIE_DVD,
+			Category::MOVIE_FOREIGN,
+			Category::MOVIE_HD,
+			Category::MOVIE_OTHER,
+			Category::MOVIE_SD,
 			$sampleFT,
 			$this->crapTime
 		);
@@ -735,7 +743,7 @@ class ReleaseRemover
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname, r.id
 			FROM releases r %s
-			STRAIGHT_JOIN release_files rf ON r.id = rf.releaseid
+			STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id
 			WHERE (rf.name REGEXP '[.]scr[$ \"]' OR r.name REGEXP '[.]scr[$ \"]')
 			%s %s",
 			$ftJoin,
@@ -836,7 +844,7 @@ class ReleaseRemover
 						$groupIDs = (substr($string, 0, -1));
 					}
 
-					$groupID = ' AND r.group_id in (' . $groupIDs . ') ';
+					$groupID = ' AND r.groups_id in (' . $groupIDs . ') ';
 				}
 				$this->method = 'Blacklist [' . $regex['id'] . ']';
 
@@ -856,7 +864,7 @@ class ReleaseRemover
 				);
 
 				if ($opTypeName == 'Subject') {
-					$join = (nZEDb_RELEASE_SEARCH_TYPE == ReleaseSearch::SPHINX ? 'INNER JOIN releases_se rse ON rse.id = r.id' : 'INNER JOIN release_search_data rs ON rs.releaseid = r.id');
+					$join = (nZEDb_RELEASE_SEARCH_TYPE == ReleaseSearch::SPHINX ? 'INNER JOIN releases_se rse ON rse.id = r.id' : 'INNER JOIN release_search_data rs ON rs.releases_id = r.id');
 				} else {
 					$join = '';
 				}
@@ -923,7 +931,7 @@ class ReleaseRemover
 					}
 				}
 
-				$regexSQL = sprintf("STRAIGHT_JOIN release_files rf ON r.id = rf.releaseid
+				$regexSQL = sprintf("STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id
 				WHERE rf.name REGEXP %s ", $this->pdo->escapeString($regex['regex'])
 				);
 
@@ -951,7 +959,7 @@ class ReleaseRemover
 						$groupIDs = (substr($string, 0, -1));
 					}
 
-					$groupID = ' AND r.group_id in (' . $groupIDs . ') ';
+					$groupID = ' AND r.groups_id in (' . $groupIDs . ') ';
 				}
 
 				$this->method = 'Blacklist Files ' . $regex['id'];
@@ -1001,10 +1009,13 @@ class ReleaseRemover
 	protected function removeWMV()
 	{
 		$this->method = 'WMV_ALL';
-		$this->query = "SELECT DISTINCT r.guid, r.searchname
-				FROM release_files AS rf
-				INNER JOIN releases r ON (r.id = rf.releaseid)
-				WHERE rf.name REGEXP 'x264.*\.wmv$'"
+		$this->query = "
+			SELECT r.guid, r.searchname
+			FROM releases r
+			LEFT JOIN release_files rf ON (r.id = rf.releases_id)
+			WHERE r.categories_id BETWEEN 2000 AND 2999
+			AND rf.name REGEXP 'x264.*\.wmv$'
+			GROUP BY r.id"
 		;
 
 		if ($this->checkSelectQuery() === false) {
@@ -1022,82 +1033,50 @@ class ReleaseRemover
 	 */
 	protected function removeCodecPoster()
 	{
-		$this->method = 'Codec Poster';
-		$regex = "rf.name REGEXP 'x264.*\.(wmv|avi)$'";
-		$regex2 = "rf.name REGEXP '\\\\.*((DVDrip|BRRip)[. ].*[. ](R[56]|HQ)|720p[ .](DVDrip|HQ)|"
-			. "Webrip.*[. ](R[56]|Xvid|AC3|US)|720p.*[. ]WEB-DL[. ]Xvid[. ]AC3[. ]US|"
-			. "HDRip.*[. ]Xvid[. ]DD5).*[. ]avi$'";
-		$codec = '\\Codec%Setup.exe';
-		$codec2 ='\\Codec%Installer.exe';
-		$iferror = 'If_you_get_error.txt';
-		$ifnotplaying = 'read me if the movie not playing.txt';
-		$frenchv = 'Lisez moi si le film ne demarre pas.txt';
-		$nl = 'lees me als de film niet spelen.txt';
-		$german = 'Lesen Sie mir wenn der Film nicht abgespielt.txt';
-		$german2 = 'Lesen Sie mir, wenn der Film nicht starten.txt';
-		$categories = sprintf("r.categoryid IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
-				Category::CAT_MOVIE_3D,
-				Category::CAT_MOVIE_BLURAY,
-				Category::CAT_MOVIE_DVD,
-				Category::CAT_MOVIE_FOREIGN,
-				Category::CAT_MOVIE_HD,
-				Category::CAT_MOVIE_OTHER,
-				Category::CAT_MOVIE_SD,
-				Category::CAT_XXX_WMV,
-				Category::CAT_XXX_X264,
-				Category::CAT_XXX_XVID,
-				Category::CAT_XXX_OTHER
+		$categories = sprintf("r.categories_id IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
+			Category::MOVIE_3D,
+			Category::MOVIE_BLURAY,
+			Category::MOVIE_DVD,
+			Category::MOVIE_FOREIGN,
+			Category::MOVIE_HD,
+			Category::MOVIE_OTHER,
+			Category::MOVIE_SD,
+			Category::XXX_WMV,
+			Category::XXX_X264,
+			Category::XXX_XVID,
+			Category::XXX_OTHER
 		);
 
-		switch (nZEDb_RELEASE_SEARCH_TYPE) {
-			case ReleaseSearch::SPHINX:
-				$rs = new ReleaseSearch($this->pdo);
-				$codecFT1 = str_replace('=10000;', '=1000000;', $rs->getSearchSQL(['filename' => 'x264|wmv|avi|DVDrip|BRRip|R5|R6|HQ|Webrip|Xvid|AC3|HDRip|DD5']));
-				$codecFT2 = str_replace('=10000;', '=1000000;', $rs->getSearchSQL(['filename' => 'Codec|error|txt|installer|vlc']));
-				$ftJoin = $rs->getFullTextJoinString();
-				break;
-			default:
-				$codecFT1 = $codecFT2 = $ftJoin = '';
-				break;
-		}
+		$regex =
+			'\.*((DVDrip|BRRip)[. ].*[. ](R[56]|HQ)|720p[ .](DVDrip|HQ)|Webrip.*[. ](R[56]|Xvid|AC3|US)' .
+			'|720p.*[. ]WEB-DL[. ]Xvid[. ]AC3[. ]US|HDRip.*[. ]Xvid[. ]DD5).*[. ]avi$';
 
-		$codeclike = sprintf("
-				SELECT r.guid, r.searchname, r.id FROM releases r %s
-				STRAIGHT_JOIN release_files rf ON r.id = rf.releaseid
-				WHERE %s %s AND
-					(rf.name %s OR rf.name %s OR
-					rf.name %s OR rf.name %s OR
-					rf.name %s OR rf.name %s OR
-					rf.name %s OR rf.name %s)
-				%s",
-					$ftJoin,
-					$categories,
-					$codecFT2,
-					$this->pdo->likeString($codec, true, true),
-					$this->pdo->likeString($codec2, true, true),
-					$this->pdo->likeString($iferror, true, true),
-					$this->pdo->likeString($ifnotplaying, true, true),
-					$this->pdo->likeString($frenchv, true, true),
-					$this->pdo->likeString($nl, true, true),
-					$this->pdo->likeString($german, true, true),
-					$this->pdo->likeString($german2, true, true),
-					$this->crapTime
-		);
-
-		$this->query = sprintf(
-			"SELECT r.guid, r.searchname, r.id FROM releases r %s
-			STRAIGHT_JOIN release_files rf ON (r.id = rf.releaseid)
-			WHERE %s %s
-			AND (%s OR %s) %s
-			UNION %s",
-			$ftJoin,
-			$categories,
-			$codecFT1,
-			$regex,
-			$regex2,
-			$this->crapTime,
-			$codeclike
-		);
+		$this->query = "
+			SELECT r.guid, r.searchname, r.id
+			FROM releases r
+			LEFT JOIN release_files rf ON r.id = rf.releases_id
+			WHERE {$categories}
+			AND (r.imdbid NOT IN ('0000000', 0) OR xxxinfo_id > 0)
+			AND nfostatus = 1
+			AND haspreview = 0
+			AND jpgstatus = 0
+			AND predb_id = 0
+			AND videostatus = 0
+			AND
+			(
+				rf.name REGEXP 'XviD-[a-z]{3}\\.(avi|mkv|wmv)$'
+				OR rf.name REGEXP 'x264.*\\.(wmv|avi)$'
+				OR rf.name REGEXP '{$regex}'
+				OR rf.name LIKE '%\\Codec%Setup.exe%'
+				OR rf.name LIKE '%\\Codec%Installer.exe%'
+				OR rf.name LIKE '%If_you_get_error.txt%'
+				OR rf.name LIKE '%read me if the movie not playing.txt%'
+				OR rf.name LIKE '%Lisez moi si le film ne demarre pas.txt%'
+				OR rf.name LIKE '%lees me als de film niet spelen.txt%'
+				OR rf.name LIKE '%Lesen Sie mir wenn der Film nicht abgespielt.txt%'
+				OR rf.name LIKE '%Lesen Sie mir, wenn der Film nicht starten.txt%'
+			)
+			GROUP BY r.id {$this->crapTime}";
 
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();
@@ -1179,7 +1158,7 @@ class ReleaseRemover
 				case 'categoryid':
 					switch ($args[1]) {
 						case 'equals':
-							return ' AND categoryID = ' . $args[2];
+							return ' AND categories_id = ' . $args[2];
 						default:
 							break;
 					}
@@ -1204,7 +1183,7 @@ class ReleaseRemover
 							break;
 					}
 					break;
-				case 'videos_id':
+				case 'videosid':
 					switch ($args[1]) {
 						case 'equals':
 							return ' AND videos_id = ' . $args[2];
@@ -1241,14 +1220,14 @@ class ReleaseRemover
 								break;
 							}
 
-							return ' AND group_id = ' . $group['id'];
+							return ' AND groups_id = ' . $group['id'];
 						case 'like':
 							$groups = $this->pdo->query('SELECT id FROM groups WHERE name ' . $this->formatLike($args[2], 'name'));
 							if (count($groups) === 0) {
 								$this->error = 'No groups were found with this pattern in your database: ' . $args[2] . PHP_EOL;
 								break;
 							}
-							$gQuery = ' AND group_id IN (';
+							$gQuery = ' AND groups_id IN (';
 							foreach ($groups as $group) {
 								$gQuery .= $group['id'] . ',';
 							}

@@ -28,6 +28,38 @@ if ($page->isPostBack()) {
 	if ($cfg->ADMIN_USER == '' || $cfg->ADMIN_PASS == '' || $cfg->ADMIN_EMAIL == '') {
 		$cfg->error = true;
 	} else {
+		switch (DB_SYSTEM) {
+			case 'mysql':
+				$adapter = 'MySql';
+				break;
+			case 'pgsql':
+				$adapter = 'PostgreSql';
+				break;
+			default:
+				break;
+		}
+
+		if (isset($adapter)) {
+			if (empty(DB_SOCKET)) {
+				$host = empty(DB_PORT) ? DB_HOST : DB_HOST . ':' . DB_PORT;
+			} else {
+				$host = DB_SOCKET;
+			}
+
+			lithium\data\Connections::add('default',
+				[
+					'type'       => 'database',
+					'adapter'    => $adapter,
+					'host'       => $host,
+					'login'      => DB_USER,
+					'password'   => DB_PASSWORD,
+					'database'   => DB_NAME,
+					'encoding'   => 'UTF-8',
+					'persistent' => false,
+				]
+			);
+		}
+
 		$user = new Users();
 		if (!$user->isValidUsername($cfg->ADMIN_USER)) {
 			$cfg->error = true;

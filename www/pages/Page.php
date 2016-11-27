@@ -12,6 +12,17 @@ class Page extends BasePage
 	{
 		parent::__construct();
 
+		define('WWW_THEMES', WWW_TOP . '/themes');
+
+		// Tell Smarty which directories to use for templates
+		$this->smarty->setTemplateDir(
+			[
+				'user'    => nZEDb_THEMES . $this->theme . '/templates',
+				'shared'  => nZEDb_THEMES . 'shared/templates',
+				'default' => nZEDb_THEMES . 'Default/templates'
+			]
+		);
+
 		$role = Users::ROLE_GUEST;
 		if ($this->userdata != null) {
 			$role = $this->userdata["role"];
@@ -29,7 +40,7 @@ class Page extends BasePage
 
 		$category = new Category(['Settings' => $content->pdo]);
 		if ($this->userdata != null) {
-			$parentcatlist = $category->getForMenu($this->userdata["categoryexclusions"]);
+			$parentcatlist = $category->getForMenu($this->userdata["categoryexclusions"], $this->userdata['rolecategoryexclusions']);
 		} else {
 			$parentcatlist = $category->getForMenu();
 		}
@@ -55,6 +66,7 @@ class Page extends BasePage
 
 		$this->smarty->assign('consolecatlist', $consoleCatList);
 		$this->smarty->assign('parentcatlist', $parentcatlist);
+		$this->smarty->assign('catClass', $category);
 
 		$searchStr = '';
 		if ($this->page == 'search' && isset($_REQUEST["id"])) {

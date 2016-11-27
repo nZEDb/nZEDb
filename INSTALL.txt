@@ -5,7 +5,7 @@ REQUIREMENTS
 		file  http://darwinsys.com/file/
 
 	PHP
-		php version 5.5 or higher
+		php version 5.6 or higher
 
 		(ini file settings)
 			date.timezone Set to your local (http://ca3.php.net/manual/en/timezones.php)
@@ -17,10 +17,8 @@ REQUIREMENTS
 
 		(extensions)
 			Curl
-			Crypt
 			Ctype
 			Date
-			DBA
 			EXIF
 			Filter
 			GD
@@ -28,6 +26,7 @@ REQUIREMENTS
 			Iconv
 			JSON
 			MBString
+			Mcrypt
 			OpenSSL
 			PEAR
 			PCRE
@@ -35,7 +34,6 @@ REQUIREMENTS
 			PDO MySQL
 			POSIX (On unix operating systems)
 			Session
-			SHA1
 			SimpleXML
 			Sockets
 			ZLib
@@ -47,7 +45,7 @@ REQUIREMENTS
 			Non root MySQL USER.
 			MySQL user with ALL permissions. (GRANT ALL ON *.* TO 'YourMySQLUsername'@'YourMySQLServerIPAddress';)
 			MySQL user with FILE permissions. (GRANT FILE ON *.* TO 'YourMySQLUsername'@'YourMySQLServerIPAddress';)
-			
+
 			If the database is remote:
 			[client]
 			loose-local-infile=1
@@ -132,6 +130,7 @@ INSTALLATION
 
 
 RUNNING OUTSIDE OF WEB ROOT
+	This is not officially supported. If you choose to do this, it is up to you to get it working ;-)
 	set www\.htaccess RewriteBase to your virtual directory
 
 

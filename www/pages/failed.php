@@ -1,14 +1,15 @@
 <?php
 
+use app\models\Settings;
 use nzedb\DnzbFailures;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 // Page is accessible only by the rss token, or logged in users.
 if ($page->users->isLoggedIn()) {
 	$uid = $page->users->currentUserId();
 	$rssToken = $page->userdata['rsstoken'];
 } else {
-	if ($page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
+	if (Settings::value('..registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
 		if (!isset($_GET["rsstoken"])) {
 			header("X-DNZB-RCode: 400");
 			header("X-DNZB-RText: Bad request, please supply all parameters!");
@@ -35,11 +36,14 @@ if ($page->users->isLoggedIn()) {
 	}
 }
 
-if (isset($_GET['guid']) && isset($_GET['searchname']) && isset($uid) && is_numeric($uid) && isset($rssToken)) {
+if (isset($_GET['guid']) && isset($uid) && is_numeric($uid) && isset($rssToken)) {
 
-	$alt = (new DnzbFailures(['Settings' => $page->settings]))->getAlternate($_GET['guid'], $_GET['searchname'], $uid);
-	if (!$alt) {
+	$alt = (new DnzbFailures(['Settings' => $page->settings]))->getAlternate($_GET['guid'], $uid);
+	if ($alt === false) {
+		header("X-DNZB-RCode: 404");
+		header("X-DNZB-RText: No NZB found for alternate match.");
 		$page->show404();
+	} else {
+		header('Location: ' . $page->serverurl . 'getnzb/' . $alt['guid'] . '&i=' . $uid . '&r=' . $rssToken);
 	}
-	header('Location: ' . $page->serverurl . 'getnzb/' . $alt['guid'] . '&i=' . $uid . '&r=' . $rssToken);
 }

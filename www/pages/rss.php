@@ -1,21 +1,23 @@
 <?php
 
+use app\models\Settings;
 use nzedb\Category;
-use nzedb\RSS;
-use nzedb\db\Settings;
+use nzedb\http\RSS;
+use nzedb\db\DB;
+use nzedb\utility\Misc;
 
 $category = new Category(['Settings' => $page->settings]);
 $rss = new RSS(['Settings' => $page->settings]);
+$offset = 0;
 
 // If no content id provided then show user the rss selection page.
 if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	// User has to either be logged in, or using rsskey.
 	if (!$page->users->isLoggedIn()) {
-		if ($page->settings->getSetting('registerstatus') != Settings::REGISTER_STATUS_API_ONLY) {
-			header('X-nZEDb: ERROR: You must be logged in or provide a valid User ID and API key!');
-			$page->show403();
+		if (Settings::value('..registerstatus') != Settings::REGISTER_STATUS_API_ONLY) {
+			Misc::showApiError(100);
 		} else {
-			header("Location: " . $page->settings->getSetting('code'));
+			header("Location: " . Settings::value('site.main.code'));
 		}
 	}
 
@@ -24,23 +26,23 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	$page->meta_keywords = "view,nzb,description,details,rss,atom";
 	$page->meta_description = "View information about nZEDb RSS Feeds.";
 
-	$firstShow = $rss->getFirstInstance('id', 'videos');
-	$firstAni = $rss->getFirstInstance('anidbid', 'releases');
+	$firstShow = $rss->getFirstInstance('videos_id', 'releases', 'id');
+	$firstAni = $rss->getFirstInstance('anidbid', 'releases', 'id');
 
-	if (isset($firstShow['id'])) {
-		$page->smarty->assign('show', $firstShow['id']);
+	if (isset($firstShow['videos_id'])) {
+		$page->smarty->assign('show', $firstShow['videos_id']);
 	} else {
 		$page->smarty->assign('show', 1);
 	}
 
-	if (isset($firstAni['anidb'])) {
-		$page->smarty->assign('anidb', $firstAni['id']);
+	if (isset($firstAni['anidbid'])) {
+		$page->smarty->assign('anidb', $firstAni['anidbid']);
 	} else {
 		$page->smarty->assign('anidb', 1);
 	}
 
 	$page->smarty->assign([
-			'categorylist'       => $category->get(true, $page->userdata["categoryexclusions"]),
+			'categorylist'       => $category->getCategories(true, $page->userdata["categoryexclusions"]),
 			'parentcategorylist' => $category->getForMenu($page->userdata["categoryexclusions"])
 		]
 	);
@@ -55,35 +57,37 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 		$rssToken = $page->userdata["rsstoken"];
 		$maxRequests = $page->userdata['apirequests'];
 	} else {
-		if ($page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
+		if (Settings::value('..registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
 			$res = $page->users->getById(0);
 		} else {
 			if (!isset($_GET["i"]) || !isset($_GET["r"])) {
-				header('X-nZEDb: ERROR: Both the User ID and API key are required for viewing the RSS!');
-				$page->show403();
+				Misc::showApiError(100, 'Both the User ID and API key are required for viewing the RSS!');
 			}
 
 			$res = $page->users->getByIdAndRssToken($_GET["i"], $_GET["r"]);
 		}
 
 		if (!$res) {
-			header('X-nZEDb: ERROR: Invalid API key or User ID!');
-			$page->show403();
+			Misc::showApiError(100);
 		}
 
 		$uid = $res["id"];
 		$rssToken = $res['rsstoken'];
 		$maxRequests = $res['apirequests'];
+		$username = $res['username'];
+
+		if ($page->users->isDisabled($username)) {
+			Misc::showApiError(101);
+		}
 	}
 
 	if ($page->users->getApiRequests($uid) > $maxRequests) {
-		header('X-nZEDb: ERROR: You have reached your daily limit for API requests!');
-		$page->show503();
+		Misc::showApiError(500, 'You have reached your daily limit for API requests!');
 	} else {
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 	}
-	// Valid or logged in user, get them the requested feed.
 
+	// Valid or logged in user, get them the requested feed.
 	$userShow = $userAnidb = -1;
 	if (isset($_GET["show"])) {
 		$userShow = ($_GET["show"] == 0 ? -1 : $_GET["show"] + 0);
@@ -91,17 +95,20 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 		$userAnidb = ($_GET["anidb"] == 0 ? -1 : $_GET["anidb"] + 0);
 	}
 
+	$outputXML = (isset($_GET['o']) && $_GET['o'] == 'json' ? false : true);
+
 	$userCat = (isset($_GET['t']) ? ($_GET['t'] == 0 ? -1 : $_GET['t']) : -1);
 	$userNum = (isset($_GET["num"]) && is_numeric($_GET['num']) ? abs($_GET['num']) : 100);
 	$userAirDate = (isset($_GET["airdate"]) && is_numeric($_GET['airdate']) ? abs($_GET["airdate"]) : -1);
 
-	$page->smarty->assign([
+	$params =
+		[
 			'dl'       => (isset($_GET['dl']) && $_GET['dl'] == '1' ? '1' : '0'),
 			'del'      => (isset($_GET['del']) && $_GET['del'] == '1' ? '1' : '0'),
+			'extended' => 1,
 			'uid'      => $uid,
-			'rsstoken' => $rssToken
-		]
-	);
+			'token'    => $rssToken
+		];
 
 	if ($userCat == -3) {
 		$relData = $rss->getShowsRss($userNum, $uid, $page->users->getCategoryExclusion($uid), $userAirDate);
@@ -110,10 +117,5 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	} else {
 		$relData = $rss->getRss(explode(',', $userCat), $userNum, $userShow, $userAnidb, $uid, $userAirDate);
 	}
-
-	$page->smarty->assign('releases', $relData);
-	$response = trim($page->smarty->fetch('rss.tpl'));
-	header("Content-type: text/xml");
-	header('Content-Length: ' . strlen($response) );
-	echo $response;
+	$rss->output($relData, $params, $outputXML, $offset, 'rss');
 }

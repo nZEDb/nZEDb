@@ -1,13 +1,12 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
-require_once nZEDb_LIBS . 'GiantBombAPI.php';
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 // Test if your giantbomb key is working.
 
+use app\models\Settings;
 use nzedb\ColorCLI;
-use nzedb\db\Settings;
 
-$giantbombkey = (new Settings())->getSetting('giantbombkey');
+$giantbombkey = Settings::value('APIs..giantbombkey');
 $cli = new ColorCLI();
 $obj = new GiantBomb($giantbombkey, $resp = "json");
 

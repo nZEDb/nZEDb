@@ -1,14 +1,18 @@
 <?php
 require_once './config.php';
 
+use app\models\Settings;
+use nzedb\Category;
 use nzedb\SABnzbd;
-use nzedb\db\Settings;
+use nzedb\db\DB;
+use nzedb\utility\Misc;
 
 // new to get information on books groups
 
 $page  = new AdminPage();
 $id    = 0;
 $error = '';
+$category = new Category();
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
@@ -23,7 +27,7 @@ switch ($action) {
 				implode(', ', $_POST['book_reqids']) : $_POST['book_reqids'];
 		}
 		// update site table as always
-		$ret = $page->settings->update($_POST);
+		$ret = $page->settings->settingsUpdate($_POST);
 
 		if (is_int($ret)) {
 			// TODO convert to switch
@@ -182,7 +186,7 @@ $page->smarty->assign('lookup_reqids_names',
 $page->smarty->assign('coversPath', nZEDb_COVERS);
 
 // return a list of audiobooks, ebooks, technical and foreign books
-$result = $page->settings->query("SELECT id, title FROM category WHERE id IN (3030, 8010, 8040, 8060)");
+$result = $page->settings->query("SELECT id, title FROM categories WHERE id IN ({$category->getCategoryValue('MUSIC_AUDIOBOOK')}, {$category->getCategoryValue('BOOKS_EBOOK')}, {$category->getCategoryValue('BOOKS_TECHNICAL')}, {$category->getCategoryValue('BOOKS_FOREIGN')})");
 
 // setup the display lists for these categories, this could have been static, but then if names changed they would be wrong
 $book_reqids_ids   = [];
@@ -193,30 +197,34 @@ foreach ($result as $bookcategory) {
 }
 
 // convert from a string array to an int array as we want to use int
-$book_reqids_ids = array_map(function($value) {return (int)$value;}, $book_reqids_ids);
+$book_reqids_ids = array_map(
+	function($value)
+	{
+		return (int)$value;
+	},
+	$book_reqids_ids
+);
 $page->smarty->assign('book_reqids_ids', $book_reqids_ids);
 $page->smarty->assign('book_reqids_names', $book_reqids_names);
 
 // convert from a list to an array as we need to use an array, but teh sites table only saves strings
-$books_selected = explode(",", $page->settings->getSetting('book_reqids'));
+$books_selected = explode(",", Settings::value('..book_reqids'));
 
 // convert from a string array to an int array
-$books_selected = array_map(function($value) {return (int)$value;}, $books_selected);
+$books_selected = array_map(
+	function($value)
+	{
+		return (int)$value;
+	},
+	$books_selected
+);
 $page->smarty->assign('book_reqids_selected', $books_selected);
 
 $page->smarty->assign('loggingopt_ids', [0, 1, 2, 3]);
 $page->smarty->assign('loggingopt_names',
 					  ['Disabled', 'Log in DB only', 'Log both DB and file', 'Log only in file']);
 
-$themelist = [];
-$themes    = scandir(nZEDb_WWW . "/themes");
-foreach ($themes as $theme) {
-	if (strpos($theme, ".") === false && is_dir(nZEDb_WWW . "/themes/" . $theme)) {
-		$themelist[] = $theme;
-	}
-}
-
-$page->smarty->assign('themelist', $themelist);
+$page->smarty->assign('themelist', Misc::getThemesList());
 
 $page->content = $page->smarty->fetch('site-edit.tpl');
 $page->render();

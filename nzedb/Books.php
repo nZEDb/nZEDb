@@ -1,8 +1,9 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
 use libs\AmazonProductAPI;
+use nzedb\db\DB;
 
 /*
  * Class for processing book info.
@@ -77,21 +78,24 @@ class Books
 		$options += $defaults;
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
-		$this->pubkey = $this->pdo->getSetting('amazonpubkey');
-		$this->privkey = $this->pdo->getSetting('amazonprivkey');
-		$this->asstag = $this->pdo->getSetting('amazonassociatetag');
-		$this->bookqty = ($this->pdo->getSetting('maxbooksprocessed') != '') ? $this->pdo->getSetting('maxbooksprocessed') : 300;
-		$this->sleeptime = ($this->pdo->getSetting('amazonsleep') != '') ? $this->pdo->getSetting('amazonsleep') : 1000;
+		$this->pubkey = Settings::value('APIs..amazonpubkey');
+		$this->privkey = Settings::value('APIs..amazonprivkey');
+		$this->asstag = Settings::value('APIs..amazonassociatetag');
+		$result = Settings::value('..maxbooksprocessed');
+		$this->bookqty = ($result != '') ? $result : 300;
+		$result = Settings::value('..amazonsleep');
+		$this->sleeptime = ($result != '') ? $result : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'book' . DS;
-		$this->bookreqids = ($this->pdo->getSetting('book_reqids') == null || $this->pdo->getSetting('book_reqids') == "") ? 8010 : $this->pdo->getSetting('book_reqids');
+		$result = Settings::value('..book_reqids');
+		$this->bookreqids = empty($bookreqids) ? Category::BOOKS_EBOOK : $result;
 		$this->renamed = '';
-		if ($this->pdo->getSetting('lookupbooks') == 2) {
+		if (Settings::value('..lookupbooks') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
 
-		$this->catWhere = 'AND (categoryid BETWEEN 8000 AND 8999 OR categoryid = 3030) ';
+		$this->catWhere = 'AND (categories_id BETWEEN ' . Category::BOOKS_ROOT . ' AND ' . Category::BOOKS_UNKNOWN . ' OR categories_id = ' . Category::MUSIC_AUDIOBOOK . ') ';
 		$this->failCache = array();
 	}
 
@@ -106,8 +110,8 @@ class Books
 	}
 
 	/**
-	 * @param $author
-	 * @param $title
+	 * @param string $author
+	 * @param string $title
 	 *
 	 * @return array|bool
 	 */
@@ -190,7 +194,7 @@ class Books
 
 		$exccatlist = '';
 		if (count($excludedcats) > 0) {
-			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
+			$exccatlist = ' AND r.categories_id NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
 		$order = $this->getBookOrder($orderby);
@@ -200,15 +204,15 @@ class Books
 				SELECT SQL_CALC_FOUND_ROWS boo.id,
 					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
 				FROM bookinfo boo
-				LEFT JOIN releases r ON boo.id = r.bookinfoid
+				LEFT JOIN releases r ON boo.id = r.bookinfo_id
 				WHERE r.nzbstatus = 1
 				AND boo.cover = 1
 				AND boo.title != ''
 				AND r.passwordstatus %s
-				AND %s %s %s %s
+				%s %s %s %s
 				GROUP BY boo.id
 				ORDER BY %s %s %s",
-				Releases::showPasswords($this->pdo),
+				Releases::showPasswords(),
 				$browseby,
 				$catsrch,
 				$maxage,
@@ -222,7 +226,7 @@ class Books
 		$bookIDs = $releaseIDs = false;
 
 		if (is_array($books['result'])) {
-			foreach ($books['result'] AS $book => $id) {
+			foreach ($books['result'] as $book => $id) {
 				$bookIDs[] = $id['id'];
 				$releaseIDs[] = $id['grp_release_id'];
 			}
@@ -235,7 +239,7 @@ class Books
 				GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
 				GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
 				GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
-				GROUP_CONCAT(rn.releaseid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
+				GROUP_CONCAT(rn.releases_id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
 				GROUP_CONCAT(g.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
 				GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
 				GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
@@ -243,17 +247,19 @@ class Books
 				GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
 				GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
 				GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
+				GROUP_CONCAT(df.failed ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_failed,
 			boo.*,
-			r.bookinfoid,
+			r.bookinfo_id,
 			g.name AS group_name,
-			rn.releaseid AS nfoid
+			rn.releases_id AS nfoid
 			FROM releases r
-			LEFT OUTER JOIN groups g ON g.id = r.group_id
-			LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
-			INNER JOIN bookinfo boo ON boo.id = r.bookinfoid
+			LEFT OUTER JOIN groups g ON g.id = r.groups_id
+			LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
+			LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
+			INNER JOIN bookinfo boo ON boo.id = r.bookinfo_id
 			WHERE boo.id IN (%s)
 			AND r.id IN (%s)
-			AND %s
+			%s
 			GROUP BY boo.id
 			ORDER BY %s %s",
 			(is_array($bookIDs) ? implode(',', $bookIDs) : -1),
@@ -263,7 +269,9 @@ class Books
 			$order[1]
 		);
 		$return = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
-		$return[0]['_totalcount'] = (isset($books['total']) ? $books['total'] : 0);
+		if (!empty($return)) {
+			$return[0]['_totalcount'] = (isset($books['total']) ? $books['total'] : 0);
+		}
 		return $return;
 	}
 
@@ -305,7 +313,7 @@ class Books
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getBookOrdering()
 	{
@@ -345,14 +353,14 @@ class Books
 		foreach ($browsebyArr as $bbk => $bbv) {
 			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk])) {
 				$bbs = stripslashes($_REQUEST[$bbk]);
-				$browseby .= 'boo.' . $bbv . ' ' . $this->pdo->likeString($bbs, true, true) . ' AND ';
+				$browseby .= 'AND boo.' . $bbv . ' ' . $this->pdo->likeString($bbs, true, true);
 			}
 		}
 		return $browseby;
 	}
 
 	/**
-	 * @param $title
+	 * @param string $title
 	 *
 	 * @return bool|mixed
 	 */
@@ -385,11 +393,11 @@ class Books
 				$this->processBookReleasesHelper(
 					$this->pdo->queryDirect(
 						sprintf('
-						SELECT searchname, id, categoryid
+						SELECT searchname, id, categories_id
 						FROM releases
 						WHERE nzbstatus = 1 %s
-						AND bookinfoid IS NULL
-						AND categoryid in (%s)
+						AND bookinfo_id IS NULL
+						AND categories_id in (%s)
 						ORDER BY postdate
 						DESC LIMIT %d', $this->renamed, $bookids[$i], $this->bookqty)
 					), $bookids[$i]
@@ -416,7 +424,7 @@ class Books
 				$startTime = microtime(true);
 				$usedAmazon = false;
 				// audiobooks are also books and should be handled in an identical manor, even though it falls under a music category
-				if ($arr['categoryid'] == '3030') {
+				if ($arr['categories_id'] == Category::MUSIC_AUDIOBOOK) {
 					// audiobook
 					$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], 'audiobook');
 				} else {
@@ -450,10 +458,10 @@ class Books
 					}
 
 					// Update release.
-					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d %s', $bookId, $arr['id'], $this->catWhere));
+					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfo_id = %d WHERE id = %d %s', $bookId, $arr['id'], $this->catWhere));
 				} else {
 					// Could not parse release title.
-					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d %s', -2, $arr['id'], $this->catWhere));
+					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfo_id = %d WHERE id = %d %s', -2, $arr['id'], $this->catWhere));
 					if ($this->echooutput) {
 						echo '.';
 					}
@@ -472,9 +480,9 @@ class Books
 	/**
 	 * @param $release_name
 	 * @param $releaseID
-	 * @param $releasetype
+	 * @param string $releasetype
 	 *
-	 * @return bool|string
+	 * @return false|string
 	 */
 	public function parseTitle($release_name, $releaseID, $releasetype)
 	{
@@ -497,7 +505,7 @@ class Books
 						$this->pdo->log->headerOver('Changing category to misc books: ') . $this->pdo->log->primary($releasename)
 					);
 				}
-				$this->pdo->queryExec(sprintf('UPDATE releases SET categoryid = %d WHERE id = %d', 8050, $releaseID));
+				$this->pdo->queryExec(sprintf('UPDATE releases SET categories_id = %s WHERE id = %d', Category::BOOKS_UNKNOWN, $releaseID));
 				return false;
 			} else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename)) {
 
@@ -506,7 +514,7 @@ class Books
 						$this->pdo->log->headerOver('Changing category to magazines: ') . $this->pdo->log->primary($releasename)
 					);
 				}
-				$this->pdo->queryExec(sprintf('UPDATE releases SET categoryid = %d WHERE id = %d', 8030, $releaseID));
+				$this->pdo->queryExec(sprintf('UPDATE releases SET categories_id = %s WHERE id = %d', Category::BOOKS_MAGAZINES, $releaseID));
 				return false;
 			} else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename)) {
 				return $releasename;

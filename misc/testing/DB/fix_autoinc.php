@@ -1,10 +1,10 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 passthru('clear');
-$pdo = new Settings();
+$pdo = new DB();
 
 if (!isset($argv[1]) || (isset($argv[1]) && $argv[1] !== 'true')) {
 	exit($pdo->log->error("\nThis script resets all AUTOINC ids for each table id columns, it can be dangerous. Please BACKUP your database before running this script.\n"

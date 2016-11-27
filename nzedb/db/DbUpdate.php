@@ -20,7 +20,9 @@
  */
 namespace nzedb\db;
 
+use app\models\Settings;
 use nzedb\ColorCLI;
+use nzedb\db\DB;
 use nzedb\utility\Git;
 use nzedb\utility\Misc;
 use nzedb\utility\Text;
@@ -28,6 +30,8 @@ use nzedb\utility\Text;
 
 class DbUpdate
 {
+	public $backedup;
+
 	/**
 	 * @var \nzedb\db\Settings    Instance variable for DB object.
 	 */
@@ -63,24 +67,18 @@ class DbUpdate
 
 	public function __construct(array $options = [])
 	{
-		$defaults = [
+		$options += [
 			'backup' => true,
 			'db'     => null,
 			'git'    => new Git(),
 			'logger' => new ColorCLI(),
 		];
-		$options += $defaults;
-		unset($defaults);
 
 		$this->backup = $options['backup'];
-		$this->pdo    = (($options['db'] instanceof Settings) ? $options['db'] : new Settings());
 		$this->git    = $options['git'];
 		$this->log    = $options['logger'];
-
-		// If $pdo is an instance of Settings, reuse it to save resources.
-		// This is for unconverted scripts that still use $db->settings instead of the $db->pdo property.
-		$this->settings =& $this->pdo;
-
+		// Must be DB not Settings because the Settings table may not exist yet.
+		$this->pdo = (($options['db'] instanceof DB) ? $options['db'] : new DB());
 		$this->_DbSystem = strtolower($this->pdo->dbSystem());
 	}
 
@@ -99,7 +97,8 @@ class DbUpdate
 		$files = empty($options['files']) ? Misc::getDirFiles($options) : $options['files'];
 		natsort($files);
 		$local = $this->pdo->isLocalDb() ? '' : 'LOCAL ';
-		$sql = 'LOAD DATA ' . $local . 'INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" OPTIONALLY ENCLOSED BY "\"" IGNORE 1 LINES (%s)';
+		$sql = 'LOAD DATA ' .
+			$local . 'INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" OPTIONALLY ENCLOSED BY "\"" LINES TERMINATED BY "\r\n" IGNORE 1 LINES (%s)';
 		foreach ($files as $file) {
 			if ($show === true) {
 				echo "File: $file\n";
@@ -178,7 +177,7 @@ class DbUpdate
 				} else {
 					echo $this->log->header('Processing patch file: ' . $file);
 					$this->splitSQL($file, ['local' => $local, 'data' => $options['data']]);
-					$current = (integer)$this->settings->getSetting('sqlpatch');
+					$current = (integer)Settings::value('..sqlpatch');
 					$current++;
 					$this->pdo->queryExec("UPDATE settings SET value = '$current' WHERE setting = 'sqlpatch';");
 					$newName = $matches['drive'] . $matches['path'] .
@@ -186,7 +185,7 @@ class DbUpdate
 							   $matches['table'] . '.sql';
 					rename($matches[0], $newName);
 					$this->git->add($newName);
-					if ($this->git->isCommited($this->git->getBranch() . ':' . str_replace(nZEDb_ROOT, '',$matches[0]))) {
+					if ($this->git->isCommited($this->git->getBranch() . ':' . str_replace(nZEDb_ROOT, '', $matches[0]))) {
 						$this->git->add(" -u {$matches[0]}"); // remove old filename from the index.
 					}
 				}
@@ -206,7 +205,7 @@ class DbUpdate
 		];
 		$options += $defaults;
 
-		$currentVersion = $this->settings->getSetting(['setting' => 'sqlpatch']);
+		$currentVersion = Settings::value('..sqlpatch');
 		if (!is_numeric($currentVersion)) {
 			exit("Bad sqlpatch value: '$currentVersion'\n");
 		}
@@ -226,15 +225,15 @@ class DbUpdate
 				if (preg_match($options['regex'], str_replace('\\', '/', $file), $matches)) {
 					$patch = (integer)$matches['patch'];
 					$setPatch = true;
-				} else if (preg_match('/UPDATE `?site`? SET `?value`? = \'?(?P<patch>\d+)\'? WHERE `?setting`? = \'sqlpatch\'/i',
-									$patch,
-									$matches)
+				} else if (preg_match(
+					'/UPDATE `?site`? SET `?value`? = \'?(?P<patch>\d+)\'? WHERE `?setting`? = \'sqlpatch\'/i',
+					$patch,
+					$matches)
 				) {
 					$patch = (integer)$matches['patch'];
 				} else {
 					throw new \RuntimeException("No patch information available, stopping!!");
 				}
-
 				if ($patch > $currentVersion) {
 					echo $this->log->header('Processing patch file: ' . $file);
 					if ($options['safe'] && !$this->backedUp) {
@@ -436,8 +435,6 @@ class DbUpdate
 			}
 		}
 	}
-
-	public $backedup;
 
 	protected function _backupDb()
 	{

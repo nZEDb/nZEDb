@@ -1,7 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 use libs\AmazonProductAPI;
 
 class Console
@@ -70,22 +71,25 @@ class Console
 			'Settings' => null,
 		];
 		$options += $defaults;
+		$category = new Category();
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
-		$this->pubkey = $this->pdo->getSetting('amazonpubkey');
-		$this->privkey = $this->pdo->getSetting('amazonprivkey');
-		$this->asstag = $this->pdo->getSetting('amazonassociatetag');
-		$this->gameqty = ($this->pdo->getSetting('maxgamesprocessed') != '') ? $this->pdo->getSetting('maxgamesprocessed') : 150;
-		$this->sleeptime = ($this->pdo->getSetting('amazonsleep') != '') ? $this->pdo->getSetting('amazonsleep') : 1000;
+		$this->pubkey = Settings::value('APIs..amazonpubkey');
+		$this->privkey = Settings::value('APIs..amazonprivkey');
+		$this->asstag = Settings::value('APIs..amazonassociatetag');
+		$result = Settings::value('..maxgamesprocessed');
+		$this->gameqty = ($result != '') ? $result : 150;
+		$result = Settings::value('..amazonsleep');
+		$this->sleeptime = ($result != '') ? $result : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'console' . DS;
 		$this->renamed = '';
-		if ($this->pdo->getSetting('lookupgames') == 2) {
+		if (Settings::value('..lookupgames') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
-		//$this->cleanconsole = ($this->pdo->getSetting('lookupgames') == 2) ? 'AND isrenamed = 1' : '';
-		$this->catWhere = 'AND categoryid BETWEEN 1000 AND 1999 ';
+		//$this->cleanconsole = (Settings::value('..lookupgames') == 2) ? 'AND isrenamed = 1' : '';
+		$this->catWhere = "AND categories_id BETWEEN " . Category::GAME_ROOT . " AND " . Category::GAME_OTHER;
 		$this->failCache = array();
 	}
 
@@ -182,25 +186,26 @@ class Console
 
 		$exccatlist = "";
 		if (count($excludedcats) > 0) {
-			$exccatlist = " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")";
+			$exccatlist = " AND r.categories_id NOT IN (" . implode(",", $excludedcats) . ")";
 		}
 
 		$order = $this->getConsoleOrder($orderby);
 
 		$consoles = $this->pdo->queryCalc(
 				sprintf("
-					SELECT SQL_CALC_FOUND_ROWS con.id,
+					SELECT SQL_CALC_FOUND_ROWS
+						con.id,
 						GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
 					FROM consoleinfo con
-					LEFT JOIN releases r ON con.id = r.consoleinfoid
+					LEFT JOIN releases r ON con.id = r.consoleinfo_id
 					WHERE r.nzbstatus = 1
 					AND con.title != ''
 					AND con.cover = 1
 					AND r.passwordstatus %s
-					AND %s %s %s
+					%s %s %s
 					GROUP BY con.id
 					ORDER BY %s %s %s",
-					Releases::showPasswords($this->pdo),
+					Releases::showPasswords(),
 					$browseby,
 					$catsrch,
 					$exccatlist,
@@ -213,7 +218,7 @@ class Console
 		$consoleIDs = $releaseIDs = false;
 
 		if (is_array($consoles['result'])) {
-			foreach ($consoles['result'] AS $console => $id) {
+			foreach ($consoles['result'] as $console => $id) {
 				$consoleIDs[] = $id['id'];
 				$releaseIDs[] = $id['grp_release_id'];
 			}
@@ -227,7 +232,7 @@ class Console
 					GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview,
 					GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password,
 					GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid,
-					GROUP_CONCAT(rn.releaseid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
+					GROUP_CONCAT(rn.releases_id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid,
 					GROUP_CONCAT(g.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname,
 					GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name,
 					GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate,
@@ -235,19 +240,21 @@ class Console
 					GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
 					GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
 					GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
+					GROUP_CONCAT(df.failed ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_failed,
 				con.*,
-				r.consoleinfoid,
+				r.consoleinfo_id,
 				g.name AS group_name,
 				genres.title AS genre,
-				rn.releaseid AS nfoid
+				rn.releases_id AS nfoid
 				FROM releases r
-				LEFT OUTER JOIN groups g ON g.id = r.group_id
-				LEFT OUTER JOIN release_nfos rn ON rn.releaseid = r.id
-				INNER JOIN consoleinfo con ON con.id = r.consoleinfoid
+				LEFT OUTER JOIN groups g ON g.id = r.groups_id
+				LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
+				LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
+				INNER JOIN consoleinfo con ON con.id = r.consoleinfo_id
 				INNER JOIN genres ON con.genre_id = genres.id
 				WHERE con.id IN (%s)
 				AND r.id IN (%s)
-				AND %s
+				%s
 				GROUP BY con.id
 				ORDER BY %s %s",
 				(is_array($consoleIDs) ? implode(',', $consoleIDs) : -1),
@@ -257,7 +264,9 @@ class Console
 				$order[1]
 			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
-		$return[0]['_totalcount'] = (isset($consoles['total']) ? $consoles['total'] : 0);
+		if (!empty($return)) {
+			$return[0]['_totalcount'] = (isset($consoles['total']) ? $consoles['total'] : 0);
+		}
 		return $return;
 	}
 
@@ -302,7 +311,7 @@ class Console
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getConsoleOrdering()
 	{
@@ -310,7 +319,7 @@ class Console
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getBrowseByOptions()
 	{
@@ -328,7 +337,7 @@ class Console
 		foreach ($browsebyArr as $bbk => $bbv) {
 			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk])) {
 				$bbs = stripslashes($_REQUEST[$bbk]);
-				$browseby .= 'con.' . $bbv . ' ' . $like . ' (' . $this->pdo->escapeString('%' . $bbs . '%') . ') AND ';
+				$browseby .= 'AND con.' . $bbv . ' ' . $like . ' (' . $this->pdo->escapeString('%' . $bbs . '%') . ')';
 			}
 		}
 		return $browseby;
@@ -637,7 +646,7 @@ class Console
 	/**
 	 * @param $genreName
 	 *
-	 * @return false|int|mixed|string
+	 * @return boolean|string
 	 */
 	protected function _getGenreKey($genreName)
 	{
@@ -651,7 +660,7 @@ class Console
 									INSERT INTO genres (title, type)
 									VALUES (%s, %d)",
 									$this->pdo->escapeString($genreName),
-									Genres::CONSOLE_TYPE
+									Category::GAME_ROOT
 								)
 			);
 		}
@@ -665,7 +674,7 @@ class Console
 	{
 		$gen = new Genres(['Settings' => $this->pdo]);
 
-		$defaultGenres = $gen->getGenres(Genres::CONSOLE_TYPE);
+		$defaultGenres = $gen->getGenres(Category::GAME_ROOT);
 		$genreassoc = [];
 		foreach ($defaultGenres as $dg) {
 			$genreassoc[$dg['id']] = strtolower($dg['title']);
@@ -823,7 +832,7 @@ class Console
 							SELECT searchname, id
 							FROM releases
 							WHERE nzbstatus = %d %s
-							AND consoleinfoid IS NULL %s
+							AND consoleinfo_id IS NULL %s
 							ORDER BY postdate DESC
 							LIMIT %d',
 							NZB::NZB_ADDED,
@@ -892,7 +901,7 @@ class Console
 				$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
-								SET consoleinfoid = %d
+								SET consoleinfo_id = %d
 								WHERE id = %d %s',
 								$gameId,
 								$arr['id'],
@@ -984,7 +993,7 @@ class Console
 	}
 
 	/**
-	 * @param $platform
+	 * @param string $platform
 	 *
 	 * @return string
 	 */
@@ -1056,9 +1065,9 @@ class Console
 	}
 
 	/**
-	 * @param $nodeName
+	 * @param string $nodeName
 	 *
-	 * @return bool|string
+	 * @return boolean|string
 	 */
 	public function matchBrowseNode($nodeName)
 	{

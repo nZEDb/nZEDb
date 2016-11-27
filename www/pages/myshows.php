@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Settings;
 use nzedb\Category;
 use nzedb\Releases;
 use nzedb\UserSeries;
@@ -44,7 +45,7 @@ switch ($action) {
 		} else {
 			$show = $tv->getByVideoID($videoId);
 			if (!$show) {
-				$page->show404('Seriously?');
+				$page->show404('No matching show.');
 			}
 		}
 
@@ -58,9 +59,13 @@ switch ($action) {
 			}
 		} else {
 			$cat = new Category(['Settings' => $page->settings]);
-			$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV);
+			$tmpcats = $cat->getChildren(Category::TV_ROOT);
 			$categories = array();
 			foreach ($tmpcats as $c) {
+				// If TV WEB-DL categorization is disabled, don't include it as an option
+				if (Settings::value('indexer.categorise.catwebdl') == 0 && $c['id'] == Category::TV_WEBDL) {
+					continue;
+				}
 				$categories[$c['id']] = $c['title'];
 			}
 			$page->smarty->assign('type', 'add');
@@ -92,7 +97,7 @@ switch ($action) {
 		} else {
 			$cat = new Category(['Settings' => $page->settings]);
 
-			$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV);
+			$tmpcats = $cat->getChildren(Category::TV_ROOT);
 			$categories = array();
 			foreach ($tmpcats as $c) {
 				$categories[$c['id']] = $c['title'];
@@ -101,7 +106,7 @@ switch ($action) {
 			$page->smarty->assign('type', 'edit');
 			$page->smarty->assign('cat_ids', array_keys($categories));
 			$page->smarty->assign('cat_names', $categories);
-			$page->smarty->assign('cat_selected', explode('|', $show['categoryid']));
+			$page->smarty->assign('cat_selected', explode('|', $show['categories']));
 			$page->smarty->assign('video', $videoId);
 			$page->smarty->assign('show', $show);
 			$page->content = $page->smarty->fetch('myshows-add.tpl');
@@ -158,7 +163,7 @@ switch ($action) {
 		$page->meta_description = "Manage Your Shows";
 
 		$cat = new Category(['Settings' => $page->settings]);
-		$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV);
+		$tmpcats = $cat->getChildren(Category::TV_ROOT);
 		$categories = array();
 		foreach ($tmpcats as $c) {
 			$categories[$c['id']] = $c['title'];
@@ -167,7 +172,7 @@ switch ($action) {
 		$shows = $us->getShows($page->users->currentUserId());
 		$results = array();
 		foreach ($shows as $showk => $show) {
-			$showcats = explode('|', $show['categoryid']);
+			$showcats = explode('|', $show['categories']);
 			if (is_array($showcats) && sizeof($showcats) > 0) {
 				$catarr = array();
 				foreach ($showcats as $scat) {

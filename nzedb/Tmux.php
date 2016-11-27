@@ -1,8 +1,15 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use app\extensions\util\Versions;
+use nzedb\db\DB;
 
+/**
+ * Class Tmux
+ *
+ * @package nzedb
+ */
 class Tmux
 {
 	/**
@@ -10,21 +17,36 @@ class Tmux
 	 */
 	public $pdo;
 
+	/**
+	 * @var
+	 */
 	public $tmux_session;
 
-	function __construct(Settings $pdo = null)
+	/**
+	 * Tmux constructor.
+	 *
+	 * @param \nzedb\db\DB|null $pdo
+	 */
+	function __construct(DB $pdo = null)
 	{
-		$this->pdo = (empty($pdo) ? new Settings() : $pdo);
+		$this->pdo = (empty($pdo) ? new DB() : $pdo);
 	}
 
+	/**
+	 * @return string
+	 */
 	public function version()
 	{
-		return $this->pdo->version();
+		return (new Versions())->getGitTagInRepo();
 	}
 
+	/**
+	 * @param $form
+	 *
+	 * @return \stdClass
+	 */
 	public function update($form)
 	{
-		$pdo = $this->pdo;
 		$tmux = $this->row2Object($form);
 
 		$sql = $sqlKeys = [];
@@ -32,21 +54,25 @@ class Tmux
 			if (is_array($settingV)) {
 				$settingV = implode(', ', $settingV);
 			}
-			$sql[] = sprintf("WHEN %s THEN %s", $pdo->escapeString($settingK), $pdo->escapeString($settingV));
-			$sqlKeys[] = $pdo->escapeString($settingK);
+			$sql[] = sprintf("WHEN %s THEN %s", $this->pdo->escapeString($settingK), $this->pdo->escapeString($settingV));
+			$sqlKeys[] = $this->pdo->escapeString($settingK);
 		}
 
-		$pdo->queryExec(sprintf("UPDATE tmux SET value = CASE setting %s END WHERE setting IN (%s)", implode(' ', $sql), implode(', ', $sqlKeys)));
+		$this->pdo->queryExec(sprintf("UPDATE tmux SET value = CASE setting %s END WHERE setting IN (%s)", implode(' ', $sql), implode(', ', $sqlKeys)));
 
 		return $tmux;
 	}
 
+	/**
+	 * @param string $setting
+	 *
+	 * @return bool|\stdClass
+	 */
 	public function get($setting = '')
 	{
-		$pdo = $this->pdo;
-		$where = ($setting !== '' ? sprintf('WHERE setting = %s', $pdo->escapeString($setting)) : '');
+		$where = ($setting !== '' ? sprintf('WHERE setting = %s', $this->pdo->escapeString($setting)) : '');
 
-		$rows = $pdo->query(sprintf("SELECT * FROM tmux %s", $where));
+		$rows = $this->pdo->query(sprintf("SELECT * FROM tmux %s", $where));
 
 		if ($rows === false) {
 			return false;
@@ -55,6 +81,11 @@ class Tmux
 		return $this->rows2Object($rows);
 	}
 
+	/**
+	 * @param $constants
+	 *
+	 * @return mixed
+	 */
 	public function getConnectionsInfo($constants)
 	{
 		$runVar['connections']['port_a'] = $runVar['connections']['host_a'] = $runVar['connections']['ip_a'] = false;
@@ -103,6 +134,12 @@ class Tmux
 		return $runVar['connections'];
 	}
 
+	/**
+	 * @param $which
+	 * @param $connections
+	 *
+	 * @return mixed
+	 */
 	public function getUSPConnections($which, $connections)
 	{
 
@@ -138,6 +175,11 @@ class Tmux
 		return ($runVar['conncounts']);
 	}
 
+	/**
+	 * @param $constants
+	 *
+	 * @return array
+	 */
 	public function getListOfPanes($constants)
 	{
 		$panes = ['zero' => '', 'one' => '', 'two' => ''];
@@ -168,6 +210,9 @@ class Tmux
 		return $panes;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getConstantSettings()
 	{
 		$tmuxstr = 'SELECT value FROM tmux WHERE setting =';
@@ -189,6 +234,9 @@ class Tmux
 		return $sql;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getMonitorSettings()
 	{
 		$tmuxstr = 'SELECT value FROM tmux WHERE setting =';
@@ -253,13 +301,20 @@ class Tmux
 					(%2\$s 'tmpunrarpath') AS tmpunrar,
 					(%2\$s 'compressedheaders') AS compressed,
 					(%2\$s 'book_reqids') AS book_reqids,
-					(%2\$s 'request_hours') AS request_hours",
+					(%2\$s 'request_hours') AS request_hours,
+					(%2\$s 'maxsizetopostprocess') AS maxsize_pp,
+					(%2\$s 'minsizetopostprocess') AS minsize_pp",
 					$tmuxstr,
 					$settstr
 		);
 		return $sql;
 	}
 
+	/**
+	 * @param $rows
+	 *
+	 * @return \stdClass
+	 */
 	public function rows2Object($rows)
 	{
 		$obj = new \stdClass;
@@ -271,6 +326,11 @@ class Tmux
 		return $obj;
 	}
 
+	/**
+	 * @param $row
+	 *
+	 * @return \stdClass
+	 */
 	public function row2Object($row)
 	{
 		$obj = new \stdClass;
@@ -281,14 +341,22 @@ class Tmux
 		return $obj;
 	}
 
+	/**
+	 * @param $setting
+	 * @param $value
+	 *
+	 * @return bool|\PDOStatement
+	 */
 	public function updateItem($setting, $value)
 	{
-		$pdo = $this->pdo;
-		$sql = sprintf("UPDATE tmux SET value = %s WHERE setting = %s", $pdo->escapeString($value), $pdo->escapeString($setting));
-		return $pdo->queryExec($sql);
+		$sql = sprintf("UPDATE tmux SET value = %s WHERE setting = %s", $this->pdo->escapeString($value), $this->pdo->escapeString($setting));
+		return $this->pdo->queryExec($sql);
 	}
 
 	//get microtime
+	/**
+	 * @return float
+	 */
 	public function microtime_float()
 	{
 		list($usec, $sec) = explode(" ", microtime());
@@ -320,10 +388,15 @@ class Tmux
 		return (round($bytes, 2) . " " . $suffix);
 	}
 
+	/**
+	 * @param $pane
+	 *
+	 * @return string
+	 */
 	public function writelog($pane)
 	{
 		$path = nZEDb_LOGS;
-		$getdate = gmDate("Ymd");
+		$getdate = gmdate("Ymd");
 		$tmux = $this->get();
 		$logs = (isset($tmux->write_logs)) ? $tmux->write_logs : 0;
 		if ($logs == 1) {
@@ -333,6 +406,13 @@ class Tmux
 		}
 	}
 
+	/**
+	 * @param $colors_start
+	 * @param $colors_end
+	 * @param $colors_exc
+	 *
+	 * @return int
+	 */
 	public function get_color($colors_start, $colors_end, $colors_exc)
 	{
 		$exception = str_replace(".", ".", $colors_exc);
@@ -350,6 +430,12 @@ class Tmux
 	}
 
 	// Returns random bool, weighted by $chance
+	/**
+	 * @param     $loop
+	 * @param int $chance
+	 *
+	 * @return bool
+	 */
 	public function rand_bool($loop, $chance = 60)
 	{
 		$tmux = $this->get();
@@ -361,6 +447,11 @@ class Tmux
 		}
 	}
 
+	/**
+	 * @param $_time
+	 *
+	 * @return string
+	 */
 	public function relativeTime($_time)
 	{
 		$d = [];
@@ -387,44 +478,109 @@ class Tmux
 		return $return;
 	}
 
+	/**
+	 * @param $cmd
+	 *
+	 * @return bool
+	 */
 	public function command_exist($cmd)
 	{
 		$returnVal = shell_exec("which $cmd 2>/dev/null");
 		return (empty($returnVal) ? false : true);
 	}
 
-	public function proc_query($qry, $bookreqids, $request_hours, $db_name)
+	/**
+	 * @param        $qry
+	 * @param        $bookreqids
+	 * @param int    $request_hours
+	 * @param string $db_name
+	 * @param string $ppmax
+	 * @param string $ppmin
+	 *
+	 * @return bool|string
+	 */
+	public function proc_query($qry, $bookreqids, $request_hours, $db_name, $ppmax = '', $ppmin = '')
 	{
 		switch ((int)$qry) {
 			case 1:
-				return sprintf("SELECT
-					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND categoryid != 5070 AND videos_id = 0
-						AND tv_episodes_id BETWEEN -3 AND 0 AND size > 1048576,1,0)) AS processtv,
-					SUM(IF(nzbstatus = 1 AND categoryid = 5070 AND anidbid IS NULL,1,0)) AS processanime,
-					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL,1,0)) AS processmovies,
-					SUM(IF(nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL,1,0)) AS processmusic,
-					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL,1,0)) AS processconsole,
-					SUM(IF(nzbstatus = 1 AND categoryid IN (%s) AND bookinfoid IS NULL,1,0)) AS processbooks,
-					SUM(IF(nzbstatus = 1 AND categoryid = 4050 AND gamesinfo_id = 0,1,0)) AS processgames,
-					SUM(IF(nzbstatus = 1 AND categoryid BETWEEN 6000 AND 6040 AND xxxinfo_id = 0,1,0)) AS processxxx,
+				return sprintf("
+					SELECT
+					SUM(IF(nzbstatus = %d AND categories_id BETWEEN %d AND %d AND categories_id != %d AND videos_id = 0 AND tv_episodes_id BETWEEN -3 AND 0 AND size > 1048576,1,0)) AS processtv,
+					SUM(IF(nzbstatus = %1\$d AND categories_id = %d AND anidbid IS NULL,1,0)) AS processanime,
+					SUM(IF(nzbstatus = %1\$d AND categories_id BETWEEN %d AND %d AND imdbid IS NULL,1,0)) AS processmovies,
+					SUM(IF(nzbstatus = %1\$d AND categories_id IN (%d, %d, %d) AND musicinfo_id IS NULL,1,0)) AS processmusic,
+					SUM(IF(nzbstatus = %1\$d AND categories_id BETWEEN %d AND %d AND consoleinfo_id IS NULL,1,0)) AS processconsole,
+					SUM(IF(nzbstatus = %1\$d AND categories_id IN (%s) AND bookinfo_id IS NULL,1,0)) AS processbooks,
+					SUM(IF(nzbstatus = %1\$d AND categories_id = %d AND gamesinfo_id = 0,1,0)) AS processgames,
+					SUM(IF(nzbstatus = %1\$d AND categories_id BETWEEN %d AND %d AND xxxinfo_id = 0,1,0)) AS processxxx,
 					SUM(IF(1=1 %s,1,0)) AS processnfo,
-					SUM(IF(nzbstatus = 1 AND nfostatus = 1,1,0)) AS nfo,
-					SUM(IF(nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND
-						((reqidstatus = 0) OR (reqidstatus = -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL %s HOUR)),1,0)) AS requestid_inprogress,
-					SUM(IF(preid > 0 AND nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1,1,0)) AS requestid_matched,
-					SUM(IF(preid > 0 AND searchname IS NOT NULL,1,0)) AS predb_matched,
-					COUNT(DISTINCT(preid)) AS distinct_predb_matched
-					FROM releases r", $bookreqids, Nfo::NfoQueryString($this->pdo), $request_hours);
+					SUM(IF(nzbstatus = %1\$d AND isrenamed = %d AND predb_id = 0 AND passwordstatus >= 0 AND nfostatus > %d
+						AND ((nfostatus = %d AND proc_nfo = %d) OR proc_files = %d OR proc_uid = %d OR proc_par2 = %d OR (nfostatus = %20\$d AND proc_sorter = %d)
+							OR (ishashed = 1 AND dehashstatus BETWEEN -6 AND 0)) AND categories_id IN (%s),1,0)) AS processrenames,
+					SUM(IF(isrenamed = %d,1,0)) AS renamed,
+					SUM(IF(nzbstatus = %1\$d AND nfostatus = %20\$d,1,0)) AS nfo,
+					SUM(IF(nzbstatus = %1\$d AND isrequestid = %d AND predb_id = 0 AND ((reqidstatus = %d) OR (reqidstatus = %d) OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %s HOUR)),1,0)) AS requestid_inprogress,
+					SUM(IF(predb_id > 0 AND nzbstatus = %1\$d AND isrequestid = %28\$d AND reqidstatus = %d,1,0)) AS requestid_matched,
+					SUM(IF(predb_id > 0,1,0)) AS predb_matched,
+					COUNT(DISTINCT(predb_id)) AS distinct_predb_matched
+					FROM releases r",
+					NZB::NZB_ADDED,
+					Category::TV_ROOT,
+					Category::TV_OTHER,
+					Category::TV_ANIME,
+					Category::TV_ANIME,
+					Category::MOVIE_ROOT,
+					Category::MOVIE_OTHER,
+					Category::MUSIC_MP3,
+					Category::MUSIC_LOSSLESS,
+					Category::MUSIC_OTHER,
+					Category::GAME_ROOT,
+					Category::GAME_OTHER,
+					$bookreqids,
+					Category::PC_GAMES,
+					Category::XXX_ROOT,
+					Category::XXX_X264,
+					Nfo::NfoQueryString($this->pdo),
+					NameFixer::IS_RENAMED_NONE,
+					Nfo::NFO_UNPROC,
+					Nfo::NFO_FOUND,
+					NameFixer::PROC_NFO_NONE,
+					NameFixer::PROC_FILES_NONE,
+					NameFixer::PROC_UID_NONE,
+					NameFixer::PROC_PAR2_NONE,
+					MiscSorter::PROC_SORTER_NONE,
+					Category::getCategoryOthersGroup(),
+					NameFixer::IS_RENAMED_DONE,
+					RequestID::IS_REQID_TRUE,
+					RequestID::REQID_UPROC,
+					RequestID::REQID_NOLL,
+					RequestID::REQID_NONE,
+					RequestID::REQID_FOUND,
+					$request_hours
+				);
 
 			case 2:
+				$ppminString = $ppmaxString = '';
+				if (is_numeric($ppmax) && !empty($ppmax)) {
+					$ppmax *= 1073741824;
+					$ppmaxString = "AND r.size < {$ppmax}";
+				}
+				if (is_numeric($ppmin) && !empty($ppmin)) {
+					$ppmin *= 1048576;
+					$ppminString = "AND r.size > {$ppmin}";
+				}
 				return "SELECT
-					(SELECT COUNT(*) FROM releases r
-						INNER JOIN category c ON c.id = r.categoryid
+					(SELECT COUNT(r.id) FROM releases r
+						LEFT JOIN categories c ON c.id = r.categories_id
 						WHERE r.nzbstatus = 1
-						AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0
+						AND r.passwordstatus BETWEEN -6 AND -1
+						AND r.haspreview = -1
+						{$ppminString}
+						{$ppmaxString}
+						AND c.disablepreview = 0
 					) AS work,
-					(SELECT COUNT(*) FROM groups WHERE active = 1) AS active_groups,
-					(SELECT COUNT(*) FROM groups WHERE name IS NOT NULL) AS all_groups";
+					(SELECT COUNT(id) FROM groups WHERE active = 1) AS active_groups,
+					(SELECT COUNT(id) FROM groups WHERE name IS NOT NULL) AS all_groups";
 
 			case 4:
 				return sprintf("
@@ -435,10 +591,10 @@ class Tmux
 					(SELECT TABLE_ROWS FROM information_schema.TABLES WHERE table_name = 'binaries' AND TABLE_SCHEMA = %1\$s) AS binaries_table,
 					(SELECT TABLE_ROWS FROM information_schema.TABLES WHERE table_name = 'collections' AND TABLE_SCHEMA = %1\$s) AS collections_table,
 					(SELECT TABLE_ROWS FROM information_schema.TABLES WHERE table_name = 'releases' AND TABLE_SCHEMA = %1\$s) AS releases,
-					(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1
+					(SELECT COUNT(id) FROM groups WHERE first_record IS NOT NULL AND backfill = 1
 						AND (now() - INTERVAL backfill_target DAY) < first_record_postdate
 					) AS backfill_groups_days,
-					(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - INTERVAL datediff(curdate(),
+					(SELECT COUNT(id) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - INTERVAL datediff(curdate(),
 					(SELECT VALUE FROM settings WHERE setting = 'safebackfilldate')) DAY) < first_record_postdate) AS backfill_groups_date",
 					$this->pdo->escapeString($db_name)
 				);
@@ -468,7 +624,7 @@ class Tmux
 	/**
 	 * Check if Tmux is running, if it is, stop it.
 	 *
-	 * @return bool		true if scripts were running, false otherwise.
+	 * @return bool true if scripts were running, false otherwise.
 	 * @access public
 	 */
 	public function stopIfRunning()
@@ -483,6 +639,9 @@ class Tmux
 		return false;
 	}
 
+	/**
+	 * @return bool|\PDOStatement
+	 */
 	public function startRunning()
 	{
 		if (!$this->isRunning()) {

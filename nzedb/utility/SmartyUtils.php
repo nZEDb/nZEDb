@@ -19,115 +19,155 @@
  * @copyright 2014 nZEDb
  */
 
+use nzedb\Category;
+
+/**
+ * Returns the value of the specified Category constant.
+ *
+ * @param string $category Name of constant whose value to return.
+ *
+ * @return Value of the specified Category constant.
+ */
+function getCategoryValue($category)
+{
+	return Category::getCategoryValue($category);
+}
+
 // Function inspired by c0r3@newznabforums adds country flags on the browse page.
 /**
- * @param $x
- * @param $t
+ * @param string $text	Text to match against.
+ * @param string $page	Type of page. browse or search.
  *
- * @return bool|string
+ * @return string|false
  */
-function release_flag($x, $t)
+function release_flag($text, $page)
 {
-	$y = $d = "";
+	$code = $language = "";
 
-	if (preg_match('/\bCzech\b/i', $x)) {
-		$y = "cz";
-		$d = "Czech";
-	} else if (preg_match('/Chinese|Mandarin|\bc[hn]\b/i', $x)) {
-		$y = "cn";
-		$d = "Chinese";
-	} else if (preg_match('/German(bed)?|\bger\b/i', $x)) {
-		$y = "de";
-		$d = "German";
-	} else if (preg_match('/Danish/i', $x)) {
-		$y = "dk";
-		$d = "Danish";
-	} else if (preg_match('/English|\beng?\b/i', $x)) {
-		$y = "en";
-		$d = "English";
-	} else if (preg_match('/Spanish/i', $x)) {
-		$y = "es";
-		$d = "Spanish";
-	} else if (preg_match('/Finnish/i', $x)) {
-		$y = "fi";
-		$d = "Finnish";
-	} else if (preg_match('/French|Vostfr|Multi/i', $x)) {
-		$y = "fr";
-		$d = "French";
-	} else if (preg_match('/\bGreek\b/i', $x)) {
-		$y = "gr";
-		$d = "Greek";
-	} else if (preg_match('/Hungarian|\bhun\b/i', $x)) {
-		$y = "hu";
-		$d = "Hungarian";
-	} else if (preg_match('/Hebrew|Yiddish/i', $x)) {
-		$y = "il";
-		$d = "Hebrew";
-	} else if (preg_match('/\bHindi\b/i', $x)) {
-		$y = "in";
-		$d = "Hindi";
-	} else if (preg_match('/Italian|\bita\b/i', $x)) {
-		$y = "it";
-		$d = "Italian";
-	} else if (preg_match('/Japanese|\bjp\b/i', $x)) {
-		$y = "jp";
-		$d = "Japanese";
-	} else if (preg_match('/Korean|\bkr\b/i', $x)) {
-		$y = "kr";
-		$d = "Korean";
-	} else if (preg_match('/Flemish|\b(Dutch|nl)\b|NlSub/i', $x)) {
-		$y = "nl";
-		$d = "Dutch";
-	} else if (preg_match('/Norwegian/i', $x)) {
-		$y = "no";
-		$d = "Norwegian";
-	} else if (preg_match('/Tagalog|Filipino/i', $x)) {
-		$y = "ph";
-		$d = "Tagalog|Filipino";
-	} else if (preg_match('/Arabic/i', $x)) {
-		$y = "pk";
-		$d = "Arabic";
-	} else if (preg_match('/Polish/i', $x)) {
-		$y = "pl";
-		$d = "Polish";
-	} else if (preg_match('/Portugese/i', $x)) {
-		$y = "pt";
-		$d = "Portugese";
-	} else if (preg_match('/Romanian/i', $x)) {
-		$y = "ro";
-		$d = "Romanian";
-	} else if (preg_match('/Russian/i', $x)) {
-		$y = "ru";
-		$d = "Russian";
-	} else if (preg_match('/Swe(dish|sub)/i', $x)) {
-		$y = "se";
-		$d = "Swedish";
-	} else if (preg_match('/\bThai\b/i', $x)) {
-		$y = "th";
-		$d = "Thai";
-	} else if (preg_match('/Turkish/i', $x)) {
-		$y = "tr";
-		$d = "Turkish";
-	} else if (preg_match('/Cantonese/i', $x)) {
-		$y = "tw";
-		$d = "Cantonese";
-	} else if (preg_match('/Vietnamese/i', $x)) {
-		$y = "vn";
-		$d = "Vietnamese";
+	switch (true) {
+		case preg_match('/Arabic/i', $text):
+			$code = "pk";
+			$language = "Arabic";
+			break;
+		case preg_match('/Cantonese/i', $text):
+			$code = "tw";
+			$language = "Cantonese";
+			break;
+		case preg_match('/Chinese|Mandarin|\bc[hn]\b/i', $text):
+			$code = "cn";
+			$language = "Chinese";
+			break;
+		case preg_match('/\bCzech\b/i', $text):
+			$code = "cz";
+			$language = "Czech";
+			break;
+		case preg_match('/Danish/i', $text):
+			$code = "dk";
+			$language = "Danish";
+			break;
+		case preg_match('/Finnish/i', $text):
+			$code = "fi";
+			$language = "Finnish";
+			break;
+		case preg_match('/Flemish|\b(Dutch|nl)\b|NlSub/i', $text):
+			$code = "nl";
+			$language = "Dutch";
+			break;
+		case preg_match('/French|Vostfr|Multi/i', $text):
+			$code = "fr";
+			$language = "French";
+			break;
+		case preg_match('/German(bed)?|\bger\b/i', $text):
+			$code = "de";
+			$language = "German";
+			break;
+		case preg_match('/\bGreek\b/i', $text):
+			$code = "gr";
+			$language = "Greek";
+			break;
+		case preg_match('/Hebrew|Yiddish/i', $text):
+			$code = "il";
+			$language = "Hebrew";
+			break;
+		case preg_match('/\bHindi\b/i', $text):
+			$code = "in";
+			$language = "Hindi";
+			break;
+		case preg_match('/Hungarian|\bhun\b/i', $text):
+			$code = "hu";
+			$language = "Hungarian";
+			break;
+		case preg_match('/Italian|\bita\b/i', $text):
+			$code = "it";
+			$language = "Italian";
+			break;
+		case preg_match('/Japanese|\bjp\b/i', $text):
+			$code = "jp";
+			$language = "Japanese";
+			break;
+		case preg_match('/Korean|\bkr\b/i', $text):
+			$code = "kr";
+			$language = "Korean";
+			break;
+		case preg_match('/Norwegian/i', $text):
+			$code = "no";
+			$language = "Norwegian";
+			break;
+		case preg_match('/Polish/i', $text):
+			$code = "pl";
+			$language = "Polish";
+			break;
+		case preg_match('/Portugese/i', $text):
+			$code = "pt";
+			$language = "Portugese";
+			break;
+		case preg_match('/Romanian/i', $text):
+			$code = "ro";
+			$language = "Romanian";
+			break;
+		case preg_match('/Spanish/i', $text):
+			$code = "es";
+			$language = "Spanish";
+			break;
+		case preg_match('/Swe(dish|sub)/i', $text):
+			$code = "se";
+			$language = "Swedish";
+			break;
+		case preg_match('/Tagalog|Filipino/i', $text):
+			$code = "ph";
+			$language = "Tagalog|Filipino";
+			break;
+		case preg_match('/\bThai\b/i', $text):
+			$code = "th";
+			$language = "Thai";
+			break;
+		case preg_match('/Turkish/i', $text):
+			$code = "tr";
+			$language = "Turkish";
+			break;
+		case preg_match('/Russian/i', $text):
+			$code = "ru";
+			$language = "Russian";
+			break;
+		case preg_match('/Vietnamese/i', $text):
+			$code = "vn";
+			$language = "Vietnamese";
+			break;
 	}
-	if ($y !== "" && $t == "browse") {
+
+	if ($code !== '' && $page == "browse") {
 		$www = WWW_TOP;
 		if (!in_array(substr($www, -1), ['\\', '/'])) {
 			$www .= DS;
 		}
 
 		return
-			'<img title=' . $d . ' src="' . $www . 'themes_shared/images/flags/' . $y . '.png" />';
-	} else if ($t == "search") {
-		if ($y == "") {
+			'<img title="' . $language . '" alt="' . $language . '" src="' . $www . 'themes/shared/img/flags/' . $code . '.png"/>';
+	} else if ($page == "search") {
+		if ($code == "") {
 			return false;
 		} else {
-			return $y;
+			return $code;
 		}
 	}
 	return '';

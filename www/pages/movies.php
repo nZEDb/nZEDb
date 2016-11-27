@@ -12,12 +12,12 @@ $movie = new Movie(['Settings' => $page->settings]);
 $cat = new Category(['Settings' => $page->settings]);
 $fail = new DnzbFailures(['Settings' => $page->settings]);
 
-$moviecats = $cat->getChildren(Category::CAT_PARENT_MOVIE);
+$moviecats = $cat->getChildren(Category::MOVIE_ROOT);
 $mtmp = [];
 foreach ($moviecats as $mcat) {
 	$mtmp[$mcat['id']] = $mcat;
 }
-$category = Category::CAT_PARENT_MOVIE;
+$category = Category::MOVIE_ROOT;
 if (isset($_REQUEST['t']) && array_key_exists($_REQUEST['t'], $mtmp)) {
 	$category = $_REQUEST['t'] + 0;
 }
@@ -46,7 +46,6 @@ foreach ($results as $result) {
 	$result['actors'] = $movie->makeFieldLinks($result, 'actors');
 	$result['director'] = $movie->makeFieldLinks($result, 'director');
 	$result['languages'] = explode(", ", $result['language']);
-	$result['failed'] = $fail->getFailedCount($result['grp_release_guid']);
 
 	$movies[] = $result;
 }
@@ -78,7 +77,8 @@ $page->smarty->assign('year', $year);
 
 $browseby_link = '&amp;title=' . $title . '&amp;actors=' . $actors . '&amp;director=' . $director . '&amp;rating=' . $rating . '&amp;genre=' . $genre . '&amp;year=' . $year;
 
-$page->smarty->assign('pagertotalitems', $results[0]['_totalcount']);
+$page->smarty->assign('pagertotalitems',
+		isset($results[0]['_totalcount']) ? $results[0]['_totalcount'] : 0);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_COVER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP . "/movies?t=" . $category . $browseby_link . "&amp;ob=" . $orderby . "&amp;offset=");
@@ -108,5 +108,9 @@ $page->meta_title = "Browse Movies";
 $page->meta_keywords = "browse,movies,nzb,description,details";
 $page->meta_description = "Browse for Movies";
 
-$page->content = $page->smarty->fetch('movies.tpl');
+if (isset($_GET["imdb"])) {
+	$page->content = $page->smarty->fetch('viewmoviefull.tpl');
+} else {
+	$page->content = $page->smarty->fetch('movies.tpl');
+}
 $page->render();

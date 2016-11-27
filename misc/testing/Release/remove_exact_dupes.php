@@ -1,16 +1,16 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ConsoleTools;
 use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if ($argc < 3 || !isset($argv[1]) || (isset($argv[1]) && !is_numeric($argv[1]))) {
-	exit($pdo->log->error("\nIncorrect argument suppplied. This script will delete all duplicate releases matching on name, fromname, group_id and size.\n"
+	exit($pdo->log->error("\nIncorrect argument suppplied. This script will delete all duplicate releases matching on name, fromname, groups_id and size.\n"
 		. "Unfortunately, I can not guarantee which copy will be deleted.\n\n"
 		. "php remove_exact_dupes.php 10 exact             ...: To delete all duplicates added within the last 10 hours.\n"
 		. "php remove_exact_dupes.php 10 near              ...: To delete all duplicates with size variation of 1% and added within the last 10 hours.\n"
@@ -31,9 +31,9 @@ if ($argv[2] === 'near') {
 }
 
 if ($crosspostt != 0) {
-	$query = sprintf('SELECT max(id) AS id, id AS idx, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name, fromname, group_id,' . $size . 'HAVING COUNT(*) > 1', $crosspostt);
+	$query = sprintf('SELECT max(id) AS id, id AS idx, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name, fromname, groups_id,' . $size . 'HAVING COUNT(*) > 1', $crosspostt);
 } else {
-	$query = sprintf('SELECT max(id) AS id, id AS idx, guid FROM releases GROUP BY name, fromname, group_id,' . $size . 'HAVING COUNT(*) > 1');
+	$query = sprintf('SELECT max(id) AS id, id AS idx, guid FROM releases GROUP BY name, fromname, groups_id, ' . $size . 'HAVING COUNT(*) > 1');
 }
 
 do {

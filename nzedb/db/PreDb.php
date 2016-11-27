@@ -28,11 +28,11 @@ class PreDb extends DB
 	 */
 	protected $ps = [
 		'AddGroups'		=> null,
-		'DeleteShort' 	=> null,
+		'DeleteShort' => null,
 		'Export'		=> null,
-		'Import' 		=> null,
+		'Import' => null,
 		'Insert'		=> null,
-		'LoadData' 		=> null,
+		'LoadData' => null,
 		'Truncate'		=> null,
 		'UpdateGroupID'	=> null,
 	];
@@ -82,8 +82,9 @@ class PreDb extends DB
 			'enclosedby' => '',
 			'fields'     => '\t',
 			'limit'      => 0,
-			'lines'      => '\r\n',    // use Windows style endings so that text can contain \n
-			'path'		=> null,
+			'lines'      => '\r\n', // use Windows style endings so that text can contain \n
+			'local'		 => false,
+			'path'       => null,
 		];
 		$options += $defaults;
 
@@ -97,9 +98,9 @@ class PreDb extends DB
 
 		$enclosedby = empty($options['enclosedby']) ? '' : "ENCLOSED BY {$this->escapeString($options['enclosedby'])}";
 
-		$sql   = <<<SQL_EXPORT
+		$sql = <<<SQL_EXPORT
 SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name
-	FROM {$this->tableMain} p LEFT OUTER JOIN groups g ON p.group_id = g.id $limit
+	FROM {$this->tableMain} p LEFT OUTER JOIN groups g ON p.groups_id = g.id $limit
 	INTO OUTFILE '{$options['path']}'
 	FIELDS TERMINATED BY '{$options['fields']}' $enclosedby
 	LINES TERMINATED BY '{$options['lines']}';
@@ -240,8 +241,8 @@ SQL_ADD_GROUPS;
 	protected function prepareSQLInsert()
 	{
 		$sql = <<<SQL_INSERT
-INSERT INTO {$this->tableMain} (title, nfo, size, files, filename, nuked, nukereason, category, predate, SOURCE, requestid, group_id)
-  SELECT pi.title, pi.nfo, pi.size, pi.files, pi.filename, pi.nuked, pi.nukereason, pi.category, pi.predate, pi.source, pi.requestid, group_id
+INSERT INTO {$this->tableMain} (title, nfo, size, files, filename, nuked, nukereason, category, predate, SOURCE, requestid, groups_id)
+  SELECT pi.title, pi.nfo, pi.size, pi.files, pi.filename, pi.nuked, pi.nukereason, pi.category,  pi.predate, pi.source, pi.requestid, groups_id
     FROM predb_imports AS pi
   ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo IS NULL, pi.nfo, predb.nfo),
 	  predb.size = IF(predb.size IS NULL, pi.size, predb.size),
@@ -251,7 +252,7 @@ INSERT INTO {$this->tableMain} (title, nfo, size, files, filename, nuked, nukere
 	  predb.nukereason = IF(pi.nuked > 0, pi.nukereason, predb.nukereason),
 	  predb.category = IF(predb.category IS NULL, pi.category, predb.category),
 	  predb.requestid = IF(predb.requestid = 0, pi.requestid, predb.requestid),
-	  predb.group_id = IF(predb.group_id = 0, pi.group_id, predb.group_id);
+	  predb.groups_id = IF(predb.groups_id = 0, pi.groups_id, predb.groups_id);
 SQL_INSERT;
 
 		$this->prepareSQLStatement($sql, 'Insert');
@@ -263,7 +264,7 @@ SQL_INSERT;
 		$defaults = [
 			'enclosedby'	=> "'",
 			'fields'		=> '\t',
-			'lines'			=> '\r\n',    // Windows' style EOL to allow \n to be used in text.
+			'lines'			=> '\r\n', // Windows' style EOL to allow \n to be used in text.
 			'local'			=> false,
 			'optional'		=> true,
 		];
@@ -295,7 +296,7 @@ SQL_LOAD_DATA;
 
 	protected function prepareSQLUpdateGroupIDs()
 	{
-		$sql = "UPDATE predb_imports AS pi SET group_id = (SELECT id FROM groups WHERE name = pi.groupname) WHERE groupname IS NOT NULL";
+		$sql = "UPDATE predb_imports AS pi SET groups_id = (SELECT id FROM groups WHERE name = pi.groupname) WHERE groupname IS NOT NULL";
 		$this->prepareSQLStatement($sql, 'UpdateGroupID');
 	}
 }

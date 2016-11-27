@@ -1,11 +1,11 @@
 <?php
-require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ConsoleTools;
 use nzedb\NameFixer;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1]))) {
 	exit($pdo->log->error(" This script tries to match a release name or searchname to a PreDB title by using Full Text Search Matching.\n"
@@ -30,17 +30,17 @@ if (isset($argv[3]) && is_numeric($argv[3])) {
 $titles = false;
 //Selects all PreDB Titles to Match Against
 if (isset($argv[1]) && $argv[1] === "all") {
-	$titles = $pdo->queryDirect("SELECT id AS preid, title, source, searched FROM predb
+	$titles = $pdo->queryDirect("SELECT id AS predb_id, title, source, searched FROM predb
 					WHERE LENGTH(title) >= 15 AND title NOT REGEXP '[\"\<\> ]'
 					ORDER BY predate ASC");
 //Selects all PreDB Titles that don't have a current match in releases (slower intial query but less loop time)
 } else if (isset($argv[1]) && $argv[1] === "full") {
-	$titles = $pdo->queryDirect("SELECT id AS preid, title, source, searched FROM predb
+	$titles = $pdo->queryDirect("SELECT id AS predb_id, title, source, searched FROM predb
 					WHERE LENGTH(title) >= 15 AND searched = 0
 					AND title NOT REGEXP '[\"\<\> ]' ORDER BY predate ASC");
 //Selects PreDB Titles where predate is greater than the past user selected number of hours
 } else if (isset($argv[1]) && is_numeric($argv[1])) {
-	$titles = $pdo->queryDirect(sprintf("SELECT id AS preid, title, source, searched FROM predb
+	$titles = $pdo->queryDirect(sprintf("SELECT id AS predb_id, title, source, searched FROM predb
 						 WHERE LENGTH(title) >= 15 AND searched = 0
 						 AND title NOT REGEXP '[\"\<\> ]' ORDER BY predate ASC LIMIT %d %s",
 						 $argv[1], $offset));
@@ -77,7 +77,7 @@ if ($total > 1) {
 				$searched = $row['searched'] - 1;
 				echo ".";
 			}
-			$pdo->queryExec(sprintf("UPDATE predb SET searched = %d WHERE id = %d", $searched, $row['preid']));
+			$pdo->queryExec(sprintf("UPDATE predb SET searched = %d WHERE id = %d", $searched, $row['predb_id']));
 			if (!isset($argv[2]) || $argv[2] !== 'show') {
 				$consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $consoletools->percentString(++$counter, $total));
 			}

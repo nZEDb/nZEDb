@@ -1,19 +1,20 @@
 <?php
-require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use nzedb\Category;
 use nzedb\ConsoleTools;
 use nzedb\NameFixer;
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
-$pdo = new Settings();
+$pdo = new DB();
 
 if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1]))) {
 	exit($pdo->log->error(
 		"\nThis script tries to match hashes of the releases.name or releases.searchname to predb hashes.\n"
 		. "To display the changes, use 'show' as the second argument.\n\n"
 		. "php decrypt_hashes.php 1000		...: to limit to 1000 sorted by newest postdate.\n"
-		. "php decrypt_hashes.php full 		...: to run on full database.\n"
-		. "php decrypt_hashes.php all 		...: to run on all hashed releases(including previously renamed).\n"
+		. "php decrypt_hashes.php full ...: to run on full database.\n"
+		. "php decrypt_hashes.php all ...: to run on all hashed releases(including previously renamed).\n"
 	));
 }
 
@@ -31,11 +32,13 @@ function getPreName($argv)
 
 	$res = false;
 	if (isset($argv[1]) && $argv[1] === "all") {
-		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE preid = 0 AND ishashed = 1');
+		$res = $pdo->queryDirect('SELECT id AS releases_id, name, searchname, groups_id, categories_id, dehashstatus FROM releases WHERE predb_id = 0 AND ishashed = 1');
 	} else if (isset($argv[1]) && $argv[1] === "full") {
-		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND ishashed = 1 AND dehashstatus BETWEEN -6 AND 0');
+		$res = $pdo->queryDirect('SELECT id AS releases_id, name, searchname, groups_id, categories_id, dehashstatus FROM releases WHERE categories_id = ' .
+				Category::OTHER_HASHED . ' AND ishashed = 1 AND dehashstatus BETWEEN -6 AND 0');
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
-		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND ishashed = 1 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
+		$res = $pdo->queryDirect('SELECT id AS releases_id, name, searchname, groups_id, categories_id, dehashstatus FROM releases WHERE categories_id = ' .
+				Category::OTHER_HASHED . ' AND ishashed = 1 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
 	}
 
 	$counter = $counted = $total = 0;
@@ -56,7 +59,7 @@ function getPreName($argv)
 			}
 
 			if ($success === 0) {
-				$pdo->queryDirect(sprintf('UPDATE releases SET dehashstatus = dehashstatus - 1 WHERE id = %d', $row['releaseid']));
+				$pdo->queryDirect(sprintf('UPDATE releases SET dehashstatus = dehashstatus - 1 WHERE id = %d', $row['releases_id']));
 			} else {
 				$counted++;
 			}

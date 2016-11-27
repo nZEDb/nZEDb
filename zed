@@ -1,0 +1,2 @@
+#!/bin/sh
+libraries/lithium/console/li3 "$@"

@@ -7,14 +7,16 @@
  * there is another script called resetRelnameStatus.php
  */
 
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use app\models\Settings;
 use nzedb\NameFixer;
 use nzedb\NNTP;
 use nzedb\PreDb;
+use nzedb\db\DB;
 
 $n = "\n";
-$pdo = new \nzedb\db\Settings();
+$pdo = new DB();
 $namefixer = new NameFixer(['Settings' => $pdo]);
 $predb = new PreDb(['Echo' => true, 'Settings' => $pdo]);
 
@@ -36,7 +38,8 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 	$nntp = null;
 	if ($argv[1] == 7 || $argv[1] == 8) {
 		$nntp = new NNTP(['Settings' => $pdo]);
-		if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+		if ((Settings::value('..alternate_nntp') == '1' ? $nntp->doConnect(true, true) :
+				$nntp->doConnect()) !== true) {
 			echo $pdo->log->error("Unable to connect to usenet.\n");
 			return;
 		}
@@ -67,6 +70,12 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 		case 8:
 			$namefixer->fixNamesWithPar2(2, $update, $other, $setStatus, $show, $nntp);
 			break;
+		case 9:
+			$namefixer->fixNamesWithMedia(1, $update, $other, $setStatus, $show);
+			break;
+		case 10:
+			$namefixer->fixNamesWithMedia(2, $update, $other, $setStatus, $show);
+			break;
 		default :
 			exit($pdo->log->error("\nERROR: Wrong argument, type php $argv[0] to see a list of valid arguments." . $n));
 			break;
@@ -84,5 +93,7 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 			. "php $argv[0] 5 false other no ...: Fix release names in misc categories using File Name in the past 6 hours.\n"
 			. "php $argv[0] 6 false other no ...: Fix release names in misc categories using File Name.\n"
 			. "php $argv[0] 7 false other no ...: Fix release names in misc categories using Par2 Files in the past 6 hours.\n"
-			. "php $argv[0] 8 false other no ...: Fix release names in misc categories using Par2 Files.\n"));
+			. "php $argv[0] 8 false other no ...: Fix release names in misc categories using Par2 Files.\n"
+			. "php $argv[0] 9 false other no ...: Fix release names in misc categories using MediaInfo Unique_ID in the past 6 hours.\n"
+			. "php $argv[0] 10 false other no ...: Fix release names in misc categories using MediaInfo Unique_ID.\n"));
 }

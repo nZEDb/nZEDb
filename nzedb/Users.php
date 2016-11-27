@@ -1,7 +1,8 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
+use app\models\Settings;
+use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 /**
@@ -57,7 +58,7 @@ class Users
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
 		$this->password_hash_cost = (defined('nZEDb_PASSWORD_HASH_COST') ? nZEDb_PASSWORD_HASH_COST : 11);
 	}
@@ -241,7 +242,7 @@ class Users
 				$this->pdo->escapeString((string)$password),
 				$this->pdo->escapeString($email),
 				$role,
-				$this->pdo->escapeString(($this->pdo->getSetting('storeuserips') == 1 ? $host : '')),
+				$this->pdo->escapeString((Settings::value('..storeuserips') == 1 ? $host : "''")),
 				$this->pdo->escapeString(uniqid()),
 				$invites,
 				($invitedBy == 0 ? 'NULL' : $invitedBy),
@@ -707,7 +708,7 @@ class Users
 
 		// Make sure this is the last check, as if a further validation check failed, the invite would still have been used up.
 		$invitedBy = 0;
-		if (($this->pdo->getSetting('registerstatus') == Settings::REGISTER_STATUS_INVITE) && !$forceInviteMode) {
+		if ((Settings::value('..registerstatus') == Settings::REGISTER_STATUS_INVITE) && !$forceInviteMode) {
 			if ($inviteCode == '') {
 				return self::ERR_SIGNUP_BADINVITECODE;
 			}
@@ -845,17 +846,17 @@ class Users
 	 * @param string $host
 	 * @param string $remember Save the user in cookies to keep them logged in.
 	 */
-	public function login($userID, $host = '', $remember = '')
+	public function login($userID, $host = '', $remember = false)
 	{
 		$_SESSION['uid'] = $userID;
 
-		if ($this->pdo->getSetting('storeuserips') != 1) {
+		if (Settings::value('..storeuserips') != 1) {
 			$host = '';
 		}
 
 		$this->updateSiteAccessed($userID, $host);
 
-		if ($remember == 1) {
+		if ($remember == true) {
 			$this->setCookies($userID);
 		}
 	}
@@ -911,7 +912,7 @@ class Users
 	{
 		return $this->pdo->queryInsert(
 			sprintf(
-				"INSERT INTO users_releases (user_id, releaseid, createddate) VALUES (%d, %d, NOW())",
+				"INSERT INTO users_releases (user_id, releases_id, createddate) VALUES (%d, %d, NOW())",
 				$userID,
 				$releaseID
 			)
@@ -931,7 +932,7 @@ class Users
 			sprintf("
 				SELECT users_releases.*, releases.searchname, releases.guid
 				FROM users_releases
-				INNER JOIN releases ON releases.id = users_releases.releaseid
+				INNER JOIN releases ON releases.id = users_releases.releases_id
 				WHERE user_id = %d",
 				$userID
 			)
@@ -941,27 +942,28 @@ class Users
 	/**
 	 * Delete items from the users cart.
 	 *
-	 * @param array $ids    List of items to delete.
+	 * @param array $guids    List of items to delete.
 	 * @param int   $userID ID of the user.
 	 *
 	 * @return bool
 	 */
-	public function delCart($ids, $userID)
+	public function delCart($guids, $userID)
 	{
-		if (!is_array($ids)) {
+		if (!is_array($guids)) {
 			return false;
 		}
 
 		$del = [];
-		foreach ($ids as $id) {
-			if (is_numeric($id)) {
-				$del[] = $id;
+		foreach ($guids as $guid) {
+			$rel = $this->pdo->queryOneRow(sprintf("SELECT id FROM releases WHERE guid = %s", $this->pdo->escapeString($guid)));
+			if ($rel) {
+				$del[] = $rel['id'];
 			}
 		}
 
 		return (bool)$this->pdo->queryExec(
 			sprintf(
-				"DELETE FROM users_releases WHERE id IN (%s) AND user_id = %d", implode(',', $del), $userID
+				"DELETE FROM users_releases WHERE releases_id IN (%s) AND user_id = %d", implode(',', $del), $userID
 			)
 		);
 	}
@@ -978,7 +980,7 @@ class Users
 		if ($rel) {
 			$this->pdo->queryExec(
 				sprintf(
-					"DELETE FROM users_releases WHERE user_id = %d AND releaseid = %d",
+					"DELETE FROM users_releases WHERE user_id = %d AND releases_id = %d",
 					$userID,
 					$rel["id"]
 				)
@@ -1003,7 +1005,17 @@ class Users
 	 */
 	public function delCartForRelease($releaseID)
 	{
-		$this->pdo->queryExec(sprintf("DELETE FROM users_releases WHERE releaseid = %d", $releaseID));
+		$this->pdo->queryExec(sprintf("DELETE FROM users_releases WHERE releases_id = %d", $releaseID));
+	}
+
+	public function delDownloadRequests($userID)
+	{
+		return $this->pdo->queryExec(sprintf("DELETE FROM user_downloads WHERE user_id = %d", $userID));
+	}
+
+	public function delApiRequests($userID)
+	{
+		return $this->pdo->queryExec(sprintf("DELETE FROM user_requests WHERE user_id = %d", $userID));
 	}
 
 	/**
@@ -1019,13 +1031,57 @@ class Users
 			foreach ($categoryIDs as $categoryID) {
 				$this->pdo->queryInsert(
 					sprintf(
-						"INSERT INTO user_excluded_categories (user_id, categoryid, createddate) VALUES (%d, %d, NOW())",
+						"INSERT INTO user_excluded_categories (user_id, categories_id, createddate) VALUES (%d, %d, NOW())",
 						$userID,
 						$categoryID
 					)
 				);
 			}
 		}
+	}
+
+	/**
+	 * Get a list of categories excluded for role
+	 *
+	 * @param $role
+	 *
+	 * @return array
+	 */
+	public function getRoleCategoryExclusion($role)
+	{
+		$ret = [];
+		$data = $this->pdo->query(sprintf("SELECT categories_id FROM role_excluded_categories WHERE role = %d", $role));
+		foreach ($data as $d)
+			$ret[] = $d["categories_id"];
+
+		return $ret;
+	}
+
+	/**
+	 * Add category exclusion for role
+	 *
+	 * @param $role
+	 *
+	 * @param $categoryIDs
+	 */
+	public function addRoleCategoryExclusions($role, $categoryIDs)
+	{
+		$this->delRoleCategoryExclusions($role);
+		if (count($categoryIDs) > 0) {
+			foreach ($categoryIDs as $categoryID) {
+				$this->pdo->queryInsert(sprintf("INSERT INTO role_excluded_categories (role, categories_id, createddate) VALUES (%d, %d, now())", $role, $categoryID));
+			}
+		}
+	}
+
+	/**
+	 * Delete role category exclusion
+	 *
+	 * @param $role
+	 */
+	public function delRoleCategoryExclusions($role)
+	{
+		$this->pdo->queryExec(sprintf("DELETE FROM role_excluded_categories WHERE role = %d", $role));
 	}
 
 	/**
@@ -1038,9 +1094,9 @@ class Users
 	public function getCategoryExclusion($userID)
 	{
 		$ret = [];
-		$categories = $this->pdo->query(sprintf("SELECT categoryid FROM user_excluded_categories WHERE user_id = %d", $userID));
+		$categories = $this->pdo->query(sprintf("SELECT categories_id FROM user_excluded_categories WHERE user_id = %d", $userID));
 		foreach ($categories as $category) {
-			$ret[] = $category["categoryid"];
+			$ret[] = $category["categories_id"];
 		}
 
 		return $ret;
@@ -1075,7 +1131,7 @@ class Users
 	 */
 	public function delCategoryExclusion($userID, $categoryID)
 	{
-		$this->pdo->queryExec(sprintf("DELETE user_excluded_categories WHERE user_id = %d AND categoryid = %d", $userID, $categoryID));
+		$this->pdo->queryExec(sprintf("DELETE user_excluded_categories WHERE user_id = %d AND categories_id = %d", $userID, $categoryID));
 	}
 
 	/**
@@ -1219,10 +1275,10 @@ class Users
 	public function getUsersByMonth()
 	{
 		return $this->pdo->query("
-			SELECT DATE_FORMAT(createddate, '%M %Y') AS mth, COUNT(*) AS num
+			SELECT DATE_FORMAT(createddate, '%M %Y') AS mth, COUNT(id) AS num
 			FROM users
 			WHERE createddate IS NOT NULL AND createddate != '0000-00-00 00:00:00'
-			GROUP BY DATE_FORMAT(createddate, '%M %Y')
+			GROUP BY mth
 			ORDER BY createddate DESC"
 		);
 	}

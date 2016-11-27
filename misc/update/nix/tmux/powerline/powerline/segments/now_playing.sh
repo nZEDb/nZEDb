@@ -212,17 +212,17 @@ __np_pithos() {
 __np_mocp() {
 	mocp_pid=$(pidof mocp)
 	if [ -n "$mocp_pid" ]; then
-    	np=$(mocp -i | grep ^Title | sed "s/^Title://")
-    	mocp_paused=$(mocp -i | grep ^State | sed "s/^State: //")
+    np=$(mocp -i | grep ^Title | sed "s/^Title://")
+    mocp_paused=$(mocp -i | grep ^State | sed "s/^State: //")
 		if [ -n "$np" -a "$mocp_paused" != "PAUSE" ]; then
-        	echo "$np"
-    	fi
+        echo "$np"
+    fi
 	fi
 }
 
 __np_rdio() {
 	[ ! shell_is_osx ] && return 1
-	np=$(osascript ${TMUX_POWERLINE_DIR_SEGMENTS}/np_rdio_mac.script) 
+	np=$(osascript ${TMUX_POWERLINE_DIR_SEGMENTS}/np_rdio_mac.script)
 	echo "$np"
 }
 

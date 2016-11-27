@@ -1,5 +1,5 @@
 <?php
-require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'indexer.php');
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\NZBImport;
 
@@ -48,7 +48,7 @@ if (substr($path, -1) !== DS) {
 }
 
 $files = new \RegexIterator(
-	new \RecursiveIteratorIterator(
+		new \RecursiveIteratorIterator(
 		new \RecursiveDirectoryIterator($argv[1])
 	),
 	'/^.+\.nzb(\.gz)?$/i',

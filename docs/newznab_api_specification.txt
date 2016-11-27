@@ -613,21 +613,22 @@ nZEDb    https://github.com/nZEDb/nZEDb
    for an item to belong to several categories at the same time.
 
    Category Range                       Category Name                   Comments
-   0000-0999                            Reserved
+   0000-0999                            Other
    1000-1999                            Console
    2000-2999                            Movies
    3000-3999                            Audio
    4000-4999                            PC
    5000-5999                            TV
    6000-6999                            XXX
-   7000-7999                            Other
-   8000-8999                            Books
-   9000-99999                           Reserved                        Reserved for future expansion
+   7000-7999                            Books
+   8000-99999                           Reserved                        Reserved for future expansion
    100000-                              Custom                          Site specific category range. Defined in CAPS
 
    Categories                           Category Name
 
-   0000                                 Reserved
+   0000                                 Other                           All of Other
+   0010                                 Other/Misc                      Anything that could not get categorized
+   0020                                 Other/Hashed                    Anything with a hashed name
    1000                                 Console                         All of console
    1010                                 Console/NDS                     Nintendo DS
    1020                                 Console/PSP                     Sony Playstation Portable
@@ -637,7 +638,7 @@ nZEDb    https://github.com/nZEDb/nZEDb
    1060                                 Console/Wiiware/VC              Wii homebrew
    1070                                 Console/XBOX 360 DLC            Microsoft XBox 360 Downloadable Content
    1080                                 Console/PS3                     Playstation 3
-   1090                                 Console/Other                   Misc Console
+   1999                                 Console/Other                   Misc Console
    1110                                 Console/3DS                     Nintendo 3DS
    1120                                 Console/PS Vita                 Playstation Vita
    1130                                 Console/WiiU                    Nintento Wii U
@@ -657,7 +658,7 @@ nZEDb    https://github.com/nZEDb/nZEDb
    3020                                 Audio/Video                     Music videos
    3030                                 Audio/Audiobook                 Books in audio format
    3040                                 Audio/Lossless                  Lossless music
-   3050                                 Audio/Other                     Misc music
+   3999                                 Audio/Other                     Misc music
    3060                                 Audio/Foreign                   Non english music.
    4000                                 PC                              All of PC
    4010                                 PC/0day                         Apps and games not released in ISO.
@@ -672,7 +673,7 @@ nZEDb    https://github.com/nZEDb/nZEDb
    5020                                 TV/FOREIGN                      FOREIGN TV
    5030                                 TV/SD                           SD TV
    5040                                 TV/HD                           HD TV
-   5050                                 TV/OTHER                        Other TV Content
+   5999                                 TV/OTHER                        Other TV Content
    5060                                 TV/Sport                        Sports
    5070                                 TV/Anime                        Anime
    5080                                 TV/Documentary                  Documentaries
@@ -681,20 +682,17 @@ nZEDb    https://github.com/nZEDb/nZEDb
    6020                                 XXX/WMV                         WMV rips
    6030                                 XXX/XviD                        dvdrips
    6040                                 XXX/x264                        HD Porn
-   6050                                 XXX/Other                       Misc Porn
+   6999                                 XXX/Other                       Misc Porn
    6060                                 XXX/Imageset                    Sets of porn images
    6070                                 XXX/Packs                       Packs of multiple porn videos
-   7000                                 Other                           All of Other
-   7010                                 Other/Misc                      Anything that could not get categorized
-   7020                                 Other/Hashed                    Anything with a hashed name
-   8000                                 Books                           All of Books
-   8010                                 Books/Ebook                     Ebooks
-   8020                                 Books/Comics                    Comics Ebooks
-   8030                                 Books/Magazines                 Magazines
-   8040                                 Books/Technical                 Technical books
-   8050                                 Books/Other                     Misc books
-   8060                                 Books/Foreign                   Non english books
-   100000-                              Custom                          Specific to a site
+   7000                                 Books                           All of Books
+   7010                                 Books/Magazines                 Magazines
+   7020                                 Books/Ebook                     Ebooks
+   7030                                 Books/Comics                    Comics Ebooks
+   7040                                 Books/Technical                 Technical books
+   7060                                 Books/Foreign                   Non english books
+   7999                                 Books/Unknown                   Misc books
+   100000+                              Custom                          Specific to a site
 
 
 4. PREDEFINED ATTRIBUTES
@@ -728,6 +726,7 @@ nZEDb    https://github.com/nZEDb/nZEDb
    usenetdate      ALL                     Date posted to usenet                   "Tue, 22 Jun 2010 06:54:22 +0100"
    info            ALL                     Info (.nfo) file URL                    "http://somesite/api?t=info&id=xxx"
    year            ALL                     Release year                            "2009"
+   prematch        ALL                     Has valid PreDB match                   "0" no "1" yes
    season          TV                      Numeric season                          "1"
    episode         TV                      Numeric episode within the season       "1"
    videos_id       TV, Movies, Anime       Local Video ID                          "1"
