@@ -167,15 +167,15 @@ class Category
 		switch ($catCount) {
 			//No category constraint
 			case 0:
-				$catsrch = ' 1=1 ';
+				$catsrch = ' AND 1=1 ';
 				break;
 			// One category constraint
 			case 1:
-				$catsrch = " r.categories_id = {$categories[0]}";
+				$catsrch = " AND r.categories_id = {$categories[0]}";
 				break;
 			// Multiple category constraints
 			default:
-				$catsrch = " r.categories_id IN (" . implode(", ", $categories) . ") ";
+				$catsrch = " AND r.categories_id IN (" . implode(", ", $categories) . ") ";
 				break;
 		}
 

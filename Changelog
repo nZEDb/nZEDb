@@ -9,8 +9,40 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-11-28 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.7.0
+
+
+2016-11-17 niel
+	Mrg: PR 2313, from  Wally73 - Update simple-expanded.sh. Removes update_theaters as Rotten
+		Tomato's API is no longer freely available.
+2016-11-14 niel
+	Chg: Update Composer configuration to use our fork of Git.php.
+	Fix: Added some patches to fix some known setting mistakes (caused be missed or missing patches)
+2016-11-12 niel
+	Add: Unit test and console command to check that the settings table has all entries from
+		settings.tsv.
+		 To run the tests do: ./zed test app/tests/ This runs ALL tests, although there is only
+		one currentyly ;-)
+		 To use the command do: ./zed verify settings_table
+		 This will list out any entries from 10-settings.tsv that cannot be found in your Db table.
+		Syntax for the latter command is tentative and may be changed in the future.
+2016-11-09 DariusIII
+	Mrg: PR #2308 - Fix advanced search and update related queries.
 2016-11-08 niel
 	Fix: Add missing use statement for Settings class.
+2016-11-07 b3rs3rk
+	Fix: Issue with SphinxSE 2.2.11 and maximum return size in ReleaseRemover with larger DB
+	Chg: Improve site/admin site performance in a few queries in Releases and Groups
+	Chg: Change NZB Writing to use XMLWriter instead of string buffering for standardization
+2016-11-05 b3rs3rk
+	Fix: nZEDb.xml file with new DB patch number
+2016-11-04 DariusIII
+	Chg: Replace reqid.nzedb.com with reqid.newznab-tmux.pw
+2016-11-02 DariusIII
+	Fix: Broken logic in XML_Response class that lead to high response times
+2016-11-01 b3rs3rk
+	Chg: Revamp categorySearch for cleanliness and make category determination more reliable and extensible
 2016-11-01 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.6.0
 

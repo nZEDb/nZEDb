@@ -23,8 +23,6 @@ archive	fetch	end	0	Download/process the last rar or zip file(s) to check for a 
 		grabstatus	1	Whether to update download counts when someone downloads a release.	grabstatus
 indexer	ppa	innerfileblacklist	/setup\.exe|password\.url/i	You can add a regex here to set releases to potentially passworded when a file name inside a rar/zip matches this regex.	innerfileblacklist
 		lastpretime	0	Last time we downloaded a pre using WEB sources	lastpretime
-		intanidbupdate	7	The number of days between AniDB full updates.  Default is 7.	intanidbupdate
-		lastanidbupdate	0	The last time a full AniDB update occurred in unixtime.	lastanidbupdate
 		lookup_reqids	1	Whether to attempt to lookup Request IDs using the Request ID link below.	lookup_reqids
 		lookupanidb	0	Whether to attempt to lookup anime information from AniDB when processing binaries. Currently it is not recommend to enable this.	lookupanidb
 		lookupbooks	1	Whether to attempt to lookup book information from Amazon when processing binaries.	lookupbooks
@@ -88,7 +86,7 @@ indexer	ppa	innerfileblacklist	/setup\.exe|password\.url/i	You can add a regex h
 		replacenzbs	0	NZBs that are crossposted, instead of deleting, replace with the nzb grabbed.(This is not necessary, was added before I understood how crossposted nzbs work).	replacenzbs
 		reqidthreads	1	The number of threads for local request id processing.	reqidthreads
 		request_hours	1	The maximum hours after a release is added to recheck for a Request ID match.	request_hours
-		request_url	http://reqid.nzedb.com/index.php	Optional URL to lookup Request IDs.	request_url
+		request_url	http://reqid.newznab-tmux.pw/index.php	Optional URL to lookup Request IDs.	request_url
 		safebackfilldate	2012-06-24	The target date for safe backfill. Format: YYYY-MM-DD	safebackfilldate
 		safepartrepair	0	Whether to put unreceived parts into partrepair table when running binaries(safe) or backfill scripts.	safepartrepair
 		segmentstodownload	2	The maximum number of segments to download to generate the sample video file. (Default 2)	segmentstodownload
@@ -111,7 +109,9 @@ APIs		fanarttvkey		The Fanart.tv api key. Used for Fanart.tv lookups. Fanart.tv 
 APIs		rottentomatokey	qxbxyngtujprvw7jxam2m6na	The api key used for access to rotten tomatoes.	rottentomatokey
 APIs		tmdbkey	9a4e16adddcd1e86da19bcaf5ff3c2a3	The API key used for access to TMDb.	tmdbkey
 APIs		trakttvclientkey		The Trakt.tv API v2 Client ID (SHA256 hash - 64 characters long string). Used for movie and tv lookups.	trakttvclientkey
-APIs	AniDB	banned	0	Timestamp of when we were 'banned'.	AniDB_banned
+APIs	anidb	max_update_frequency	7	The number of days between AniDB full updates.  Default is 7.	intanidbupdate
+APIs	anidb	last_full_update	0	The last time a full AniDB update occurred in unixtime.	lastanidbupdate
+APIs	anidb	banned	0	Timestamp of when we were 'banned'.	AniDB_banned
 APIs	recaptcha	sitekey		ReCaptcha SiteKey for generating the captcha block for input forms.	recaptchasitekey
 APIs	recaptcha	secretkey		ReCaptcha SecretKey for verifying submitted captcha results.	recaptchasecretkey
 APIs	recaptcha	enabled	1	Whether ReCaptcha should be used or not.\nThis allows for disabling it without having to remove your keys.	recaptchenabled
