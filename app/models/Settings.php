@@ -233,6 +233,30 @@ class Settings extends \lithium\data\Model
 	}
 
 	/**
+	 * Take $_POST data from smarty and validate before entering into settings table.
+	 *
+	 * @param $post			The $_POST array from site-edit submit.
+	 *
+	 * @return null|string	Returns null if no error encountered, otherwise error message.
+	 */
+	public static function updateFromSmartyForm($post)
+	{
+		$error = self::validateSmartyForm($post);
+
+		if ($error === null) {
+			$conditions = $data = [];
+			foreach ($post as $key => $value) {
+				$data[] = ['value' => $value];
+				$conditions[] = self::dottedToArray(self::postToDotted($key));
+			}
+
+			self::update($data, $conditions);
+		}
+
+		return $error;
+	}
+
+	/**
 	 * Return the value of supplied setting.
 	 * The setting can be either a normal condition array for the custom 'setting' finder or a
 	 * dotted string notation setting. Note that dotted notation will be converted to an array,
@@ -261,11 +285,6 @@ class Settings extends \lithium\data\Model
 		return $value;
 	}
 
-	public static function validateSmartyForm($form)
-	{
-		;
-	}
-
 	protected static function dottedToArray($setting)
 	{
 		$result = [];
@@ -292,6 +311,71 @@ class Settings extends \lithium\data\Model
 
 		return $result;
 
+	}
+
+	/**
+	 * Takes a $_POST key value (which replaces full-stops (".") with underscores ("_") and
+	 * converts it back to having full-stops. Only the first two are converted.
+	 * NOTE for this to work section and subsection may NEVER contain underscores, or they will
+	 * be converted.
+	 *
+	 * @param $setting
+	 *
+	 * @return mixed
+	 */
+	protected static function postToDotted($setting)
+	{
+		return preg_replace("_", ".", $setting, 2);
+	}
+
+	protected static function validateSmartyForm($post)
+	{
+		$defaults = [
+			'checkpasswordedrar' => false,
+			'ffmpegpath'         => '',
+			'mediainfopath'      => '',
+			'nzbpath'            => '',
+			'tmpunrarpath'       => '',
+			'unrarpath'          => '',
+			'yydecoderpath'      => '',
+		];
+		$post += $defaults;    // Make sure keys exist to avoid error notices.
+		ksort($post);
+
+		$fields['nzbpath'] = Text::trailingSlash($post['nzbpath']);
+		$error = null;
+
+		switch (true) {
+			case ($fields['apps__mediainfopath'] != '' && !is_file($fields['apps__mediainfopath'])):
+				$error = 'The mediainfo path does not point to a valid binary';
+				break;
+			case ($fields['apps__ffmpegpath'] != '' && !is_file($fields['apps__ffmpegpath'])):
+				$error = 'The ffmpeg path does not point to a valid binary';
+				break;
+			case ($fields['apps__unrarpath'] != '' && !is_file($fields['apps__unrarpath'])):
+				$error = 'The unrar path does not point to a valid binary';
+				break;
+			case (empty($fields['nzbpath'])):
+				$error = 'The nzb path is required, please set it.';
+				break;
+			case (!file_exists($fields['nzbpath']) || !is_dir($fields['nzbpath'])):
+				$error = 'The nzb path does not point to an existing directory';
+				break;
+			case (!is_readable($fields['nzbpath'])):
+				$error = '"The nzb path cannot be read from. Check the permissions.';
+				break;
+			case ($fields['checkpasswordedrar'] == 1 && !is_file($fields['unrarpath'])):
+				$error = '"Deep password check requires a valid path to unrar binary';
+				break;
+			case ($fields['tmpunrarpath'] != '' && !file_exists($fields['tmpunrarpath'])):
+				$error = 'The temp unrar path is not a valid directory';
+				break;
+			case ($fields['apps__yydecoderpath'] != '' &&
+				!file_exists($fields['apps__yydecoderpath'])):
+				$error = 'The yydecoder&apos;s path must exist. Please set it or leave it empty.';
+		}
+
+		return $error;
 	}
 }
 
