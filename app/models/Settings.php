@@ -132,24 +132,8 @@ class Settings extends \lithium\data\Model
 			$result = true;
 			foreach ($settings as $line) {
 				$message = '';
-				switch (PHP_MAJOR_VERSION) {
-					case 7:
-						list(
-							$setting['section'],
-							$setting['subsection'],
-							$setting['name'],
-							) = explode("\t", $line);
-						break;
-					case 5:
-						list(
-							$setting['name'],
-							$setting['subsection'],
-							$setting['section']
-							) = explode("\t", $line);
-						break;
-					default:
-						throw new \RuntimeException("PHP version not recognised!");
-				}
+				list($setting['section'], $setting['subsection'], $setting['name']) =
+					explode("\t", $line);
 
 				$value = Settings::value(
 					[
