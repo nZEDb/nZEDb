@@ -9,10 +9,15 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-11-29 niel
+	Fix: Verify settings_table failing for PHP 5.6 users, because of reversed list() parameter,
+		due to misreading the documentation (Fixes issue #2319).
 2016-11-28 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.7.0
 
 
+2016-11-21 b3rs3rk
+	Chg: Avoid joining groups table on CBP deletes by selecting group info beforehand
 2016-11-17 niel
 	Mrg: PR 2313, from  Wally73 - Update simple-expanded.sh. Removes update_theaters as Rotten
 		Tomato's API is no longer freely available.
