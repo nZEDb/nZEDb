@@ -534,7 +534,7 @@ class ProcessReleases
 	 *
 	 * @param int|string $groupID (optional)
 	 *
-	 * @return int
+	 * @return array
 	 * @access public
 	 */
 	public function createReleases($groupID)
@@ -668,7 +668,7 @@ class ProcessReleases
 								if ($grpTmp !== false) {
 									//check if the group already exists in database
 									$xrefGrpID = $this->groups->getIDByName($grpTmp);
-									if ($xrefGrpID === false) {
+									if ($xrefGrpID === '') {
 										$xrefGrpID = $this->groups->add(
 											[
 												'name'                  => $grpTmp,
@@ -677,7 +677,9 @@ class ProcessReleases
 												'first_record'          => 0,
 												'last_record'           => 0,
 												'active'                => 0,
-												'backfill'              => 0
+												'backfill'              => 0,
+												'minfilestoformrelease' => '',
+												'minsizetoformrelease'  => ''
 											]
 										);
 									}
