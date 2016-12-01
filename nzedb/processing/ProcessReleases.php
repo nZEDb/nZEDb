@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing;
 
+use app\models\ReleasesGroups;
 use app\models\Settings;
 use nzedb\Categorize;
 use nzedb\Category;
@@ -659,6 +660,35 @@ class ProcessReleases
 								$collection['id']
 							)
 						);
+
+						if (preg_match_all('#(\S+):\S+#', $collection['xref'], $matches)) {
+							foreach ($matches[1] as $grp) {
+								$grps = $this->groups->isValidGroup($grp);
+								if ($grps !== false) {
+									//check if the group already exists in database
+									$dupeCheck = $this->pdo->queryOneRow(sprintf('SELECT SQL_NO_CACHE id FROM groups WHERE name = %s', $this->pdo->escapeString($grp)));
+									if ($dupeCheck === false) {
+										$this->groups->add([
+												'name'                  => $grp,
+												'description'           => 'Added by Release processing',
+												'backfill_target'       => 1,
+												'first_record'          => 0,
+												'last_record'           => 0,
+												'active'                => 0,
+												'backfill'              => 0
+											]
+										);
+									}
+								}
+								$groupIDs = $this->groups->getIDByName($grp);
+
+								$relGroups = ReleasesGroups::create();
+								$relGroups->releases_id = $releaseID;
+								$relGroups->groups_id = $groupIDs;
+								$relGroups->groups_name = $grp;
+								$relGroups->save();
+							}
+						}
 
 						$returnCount++;
 

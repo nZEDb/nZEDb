@@ -622,7 +622,7 @@ class Releases
 		// Delete from DB.
 		$this->pdo->queryExec(
 			sprintf('
-				DELETE r, rn, rc, uc, rf, ra, rs, rv, re, df
+				DELETE r, rn, rc, uc, rf, ra, rs, rv, re, df, rg
 				FROM releases r
 				LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
 				LEFT OUTER JOIN release_comments rc ON rc.releases_id = r.id
@@ -633,6 +633,7 @@ class Releases
 				LEFT OUTER JOIN video_data rv ON rv.releases_id = r.id
 				LEFT OUTER JOIN releaseextrafull re ON re.releases_id = r.id
 				LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
+				LEFT OUTER JOIN releases_groups rg ON rg.releases_id = r.id
 				WHERE %s',
 				(isset($identifiers['i']) && $identifiers['i'] > 0
 					? "r.id = {$identifiers['i']}"
@@ -1254,6 +1255,8 @@ class Releases
 			"SELECT r.*,
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				CONCAT(cp.id, ',', c.id) AS category_ids,
+				GROUP_CONCAT(rg.groups_id SEPARATOR ',') AS release_groups,
+				GROUP_CONCAT(rg.groups_name SEPARATOR ',') AS release_group_names,
 				g.name AS group_name,
 				v.title AS showtitle, v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.source,
 				tvi.summary, tvi.image,
@@ -1262,6 +1265,7 @@ class Releases
 			LEFT JOIN groups g ON g.id = r.groups_id
 			LEFT JOIN categories c ON c.id = r.categories_id
 			LEFT JOIN categories cp ON cp.id = c.parentid
+			LEFT JOIN releases_groups rg ON rg.releases_id = r.id
 			LEFT OUTER JOIN videos v ON r.videos_id = v.id
 			LEFT OUTER JOIN tv_info tvi ON r.videos_id = tvi.videos_id
 			LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id

@@ -25,6 +25,6 @@ class ReleasesGroups extends \lithium\data\Model
 	public $hasMany = ['Groups'];
 
 	protected $_meta = [
-		'key'			=> ['releases_id', 'groups_id'],
+		'key'			=> ['releases_id', 'groups_id', 'groups_name'],
 	];
 }
