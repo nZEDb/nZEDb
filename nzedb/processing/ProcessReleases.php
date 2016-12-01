@@ -680,12 +680,14 @@ class ProcessReleases
 										);
 									}
 								}
-								$groupIDs = $this->groups->getIDByName($grp);
+								$groupID = $this->groups->getIDByName($grp);
 
-								$relGroups = ReleasesGroups::create();
-								$relGroups->releases_id = $releaseID;
-								$relGroups->groups_id = $groupIDs;
-								$relGroups->groups_name = $grp;
+								$relGroups = ReleasesGroups::create(
+									[
+										'releases_id' => $releaseID,
+										'groups_id' => $groupID,
+									]
+								);
 								$relGroups->save();
 							}
 						}
