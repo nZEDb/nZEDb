@@ -271,11 +271,24 @@
 	<td>{$release.name|escape:"htmlall"|wordwrap:80:"\n":true}</td>
 </tr>
 
-<tr>
-	<th style="vertical-align:top">Group:</th>
-	<td title="{$release.group_name}"><a title="Browse {$release.group_name}" href="{$smarty.const.WWW_TOP}/browse?g={$release.group_name}">{$release.group_name|replace:"alt.binaries":"a.b"}</a>
-	</td>
-</tr>
+	<tr>
+		<th style="vertical-align: top">Group(s)</th>
+		{if !empty($release.group_names)}
+			{assign var="groupname" value=","|explode:$release.group_names}
+			<td>
+				{foreach $groupname as $grp}
+					<a title="Browse {$grp}"
+					   href="{$smarty.const.WWW_TOP}/browse?g={$grp}">{$grp|replace:"alt.binaries":"a.b"}</a>
+					<br/>
+				{/foreach}
+			</td>
+		{else}
+			<td>
+				<a title="Browse {$release.group_name}"
+				   href="{$smarty.const.WWW_TOP}/browse?g={$release.group_name}">{$release.group_name|replace:"alt.binaries":"a.b"}</a>
+			</td>
+		{/if}
+	</tr>
 <tr>
 	<th style="vertical-align:top">Category:</th>
 	<td><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categories_id}">{$release.category_name}</a>
