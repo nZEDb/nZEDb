@@ -8,6 +8,9 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
+2016-12-02 niel
+	Chg: Sort contents of 10-settings.tsv to make findind incorrect/missing entries easier ;-)
 2016-11-29 b3rs3rk
 	Fix: Gamma Console cover view not displaying releases grouped by Console ID
 2016-11-29 niel
