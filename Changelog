@@ -8,7 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2016-11-29 b3rs3rk
+	Fix: Gamma Console cover view not displaying releases grouped by Console ID
 2016-11-29 niel
 	Fix: Verify settings_table failing for PHP 5.6 users, because of reversed list() parameter,
 		due to misreading the documentation (Fixes issue #2319).
