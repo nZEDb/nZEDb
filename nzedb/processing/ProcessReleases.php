@@ -1287,22 +1287,18 @@ class ProcessReleases
 
 		if ($this->crossPostTime != 0) {
 			// Crossposted releases.
-			do {
-				$releases = $this->pdo->queryDirect(
-					sprintf(
-						'SELECT SQL_NO_CACHE id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1',
-						$this->crossPostTime
-					)
-				);
-				$total = 0;
-				if ($releases && $releases->rowCount()) {
-					$total = $releases->rowCount();
-					foreach ($releases as $release) {
-						$this->releases->deleteSingle(['g' => $release['guid'], 'i' => $release['id']], $this->nzb, $this->releaseImage);
-						$duplicateDeleted++;
-					}
+			$releases = $this->pdo->queryDirect(
+				sprintf(
+					'SELECT SQL_NO_CACHE id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1',
+					$this->crossPostTime
+				)
+			);
+			if ($releases instanceof \Traversable) {
+				foreach ($releases as $release) {
+					$this->releases->deleteSingle(['g' => $release['guid'], 'i' => $release['id']], $this->nzb, $this->releaseImage);
+					$duplicateDeleted++;
 				}
-			} while ($total > 0);
+			}
 		}
 
 		if ($this->completion > 0) {
