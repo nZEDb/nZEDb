@@ -89,7 +89,7 @@ class Books
 		$this->sleeptime = ($result != '') ? $result : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'book' . DS;
 		$result = Settings::value('..book_reqids');
-		$this->bookreqids = empty($bookreqids) ? Category::BOOKS_EBOOK : $result;
+		$this->bookreqids = empty($result) ? Category::BOOKS_EBOOK : $result;
 		$this->renamed = '';
 		if (Settings::value('..lookupbooks') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
