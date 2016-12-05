@@ -113,7 +113,7 @@ class Versions extends \lithium\core\Object
 				if ($options['verbose'] === true) {
 					echo "Updating tag version to $latestTag" . PHP_EOL;
 				}
-				$this->versions->git->tag = $this->git->tagLatest();
+				$this->versions->git->tag = $latestTag;
 				$this->changes |= self::UPDATED_GIT_TAG;
 
 				return $this->versions->git->tag;
