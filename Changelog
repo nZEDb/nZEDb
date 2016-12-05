@@ -8,6 +8,11 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
+2016-12-05 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.7.0
+
+
 2016-12-03 b3rs3rk
 	Fix: Books processing variable incorrect causing only one category to run
 2016-12-03 niel
