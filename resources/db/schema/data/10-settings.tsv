@@ -15,32 +15,27 @@ section,subsection,name,value,hint,setting
 		deletepossiblerelease	0	Whether to delete releases which are potentially passworded.	deletepossiblerelease
 		disablebackfillgroup	0	Whether to disable backfill on a group if the target date has been reached.	disablebackfillgroup
 		extractusingrarinfo	0	Whether to use rarinfo or 7zip/unrar directly to decompress zip/rar files.	extractusingrarinfo
-archive	fetch	end	0	Download/process the last rar or zip file(s) to check for a password and get the file names inside?	fetchlastcompressedfiles
 		ffmpeg_duration	5	The maximum duration (In Seconds) for ffmpeg to generate the sample for. (Default 5)	ffmpeg_duration
 		ffmpeg_image_time	5		ffmpeg_image_time
 		fixnamesperrun	10	The maximum number of releases to check per run(threaded script only).	fixnamesperrun
 		fixnamethreads	1	The number of threads for fixReleasesNames. This includes md5, nfos and filenames.	fixnamethreads
 		grabstatus	1	Whether to update download counts when someone downloads a release.	grabstatus
-indexer	ppa	innerfileblacklist	/setup\.exe|password\.url/i	You can add a regex here to set releases to potentially passworded when a file name inside a rar/zip matches this regex.	innerfileblacklist
 		lastpretime	0	Last time we downloaded a pre using WEB sources	lastpretime
-		intanidbupdate	7	The number of days between AniDB full updates.  Default is 7.	intanidbupdate
-		lastanidbupdate	0	The last time a full AniDB update occurred in unixtime.	lastanidbupdate
 		lookup_reqids	1	Whether to attempt to lookup Request IDs using the Request ID link below.	lookup_reqids
 		lookupanidb	0	Whether to attempt to lookup anime information from AniDB when processing binaries. Currently it is not recommend to enable this.	lookupanidb
 		lookupbooks	1	Whether to attempt to lookup book information from Amazon when processing binaries.	lookupbooks
 		lookupgames	1	Whether to attempt to lookup game information from Amazon when processing binaries.	lookupgames
 		lookupimdb	1	Whether to attempt to lookup film information from IMDB or TheMovieDB when processing binaries.	lookupimdb
-		lookupxxx	1	Whether to attempt to lookup xxx information from ADE or Popporn when processing binaries.	lookupxxx
 		lookupmusic	1	Whether to attempt to lookup music information from Amazon when processing binaries.	lookupmusic
 		lookupnfo	1	Whether to attempt to retrieve an nfo file from usenet when processing binaries.<br/>NOTE: disabling nfo lookups will disable movie lookups.	lookupnfo
 		lookuppar2	0	Whether to attempt to find a better name for releases in misc->other using the PAR2 file.<br/>NOTE: this can be slow depending on the group!	lookuppar2
 		lookuptvrage	1	Whether to attempt to lookup tv rage ids on the web when processing binaries.	lookuptvrage
+		lookupxxx	1	Whether to attempt to lookup xxx information from ADE or Popporn when processing binaries.	lookupxxx
 		maxaddprocessed	25	The maximum amount of releases to process for passwords/previews/mediainfo per run. Every release gets processed here. This uses NNTP an connection, 1 per thread. This does not query Amazon.	maxaddprocessed
 		maxanidbprocessed	100	The maximum amount of anime to process with anidb per run. This does not use an NNTP connection or query Amazon.	maxanidbprocessed
 		maxbooksprocessed	300	The maximum amount of books to process with amazon per run. This does not use an NNTP connection	maxbooksprocessed
 		maxgamesprocessed	150	The maximum amount of games to process with amazon per run. This does not use an NNTP connection.	maxgamesprocessed
 		maximdbprocessed	100	The maximum amount of movies to process with IMDB per run. This does not use an NNTP connection or query Amazon.	maximdbprocessed
-		maxxxxprocessed	100	The maximum amount of xxx to process with ADE and Popporn per run. This does not use an NNTP connection or query Amazon.	maxxxxprocessed
 		maxmssgs	20000	The maximum number of messages to fetch at a time from the server. Only raise this if you have php set right and lots of RAM.	maxmssgs
 		maxmusicprocessed	150	The maximum amount of music to process with amazon per run. This does not use an NNTP connection.	maxmusicprocessed
 		maxnestedlevels	3	How many levels deep to go into nested rar/zip files.	maxnestedlevels
@@ -53,15 +48,16 @@ indexer	ppa	innerfileblacklist	/setup\.exe|password\.url/i	You can add a regex h
 		maxsizetoformrelease	0	The maximum total size in bytes to make a release. If set to 0, then ignored. Only deletes during release creation.	maxsizetoformrelease
 		maxsizetopostprocess	100	The maximum size in gigabytes to post process (additional) a release. If set to 0, then ignored.	maxsizetopostprocess
 		maxsizetoprocessnfo	100	The maximum size in gigabytes of a release to process it for NFOs. If set to 0, then ignored.	maxsizetoprocessnfo
+		maxxxxprocessed	100	The maximum amount of xxx to process with ADE and Popporn per run. This does not use an NNTP connection or query Amazon.	maxxxxprocessed
 		minsizetopostprocess	1	The minimum size in megabytes to post process (additional) a release. If set to 0, then ignored.	minsizetopostprocess
 		minsizetoprocessnfo	1	The minimum size in megabytes of a release to process it for NFOs. If set to 0, then ignored.	minsizetoprocessnfo
-		miscotherretentionhours	0	The number of hours releases categorized as Misc->Other will be retained. Set to 0 to disable.	miscotherretentionhours
 		mischashedretentionhours	0	The number of hours releases categorized as Misc->Hashed will be retained. Set to 0 to disable.	mischashedretentionhours
-		nfothreads	1	The number of threads for nfo postprocessing. The max is 16, if you set anything higher it will use 16.	nfothreads
+		miscotherretentionhours	0	The number of hours releases categorized as Misc->Other will be retained. Set to 0 to disable.	miscotherretentionhours
 		newgroupdaystoscan	1	Days	newgroupdaystoscan
 		newgroupmsgstoscan	100000	Posts	newgroupmsgstoscan
 		newgroupscanmethod	0	Scan back X (posts/days) for each new group? Use backfill to scan further.	newgroupscanmethod
 		nextppticket	0		nextppticket
+		nfothreads	1	The number of threads for nfo postprocessing. The max is 16, if you set anything higher it will use 16.	nfothreads
 		nntpproxy	0	Using the NNTP Proxy for nZEDb can improve performance of nZEDb dramatically. It uses connection pooling which not only give more control over the number of connections to use but also reduces time for connection setup/teardown. The proxy also takes care of compressed headers for you. To use this featrure you will need to install pynntp (sudo pip install pynntp or sudo easy_install pynntp) and socketpool (sudo pip install socketpool or sudo easy_install socketpool) (ensure python2 is default) and edit the configuration file (nntpproxy.conf and nntpproxy_a.conf) in the update_scripts/python_scripts/lib (copy sample) directory and finally edit your www/config.php file to use the proxy (username and password are ignored by the proxy - make then anything you like - the proxy doesn't use ssl either). Make sure you turn off the use compressed headers option here in site preferences (the proxy uses compressed headers by default and passes on decompressed data).	nntpproxy
 		nntpretries	10	The maximum number of retry attmpts to connect to nntp provider. On error, each retry takes approximately 5 seconds nntp returns reply. (Default 10).	nntpretries
 		nzbpath	/your/path/to/nzbs/	The directory where nzb files will be stored.	nzbpath
@@ -76,11 +72,11 @@ indexer	ppa	innerfileblacklist	/setup\.exe|password\.url/i	You can add a regex h
 		postthreadsamazon	1		postthreadsamazon
 		postthreadsnon	1	The number of threads for non-amazon postprocessing. This includes movies, anime and tv lookups.	postthreadsnon
 		predbversion	1		predbversion
+		privateprofiles	1	Hide profiles from other users (admin/mod can still access).	privateprofiles
 		processaudiosample	0	Whether to attempt to process a audio sample, they will be up to 30 seconds, in ogg format. You must have ffmpeg for this.	processaudiosample
 		processjpg	0	Whether to attempt to retrieve a JPG file while additional post processing, these are usually on XXX releases.	processjpg
 		processthumbnails	0	Whether to attempt to process a video thumbnail image. You must have ffmpeg for this.	processthumbnails
 		processvideos	0	Whether to attempt to process a video sample, these videos are very short 1-3 seconds, 100KB on average, in ogv format. You must have ffmpeg for this.	processvideos
-		privateprofiles	1	Hide profiles from other users (admin/mod can still access).	privateprofiles
 		registerstatus	0	The status of registrations to the site.	registerstatus
 		releasecompletion	95	The minimum completion % to keep a release. Set to 0 to disable.	releasecompletion
 		releaseretentiondays	0	!!THIS IS NOT HEADER RETENTION!! The number of days releases will be retained for use throughout site. Set to 0 to disable.	releaseretentiondays
@@ -88,7 +84,7 @@ indexer	ppa	innerfileblacklist	/setup\.exe|password\.url/i	You can add a regex h
 		replacenzbs	0	NZBs that are crossposted, instead of deleting, replace with the nzb grabbed.(This is not necessary, was added before I understood how crossposted nzbs work).	replacenzbs
 		reqidthreads	1	The number of threads for local request id processing.	reqidthreads
 		request_hours	1	The maximum hours after a release is added to recheck for a Request ID match.	request_hours
-		request_url	http://reqid.nzedb.com/index.php	Optional URL to lookup Request IDs.	request_url
+		request_url	http://reqid.newznab-tmux.pw/index.php	Optional URL to lookup Request IDs.	request_url
 		safebackfilldate	2012-06-24	The target date for safe backfill. Format: YYYY-MM-DD	safebackfilldate
 		safepartrepair	0	Whether to put unreceived parts into partrepair table when running binaries(safe) or backfill scripts.	safepartrepair
 		segmentstodownload	2	The maximum number of segments to download to generate the sample video file. (Default 2)	segmentstodownload
@@ -105,35 +101,41 @@ indexer	ppa	innerfileblacklist	/setup\.exe|password\.url/i	You can add a regex h
 APIs		amazonassociatetag	n01369-20	The amazon associate tag. Used for music/book lookups.	amazonassociatetag
 APIs		amazonprivkey	B58mVwyj+T/MEucxWugJ3GQ0CcW2kQq16qq/1WpS	The amazon private api key. Used for music/book lookups.	amazonprivkey
 APIs		amazonpubkey	AKIAIPDNG5EU7LB4AD3Q	The amazon public api key. Used for music/book lookups.	amazonpubkey
-APIs		giantbombkey		The giantbomb api key. Used for game lookups.	giantbombkey
 APIs		anidbkey		The Anidb api key. Used for Anime lookups.	anidbkey
 APIs		fanarttvkey		The Fanart.tv api key. Used for Fanart.tv lookups. Fanart.tv would appreciate it if you use this service to help them out by adding high quality images not already available on TMDB.	fanarttvkey
+APIs		giantbombkey		The giantbomb api key. Used for game lookups.	giantbombkey
 APIs		rottentomatokey	qxbxyngtujprvw7jxam2m6na	The api key used for access to rotten tomatoes.	rottentomatokey
 APIs		tmdbkey	9a4e16adddcd1e86da19bcaf5ff3c2a3	The API key used for access to TMDb.	tmdbkey
 APIs		trakttvclientkey		The Trakt.tv API v2 Client ID (SHA256 hash - 64 characters long string). Used for movie and tv lookups.	trakttvclientkey
-APIs	AniDB	banned	0	Timestamp of when we were 'banned'.	AniDB_banned
-APIs	recaptcha	sitekey		ReCaptcha SiteKey for generating the captcha block for input forms.	recaptchasitekey
-APIs	recaptcha	secretkey		ReCaptcha SecretKey for verifying submitted captcha results.	recaptchasecretkey
-APIs	recaptcha	enabled	1	Whether ReCaptcha should be used or not.\nThis allows for disabling it without having to remove your keys.	recaptchenabled
+APIs	anidb	banned	0	Timestamp of when we were 'banned'.	AniDB_banned
+APIs	anidb	last_full_update	0	The last time a full AniDB update occurred in unixtime.	lastanidbupdate
+APIs	anidb	max_update_frequency	7	The number of days between AniDB full updates.  Default is 7.	intanidbupdate
 APIs	APIKeys	section-label	3<sup>rd.</sup> Party API Keys		""
-apps	indexer	magic_file_path		Path to magic number database. Windows&apos; users should set this if they have installed GNUWin &lsquo;file&rsquo;. *nix users can optionally set this to a file of their choice.	magic_file_path
+APIs	recaptcha	enabled	1	Whether ReCaptcha should be used or not.\nThis allows for disabling it without having to remove your keys.	recaptchenabled
+APIs	recaptcha	secretkey		ReCaptcha SecretKey for verifying submitted captcha results.	recaptchasecretkey
+APIs	recaptcha	sitekey		ReCaptcha SiteKey for generating the captcha block for input forms.	recaptchasitekey
 apps		7zippath		The path to the 7za (7zip command line in windows) binary, used for grabbing nfos from compressed zip files. Use forward slashes in windows c:/path/to/7z.exe	zippath
 apps		ffmpegpath		The path to the ffmpeg or avconv binary. Used for making thumbnails and video/audio previews. Use forward slashes in windows c:/path/to/ffmpeg.exe	ffmpegpath
 apps		mediainfopath		The path to the mediainfo binary. Used for deep file media analysis. Use empty path to disable mediainfo checks Use forward slashes in windows c:/path/to/mediainfo.exe	mediainfopath
-apps		unrarpath		The path to an unrar binary, used in deep password detection and media info grabbing. Use forward slashes in windows c:/path/to/unrar.exe	unrarpath
 apps		timeoutpath		The path to the timeout binary. This is used to limit the amount of time unrar/7zip/mediainfo/ffmpeg/avconv can run. You can the time limit in the process additional section. You can leave this empty to disable this. Use forward slashes in windows c:/path/to/timeout.exe	timeoutpath
+apps		unrarpath		The path to an unrar binary, used in deep password detection and media info grabbing. Use forward slashes in windows c:/path/to/unrar.exe	unrarpath
 apps		yydecoderpath		Path to yydecode, this will decode yEnc articles. On ubuntu/debian you can get yydecode in the getdeb repository. Compiling yydecode from source is easy/fast also. Use forward slashes in windows c:/path/to/yydecode.exe	yydecoderpath
+apps	indexer	magic_file_path		Path to magic number database. Windows&apos; users should set this if they have installed GNUWin &lsquo;file&rsquo;. *nix users can optionally set this to a file of their choice.	magic_file_path
 apps	sabnzbplus	apikey		The Api key of the SAB installation. Can be the full api key or the nzb api key (as of SAB 0.6)	sabapikey
 apps	sabnzbplus	apikeytype	1	Select the type of api key you entered in the above setting	sabapikeytype
 apps	sabnzbplus	integrationtype	2	Whether to allow integration with a SAB install and if so what type of integration. <br/>Setting this to integrated also disables NZBGet from being selectable to the user.	sabintegrationtype
 apps	sabnzbplus	priority	0	Set the priority level for NZBs that are added to your queue	sabpriority
 apps	sabnzbplus	url		The url of the SAB installation, for example: http://localhost:8080/sabnzbd/	saburl
+archive	fetch	end	0	Download/process the last rar or zip file(s) to check for a password and get the file names inside?	fetchlastcompressedfiles
 indexer	categorise	categorizeforeign	1	This only works if the above is set to english. Whether to send foreign movies/tv to foreign sections or not. If set to true they will go in foreign categories.	categorizeforeign
 indexer	categorise	catwebdl	0	Whether to send WEB-DL to the WEB-DL section or not. If set to true they will go in WEB-DL category, false will send them in HD TV.<br/>This will also make them inaccessible to Sickbeard and possibly Couchpotato.	catwebdl
 indexer	categorise	imdblanguage	en	Which language to lookup when sending requests to IMDB/Tmdb. (If akas.imdb.com is set, imdb still returns the original titles.)	imdblanguage
 indexer	categorise	imdburl	0	akas.imdb.com returns titles in their original title, imdb.com returns titles based on your IP address (if you are in france, you will get french titles).	imdburl
+indexer	ppa	innerfileblacklist	/setup\.exe|password\.url/i	You can add a regex here to set releases to potentially passworded when a file name inside a rar/zip matches this regex.	innerfileblacklist
 indexer	processing	collection_timeout	48	How many hours to wait before deleting a stuck/broken collection. (This is to prevent the MySQL tables from swelling up.)	collection_timeout
 indexer	processing	last_run_time	3015-08-04 15:58:23	Last date the indexer (update_binaries or backfill) was run.	last_run_time
+max	headers	iteration	1000000	The maximum number of headers that update binaries is given as the total range. This ensures that a total of no more than this amount is attempted to be downloaded per group.	max_headers_iteration
+shell	date	format	%Y-%m-%d %T	Format string to use in shell's date command output. See `man date` for acceptable format.\nDefault: %Y-%m-%d %T	shell.date.format
 site	google	adbrowse		The banner slot in the header.	adbrowse
 site	google	addetail		The banner slot in the release details view.	addetail
 site	google	adheader		The banner slot in the header.	adheader
@@ -159,6 +161,4 @@ site	main	title	nZEDb	Displayed around the site and contact form as the name for
 site	trailers	trailers_display	1	Display trailers on the details page?	trailers_display
 site	trailers	trailers_size_x	480	Width of the displayed trailer. 480 by default.	trailers_size_x
 site	trailers	trailers_size_y	345	Height of the displayed trailer. 345 by default.	trailers_size_y
-shell	date	format	%Y-%m-%d %T	Format string to use in shell's date command output. See `man date` for acceptable format.\nDefault: %Y-%m-%d %T	shell.date.format
 tmux	running	exit	0	Determines if the running tmux monitor script should exit. If 0 nothing changes; if positive the script should exit gracefully (allowing all panes to finish); if negative the script should die as soon as possible.	tmux.running.exit
-max	headers	iteration	1000000	The maximum number of headers that update binaries is given as the total range. This ensures that a total of no more than this amount is attempted to be downloaded per group.	max_headers_iteration

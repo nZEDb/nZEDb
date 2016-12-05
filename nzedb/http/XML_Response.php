@@ -427,19 +427,21 @@ class XML_Response
 				$this->setTvAttr();
 			}
 
-			switch (true) {
-					case isset($this->release['imdbid']) && $this->release['imdbid'] > 0:
-						$this->writeZedAttr('imdb', $this->release['imdbid']);
-					case isset($this->release['anidbid']) && $this->release['anidbid'] > 0:
-						$this->writeZedAttr('anidbid', $this->release['anidbid']);
-					case isset($this->release['predb_id']) && $this->release['predb_id'] > 0:
-						$this->writeZedAttr('prematch', 1);
-					case isset($this->release['nfostatus']) && $this->release['nfostatus'] == 1:
-						$this->writeZedAttr(
-							'info',
-							$this->server['server']['url'] .
-							"api?t=info&id={$this->release['guid']}&r={$this->parameters['token']}"
-						);
+			if (isset($this->release['imdbid']) && $this->release['imdbid'] > 0) {
+				$this->writeZedAttr('imdb', $this->release['imdbid']);
+			}
+			if (isset($this->release['anidbid']) && $this->release['anidbid'] > 0) {
+				$this->writeZedAttr('anidbid', $this->release['anidbid']);
+			}
+			if (isset($this->release['predb_id']) && $this->release['predb_id'] > 0) {
+				$this->writeZedAttr('prematch', 1);
+			}
+			if (isset($this->release['nfostatus']) && $this->release['nfostatus'] == 1) {
+				$this->writeZedAttr(
+					'info',
+					$this->server['server']['url'] .
+					"api?t=info&id={$this->release['guid']}&r={$this->parameters['token']}"
+				);
 			}
 			$this->writeZedAttr('grabs', $this->release['grabs']);
 			$this->writeZedAttr('comments', $this->release['comments']);
@@ -455,28 +457,36 @@ class XML_Response
 	 */
 	protected function setTvAttr()
 	{
-		switch(true) {
-			case !empty($this->release['title']):
-				$this->writeZedAttr('title', $this->release['title']);
-			case isset($this->release['series']) && $this->release['series'] > 0:
-				$this->writeZedAttr('season', $this->release['series']);
-			case isset($this->release['episode']) && $this->release['episode'] > 0:
-				$this->writeZedAttr('episode', $this->release['episode']);
-			case !empty($this->release['firstaired']):
-				$this->writeZedAttr('tvairdate', $this->release['firstaired']);
-			case isset($this->release['tvdb']) && $this->release['tvdb'] > 0:
-				$this->writeZedAttr('tvdbid', $this->release['tvdb']);
-			case isset($this->release['trakt']) && $this->release['trakt'] > 0:
-				$this->writeZedAttr('traktid', $this->release['trakt']);
-			case isset($this->release['tvrage']) && $this->release['tvrage'] > 0:
-				$this->writeZedAttr('tvrageid', $this->release['tvrage']);
-				$this->writeZedAttr('rageid', $this->release['tvrage']);
-			case isset($this->release['tvmaze']) && $this->release['tvmaze'] > 0:
-				$this->writeZedAttr('tvmazeid', $this->release['tvmaze']);
-			case isset($this->release['imdb']) && $this->release['imdb'] > 0:
-				$this->writeZedAttr('imdbid', str_pad($this->release['imdb'], 7, '0', STR_PAD_LEFT));
-			case isset($this->release['tmdb']) && $this->release['tmdb'] > 0:
-				$this->writeZedAttr('tmdbid', $this->release['tmdb']);
+		if (!empty($this->release['title'])) {
+			$this->writeZedAttr('title', $this->release['title']);
+		}
+		if (isset($this->release['series']) && $this->release['series'] > 0) {
+			$this->writeZedAttr('season', $this->release['series']);
+		}
+		if (isset($this->release['episode']) && $this->release['episode'] > 0) {
+			$this->writeZedAttr('episode', $this->release['episode']);
+		}
+		if (!empty($this->release['firstaired'])) {
+			$this->writeZedAttr('tvairdate', $this->release['firstaired']);
+		}
+		if (isset($this->release['tvdb']) && $this->release['tvdb'] > 0) {
+			$this->writeZedAttr('tvdbid', $this->release['tvdb']);
+		}
+		if (isset($this->release['trakt']) && $this->release['trakt'] > 0) {
+			$this->writeZedAttr('traktid', $this->release['trakt']);
+		}
+		if (isset($this->release['tvrage']) && $this->release['tvrage'] > 0) {
+			$this->writeZedAttr('tvrageid', $this->release['tvrage']);
+			$this->writeZedAttr('rageid', $this->release['tvrage']);
+		}
+		if (isset($this->release['tvmaze']) && $this->release['tvmaze'] > 0) {
+			$this->writeZedAttr('tvmazeid', $this->release['tvmaze']);
+		}
+		if (isset($this->release['imdb']) && $this->release['imdb'] > 0) {
+			$this->writeZedAttr('imdbid', str_pad($this->release['imdb'], 7, '0', STR_PAD_LEFT));
+		}
+		if (isset($this->release['tmdb']) && $this->release['tmdb'] > 0) {
+			$this->writeZedAttr('tmdbid', $this->release['tmdb']);
 		}
 	}
 

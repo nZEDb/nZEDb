@@ -195,6 +195,9 @@ class Git extends \lithium\core\Object
 	{
 		if (empty($this->gitTagLatest) || $cached === false) {
 			$this->gitTagLatest = trim($this->describe("--tags --abbrev=0 HEAD"));
+			if (strtolower($this->gitTagLatest[0]) === 'v') {
+				$this->gitTagLatest = substr($this->gitTagLatest, 1);
+			}
 		}
 		return $this->gitTagLatest;
 	}

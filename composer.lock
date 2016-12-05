@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "60138937b0e7410f9071d121d50b92d7",
-    "content-hash": "b0b1823fecb04dc7b862227665c8bf34",
+    "hash": "8d773ae5526c0d61a14b86b7b781b260",
+    "content-hash": "df62c1aba4f1864d1aaf4a483d0f8785",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -71,16 +71,16 @@
         },
         {
             "name": "bower-asset/autosize-3.0.x",
-            "version": "3.0.17",
+            "version": "3.0.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jackmoore/autosize.git",
-                "reference": "3838f1939045804b3166fd217ed59184758e8de3"
+                "reference": "fa2fa308e91ff9f8ba1a9fb17a1b9cc620671ca8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jackmoore/autosize/zipball/3838f1939045804b3166fd217ed59184758e8de3",
-                "reference": "3838f1939045804b3166fd217ed59184758e8de3",
+                "url": "https://api.github.com/repos/jackmoore/autosize/zipball/fa2fa308e91ff9f8ba1a9fb17a1b9cc620671ca8",
+                "reference": "fa2fa308e91ff9f8ba1a9fb17a1b9cc620671ca8",
                 "shasum": ""
             },
             "type": "bower-asset-library",
@@ -1269,32 +1269,6 @@
             "time": "2016-05-04 01:31:56"
         },
         {
-            "name": "kbjr/Git.php",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/kbjr/Git.php.git",
-                "reference": "0d1a99625d45bccda222389bbe6135482b407782"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/kbjr/Git.php/zipball/0d1a99625d45bccda222389bbe6135482b407782",
-                "reference": "0d1a99625d45bccda222389bbe6135482b407782",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "Git.php"
-                ]
-            },
-            "support": {
-                "source": "https://github.com/kbjr/Git.php/tree/master",
-                "issues": "https://github.com/kbjr/Git.php/issues"
-            },
-            "time": "2015-03-31 14:10:29"
-        },
-        {
             "name": "moinax/tvdb",
             "version": "v1.0.6",
             "source": {
@@ -1333,6 +1307,31 @@
                 "api"
             ],
             "time": "2016-10-25 08:14:27"
+        },
+        {
+            "name": "nzedb/Git.php",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nZEDb/Git.php.git",
+                "reference": "327f844c964fc078075a0a77e789b8dfd8b5016f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nZEDb/Git.php/zipball/327f844c964fc078075a0a77e789b8dfd8b5016f",
+                "reference": "327f844c964fc078075a0a77e789b8dfd8b5016f",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "Git.php"
+                ]
+            },
+            "support": {
+                "source": "https://github.com/nZEDb/Git.php/tree/master"
+            },
+            "time": "2016-10-30 19:06:19"
         },
         {
             "name": "phpmailer/phpmailer",
@@ -1583,7 +1582,7 @@
     "stability-flags": {
         "giantbomb/giantbomb": 20,
         "joshpinkney/tv-maze-php-api": 20,
-        "kbjr/git.php": 20,
+        "nzedb/git.php": 20,
         "unionofrad/lithium": 20,
         "unionofrad/manual": 20
     },

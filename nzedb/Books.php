@@ -89,7 +89,7 @@ class Books
 		$this->sleeptime = ($result != '') ? $result : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'book' . DS;
 		$result = Settings::value('..book_reqids');
-		$this->bookreqids = empty($bookreqids) ? Category::BOOKS_EBOOK : $result;
+		$this->bookreqids = empty($result) ? Category::BOOKS_EBOOK : $result;
 		$this->renamed = '';
 		if (Settings::value('..lookupbooks') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
@@ -209,10 +209,10 @@ class Books
 				AND boo.cover = 1
 				AND boo.title != ''
 				AND r.passwordstatus %s
-				AND %s %s %s %s
+				%s %s %s %s
 				GROUP BY boo.id
 				ORDER BY %s %s %s",
-				Releases::showPasswords($this->pdo),
+				Releases::showPasswords(),
 				$browseby,
 				$catsrch,
 				$maxage,
@@ -259,7 +259,7 @@ class Books
 			INNER JOIN bookinfo boo ON boo.id = r.bookinfo_id
 			WHERE boo.id IN (%s)
 			AND r.id IN (%s)
-			AND %s
+			%s
 			GROUP BY boo.id
 			ORDER BY %s %s",
 			(is_array($bookIDs) ? implode(',', $bookIDs) : -1),
@@ -353,7 +353,7 @@ class Books
 		foreach ($browsebyArr as $bbk => $bbv) {
 			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk])) {
 				$bbs = stripslashes($_REQUEST[$bbk]);
-				$browseby .= 'boo.' . $bbv . ' ' . $this->pdo->likeString($bbs, true, true) . ' AND ';
+				$browseby .= 'AND boo.' . $bbv . ' ' . $this->pdo->likeString($bbs, true, true);
 			}
 		}
 		return $browseby;

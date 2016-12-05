@@ -168,7 +168,7 @@ class Movie
 		$result = Settings::value('..maximdbprocessed');
 		$this->movieqty = empty($result) ? $result : 100;
 		$this->searchEngines = true;
-		$this->showPasswords = Releases::showPasswords($this->pdo);
+		$this->showPasswords = Releases::showPasswords();
 
 		$this->debug = nZEDb_DEBUG;
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI && $this->pdo->cli);
@@ -309,7 +309,7 @@ class Movie
 					ORDER BY %s %s %s",
 					$this->showPasswords,
 					$this->getBrowseBy(),
-					(!empty($catsrch) ? 'AND ' . $catsrch : ''),
+					(!empty($catsrch) ? $catsrch : ''),
 					($maxAge > 0
 							? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
 							: ''
@@ -363,7 +363,7 @@ class Movie
 			ORDER BY %s %s",
 				(is_array($movieIDs) ? implode(',', $movieIDs) : -1),
 				(is_array($releaseIDs) ? implode(',', $releaseIDs) : -1),
-				(!empty($catsrch) ? 'AND ' . $catsrch : ''),
+				(!empty($catsrch) ? $catsrch : ''),
 				$order[0],
 				$order[1]
 		);
