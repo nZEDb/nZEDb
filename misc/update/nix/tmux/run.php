@@ -165,10 +165,11 @@ if ($seq == 1) {
  *
  * @param string $pane
  *
+ * @return string
  */
 function writelog($pane)
 {
-	$path = dirname(__FILE__) . "/logs";
+	$path = nZEDb_RES . "logs";
 	$getdate = gmDate("Ymd");
 	$tmux = new Tmux();
 	$logs = $tmux->get()->write_logs;
