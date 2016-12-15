@@ -8,11 +8,12 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2016-12-08 b3rs3rk
+	Fix: Issue #2330 postprocessing_non_amazon and postprocessing_additional PHP Notice: / PHP Warning
+2016-12-08 DariusIII
+	Chg: Move tmux Monitor pane logging to resources/logs folder, fixes notice in monitor pane when starting tmux
 2016-12-05 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.7.0
-
-
 2016-12-03 b3rs3rk
 	Fix: Books processing variable incorrect causing only one category to run
 2016-12-03 niel

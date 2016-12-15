@@ -246,7 +246,7 @@ class TVMaze extends TV
 
 		sleep(1);
 
-		if (is_array($response)) {
+		if (is_array($response) && $response[0] !== false) {
 			$return = $this->matchShowInfo($response, $cleanName);
 		}
 		if ($return === false) {
