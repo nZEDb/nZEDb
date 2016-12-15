@@ -256,6 +256,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2016-08-19 DariusIII
 	Fix: Links to other cats in Alpha/Gamma headermenu.tpl (Fixes issue #2237)
 2016-08-15 DariusIII
+	Chg: Add proper renaming of SDPORN releases
 	Fix: Move tv and movies UHD category checks before web-dl check.(fixes issue #2234)
 		note: run misc/testing/Release/recategorize.php all
 2016-08-08 DariusIII

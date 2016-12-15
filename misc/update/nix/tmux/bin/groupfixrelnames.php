@@ -158,6 +158,10 @@ if (!isset($argv[1])) {
 									echo $pdo->log->primaryOver('f');
 									$releaseFile['textstring'] = $fileName;
 									$namefixer->checkName($releaseFile, true, 'Filenames, ', 1, 1);
+									if ($namefixer->matched === false) {
+										echo $pdo->log->primaryOver('xf');
+										$namefixer->xxxNameCheck($releaseFile, true, 'Filenames, ', 1, 1);
+									}
 								}
 							}
 						}

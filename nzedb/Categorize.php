@@ -1040,6 +1040,10 @@ class Categorize extends Category
 			$this->tmpCat = Category::XXX_SD;
 			return true;
 		}
+		if (preg_match('/SDPORN/i', $this->releaseName)) {
+			$this->tmpCat = Category::XXX_SD;
+			return true;
+		}
 		return false;
 	}
 
