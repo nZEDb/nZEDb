@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2016-12-15 DariusIII
+	Chg: Disable desura game lookups for now, site has changed ownership and is not functional atm
 2016-12-08 b3rs3rk
 	Fix: Issue #2330 postprocessing_non_amazon and postprocessing_additional PHP Notice: / PHP Warning
 2016-12-08 DariusIII

@@ -464,6 +464,8 @@ class Games
 		if ($this->_getGame->search() !== false) {
 			$this->_gameResults = $this->_getGame->getAll();
 		}
+
+		/*
 		if (count($this->_gameResults) < 1) {
 			$this->_getGame = new Desura();
 			$this->_classUsed = "desura";
@@ -473,6 +475,8 @@ class Games
 				$this->_gameResults = $this->_getGame->getAll();
 			}
 		}
+		*/
+
 		if (count($this->_gameResults) < 1) {
 			$this->_getGame = new Greenlight();
 			$this->_classUsed = "gl";
@@ -498,6 +502,7 @@ class Games
 		$genreName = '';
 			switch ($this->_classUsed) {
 
+				/*
 				case "desura":
 					if (isset($this->_gameResults['cover'])) {
 						$con['coverurl'] = (string)$this->_gameResults['cover'];
@@ -536,6 +541,7 @@ class Games
 						$genreName = $this->_matchGenre($genres);
 					}
 					break;
+				*/
 
 				case "gb":
 					$con['coverurl'] = (string)$this->_gameResults['image']['super_url'];
