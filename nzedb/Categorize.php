@@ -299,6 +299,17 @@ class Categorize extends Category
 				case $group === 'alt.binaries.gamecube':
 					$this->tmpCat = Category::GAME_OTHER;
 					break;
+				case preg_match('/alt.binaries.games/', $group):
+					switch (true) {
+						case $this->isPCGame():
+						case $this->is0day():
+						case $this->isConsole():
+							break;
+						default:
+							$this->tmpCat = Category::PC_GAMES;
+							break;
+					}
+					break;
 				case preg_match('/alt.binaries.games.(dox|adventures)/', $group):
 					switch (true) {
 						case $this->isPCGame():
