@@ -1598,7 +1598,7 @@ class NameFixer
 			} else if (preg_match('/\w.+?\.(epub|mobi|azw|opf|fb2|prc|djvu|cb[rz])/i', $release["textstring"], $result)) {
 				$result = str_replace("." . $result["1"], " (" . $result["1"] . ")", $result['0']);
 				$this->updateRelease($release, $result, $method = "fileCheck: EBook", $echo, $type, $namestatus, $show);
-			} else if (preg_match('/([-.\w.*\s[\(\d\)?]+)[\\\\]/i', $release["textstring"], $result)) {
+			} else if (preg_match('/\w[-\w.\',;& ]+/i', $release['textstring'], $result) && preg_match(self::PREDB_REGEX, $release['textstring'])) {
 				$this->updateRelease($release, $result["1"], $method = "fileCheck: Folder name", $echo, $type, $namestatus, $show);
 			}
 		}
