@@ -5,7 +5,7 @@ DELIMITER $$
 CREATE PROCEDURE loop_cbpm(IN method CHAR(10))
   COMMENT 'Performs tasks on All CBPM tables one by one -- REPAIR/ANALYZE/OPTIMIZE or DROP/TRUNCATE'
 
-  main:BEGIN
+  main: BEGIN
     DECLARE done INT DEFAULT 0;
     DECLARE tname VARCHAR(255) DEFAULT '';
     DECLARE cur1 CURSOR FOR
@@ -29,12 +29,13 @@ CREATE PROCEDURE loop_cbpm(IN method CHAR(10))
     alter_loop: LOOP FETCH cur1
     INTO tname;
       IF done
-      THEN LEAVE alter_loop; END IF;
+        THEN LEAVE alter_loop;
+      END IF;
       SET @SQL := CONCAT(method, " TABLE ", tname);
       PREPARE _stmt FROM @SQL;
       EXECUTE _stmt;
       DEALLOCATE PREPARE _stmt;
     END LOOP;
     CLOSE cur1;
-  END;
+  END main;
 $$
