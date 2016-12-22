@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-12-22 niel
+	Mrg: PR 2343, from kaibosh - Updates tmux configuration for using newer versions.
 2016-12-21 b3rs3rk
 	Chg: Make match_prefiles more precise with match attempts and reduce initial memory usage
 2016-12-19 niel
