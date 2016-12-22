@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-12-21 b3rs3rk
+	Chg: Make match_prefiles more precise with match attempts and reduce initial memory usage
 2016-12-19 niel
 	Fix: Update delete_release stored procedure to use separate queries and no CONCATs for the WHERE clause.
 2016-12-16 niel
