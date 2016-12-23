@@ -224,6 +224,7 @@ $page->smarty->assign('loggingopt_ids', [0, 1, 2, 3]);
 $page->smarty->assign('loggingopt_names',
 					  ['Disabled', 'Log in DB only', 'Log both DB and file', 'Log only in file']);
 
+$page->smarty->assign('settings', Settings::toTree([], false));
 $page->smarty->assign('themelist', Misc::getThemesList());
 
 $page->content = $page->smarty->fetch('site-edit.tpl');
