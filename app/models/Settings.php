@@ -194,6 +194,7 @@ class Settings extends \lithium\data\Model
 		$results = empty($options) ?
 			Settings::find('all') :
 			Settings::find('all', $options);
+		$results = $results->data();
 
 		$tree = [];
 		if (is_array($results)) {
