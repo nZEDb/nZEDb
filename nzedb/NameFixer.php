@@ -809,58 +809,79 @@ class NameFixer
 		return $join;
 	}
 
-
-	public function getPreFileNames($args = [])
+	/**
+	 * Retrieves releases and their file names to attempt PreDB matches
+	 * Runs in a limited mode based on arguments passed or a full mode broken into chunks of entire DB
+	 *
+	 * @param array $args The CLI script arguments
+	 */
+	public function getPreFileNames(array $args = array())
 	{
-		$timestart = time();
-		$counter = $counted = 0;
-		$limit = $orderby = '';
+		$n = PHP_EOL;
+
 		$show = (isset($args[2]) && $args[2] === 'show') ? 1 : 0;
 
 		if (isset($args[1]) && is_numeric($args[1])) {
-			$orderby = "ORDER BY r.id DESC";
 			$limit = "LIMIT " . $args[1];
+			$orderby = 'ORDER BY r.id DESC';
+		} else {
+			$maxrelid = 0;
+			$orderby = 'ORDER BY r.id ASC';
+			$limit = "LIMIT 1000000";
 		}
 
 		echo $this->pdo->log->header("\nMatch PreFiles (${args[1]}) Started at " . date('g:i:s'));
 		echo $this->pdo->log->primary("Matching predb filename to cleaned release_files.name.\n");
 
-		$query = $this->pdo->queryDirect(
-						sprintf('
-							SELECT r.id AS releases_id, r.name, r.searchname,
-								r.groups_id, r.categories_id,
-								rf.name AS filename
-							FROM releases r
-							INNER JOIN release_files rf ON r.id = rf.releases_id
-							AND rf.name IS NOT NULL
-							WHERE r.predb_id = 0
-							GROUP BY r.id
-							%s %s',
-							$orderby,
-							$limit
-						)
-		);
+		do {
+			$counter = $counted = 0;
+			$timestart = time();
 
-		if ($query !== false) {
-			$total = $query->rowCount();
+			$query = $this->pdo->queryDirect(
+				sprintf("
+					SELECT r.id AS releases_id, r.name, r.searchname,
+						r.groups_id, r.categories_id,
+						GROUP_CONCAT(rf.name ORDER BY LENGTH(rf.name) DESC SEPARATOR '||') AS filename
+					FROM releases r
+					INNER JOIN release_files rf ON r.id = rf.releases_id
+					AND rf.name IS NOT NULL
+					WHERE %s
+					r.predb_id = 0
+					GROUP BY r.id
+					%s %s",
+					(isset($maxrelid) && $maxrelid > 0 ? "r.id > {$maxrelid} AND" : ''),
+					$orderby,
+					$limit
+				)
+			);
 
-			if ($total > 0 && $query instanceof \Traversable) {
-				echo $this->pdo->log->header("\n" . number_format($total) . ' releases to process.');
+			if ($query !== false) {
+				$total = $query->rowCount();
 
-				foreach ($query as $row) {
-					$success = $this->matchPredbFiles($row, 1, 1, true, $show);
-					if ($success === 1) {
-						$counted++;
+				if ($total > 0 && $query instanceof \Traversable) {
+					echo $this->pdo->log->header($n . number_format($total) . ' releases to process.');
+
+					foreach ($query as $row) {
+						$success = $this->matchPredbFiles($row, 1, 1, true, $show);
+						if ($success === 1) {
+							$counted++;
+						}
+						if ($show === 0) {
+							$this->consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $this->consoletools->percentString(++$counter, $total));
+						}
+						if (isset($maxrelid) && $row['releases_id'] > $maxrelid) {
+							$maxrelid = $row['releases_id'];
+						}
 					}
-					if ($show === 0) {
-						$this->consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $this->consoletools->percentString(++$counter, $total));
-					}
+					echo $this->pdo->log->header($n . "Renamed " . number_format($counted) . " releases in " . $this->consoletools->convertTime(time() - $timestart) . ".");
+				} else {
+					echo $this->pdo->log->info($n . "Nothing to do.");
+					break;
 				}
-				echo $this->pdo->log->header("\nRenamed " . number_format($counted) . " releases in " . $this->consoletools->convertTime(time() - $timestart) . ".");
 			} else {
-				echo $this->pdo->log->info("\nNothing to do.");
+				break;
 			}
-		}
+		} while (isset($maxrelid));
 	}
 
 	/**
@@ -877,28 +898,33 @@ class NameFixer
 	public function matchPredbFiles($release, $echo, $namestatus, $echooutput, $show)
 	{
 		$matching = 0;
-		$this->_fileName = $this->_cleanMatchFiles($release['filename']);
 		$pre = false;
 
-		if ($this->_fileName !== '') {
-			$pre = $this->pdo->queryOneRow(
-						sprintf('
-							SELECT id AS predb_id, title, source
-							FROM predb
-							WHERE filename = %s
-							OR title = %1$s',
-							$this->pdo->escapeString($this->_fileName)
-						)
-			);
-		}
-
-		if (isset($pre) && $pre !== false) {
-			if ($pre['title'] !== $release['searchname']) {
-				$this->updateRelease($release, $pre['title'], $method = "file matched source: " . $pre['source'], $echo, "PreDB file match, ", $namestatus, $show, $pre['predb_id']);
-			} else {
-				$this->_updateSingleColumn('predb_id', $pre['predb_id'], $release['releases_id']);
+		foreach(explode('||', $release['filename']) AS $key => $fileName) {
+			$this->_fileName = $fileName;
+			$this->_cleanMatchFiles();
+			if ($this->_fileName !== '') {
+				$pre = $this->pdo->queryOneRow(
+					sprintf('
+					SELECT id AS predb_id, title, source
+					FROM predb
+					WHERE filename = %s
+					OR title = %1$s',
+					$this->pdo->escapeString($this->_fileName)
+					)
+				);
 			}
-			$matching++;
+
+			if (isset($pre) && $pre !== false) {
+				$release['filename'] = $this->_fileName;
+				if ($pre['title'] !== $release['searchname']) {
+					$this->updateRelease($release, $pre['title'], $method = "file matched source: " . $pre['source'], $echo, "PreDB file match, ", $namestatus, $show, $pre['predb_id']);
+				} else {
+					$this->_updateSingleColumn('predb_id', $pre['predb_id'], $release['releases_id']);
+				}
+				$matching++;
+				break;
+			}
 		}
 		return $matching;
 	}
@@ -906,15 +932,13 @@ class NameFixer
 	/**
 	 * Cleans file names for PreDB Match
 	 *
-	 * @param string $fileName
-	 *
 	 * @return string
 	 */
-	protected function _cleanMatchFiles($fileName = '')
+	protected function _cleanMatchFiles()
 	{
 
 		// first strip all non-printing chars  from filename
-		$this->_fileName = $this->text->stripNonPrintingChars($fileName);
+		$this->_fileName = $this->text->stripNonPrintingChars($this->_fileName);
 
 		if (strlen($this->_fileName) !== false && strlen($this->_fileName) > 0 && strpos($this->_fileName, '.') !== 0) {
 			switch (true) {
@@ -944,9 +968,7 @@ class NameFixer
 				case preg_match('/^\d{2}-/', $this->_fileName):
 					$this->_fileName = preg_replace('/^\d{2}-/', '', $this->_fileName);
 			}
-			return trim($this->_fileName);
 		}
-		return '';
 	}
 
 	/**
@@ -1598,8 +1620,8 @@ class NameFixer
 			} else if (preg_match('/\w.+?\.(epub|mobi|azw|opf|fb2|prc|djvu|cb[rz])/i', $release["textstring"], $result)) {
 				$result = str_replace("." . $result["1"], " (" . $result["1"] . ")", $result['0']);
 				$this->updateRelease($release, $result, $method = "fileCheck: EBook", $echo, $type, $namestatus, $show);
-			} else if (preg_match('/([-.\w.*\s[\(\d\)?]+)[\\\\]/i', $release["textstring"], $result)) {
-				$this->updateRelease($release, $result["1"], $method = "fileCheck: Folder name", $echo, $type, $namestatus, $show);
+			} else if (preg_match('/\w[-\w.\',;& ]+/i', $release['textstring'], $result) && preg_match(self::PREDB_REGEX, $release['textstring'])) {
+				$this->updateRelease($release, $result["0"], $method = "fileCheck: Folder name", $echo, $type, $namestatus, $show);
 			}
 		}
 	}
