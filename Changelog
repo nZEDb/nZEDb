@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2016-12-27 niel
+	Mrg: PR 2346, from kaibosh - Correct powerline tmux config.
 2016-12-26 DariusIII
 	Chg: Move predb from frontpage to admin area
 2016-12-22 niel
