@@ -24,9 +24,13 @@ fi
 
 echo ""
 echo "Setting cache directory permissions for you..."
+sudo chown -R www-data:www-data /var/lib/php/sessions/
 chmod 755 ./
-chmod -R 755 resources
+chmod -R 755 app/libraries
 chmod -R 777 app/resources
+chmod -R 755 libraries
+chmod -R 755 resources
+chmod -R 777 www
 chmod +x ./zed
 alias zed='./zed'
 echo ""
