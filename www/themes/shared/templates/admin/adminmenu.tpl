@@ -103,6 +103,7 @@
 						<li class="last"><a href="{$smarty.const.WWW_TOP}/nzb-export.php">Export</a></li>
 					</ul>
 				</li>
+				<li><a href="{$smarty.const.WWW_TOP}/predb.php">Pre Database</a></li>
 				<li><a href="{$smarty.const.WWW_TOP}/opcachestats.php">Opcache Statistics</a></li>
 				<li><a href="{$smarty.const.WWW_TOP}/db-optimise.php" class="confirm_action">Optimise Tables</a></li>
 				<li><a href="{$smarty.const.WWW_TOP}/sharing.php">Sharing Settings</a></li>
