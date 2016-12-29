@@ -1335,16 +1335,16 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v5.2.16",
+            "version": "v5.2.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "1d85f9ef3ecfc42bbc4f3c70d5e37ca9a65f629a"
+                "reference": "1d51856b76c06fc687fcd9180efa7a0bed0d761e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/1d85f9ef3ecfc42bbc4f3c70d5e37ca9a65f629a",
-                "reference": "1d85f9ef3ecfc42bbc4f3c70d5e37ca9a65f629a",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/1d51856b76c06fc687fcd9180efa7a0bed0d761e",
+                "reference": "1d51856b76c06fc687fcd9180efa7a0bed0d761e",
                 "shasum": ""
             },
             "require": {
@@ -1391,7 +1391,7 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2016-06-06 09:09:37"
+            "time": "2016-12-28 15:35:48"
         },
         {
             "name": "smarty/smarty",
@@ -1458,7 +1458,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/49d2d46a63d6f2a94c28e392ee67b150aed4d524",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/5e894ca64a07d03ad1f09230875b621d04405a21",
                 "reference": "49d2d46a63d6f2a94c28e392ee67b150aed4d524",
                 "shasum": ""
             },
