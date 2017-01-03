@@ -1,11 +1,11 @@
 <?php
 
-namespace nntmux;
+namespace nzedb;
 
 use app\models\ReleasesGroups;
 use app\models\Settings;
-use nntmux\db\DB;
-use nntmux\processing\ProcessReleases;
+use nzedb\db\DB;
+use nzedb\processing\ProcessReleases;
 
 
 class ReleasesMultiGroup
@@ -48,7 +48,7 @@ class ReleasesMultiGroup
 		$this->releaseCleaning = new ReleaseCleaning($this->pdo);
 		$this->releases = new Releases(['Settings' => $this->pdo, 'Groups' => $this->groups]);
 		$this->tablePerGroup = (Settings::value('..tablepergroup') == 0 ? false : true);
-		$this->echoCLI = NN_ECHOCLI;
+		$this->echoCLI = nZEDb_ECHOCLI;
 		$this->releaseCreationLimit = (Settings::value('..maxnzbsprocessed') != '' ? (int)Settings::value('..maxnzbsprocessed') : 1000);
 	}
 
@@ -60,26 +60,6 @@ class ReleasesMultiGroup
 	public static function isMultiGroup($fromName)
 	{
 		return in_array($fromName, self::$mgrPosterNames);
-	}
-
-	/**
-	 * @param $collectionID
-	 * @param $xref
-	 *
-	 * @return bool
-	 */
-	public function checkXref($collectionID, $xref)
-	{
-		$collection = $this->pdo->queryDirect(sprintf('SELECT xref FROM mgr_collections WHERE id = %d', $collectionID));
-
-		if (preg_match_all('#(\S+):\S+#', $collection['xref'], $matches)) {
-			foreach ($matches[1] as $mgrgroup){
-				if ($mgrgroup == $xref) {
-					return false;
-				}
-			}
-		}
-		return true;
 	}
 
 	/**

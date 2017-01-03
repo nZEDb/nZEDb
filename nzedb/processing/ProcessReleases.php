@@ -12,6 +12,7 @@ use nzedb\NZB;
 use nzedb\PreDb;
 use nzedb\ReleaseCleaning;
 use nzedb\ReleaseImage;
+use nzedb\ReleasesMultiGroup;
 use nzedb\Releases;
 use nzedb\RequestIDLocal;
 use nzedb\RequestIDWeb;
@@ -195,9 +196,11 @@ class ProcessReleases
 		$totalReleasesAdded = 0;
 		do {
 			$releasesCount = $this->createReleases($groupID);
-			$totalReleasesAdded += $releasesCount['added'];
+			$mgrReleasesCount = (new ReleasesMultiGroup())->createMGRReleases($groupID);
+			$totalReleasesAdded += $releasesCount['added'] += $mgrReleasesCount['added'];
 
 			$nzbFilesAdded = $this->createNZBs($groupID);
+			$mgrFilesAdded = (new ReleasesMultiGroup())->createMGRNZBs($groupID);
 			if ($this->processRequestIDs === 0) {
 				$this->processRequestIDs($groupID, 5000, true);
 			} else if ($this->processRequestIDs === 1) {
@@ -224,7 +227,7 @@ class ProcessReleases
 			$this->deleteCollections($groupID);
 
 			// This loops as long as the number of releases or nzbs added was >= the limit (meaning there are more waiting to be created)
-		} while (($releasesCount['added'] + $releasesCount['dupes']) >= $this->releaseCreationLimit || $nzbFilesAdded >= $this->releaseCreationLimit);
+		} while (($releasesCount['added'] + $releasesCount['dupes']+ $mgrReleasesCount['added'] + $mgrReleasesCount['dupes']) >= $this->releaseCreationLimit || $nzbFilesAdded + $mgrFilesAdded >= $this->releaseCreationLimit);
 
 
 
@@ -381,6 +384,28 @@ class ProcessReleases
 			$this->pdo->log->doEcho(
 				$this->pdo->log->primary(
 					$checked->rowCount() . " collections set to filecheck = 3(size calculated)"
+				)
+			);
+			$this->pdo->log->doEcho($this->pdo->log->primary($this->consoleTools->convertTime(time() - $startTime)), true);
+		}
+
+		// Get the total size in bytes of the mgr collection for mgr collections where filecheck = 2.
+		$mgrChecked = $this->pdo->queryExec(
+			sprintf(
+				'UPDATE mgr_collections c
+				SET filesize = (SELECT COALESCE(SUM(b.partsize), 0) FROM mgr_binaries b WHERE b.collection_id = c.id),
+				filecheck = %d
+				WHERE c.filecheck = %d
+				AND c.filesize = 0 %s',
+				self::COLLFC_SIZED,
+				self::COLLFC_COMPPART,
+				(!empty($groupID) ? ' AND c.group_id = ' . $groupID : '')
+			)
+		);
+		if ($mgrChecked !== false && $this->echoCLI) {
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary(
+					$mgrChecked->rowCount() . " mgr collections set to filecheck = 3(size calculated)"
 				)
 			);
 			$this->pdo->log->doEcho($this->pdo->log->primary($this->consoleTools->convertTime(time() - $startTime)), true);
@@ -1513,6 +1538,21 @@ class ProcessReleases
 				self::COLLFC_COMPCOLL
 			)
 		);
+
+		$this->pdo->queryExec(
+			sprintf('
+				UPDATE mgr_collections c INNER JOIN
+					(SELECT c.id FROM mgr_collections c
+					INNER JOIN mgr_binaries b ON b.collection_id = c.id
+					WHERE c.totalfiles > 0 AND c.filecheck = %d
+					GROUP BY b.collection_id, c.totalfiles, c.id
+					HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)
+					)
+				r ON c.id = r.id SET filecheck = %d',
+				self::COLLFC_DEFAULT,
+				self::COLLFC_COMPCOLL
+			)
+		);
 	}
 
 	/**
@@ -1561,6 +1601,31 @@ class ProcessReleases
 				$where
 			)
 		);
+
+		$this->pdo->queryExec(
+			sprintf('
+				UPDATE mgr_collections c INNER JOIN
+					(SELECT c.id FROM mgr_collections c
+					INNER JOIN mgr_binaries b ON b.collection_id = c.id
+					WHERE b.filenumber = 0
+					AND c.totalfiles > 0
+					AND c.filecheck = %d
+					GROUP BY c.id
+					)
+				r ON c.id = r.id SET c.filecheck = %d',
+				self::COLLFC_COMPCOLL,
+				self::COLLFC_ZEROPART
+			)
+		);
+		$this->pdo->queryExec(
+			sprintf('
+				UPDATE mgr_collections c
+				SET filecheck = %d
+				WHERE filecheck = %d',
+				self::COLLFC_TEMPCOMP,
+				self::COLLFC_COMPCOLL
+			)
+		);
 	}
 
 	/**
@@ -1580,17 +1645,63 @@ class ProcessReleases
 				UPDATE %s b INNER JOIN
 					(SELECT b.id FROM %s b
 					INNER JOIN %s c ON c.id = b.collection_id
-					WHERE c.filecheck IN (%d, %d) AND b.partcheck = %d %s
-					AND b.currentparts >= b.totalparts
+					WHERE c.filecheck = %d AND b.partcheck = %d %s
+					AND b.currentparts = b.totalparts
 					GROUP BY b.id, b.totalparts)
 				r ON b.id = r.id SET b.partcheck = %d',
 				$group['bname'],
 				$group['bname'],
 				$group['cname'],
 				self::COLLFC_TEMPCOMP,
+				self::FILE_INCOMPLETE,
+				$where,
+				self::FILE_COMPLETE
+			)
+		);
+		$this->pdo->queryExec(
+			sprintf('
+				UPDATE %s b INNER JOIN
+					(SELECT b.id FROM %s b
+					INNER JOIN %s c ON c.id = b.collection_id
+					WHERE c.filecheck = %d AND b.partcheck = %d %s
+					AND b.currentparts >= (b.totalparts + 1)
+					GROUP BY b.id, b.totalparts)
+				r ON b.id = r.id SET b.partcheck = %d',
+				$group['bname'],
+				$group['bname'],
+				$group['cname'],
 				self::COLLFC_ZEROPART,
 				self::FILE_INCOMPLETE,
 				$where,
+				self::FILE_COMPLETE
+			)
+		);
+
+		$this->pdo->queryExec(
+			sprintf('
+				UPDATE mgr_binaries b INNER JOIN
+					(SELECT b.id FROM mgr_binaries b
+					INNER JOIN mgr_collections c ON c.id = b.collection_id
+					WHERE c.filecheck = %d AND b.partcheck = %d
+					AND b.currentparts = b.totalparts
+					GROUP BY b.id, b.totalparts)
+				r ON b.id = r.id SET b.partcheck = %d',
+				self::COLLFC_TEMPCOMP,
+				self::FILE_INCOMPLETE,
+				self::FILE_COMPLETE
+			)
+		);
+		$this->pdo->queryExec(
+			sprintf('
+				UPDATE mgr_binaries b INNER JOIN
+					(SELECT b.id FROM mgr_binaries b
+					INNER JOIN mgr_collections c ON c.id = b.collection_id
+					WHERE c.filecheck = %d AND b.partcheck = %d
+					AND b.currentparts >= (b.totalparts + 1)
+					GROUP BY b.id, b.totalparts)
+				r ON b.id = r.id SET b.partcheck = %d',
+				self::COLLFC_ZEROPART,
+				self::FILE_INCOMPLETE,
 				self::FILE_COMPLETE
 			)
 		);
@@ -1626,6 +1737,20 @@ class ProcessReleases
 				self::COLLFC_COMPPART
 			)
 		);
+
+		$this->pdo->queryExec(
+			sprintf('
+				UPDATE mgr_collections c INNER JOIN
+					(SELECT c.id FROM mgr_collections c
+					INNER JOIN mgr_binaries b ON c.id = b.collection_id
+					WHERE b.partcheck = 1 AND c.filecheck IN (%d, %d)
+					GROUP BY b.collection_id, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles)
+				r ON c.id = r.id SET filecheck = %d',
+				self::COLLFC_TEMPCOMP,
+				self::COLLFC_ZEROPART,
+				self::COLLFC_COMPPART
+			)
+		);
 	}
 
 	/**
@@ -1650,6 +1775,17 @@ class ProcessReleases
 				self::COLLFC_TEMPCOMP,
 				self::COLLFC_ZEROPART,
 				$where
+			)
+		);
+
+		$this->pdo->queryExec(
+			sprintf('
+				UPDATE mgr_collections c
+				SET filecheck = %d
+				WHERE filecheck IN (%d, %d)',
+				self::COLLFC_COMPCOLL,
+				self::COLLFC_TEMPCOMP,
+				self::COLLFC_ZEROPART
 			)
 		);
 	}
@@ -1678,6 +1814,18 @@ class ProcessReleases
 				self::COLLFC_DEFAULT,
 				self::COLLFC_COMPCOLL,
 				$where
+			)
+		);
+
+		$this->pdo->queryExec(
+			sprintf("
+				UPDATE mgr_collections c SET filecheck = %d, totalfiles = (SELECT COUNT(b.id) FROM mgr_binaries b WHERE b.collection_id = c.id)
+				WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR
+				AND c.filecheck IN (%d, %d, 10)",
+				self::COLLFC_COMPPART,
+				$this->collectionDelayTime,
+				self::COLLFC_DEFAULT,
+				self::COLLFC_COMPCOLL
 			)
 		);
 	}
