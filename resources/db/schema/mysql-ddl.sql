@@ -754,8 +754,22 @@ CREATE TABLE release_comments (
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
 
-  DROP TABLE IF EXISTS release_unique;
-  CREATE TABLE release_unique (
+
+DROP TABLE IF EXISTS releases_groups;
+CREATE TABLE releases_groups (
+  releases_id INT(11) UNSIGNED NOT NULL DEFAULT '0'
+  COMMENT 'FK to releases.id',
+  groups_id   INT(11) UNSIGNED NOT NULL DEFAULT '0'
+  COMMENT 'FK to groups.id',
+  PRIMARY KEY (releases_id, groups_id)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+
+DROP TABLE IF EXISTS release_unique;
+CREATE TABLE release_unique (
   releases_id   INT(11) UNSIGNED  NOT NULL COMMENT 'FK to releases.id.',
   uniqueid BINARY(16)  NOT NULL DEFAULT '0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0' COMMENT 'Unique_ID from mediainfo.',
   PRIMARY KEY (releases_id, uniqueid)
@@ -1252,6 +1266,7 @@ CREATE TABLE         xxxinfo (
 
 
 DELIMITER $$
+
 CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW
   BEGIN
     IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}'
@@ -1334,5 +1349,91 @@ CREATE TRIGGER insert_MD5 BEFORE INSERT ON release_comments FOR EACH ROW
   SET
     NEW.text_hash = MD5(NEW.text);
     $$
+
+#
+# Stored Procedures
+#
+CREATE PROCEDURE loop_cbpm(IN method CHAR(10))
+  COMMENT 'Performs tasks on All CBPM tables one by one -- REPAIR/ANALYZE/OPTIMIZE or DROP/TRUNCATE'
+
+    main: BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE tname VARCHAR(255) DEFAULT '';
+    DECLARE cur1 CURSOR FOR
+      SELECT TABLE_NAME
+      FROM information_schema.TABLES
+      WHERE
+        TABLE_SCHEMA = (SELECT DATABASE())
+        AND
+        (
+          TABLE_NAME LIKE 'collections%'
+          OR TABLE_NAME LIKE 'parts%'
+          OR TABLE_NAME LIKE 'binaries%'
+          OR TABLE_NAME LIKE 'missed%'
+        )
+      ORDER BY TABLE_NAME ASC;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    IF method NOT IN ('repair', 'analyze', 'optimize', 'drop', 'truncate')
+    THEN LEAVE main; END IF;
+
+    OPEN cur1;
+    alter_loop: LOOP FETCH cur1
+    INTO tname;
+      IF done
+      THEN LEAVE alter_loop; END IF;
+      SET @SQL := CONCAT(method, " TABLE ", tname);
+      PREPARE _stmt FROM @SQL;
+      EXECUTE _stmt;
+      DEALLOCATE PREPARE _stmt;
+    END LOOP;
+    CLOSE cur1;
+  END;
+$$
+
+
+CREATE PROCEDURE delete_release(IN is_numeric BOOLEAN, IN identifier VARCHAR(40))
+  COMMENT 'Cascade deletes release from child tables when parent row is deleted'
+  COMMENT 'If is_numeric is true, identifier should be the releases_id, if false the guid'
+
+  main: BEGIN
+
+    IF is_numeric IS TRUE
+    THEN
+      DELETE r, rn, rc, uc, rf, ra, rs, rv, re, df, rg
+      FROM releases r
+        LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
+        LEFT OUTER JOIN release_comments rc ON rc.releases_id = r.id
+        LEFT OUTER JOIN users_releases uc ON uc.releases_id = r.id
+        LEFT OUTER JOIN release_files rf ON rf.releases_id = r.id
+        LEFT OUTER JOIN audio_data ra ON ra.releases_id = r.id
+        LEFT OUTER JOIN release_subtitles rs ON rs.releases_id = r.id
+        LEFT OUTER JOIN video_data rv ON rv.releases_id = r.id
+        LEFT OUTER JOIN releaseextrafull re ON re.releases_id = r.id
+        LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
+        LEFT OUTER JOIN releases_groups rg ON rg.releases_id = r.id
+      WHERE r.id = identifier;
+
+    ELSEIF is_numeric IS FALSE
+      THEN
+        DELETE r, rn, rc, uc, rf, ra, rs, rv, re, df, rg
+        FROM releases r
+          LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
+          LEFT OUTER JOIN release_comments rc ON rc.releases_id = r.id
+          LEFT OUTER JOIN users_releases uc ON uc.releases_id = r.id
+          LEFT OUTER JOIN release_files rf ON rf.releases_id = r.id
+          LEFT OUTER JOIN audio_data ra ON ra.releases_id = r.id
+          LEFT OUTER JOIN release_subtitles rs ON rs.releases_id = r.id
+          LEFT OUTER JOIN video_data rv ON rv.releases_id = r.id
+          LEFT OUTER JOIN releaseextrafull re ON re.releases_id = r.id
+          LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
+          LEFT OUTER JOIN releases_groups rg ON rg.releases_id = r.id
+        WHERE r.guid = identifier;
+
+    ELSE LEAVE main;
+    END IF;
+
+  END main;
+$$
 
 DELIMITER ;

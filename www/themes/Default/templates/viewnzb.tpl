@@ -187,7 +187,24 @@
 	{/if}
 	{/if}
 
-	<tr><th>Group:</th><td title="{$release.group_name}"><a title="Browse {$release.group_name}" href="{$smarty.const.WWW_TOP}/browse?g={$release.group_name}">{$release.group_name|replace:"alt.binaries":"a.b"}</a></td></tr>
+	<tr>
+		<th width="140">Group(s)</th>
+		{if !empty($release.group_names)}
+			{assign var="groupname" value=","|explode:$release.group_names}
+			<td>
+				{foreach $groupname as $grp}
+					<a title="Browse {$grp}"
+					   href="{$smarty.const.WWW_TOP}/browse?g={$grp}">{$grp|replace:"alt.binaries":"a.b"}</a>
+					<br/>
+				{/foreach}
+			</td>
+		{else}
+			<td>
+				<a title="Browse {$release.group_name}"
+				   href="{$smarty.const.WWW_TOP}/browse?g={$release.group_name}">{$release.group_name|replace:"alt.binaries":"a.b"}</a>
+			</td>
+		{/if}
+	</tr>
 	<tr><th>Category:</th><td><a title="Browse by {$release.category_name}" href="{$smarty.const.WWW_TOP}/browse?t={$release.categories_id}">{$release.category_name}</a></td></tr>
 	{if $nfo.releases_id|@count > 0}
 	<tr><th>Nfo:</th><td><a href="{$smarty.const.WWW_TOP}/nfo/{$release.guid}" title="View Nfo">View Nfo</a></td></tr>

@@ -1,6 +1,7 @@
 <?php
 require_once nZEDb_ROOT . 'app' . DS . 'config' . DS . 'bootstrap' . DS . 'libraries.php';
 
+use nzedb\Category;
 use nzedb\Users;
 
 class AdminPage extends BasePage
@@ -22,6 +23,9 @@ class AdminPage extends BasePage
 		) {
 			$this->show403(true);
 		}
+
+		$category = new Category();
+		$this->smarty->assign('catClass', $category);
 
 		$this->smarty->setTemplateDir(
 			[

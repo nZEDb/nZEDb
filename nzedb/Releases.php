@@ -619,27 +619,20 @@ class Releases
 		// Delete from sphinx.
 		$this->sphinxSearch->deleteRelease($identifiers, $this->pdo);
 
+		if (isset($identifiers['i']) && $identifiers['i'] > 0) {
+			$param1 = true;
+			$param2 = $identifiers['i'];
+		} else {
+			$param1 = false;
+			$param2 = $identifiers['g'];
+		}
+
 		// Delete from DB.
-		$this->pdo->queryExec(
-			sprintf('
-				DELETE r, rn, rc, uc, rf, ra, rs, rv, re, df
-				FROM releases r
-				LEFT OUTER JOIN release_nfos rn ON rn.releases_id = r.id
-				LEFT OUTER JOIN release_comments rc ON rc.releases_id = r.id
-				LEFT OUTER JOIN users_releases uc ON uc.releases_id = r.id
-				LEFT OUTER JOIN release_files rf ON rf.releases_id = r.id
-				LEFT OUTER JOIN audio_data ra ON ra.releases_id = r.id
-				LEFT OUTER JOIN release_subtitles rs ON rs.releases_id = r.id
-				LEFT OUTER JOIN video_data rv ON rv.releases_id = r.id
-				LEFT OUTER JOIN releaseextrafull re ON re.releases_id = r.id
-				LEFT OUTER JOIN dnzb_failures df ON df.release_id = r.id
-				WHERE %s',
-				(isset($identifiers['i']) && $identifiers['i'] > 0
-					? "r.id = {$identifiers['i']}"
-					: "r.guid = {$this->pdo->escapeString($identifiers['g'])}"
-				)
-			)
-		);
+		$query = $this->pdo->prepare('CALL delete_release(:is_numeric, :identifier)');
+		$query->bindParam(':is_numeric', $param1, \PDO::PARAM_BOOL);
+		$query->bindParam(':identifier', $param2);
+
+		$query->execute();
 	}
 
 	/**
@@ -1255,17 +1248,21 @@ class Releases
 				CONCAT(cp.title, ' > ', c.title) AS category_name,
 				CONCAT(cp.id, ',', c.id) AS category_ids,
 				g.name AS group_name,
+				GROUP_CONCAT(g2.name ORDER BY g2.name ASC SEPARATOR ',') AS group_names,
 				v.title AS showtitle, v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.source,
 				tvi.summary, tvi.image,
 				tve.title, tve.firstaired, tve.se_complete
-				FROM releases r
+			FROM releases r
 			LEFT JOIN groups g ON g.id = r.groups_id
 			LEFT JOIN categories c ON c.id = r.categories_id
 			LEFT JOIN categories cp ON cp.id = c.parentid
 			LEFT OUTER JOIN videos v ON r.videos_id = v.id
 			LEFT OUTER JOIN tv_info tvi ON r.videos_id = tvi.videos_id
 			LEFT OUTER JOIN tv_episodes tve ON r.tv_episodes_id = tve.id
-			WHERE %s",
+			LEFT OUTER JOIN releases_groups rg ON r.id = rg.releases_id
+			LEFT OUTER JOIN groups g2 ON rg.groups_id = g2.id
+			WHERE %s
+			GROUP BY r.id",
 			$gSql
 		);
 

@@ -351,8 +351,8 @@ class Misc
 
 		// Check database patch version
 		if ($patch < $ver) {
-			$message = "\nYour database is not up to date. Reported patch levels\n   Db: $patch\nfile: $ver\nPlease update.\n php " .
-				nZEDb_ROOT . "cli/update_db.php true\n";
+			$message = "\nYour database is not up to date. Reported patch levels\n   Db: $patch\nfile: $ver\nPlease update.\n " .
+				"\t./zed update db\n";
 			if (self::isCLI()) {
 				echo (new ColorCLI())->error($message);
 			}

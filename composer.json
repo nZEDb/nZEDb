@@ -99,7 +99,7 @@
     "moinax/tvdb": "^1.0.4",
     "nzedb/Git.php": "dev-master",
     "php": ">=5.6.9",
-    "phpmailer/phpmailer": "^5.2.14",
+    "phpmailer/phpmailer": "^5.2.21",
     "smarty/smarty": "~3.1.29",
     "unionofrad/lithium": "^1.2-dev",
     "bower-asset/animate.css": "~3.5.1",

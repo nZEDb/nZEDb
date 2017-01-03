@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing;
 
+use app\models\ReleasesGroups;
 use app\models\Settings;
 use nzedb\Categorize;
 use nzedb\Category;
@@ -533,7 +534,7 @@ class ProcessReleases
 	 *
 	 * @param int|string $groupID (optional)
 	 *
-	 * @return int
+	 * @return array
 	 * @access public
 	 */
 	public function createReleases($groupID)
@@ -659,6 +660,40 @@ class ProcessReleases
 								$collection['id']
 							)
 						);
+
+						if (preg_match_all('#(\S+):\S+#', $collection['xref'], $matches)) {
+							foreach ($matches[1] as $grp) {
+								//check if the group name is in a valid format
+								$grpTmp = $this->groups->isValidGroup($grp);
+								if ($grpTmp !== false) {
+									//check if the group already exists in database
+									$xrefGrpID = $this->groups->getIDByName($grpTmp);
+									if ($xrefGrpID === '') {
+										$xrefGrpID = $this->groups->add(
+											[
+												'name'                  => $grpTmp,
+												'description'           => 'Added by Release processing',
+												'backfill_target'       => 1,
+												'first_record'          => 0,
+												'last_record'           => 0,
+												'active'                => 0,
+												'backfill'              => 0,
+												'minfilestoformrelease' => '',
+												'minsizetoformrelease'  => ''
+											]
+										);
+									}
+
+									$relGroups = ReleasesGroups::create(
+										[
+											'releases_id' => $releaseID,
+											'groups_id' => $xrefGrpID,
+										]
+									);
+									$relGroups->save();
+								}
+							}
+						}
 
 						$returnCount++;
 
@@ -1252,22 +1287,18 @@ class ProcessReleases
 
 		if ($this->crossPostTime != 0) {
 			// Crossposted releases.
-			do {
-				$releases = $this->pdo->queryDirect(
-					sprintf(
-						'SELECT SQL_NO_CACHE id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1',
-						$this->crossPostTime
-					)
-				);
-				$total = 0;
-				if ($releases && $releases->rowCount()) {
-					$total = $releases->rowCount();
-					foreach ($releases as $release) {
-						$this->releases->deleteSingle(['g' => $release['guid'], 'i' => $release['id']], $this->nzb, $this->releaseImage);
-						$duplicateDeleted++;
-					}
+			$releases = $this->pdo->queryDirect(
+				sprintf(
+					'SELECT SQL_NO_CACHE id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1',
+					$this->crossPostTime
+				)
+			);
+			if ($releases instanceof \Traversable) {
+				foreach ($releases as $release) {
+					$this->releases->deleteSingle(['g' => $release['guid'], 'i' => $release['id']], $this->nzb, $this->releaseImage);
+					$duplicateDeleted++;
 				}
-			} while ($total > 0);
+			}
 		}
 
 		if ($this->completion > 0) {
