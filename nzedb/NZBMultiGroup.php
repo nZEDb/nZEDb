@@ -15,22 +15,22 @@ class NZBMultiGroup extends NZB
 	/**
 	 * @var
 	 */
-	private $_collectionsQuery;
+	protected $_collectionsQuery;
 
 	/**
 	 * @var
 	 */
-	private $_binariesQuery;
+	protected $_binariesQuery;
 
 	/**
 	 * @var
 	 */
-	private $_partsQuery;
+	protected $_partsQuery;
 
 	/**
 	 * @var
 	 */
-	private $_nzbCommentString;
+	protected $_nzbCommentString;
 
 	/**
 	 * Default constructor.
