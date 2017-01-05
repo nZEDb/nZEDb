@@ -9,34 +9,39 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-01-02 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.8.0
+
+
 2016-12-27 niel
 	Mrg: PR 2346, from kaibosh - Correct powerline tmux config.
 	Add: Created new bash script to clone and use composer install. The script can be run from the
 		directory you want nZEDb installed to (usually /var/www) using:
 			bash <(curl -s https://raw.github.com/nZEDb/nZEDb/master/_install/install.sh)
 2016-12-26 DariusIII
-	Chg: Move predb from frontpage to admin area
+	Chg: Move predb from frontpage to admin area.
 2016-12-22 niel
 	Mrg: PR 2343, from kaibosh - Updates tmux configuration for using newer versions.
 2016-12-21 b3rs3rk
-	Chg: Make match_prefiles more precise with match attempts and reduce initial memory usage
+	Chg: Make match_prefiles more precise with match attempts and reduce initial memory usage.
 2016-12-19 niel
 	Fix: Update delete_release stored procedure to use separate queries and no CONCATs for the WHERE clause.
 2016-12-16 niel
 	Mrg: dev-releases_groups branch. This provides the ability to have more than one group
 		assocciated with a release.
 2016-12-16 DariusIII
-	Chg: Improve release renaming
+	Chg: Improve release renaming.
 2016-12-15 DariusIII
-	Chg: Disable desura game lookups for now, site has changed ownership and is not functional atm
+	Chg: Disable desura game lookups for now, site has changed ownership and is not functional atm.
 2016-12-08 b3rs3rk
 	Fix: Issue #2330 postprocessing_non_amazon and postprocessing_additional PHP Notice: / PHP Warning
 2016-12-08 DariusIII
 	Chg: Move tmux Monitor pane logging to resources/logs folder, fixes notice in monitor pane when starting tmux
 2016-12-05 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.7.0
+
 2016-12-03 b3rs3rk
-	Fix: Books processing variable incorrect causing only one category to run
+	Fix: Books processing variable incorrect, causing only one category to run.
 2016-12-03 niel
 	Mrg: PR 2326, from cytec - Fix post processing for tv shows.
 2016-12-02 niel
