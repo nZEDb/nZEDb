@@ -33,7 +33,7 @@ class NZB
 	 *
 	 * @var int
 	 */
-	private $nzbSplitLevel;
+	protected $nzbSplitLevel;
 
 	/**
 	 * Path to store NZB files.
@@ -341,7 +341,7 @@ class NZB
 	 *
 	 * @access public
 	 */
-	private function buildNZBPath($releaseGuid, $levelsToSplit, $createIfNotExist)
+	protected function buildNZBPath($releaseGuid, $levelsToSplit, $createIfNotExist)
 	{
 		$nzbPath = '';
 
