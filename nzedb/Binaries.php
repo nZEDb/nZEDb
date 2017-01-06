@@ -624,9 +624,9 @@ class Binaries
 
 		$this->_pdo->beginTransaction();
 		// Loop articles, figure out files/parts.
-		foreach ($headers as $header) {
-
-			ReleasesMultiGroup::isMultiGroup($header['From']) ? $multiGroup = true : $multiGroup = false;
+		foreach ($headers as $header)
+		{
+			$multiGroup = ReleasesMultiGroup::isMultiGroup($header['From']);
 
 			// Check if we got the article or not.
 			if (isset($header['Number'])) {
@@ -749,16 +749,19 @@ class Binaries
 					$now = time();
 
 					$xref = ($multiGroup === true ? sprintf('xref = CONCAT(xref, "\\n"%s ),', $this->_pdo->escapeString(substr($header['Xref'], 2, 255))) : '');
+					$table = $multiGroup === true ? 'mgr_collections' : $tableNames['cname'];
+					$date = $header['Date'] > $now ? $now : $header['Date'];
+					$unixtime = is_numeric($header['Date']) ? $date : $now;
 					$collectionID = $this->_pdo->queryInsert(
 						sprintf("
 							INSERT INTO %s (subject, fromname, date, xref, group_id,
 								totalfiles, collectionhash, dateadded)
 							VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %d, '%s', NOW())
 							ON DUPLICATE KEY UPDATE %s dateadded = NOW(), noise = '%s'",
-							($multiGroup === true ? 'mgr_collections' : $tableNames['cname']),
+							$table,
 							$this->_pdo->escapeString(substr(utf8_encode($matches[1]), 0, 255)),
 							$this->_pdo->escapeString(utf8_encode($header['From'])),
-							(is_numeric($header['Date']) ? ($header['Date'] > $now ? $now : $header['Date']) : $now),
+							$unixtime,
 							$this->_pdo->escapeString(substr($header['Xref'], 0, 255)),
 							$groupMySQL['id'],
 							$fileCount[3],
