@@ -1407,7 +1407,7 @@ class Binaries
 	 *
 	 * @return bool
 	 */
-	private function addMissingMGRParts($numbers)
+	private function addMissingMGRParts(array $numbers)
 	{
 		$insertStr = 'INSERT INTO mgr_missed_parts (numberid) VALUES ';
 		foreach ($numbers as $number) {
@@ -1425,7 +1425,7 @@ class Binaries
 	 *
 	 * @return void
 	 */
-	private function removeRepairedParts($numbers, $tableName, $groupID)
+	private function removeRepairedParts(array $numbers, $tableName, $groupID)
 	{
 		$sql = 'DELETE FROM ' . $tableName . ' WHERE numberid in (';
 		foreach ($numbers as $number) {
