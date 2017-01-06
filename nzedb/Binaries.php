@@ -788,13 +788,16 @@ class Binaries
 					$collectionID = $collectionIDs[$header['CollectionKey']];
 				}
 
+				$table = $multiGroup === true ? 'mgr_binaries' : $tableNames['bname'];
+				$hash = $multiGroup === true ? md5($matches[1] . $header['From']) :
+					md5($matches[1] . $header['From'] . $groupMySQL['id']);
 				$binaryID = $this->_pdo->queryInsert(
 					sprintf("
 						INSERT INTO %s (binaryhash, name, collection_id, totalparts, currentparts, filenumber, partsize)
 						VALUES (UNHEX('%s'), %s, %d, %d, 1, %d, %d)
 						ON DUPLICATE KEY UPDATE currentparts = currentparts + 1, partsize = partsize + %d",
-						($multiGroup === true ? 'mgr_binaries' : $tableNames['bname']),
-						($multiGroup === true ? md5($matches[1] . $header['From']) : md5($matches[1] . $header['From'] . $groupMySQL['id'])),
+						$table,
+						$hash,
 						$this->_pdo->escapeString(utf8_encode($matches[1])),
 						$collectionID,
 						$matches[3],
