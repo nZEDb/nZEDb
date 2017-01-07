@@ -458,15 +458,15 @@ CREATE TABLE menu_items (
 
 DROP TABLE IF EXISTS missed_parts;
 CREATE TABLE missed_parts (
-  id       INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
-  numberid BIGINT UNSIGNED  NOT NULL,
-  group_id INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to groups.id',
-  attempts TINYINT(1)       NOT NULL DEFAULT '0',
+  id        INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
+  numberid  BIGINT UNSIGNED  NOT NULL,
+  groups_id INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to groups.id',
+  attempts  TINYINT(1)       NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
-  INDEX ix_missed_parts_attempts                  (attempts),
-  INDEX ix_missed_parts_groupid_attempts          (group_id, attempts),
-  INDEX ix_missed_parts_numberid_groupsid_attempts (numberid, group_id, attempts),
-  UNIQUE INDEX ix_missed_parts_numberid_groupsid          (numberid, group_id)
+  INDEX ix_missed_parts_attempts                   (attempts),
+  INDEX ix_missed_parts_groupsid_attempts          (groups_id, attempts),
+  INDEX ix_missed_parts_numberid_groupsid_attempts (numberid, groups_id, attempts),
+  UNIQUE INDEX ux_missed_parts_numberid_groupsid   (numberid, groups_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
