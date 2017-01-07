@@ -726,7 +726,7 @@ class Binaries
 
 					$collectionID = $this->_pdo->queryInsert(
 						sprintf("
-							INSERT INTO %s (subject, fromname, date, xref, group_id,
+							INSERT INTO %s (subject, fromname, date, xref, groups_id,
 								totalfiles, collectionhash, dateadded)
 							VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %d, '%s', NOW())
 							ON DUPLICATE KEY UPDATE dateadded = NOW(), noise = '%s'",
@@ -1110,7 +1110,7 @@ class Binaries
 						$group['bname'],
 						$group['pname'],
 						$currentPost,
-						$this->_tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID) : ''
+						$this->_tablePerGroup === false ? sprintf('AND c.groups_id = %d', $groupID) : ''
 					)
 				);
 				if ($local !== false) {
@@ -1544,7 +1544,7 @@ class Binaries
 	 */
 	public function purgeGroup($groupID)
 	{
-		$this->_pdo->queryExec(sprintf('DELETE c FROM collections c WHERE c.group_id = %d', $groupID));
+		$this->_pdo->queryExec(sprintf('DELETE c FROM collections c WHERE c.groups_id = %d', $groupID));
 	}
 
 	/**

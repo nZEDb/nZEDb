@@ -178,7 +178,7 @@ class NZB
 			SELECT c.*, UNIX_TIMESTAMP(c.date) AS udate,
 				g.name AS groupname
 			FROM {$this->_tableNames['cName']} c
-			INNER JOIN groups g ON c.group_id = g.id
+			INNER JOIN groups g ON c.groups_id = g.id
 			WHERE c.releaseid = ";
 		$this->_binariesQuery = "
 			SELECT b.id, b.name, b.totalparts

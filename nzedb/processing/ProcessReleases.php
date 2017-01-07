@@ -233,7 +233,8 @@ class ProcessReleases
 
 		//Print amount of added releases and time it took.
 		if ($this->echoCLI && $this->tablePerGroup === false) {
-			$countID = $this->pdo->queryOneRow('SELECT COUNT(id) AS count FROM collections ' . (!empty($groupID) ? ' WHERE group_id = ' . $groupID : ''));
+			$countID = $this->pdo->queryOneRow('SELECT COUNT(id) AS count FROM collections ' .
+				(!empty($groupID) ? ' WHERE groups_id = ' . $groupID : ''));
 			$this->pdo->log->doEcho(
 				$this->pdo->log->primary(
 					'Completed adding ' .
@@ -316,7 +317,7 @@ class ProcessReleases
 			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Attempting to find complete collections."));
 		}
 
-		$where = (!empty($groupID) ? ' AND c.group_id = ' . $groupID . ' ' : ' ');
+		$where = (!empty($groupID) ? ' AND c.groups_id = ' . $groupID . ' ' : ' ');
 
 		$this->processStuckCollections($group, $where);
 		$this->collectionFileCheckStage1($group, $where);
@@ -374,7 +375,7 @@ class ProcessReleases
 				$group['bname'],
 				self::COLLFC_SIZED,
 				self::COLLFC_COMPPART,
-				(!empty($groupID) ? ' AND c.group_id = ' . $groupID : ' ')
+				(!empty($groupID) ? ' AND c.groups_id = ' . $groupID : ' ')
 			)
 		);
 		if ($checked !== false && $this->echoCLI) {
@@ -439,7 +440,7 @@ class ProcessReleases
 						'SELECT SQL_NO_CACHE id FROM %s c WHERE c.filecheck = %d AND c.filesize > 0 %s LIMIT 1',
 						$group['cname'],
 						self::COLLFC_SIZED,
-						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : ''
+						$this->tablePerGroup === false ? sprintf('AND c.groups_id = %d', $groupID['id']) : ''
 					)
 				) !== false
 			) {
@@ -458,7 +459,7 @@ class ProcessReleases
 						$group['bname'],
 						$group['pname'],
 						self::COLLFC_SIZED,
-						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : '',
+						$this->tablePerGroup === false ? sprintf('AND c.groups_id = %d', $groupID['id']) : '',
 						$groupMinSizeSetting,
 						$minSizeSetting,
 						$groupMinSizeSetting,
@@ -482,7 +483,7 @@ class ProcessReleases
 							$group['bname'],
 							$group['pname'],
 							self::COLLFC_SIZED,
-							$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : '',
+							$this->tablePerGroup === false ? sprintf('AND c.groups_id = %d', $groupID['id']) : '',
 							$maxSizeSetting
 						)
 					);
@@ -503,7 +504,7 @@ class ProcessReleases
 						$group['bname'],
 						$group['pname'],
 						self::COLLFC_SIZED,
-						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : '',
+						$this->tablePerGroup === false ? sprintf('AND c.groups_id = %d', $groupID['id']) : '',
 						$groupMinFilesSetting,
 						$minFilesSetting,
 						$groupMinFilesSetting,
@@ -551,17 +552,18 @@ class ProcessReleases
 
 		$this->pdo->ping(true);
 
+		$groupsid = !empty($groupID) ? ' groups_id = ' . $groupID . ' AND ' : ' ';
 		$collections = $this->pdo->queryDirect(
 			sprintf('
 				SELECT SQL_NO_CACHE %s.*, groups.name AS gname
 				FROM %s
-				INNER JOIN groups ON %s.group_id = groups.id
+				INNER JOIN groups ON %s.groups_id = groups.id
 				WHERE %s %s.filecheck = %d
 				AND filesize > 0 LIMIT %d',
 				$group['cname'],
 				$group['cname'],
 				$group['cname'],
-				(!empty($groupID) ? ' group_id = ' . $groupID . ' AND ' : ' '),
+				$groupsid,
 				$group['cname'],
 				self::COLLFC_SIZED,
 				$this->releaseCreationLimit
@@ -634,12 +636,12 @@ class ProcessReleases
 							'name' => $cleanRelName,
 							'searchname' => $this->pdo->escapeString(utf8_encode($cleanedName)),
 							'totalpart' => $collection['totalfiles'],
-							'groups_id' => $collection['group_id'],
+							'groups_id' => $collection['groups_id'],
 							'guid' => $this->pdo->escapeString($this->releases->createGUID()),
 							'postdate' => $this->pdo->escapeString($collection['date']),
 							'fromname' => $fromName,
 							'size' => $collection['filesize'],
-							'categories_id' => $categorize->determineCategory($collection['group_id'], $cleanedName),
+							'categories_id' => $categorize->determineCategory($collection['groups_id'], $cleanedName),
 							'isrenamed' => ($properName === true ? 1 : 0),
 							'reqidstatus' => ($isReqID === true ? 1 : 0),
 							'predb_id' => ($preID === false ? 0 : $preID),
@@ -938,6 +940,7 @@ class ProcessReleases
 		}
 
 		$deleted = 0;
+		$groupsid = !empty($groupID) && $this->tablePerGroup === false ? ' AND c.groups_id = ' . $groupID : '';
 		$deleteQuery = $this->pdo->queryExec(
 			sprintf(
 				'DELETE c, b, p FROM %s c
@@ -948,7 +951,7 @@ class ProcessReleases
 				$group['bname'],
 				$group['pname'],
 				Settings::value('..partretentionhours'),
-				(!empty($groupID) && $this->tablePerGroup === false ? ' AND c.group_id = ' . $groupID : '')
+				$groupsid
 			)
 		);
 
@@ -978,6 +981,7 @@ class ProcessReleases
 			}
 
 			$deleted = 0;
+			$groupsid = !empty($groupID) && $this->tablePerGroup === false ? ' AND c.groups_id = ' . $groupID : '';
 			$deleteQuery = $this->pdo->queryExec(
 				sprintf(
 					'DELETE c, b, p FROM %s c
@@ -987,7 +991,7 @@ class ProcessReleases
 					$group['cname'],
 					$group['bname'],
 					$group['pname'],
-					(!empty($groupID) && $this->tablePerGroup === false ? ' AND c.group_id = ' . $groupID : '')
+					$groupsid
 				)
 			);
 
