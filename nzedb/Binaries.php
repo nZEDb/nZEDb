@@ -545,7 +545,7 @@ class Binaries
 			if ($partRepair === true) {
 				$this->_pdo->queryExec(
 					sprintf(
-						'UPDATE missed_parts SET attempts = attempts + 1 WHERE group_id = %d AND numberid %s',
+						'UPDATE missed_parts SET attempts = attempts + 1 WHERE groups_id = %d AND numberid %s',
 						$groupMySQL['id'],
 						($first == $last ? '= ' . $first : 'IN (' . implode(',', range($first, $last)) . ')')
 					)
@@ -957,7 +957,7 @@ class Binaries
 		$missingParts = $this->_pdo->query(
 			sprintf('
 				SELECT * FROM %s
-				WHERE group_id = %d AND attempts < %d
+				WHERE groups_id = %d AND attempts < %d
 				ORDER BY numberid ASC LIMIT %d',
 				$tableNames['prname'],
 				$groupArr['id'],
@@ -1024,7 +1024,7 @@ class Binaries
 				sprintf('
 					SELECT COUNT(id) AS num
 					FROM %s
-					WHERE group_id = %d
+					WHERE groups_id = %d
 					AND numberid <= %d',
 					$tableNames['prname'],
 					$groupArr['id'],
@@ -1043,7 +1043,7 @@ class Binaries
 					sprintf('
 						UPDATE %s
 						SET attempts = attempts + 1
-						WHERE group_id = %d
+						WHERE groups_id = %d
 						AND numberid <= %d',
 						$tableNames['prname'],
 						$groupArr['id'],
@@ -1066,7 +1066,7 @@ class Binaries
 		// Remove articles that we cant fetch after x attempts.
 		$this->_pdo->queryExec(
 			sprintf(
-				'DELETE FROM %s WHERE attempts >= %d AND group_id = %d',
+				'DELETE FROM %s WHERE attempts >= %d AND groups_id = %d',
 				$tableNames['prname'],
 				$this->_partRepairMaxTries,
 				$groupArr['id']
@@ -1300,7 +1300,7 @@ class Binaries
 	 */
 	private function addMissingParts($numbers, $tableName, $groupID)
 	{
-		$insertStr = 'INSERT INTO ' . $tableName . ' (numberid, group_id) VALUES ';
+		$insertStr = 'INSERT INTO ' . $tableName . ' (numberid, groups_id) VALUES ';
 		foreach ($numbers as $number) {
 			$insertStr .= '(' . $number . ',' . $groupID . '),';
 		}
@@ -1322,7 +1322,7 @@ class Binaries
 		foreach ($numbers as $number) {
 			$sql .= $number . ',';
 		}
-		$this->_pdo->queryExec((rtrim($sql, ',') . ') AND group_id = ' . $groupID));
+		$this->_pdo->queryExec((rtrim($sql, ',') . ') AND groups_id = ' . $groupID));
 	}
 
 	/**

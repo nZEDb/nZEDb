@@ -119,22 +119,22 @@ if ($DoPartRepair === true) {
 	foreach ($actgroups as $group) {
 		$pcount = 1;
 		$pdone = 0;
-		$sql = sprintf('SELECT COUNT(*) AS total FROM missed_parts where group_id = %d;', $group['id']);
+		$sql = sprintf('SELECT COUNT(*) AS total FROM missed_parts where groups_id = %d;', $group['id']);
 		$plen = $pdo->queryOneRow($sql);
 		while ($pdone < $plen['total']) {
 			// Only load 10000 partrepair records per loop to not overload memory.
-			$partrepairs = $pdo->queryAssoc(sprintf('select * from missed_parts where group_id = %d limit %d, 10000;', $group['id'], $pdone));
+			$partrepairs = $pdo->queryAssoc(sprintf('select * from missed_parts where groups_id = %d limit %d, 10000;', $group['id'], $pdone));
 			if ($partrepairs instanceof \Traversable) {
 				foreach ($partrepairs as $partrepair) {
 					$partrepair['numberid'] = $pdo->escapeString($partrepair['numberid']);
-					$partrepair['group_id'] = $pdo->escapeString($partrepair['group_id']);
+					$partrepair['groups_id'] = $pdo->escapeString($partrepair['groups_id']);
 					$partrepair['attempts'] = $pdo->escapeString($partrepair['attempts']);
 					if ($debug) {
 						echo "\n\nPart Repair insert:\n";
 						print_r($partrepair);
-						echo sprintf("\nINSERT INTO missed_parts_%d (numberid, group_id, attempts) VALUES (%s, %s, %s)\n\n", $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']);
+						echo sprintf("\nINSERT INTO missed_parts_%d (numberid, groups_id, attempts) VALUES (%s, %s, %s)\n\n", $group['id'], $partrepair['numberid'], $partrepair['groups_id'], $partrepair['attempts']);
 					}
-					$pdo->queryExec(sprintf('INSERT INTO missed_parts_%d (numberid, group_id, attempts) VALUES (%s, %s, %s);', $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']));
+					$pdo->queryExec(sprintf('INSERT INTO missed_parts_%d (numberid, groups_id, attempts) VALUES (%s, %s, %s);', $group['id'], $partrepair['numberid'], $partrepair['groupsd'], $partrepair['attempts']));
 					$consoletools->overWrite('Part Repairs Completed for ' . $group['name'] . ':' . $consoletools->percentString($pcount, $plen['total']));
 					$pcount++;
 				}
