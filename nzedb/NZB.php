@@ -183,7 +183,7 @@ class NZB
 		$this->_binariesQuery = "
 			SELECT b.id, b.name, b.totalparts
 			FROM {$this->_tableNames['bName']} b
-			WHERE b.collection_id = %d
+			WHERE b.collections_id = %d
 			ORDER BY b.name ASC";
 		$this->_partsQuery = "
 			SELECT DISTINCT(p.messageid), p.size, p.partnumber
@@ -319,7 +319,7 @@ class NZB
 		// Delete CBP for release that has its NZB created.
 		$this->pdo->queryExec(
 			sprintf('
-				DELETE c, b, p FROM %s c JOIN %s b ON(c.id=b.collection_id) STRAIGHT_JOIN %s p ON(b.id=p.binaryid) WHERE c.releaseid = %d',
+				DELETE c, b, p FROM %s c JOIN %s b ON(c.id=b.collections_id) STRAIGHT_JOIN %s p ON(b.id=p.binaryid) WHERE c.releaseid = %d',
 				$this->_tableNames['cName'], $this->_tableNames['bName'], $this->_tableNames['pName'], $relID
 			)
 		);
