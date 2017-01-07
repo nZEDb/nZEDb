@@ -618,7 +618,7 @@ class Binaries
 		$headersRepaired = $articles = $rangeNotReceived = $collectionIDs = $binariesUpdate = $headersReceived = $headersNotInserted = [];
 		$notYEnc = $headersBlackListed = 0;
 
-		$partsQuery = $partsCheck = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size) VALUES ', $tableNames['pname']);
+		$partsQuery = $partsCheck = sprintf('INSERT IGNORE INTO %s (binaries_id, number, messageid, partnumber, size) VALUES ', $tableNames['pname']);
 
 		$this->_pdo->beginTransaction();
 		// Loop articles, figure out files/parts.
@@ -1103,7 +1103,7 @@ class Binaries
 						SELECT c.date AS date
 						FROM %s c
 						INNER JOIN %s b ON(c.id=b.collections_id)
-						INNER JOIN %s p ON(b.id=p.binaryid)
+						INNER JOIN %s p ON(b.id=p.binaries_id)
 						WHERE p.number = %s
 						%s LIMIT 1',
 						$group['cname'],

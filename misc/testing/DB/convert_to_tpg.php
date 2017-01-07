@@ -86,7 +86,7 @@ while ($cdone < $clen['total']) {
 						print_r($binarynew);
 						echo sprintf("\nINSERT INTO binaries_%d (name, collections_id, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s)\n\n", $collection['groups_id'], implode(', ', $binarynew));
 					}
-					$newbid = array('binaryid' => $pdo->queryInsert(sprintf('INSERT INTO binaries_%d (name, collections_id, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s);', $collection['groups_id'], implode(', ', $binarynew))));
+					$newbid = array('binaries_id' => $pdo->queryInsert(sprintf('INSERT INTO binaries_%d (name, collections_id, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s);', $collection['groups_id'], implode(', ', $binarynew))));
 
 					//Get parts and split to correct group tables.
 					$parts = $pdo->queryAssoc('SELECT * FROM parts WHERE binaryID = ' . $oldbid . ';');
@@ -102,9 +102,9 @@ while ($cdone < $clen['total']) {
 						$partsnew = substr($partsnew, 0, -2);
 						if ($debug) {
 							echo "\n\nParts insert:\n";
-							echo sprintf("\nINSERT INTO parts_%d (binaryid, messageid, number, partnumber, size, collections_id) VALUES %s;\n\n", $collection['groups_id'], $partsnew);
+							echo sprintf("\nINSERT INTO parts_%d (binaries_id, messageid, number, partnumber, size, collections_id) VALUES %s;\n\n", $collection['groups_id'], $partsnew);
 						}
-						$sql = sprintf('INSERT INTO parts_%d (binaryid, messageid, number, partnumber, size, collections_id) VALUES %s;', $collection['groups_id'], $partsnew);
+						$sql = sprintf('INSERT INTO parts_%d (binaries_id, messageid, number, partnumber, size, collections_id) VALUES %s;', $collection['groups_id'], $partsnew);
 						$pdo->queryExec($sql);
 					}
 				}
