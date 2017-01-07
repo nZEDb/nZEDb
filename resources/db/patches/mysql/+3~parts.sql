@@ -1,9 +1,9 @@
 #
 #
 
-DROP PROCEDURE IF EXISTS change_binaries;
+DROP PROCEDURE IF EXISTS change_parts;
 DELIMITER $$
-CREATE PROCEDURE change_binaries()
+CREATE PROCEDURE change_parts()
   BEGIN
     DECLARE done INT DEFAULT FALSE;
     DECLARE _table CHAR(255);
@@ -28,5 +28,5 @@ CREATE PROCEDURE change_binaries()
   END $$
 DELIMITER ;
 
-CALL change_binaries();
-DROP PROCEDURE change_binaries;
+CALL change_parts();
+DROP PROCEDURE change_parts;
