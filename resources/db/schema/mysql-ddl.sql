@@ -109,19 +109,19 @@ CREATE TABLE audio_data (
 
 DROP TABLE IF EXISTS binaries;
 CREATE TABLE binaries (
-  id            BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  name          VARCHAR(1000)       NOT NULL DEFAULT '',
-  collection_id INT(11) UNSIGNED    NOT NULL DEFAULT 0,
-  filenumber    INT UNSIGNED        NOT NULL DEFAULT '0',
-  totalparts    INT(11) UNSIGNED    NOT NULL DEFAULT 0,
-  currentparts  INT UNSIGNED        NOT NULL DEFAULT 0,
-  binaryhash    BINARY(16)          NOT NULL DEFAULT '0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
-  partcheck     TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
-  partsize      BIGINT UNSIGNED     NOT NULL DEFAULT 0,
+  id             BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  name           VARCHAR(1000)       NOT NULL DEFAULT '',
+  collections_id INT(11) UNSIGNED    NOT NULL DEFAULT 0,
+  filenumber     INT UNSIGNED        NOT NULL DEFAULT '0',
+  totalparts     INT(11) UNSIGNED    NOT NULL DEFAULT 0,
+  currentparts   INT UNSIGNED        NOT NULL DEFAULT 0,
+  binaryhash     BINARY(16)          NOT NULL DEFAULT '0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
+  partcheck      TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+  partsize       BIGINT UNSIGNED     NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE INDEX ix_binary_binaryhash (binaryhash),
-  INDEX ix_binary_partcheck  (partcheck),
-  INDEX ix_binary_collection (collection_id)
+  INDEX ix_binaries_partcheck   (partcheck),
+  INDEX ix_binaries_collections (collections_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
