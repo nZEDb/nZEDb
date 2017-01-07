@@ -554,12 +554,12 @@ CREATE TABLE page_contents (
 
 DROP TABLE IF EXISTS parts;
 CREATE TABLE parts (
-  binaryid      BIGINT(20) UNSIGNED                      NOT NULL DEFAULT '0',
+  binaries_id   BIGINT(20) UNSIGNED                      NOT NULL DEFAULT '0',
   messageid     VARCHAR(255)        CHARACTER SET latin1 NOT NULL DEFAULT '',
   number        BIGINT UNSIGNED                          NOT NULL DEFAULT '0',
   partnumber    MEDIUMINT UNSIGNED                       NOT NULL DEFAULT '0',
   size          MEDIUMINT UNSIGNED                       NOT NULL DEFAULT '0',
-  PRIMARY KEY (binaryid,number)
+  PRIMARY KEY (binaries_id,number)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
