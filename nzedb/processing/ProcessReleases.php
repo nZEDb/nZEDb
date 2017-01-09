@@ -17,6 +17,7 @@ use nzedb\Releases;
 use nzedb\RequestIDLocal;
 use nzedb\RequestIDWeb;
 use nzedb\db\DB;
+use nzedb\utility\Misc;
 
 class ProcessReleases
 {
@@ -775,6 +776,9 @@ class ProcessReleases
 			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Create the NZB, delete collections/binaries/parts."));
 		}
 
+		$relMgrp = new ReleasesMultiGroup();
+		$posters = Misc::convertMultiArray($relMgrp->getAllPosters(), "','");
+
 		$releases = $this->pdo->queryDirect(
 			sprintf("
 				SELECT SQL_NO_CACHE CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title,
@@ -782,8 +786,10 @@ class ProcessReleases
 				FROM releases r
 				INNER JOIN categories c ON r.categories_id = c.id
 				INNER JOIN categories cp ON cp.id = c.parentid
-				WHERE %s nzbstatus = 0",
-				(!empty($groupID) ? ' r.groups_id = ' . $groupID . ' AND ' : ' ')
+				WHERE %s nzbstatus = 0
+				AND r.fromname NOT IN('%s')",
+				(!empty($groupID) ? ' r.groups_id = ' . $groupID . ' AND ' : ' '),
+				$posters
 			)
 		);
 
