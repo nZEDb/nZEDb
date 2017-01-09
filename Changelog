@@ -17,7 +17,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Mrg: PR 2346, from kaibosh - Correct powerline tmux config.
 	Add: Created new bash script to clone and use composer install. The script can be run from the
 		directory you want nZEDb installed to (usually /var/www) using:
-			bash <(curl -s https://raw.github.com/nZEDb/nZEDb/0.x/_install/install.sh)
+			bash <(curl -s https://raw.githubusercontent.com/nZEDb/nZEDb/0.x/_install/install.sh)
 2016-12-26 DariusIII
 	Chg: Move predb from frontpage to admin area.
 2016-12-22 niel

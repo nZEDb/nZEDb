@@ -8,7 +8,7 @@ Added:
      assocciated with a release.
 	* Created new bash script to clone and use composer install. The script can be run from the
 	 directory you want nZEDb installed to (usually /var/www) using:
-		bash <(curl -s https://raw.github.com/nZEDb/nZEDb/0.x/_install/install.sh)
+		bash <(curl -s https://raw.githubusercontent.com/nZEDb/nZEDb/0.x/_install/install.sh)
 
 Changed:
 	* Sort contents of 10-settings.tsv to make findind incorrect/missing entries easier ;-)
