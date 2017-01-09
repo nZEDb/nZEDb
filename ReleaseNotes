@@ -2,6 +2,11 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
+0.6.8.1 2017-01-09
+Fixed:
+	* Paths for install.sh script
+
+
 0.6.8.0 2017-01-02
 Added:
 	* dev-releases_groups branch. This provides the ability to have more than one group
