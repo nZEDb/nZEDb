@@ -1,6 +1,5 @@
+# Changing missed_parts table to use groups_id instead of group_id.
 #
-#
-
 DROP PROCEDURE IF EXISTS change_missed_parts;
 DELIMITER $$
 CREATE PROCEDURE change_missed_parts()

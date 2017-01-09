@@ -1,6 +1,5 @@
+# Changing collections table to use groups_id instead of group_id.
 #
-#
-
 DROP PROCEDURE IF EXISTS change_collections;
 DELIMITER $$
 CREATE PROCEDURE change_collections()

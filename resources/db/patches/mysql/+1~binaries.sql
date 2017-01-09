@@ -1,6 +1,5 @@
+# Changing the binaries table to use collections_id instead of collection_id.
 #
-#
-
 DROP PROCEDURE IF EXISTS change_binaries;
 DELIMITER $$
 CREATE PROCEDURE change_binaries()

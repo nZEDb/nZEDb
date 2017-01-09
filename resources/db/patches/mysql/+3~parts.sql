@@ -1,6 +1,5 @@
+# Changing the parts table to use binaries_id instead of binaryid.
 #
-#
-
 DROP PROCEDURE IF EXISTS change_parts;
 DELIMITER $$
 CREATE PROCEDURE change_parts()
