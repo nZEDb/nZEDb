@@ -297,6 +297,8 @@ function processReleases($releases, $mgrreleases, $groupID)
 	$releases->processIncompleteCollections($groupID);
 	$releases->processCollectionSizes($groupID);
 	$releases->deleteUnwantedCollections($groupID);
+	$releases->processCollectionSizes($groupID, true);
+	$releases->deleteUnwantedCollections($groupID, true);
 
 	do {
 		$mgrReleasesCount = $mgrreleases->createMGRReleases($groupID);
