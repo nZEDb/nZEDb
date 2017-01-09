@@ -9,6 +9,13 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+
+2017-01-09 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.8.1
+
+
+2017-01-09
+	Fix: Paths for install.sh script.
 2017-01-02 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.8.0
 
