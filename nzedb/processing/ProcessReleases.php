@@ -198,11 +198,11 @@ class ProcessReleases
 		$totalReleasesAdded = 0;
 		do {
 			$releasesCount = $this->createReleases($groupID);
-			$mgrReleasesCount = (new ReleasesMultiGroup())->createMGRReleases($groupID);
+			$mgrReleasesCount = (new ReleasesMultiGroup(['Settings' => $this->pdo]))->createMGRReleases($groupID);
 			$totalReleasesAdded += $releasesCount['added'] += $mgrReleasesCount['added'];
 
 			$nzbFilesAdded = $this->createNZBs($groupID);
-			$mgrFilesAdded = (new ReleasesMultiGroup())->createMGRNZBs($groupID);
+			$mgrFilesAdded = (new ReleasesMultiGroup(['Settings' => $this->pdo]))->createMGRNZBs($groupID);
 			if ($this->processRequestIDs === 0) {
 				$this->processRequestIDs($groupID, 5000, true);
 			} else if ($this->processRequestIDs === 1) {
@@ -790,7 +790,7 @@ class ProcessReleases
 			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Create the NZB, delete collections/binaries/parts."));
 		}
 
-		$relMgrp = new ReleasesMultiGroup();
+		$relMgrp = new ReleasesMultiGroup(['Settings' => $this->pdo]);
 		$posters = Misc::convertMultiArray($relMgrp->getAllPosters(), "','");
 
 		$releases = $this->pdo->queryDirect(

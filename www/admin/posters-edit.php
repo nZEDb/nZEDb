@@ -6,7 +6,7 @@ require_once './config.php';
 use nzedb\ReleasesMultiGroup;
 
 $page = new AdminPage();
-$relPosters = new ReleasesMultiGroup();
+$relPosters = new ReleasesMultiGroup(['Settings' => $page->settings]);
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
