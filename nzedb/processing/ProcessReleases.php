@@ -191,6 +191,7 @@ class ProcessReleases
 		$this->processIncompleteCollections($groupID);
 		$this->processCollectionSizes($groupID);
 		$this->deleteUnwantedCollections($groupID);
+		$this->deleteUnwantedCollections($groupID, true);
 
 		$DIR = nZEDb_MISC;
 
@@ -330,6 +331,14 @@ class ProcessReleases
 		$this->collectionFileCheckStage5($group, $where);
 		$this->collectionFileCheckStage6($group, $where);
 
+		$this->processStuckCollections($group, $where, true);
+		$this->collectionFileCheckStage1($group, $where, true);
+		$this->collectionFileCheckStage2($group, $where, true);
+		$this->collectionFileCheckStage3($group, $where, true);
+		$this->collectionFileCheckStage4($group, $where, true);
+		$this->collectionFileCheckStage5($group, $where, true);
+		$this->collectionFileCheckStage6($group, $where, true);
+
 		if ($this->echoCLI) {
 			$count = $this->pdo->queryOneRow(
 				sprintf(
@@ -418,13 +427,18 @@ class ProcessReleases
 	 *
 	 * @param int|string $groupID (optional)
 	 *
+	 * @param bool       $multiGroup
+	 *
 	 * @void
 	 * @access public
 	 */
-	public function deleteUnwantedCollections($groupID)
+	public function deleteUnwantedCollections($groupID, $multiGroup = false)
 	{
 		$startTime = time();
 		$group = $this->groups->getCBPTableNames($this->tablePerGroup, $groupID);
+		$tablec = $multiGroup === true ? 'mgr_collections' : $group['cname'];
+		$tableb = $multiGroup === true ? 'mgr_binaries' : $group['bname'];
+		$tablep = $multiGroup === true ? 'mgr_parts' : $group['pname'];
 
 		if ($this->echoCLI) {
 			$this->pdo->log->doEcho(
@@ -442,7 +456,7 @@ class ProcessReleases
 
 		$minSizeDeleted = $maxSizeDeleted = $minFilesDeleted = 0;
 
-		$maxSizeSetting = Settings::value('..maxsizetoformrelease');
+		$maxSizeSetting = Settings::value('.release.maxsizetoformrelease');
 		$minSizeSetting = Settings::value('.release.minsizetoformrelease');
 		$minFilesSetting = Settings::value('.release.minfilestoformrelease');
 
@@ -452,10 +466,10 @@ class ProcessReleases
 
 			$groupMinimums = $this->groups->getByID($groupID['id']);
 			if ($groupMinimums !== false) {
-				if (is_numeric($groupMinimums['minsizetoformrelease']) && $groupMinimums['minsizetoformrelease'] > 0) {
+				if (!empty($groupMinimums['minsizetoformrelease']) && $groupMinimums['minsizetoformrelease'] > 0) {
 					$groupMinSizeSetting = (int)$groupMinimums['minsizetoformrelease'];
 				}
-				if (is_numeric($groupMinimums['minfilestoformrelease']) && $groupMinimums['minfilestoformrelease'] > 0) {
+				if (!empty($groupMinimums['minfilestoformrelease']) && $groupMinimums['minfilestoformrelease'] > 0) {
 					$groupMinFilesSetting = (int)$groupMinimums['minfilestoformrelease'];
 				}
 			}
@@ -463,7 +477,7 @@ class ProcessReleases
 			if ($this->pdo->queryOneRow(
 					sprintf(
 						'SELECT SQL_NO_CACHE id FROM %s c WHERE c.filecheck = %d AND c.filesize > 0 %s LIMIT 1',
-						$group['cname'],
+						$tablec,
 						self::COLLFC_SIZED,
 						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : ''
 					)
@@ -480,9 +494,9 @@ class ProcessReleases
 						AND c.filesize > 0
 						AND GREATEST(%d, %d) > 0
 						AND c.filesize < GREATEST(%d, %d)',
-						$group['cname'],
-						$group['bname'],
-						$group['pname'],
+						$tablec,
+						$tableb,
+						$tablep,
 						self::COLLFC_SIZED,
 						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : '',
 						$groupMinSizeSetting,
@@ -504,9 +518,9 @@ class ProcessReleases
 							LEFT JOIN %s p ON b.id = p.binaryid
 							WHERE c.filecheck = %d %s
 							AND c.filesize > %d',
-							$group['cname'],
-							$group['bname'],
-							$group['pname'],
+							$tablec,
+							$tableb,
+							$tablep,
 							self::COLLFC_SIZED,
 							$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : '',
 							$maxSizeSetting
@@ -525,9 +539,9 @@ class ProcessReleases
 						WHERE c.filecheck = %d %s
 						AND GREATEST(%d, %d) > 0
 						AND c.totalfiles < GREATEST(%d, %d)',
-						$group['cname'],
-						$group['bname'],
-						$group['pname'],
+						$tablec,
+						$tableb,
+						$tablep,
 						self::COLLFC_SIZED,
 						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : '',
 						$groupMinFilesSetting,
@@ -1521,11 +1535,16 @@ class ProcessReleases
 	 * @param array  $group
 	 * @param string $where
 	 *
+	 * @param bool   $multiGroup
+	 *
 	 * @void
 	 * @access private
 	 */
-	private function collectionFileCheckStage1(array &$group, &$where)
+	private function collectionFileCheckStage1(array &$group, &$where, $multiGroup = false)
 	{
+		$tablec = $multiGroup === true ? 'mgr_collections' : $group['cname'];
+		$tableb = $multiGroup === true ? 'mgr_binaries' : $group['bname'];
+
 		$this->pdo->queryExec(
 			sprintf('
 				UPDATE %s c INNER JOIN
@@ -1536,26 +1555,11 @@ class ProcessReleases
 					HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)
 					)
 				r ON c.id = r.id SET filecheck = %d',
-				$group['cname'],
-				$group['cname'],
-				$group['bname'],
+				$tablec,
+				$tablec,
+				$tableb,
 				self::COLLFC_DEFAULT,
 				$where,
-				self::COLLFC_COMPCOLL
-			)
-		);
-
-		$this->pdo->queryExec(
-			sprintf('
-				UPDATE mgr_collections c INNER JOIN
-					(SELECT c.id FROM mgr_collections c
-					INNER JOIN mgr_binaries b ON b.collection_id = c.id
-					WHERE c.totalfiles > 0 AND c.filecheck = %d
-					GROUP BY b.collection_id, c.totalfiles, c.id
-					HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)
-					)
-				r ON c.id = r.id SET filecheck = %d',
-				self::COLLFC_DEFAULT,
 				self::COLLFC_COMPCOLL
 			)
 		);
@@ -1572,11 +1576,16 @@ class ProcessReleases
 	 * @param array  $group
 	 * @param string $where
 	 *
+	 * @param bool   $multiGroup
+	 *
 	 * @void
 	 * @access private
 	 */
-	private function collectionFileCheckStage2(array &$group, &$where)
+	private function collectionFileCheckStage2(array &$group, &$where, $multiGroup = false)
 	{
+		$tablec = $multiGroup === true ? 'mgr_collections' : $group['cname'];
+		$tableb = $multiGroup === true ? 'mgr_binaries' : $group['bname'];
+
 		$this->pdo->queryExec(
 			sprintf('
 				UPDATE %s c INNER JOIN
@@ -1588,9 +1597,9 @@ class ProcessReleases
 					GROUP BY c.id
 					)
 				r ON c.id = r.id SET c.filecheck = %d',
-				$group['cname'],
-				$group['cname'],
-				$group['bname'],
+				$tablec,
+				$tablec,
+				$tableb,
 				self::COLLFC_COMPCOLL,
 				$where,
 				self::COLLFC_ZEROPART
@@ -1601,35 +1610,10 @@ class ProcessReleases
 				UPDATE %s c
 				SET filecheck = %d
 				WHERE filecheck = %d %s',
-				$group['cname'],
+				$tablec,
 				self::COLLFC_TEMPCOMP,
 				self::COLLFC_COMPCOLL,
 				$where
-			)
-		);
-
-		$this->pdo->queryExec(
-			sprintf('
-				UPDATE mgr_collections c INNER JOIN
-					(SELECT c.id FROM mgr_collections c
-					INNER JOIN mgr_binaries b ON b.collection_id = c.id
-					WHERE b.filenumber = 0
-					AND c.totalfiles > 0
-					AND c.filecheck = %d
-					GROUP BY c.id
-					)
-				r ON c.id = r.id SET c.filecheck = %d',
-				self::COLLFC_COMPCOLL,
-				self::COLLFC_ZEROPART
-			)
-		);
-		$this->pdo->queryExec(
-			sprintf('
-				UPDATE mgr_collections c
-				SET filecheck = %d
-				WHERE filecheck = %d',
-				self::COLLFC_TEMPCOMP,
-				self::COLLFC_COMPCOLL
 			)
 		);
 	}
@@ -1641,73 +1625,49 @@ class ProcessReleases
 	 * @param array  $group
 	 * @param string $where
 	 *
+	 * @param bool   $multiGroup
+	 *
 	 * @void
 	 * @access private
 	 */
-	private function collectionFileCheckStage3(array &$group, $where)
+	private function collectionFileCheckStage3(array &$group, $where, $multiGroup = false)
 	{
-		$this->pdo->queryExec(
-			sprintf('
-				UPDATE %s b INNER JOIN
-					(SELECT b.id FROM %s b
-					INNER JOIN %s c ON c.id = b.collection_id
-					WHERE c.filecheck = %d AND b.partcheck = %d %s
-					AND b.currentparts = b.totalparts
-					GROUP BY b.id, b.totalparts)
-				r ON b.id = r.id SET b.partcheck = %d',
-				$group['bname'],
-				$group['bname'],
-				$group['cname'],
-				self::COLLFC_TEMPCOMP,
-				self::FILE_INCOMPLETE,
-				$where,
-				self::FILE_COMPLETE
-			)
-		);
-		$this->pdo->queryExec(
-			sprintf('
-				UPDATE %s b INNER JOIN
-					(SELECT b.id FROM %s b
-					INNER JOIN %s c ON c.id = b.collection_id
-					WHERE c.filecheck = %d AND b.partcheck = %d %s
-					AND b.currentparts >= (b.totalparts + 1)
-					GROUP BY b.id, b.totalparts)
-				r ON b.id = r.id SET b.partcheck = %d',
-				$group['bname'],
-				$group['bname'],
-				$group['cname'],
-				self::COLLFC_ZEROPART,
-				self::FILE_INCOMPLETE,
-				$where,
-				self::FILE_COMPLETE
-			)
-		);
+		$tablec = $multiGroup === true ? 'mgr_collections' : $group['cname'];
+		$tableb = $multiGroup === true ? 'mgr_binaries' : $group['bname'];
 
 		$this->pdo->queryExec(
 			sprintf('
-				UPDATE mgr_binaries b INNER JOIN
-					(SELECT b.id FROM mgr_binaries b
-					INNER JOIN mgr_collections c ON c.id = b.collection_id
-					WHERE c.filecheck = %d AND b.partcheck = %d
+				UPDATE %s b INNER JOIN
+					(SELECT b.id FROM %s b
+					INNER JOIN %s c ON c.id = b.collection_id
+					WHERE c.filecheck = %d AND b.partcheck = %d %s
 					AND b.currentparts = b.totalparts
 					GROUP BY b.id, b.totalparts)
 				r ON b.id = r.id SET b.partcheck = %d',
+				$tableb,
+				$tableb,
+				$tablec,
 				self::COLLFC_TEMPCOMP,
 				self::FILE_INCOMPLETE,
+				$where,
 				self::FILE_COMPLETE
 			)
 		);
 		$this->pdo->queryExec(
 			sprintf('
-				UPDATE mgr_binaries b INNER JOIN
-					(SELECT b.id FROM mgr_binaries b
-					INNER JOIN mgr_collections c ON c.id = b.collection_id
-					WHERE c.filecheck = %d AND b.partcheck = %d
+				UPDATE %s b INNER JOIN
+					(SELECT b.id FROM %s b
+					INNER JOIN %s c ON c.id = b.collection_id
+					WHERE c.filecheck = %d AND b.partcheck = %d %s
 					AND b.currentparts >= (b.totalparts + 1)
 					GROUP BY b.id, b.totalparts)
 				r ON b.id = r.id SET b.partcheck = %d',
+				$tableb,
+				$tableb,
+				$tablec,
 				self::COLLFC_ZEROPART,
 				self::FILE_INCOMPLETE,
+				$where,
 				self::FILE_COMPLETE
 			)
 		);
@@ -1721,11 +1681,16 @@ class ProcessReleases
 	 * @param array  $group
 	 * @param string $where
 	 *
+	 * @param bool   $multiGroup
+	 *
 	 * @void
 	 * @access private
 	 */
-	private function collectionFileCheckStage4(array &$group, &$where)
+	private function collectionFileCheckStage4(array &$group, &$where, $multiGroup= false)
 	{
+		$tablec = $multiGroup === true ? 'mgr_collections' : $group['cname'];
+		$tableb = $multiGroup === true ? 'mgr_binaries' : $group['bname'];
+
 		$this->pdo->queryExec(
 			sprintf('
 				UPDATE %s c INNER JOIN
@@ -1734,26 +1699,12 @@ class ProcessReleases
 					WHERE b.partcheck = 1 AND c.filecheck IN (%d, %d) %s
 					GROUP BY b.collection_id, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles)
 				r ON c.id = r.id SET filecheck = %d',
-				$group['cname'],
-				$group['cname'],
-				$group['bname'],
+				$tablec,
+				$tablec,
+				$tableb,
 				self::COLLFC_TEMPCOMP,
 				self::COLLFC_ZEROPART,
 				$where,
-				self::COLLFC_COMPPART
-			)
-		);
-
-		$this->pdo->queryExec(
-			sprintf('
-				UPDATE mgr_collections c INNER JOIN
-					(SELECT c.id FROM mgr_collections c
-					INNER JOIN mgr_binaries b ON c.id = b.collection_id
-					WHERE b.partcheck = 1 AND c.filecheck IN (%d, %d)
-					GROUP BY b.collection_id, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles)
-				r ON c.id = r.id SET filecheck = %d',
-				self::COLLFC_TEMPCOMP,
-				self::COLLFC_ZEROPART,
 				self::COLLFC_COMPPART
 			)
 		);
@@ -1766,32 +1717,25 @@ class ProcessReleases
 	 * @param array  $group
 	 * @param string $where
 	 *
+	 * @param bool   $multiGroup
+	 *
 	 * @void
 	 * @access private
 	 */
-	private function collectionFileCheckStage5(array &$group, &$where)
+	private function collectionFileCheckStage5(array &$group, &$where, $multiGroup = false)
 	{
+		$tablec = $multiGroup === true ? 'mgr_collections' : $group['cname'];
+
 		$this->pdo->queryExec(
 			sprintf('
 				UPDATE %s c
 				SET filecheck = %d
 				WHERE filecheck IN (%d, %d) %s',
-				$group['cname'],
+				$tablec,
 				self::COLLFC_COMPCOLL,
 				self::COLLFC_TEMPCOMP,
 				self::COLLFC_ZEROPART,
 				$where
-			)
-		);
-
-		$this->pdo->queryExec(
-			sprintf('
-				UPDATE mgr_collections c
-				SET filecheck = %d
-				WHERE filecheck IN (%d, %d)',
-				self::COLLFC_COMPCOLL,
-				self::COLLFC_TEMPCOMP,
-				self::COLLFC_ZEROPART
 			)
 		);
 	}
@@ -1803,35 +1747,28 @@ class ProcessReleases
 	 * @param array  $group
 	 * @param string $where
 	 *
+	 * @param bool   $multiGroup
+	 *
 	 * @void
 	 * @access private
 	 */
-	private function collectionFileCheckStage6(array &$group, &$where)
+	private function collectionFileCheckStage6(array &$group, &$where, $multiGroup = false)
 	{
+		$tablec = $multiGroup === true ? 'mgr_collections' : $group['cname'];
+		$tableb = $multiGroup === true ? 'mgr_binaries' : $group['bname'];
+
 		$this->pdo->queryExec(
 			sprintf("
 				UPDATE %s c SET filecheck = %d, totalfiles = (SELECT COUNT(b.id) FROM %s b WHERE b.collection_id = c.id)
 				WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR
 				AND c.filecheck IN (%d, %d, 10) %s",
-				$group['cname'],
+				$tablec,
 				self::COLLFC_COMPPART,
-				$group['bname'],
+				$tableb,
 				$this->collectionDelayTime,
 				self::COLLFC_DEFAULT,
 				self::COLLFC_COMPCOLL,
 				$where
-			)
-		);
-
-		$this->pdo->queryExec(
-			sprintf("
-				UPDATE mgr_collections c SET filecheck = %d, totalfiles = (SELECT COUNT(b.id) FROM mgr_binaries b WHERE b.collection_id = c.id)
-				WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR
-				AND c.filecheck IN (%d, %d, 10)",
-				self::COLLFC_COMPPART,
-				$this->collectionDelayTime,
-				self::COLLFC_DEFAULT,
-				self::COLLFC_COMPCOLL
 			)
 		);
 	}
@@ -1839,27 +1776,33 @@ class ProcessReleases
 	/**
 	 * If a collection has been stuck for $this->collectionTimeout hours, delete it, it's bad.
 	 *
-	 * @param array $group
+	 * @param array  $group
 	 * @param string $where
+	 *
+	 * @param bool   $multiGroup
 	 *
 	 * @void
 	 * @access private
 	 */
-	private function processStuckCollections(array $group, $where)
+	private function processStuckCollections(array $group, $where, $multiGroup = false)
 	{
 		$lastRun = Settings::value('indexer.processing.last_run_time');
+		$tablec = $multiGroup === true ? 'mgr_collections' : $group['cname'];
+		$tableb = $multiGroup === true ? 'mgr_binaries' : $group['bname'];
+		$tablep = $multiGroup === true ? 'mgr_parts' : $group['pname'];
+
 		$obj = $this->pdo->queryExec(
 			sprintf("
-				DELETE c, b, p FROM %s c
-				LEFT JOIN %s b ON (c.id=b.collection_id)
-				LEFT JOIN %s p ON (b.id=p.binaryid)
-				WHERE
-					c.added <
-					DATE_SUB({$this->pdo->escapeString($lastRun)}, INTERVAL %d HOUR)
-					%s",
-				$group['cname'],
-				$group['bname'],
-				$group['pname'],
+                DELETE c, b, p FROM %s c
+                LEFT JOIN %s b ON (c.id=b.collection_id)
+                LEFT JOIN %s p ON (b.id=p.binaryid)
+                WHERE
+                    c.added <
+                    DATE_SUB({$this->pdo->escapeString($lastRun)}, INTERVAL %d HOUR)
+                %s",
+				$tablec,
+				$tableb,
+				$tablep,
 				$this->collectionTimeout,
 				$where
 			)
