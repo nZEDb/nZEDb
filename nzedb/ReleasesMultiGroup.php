@@ -6,21 +6,11 @@ use app\models\ReleasesGroups;
 use app\models\Settings;
 use nzedb\db\DB;
 use nzedb\processing\ProcessReleases;
+use nzedb\utility\Misc;
 
 
 class ReleasesMultiGroup
 {
-
-	/**
-	 * @var array of MGR posters
-	 */
-	public static $mgrPosterNames = [
-		'mmmq@meh.com',
-		'buymore@suprnova.com',
-		'pfc@p0rnFuscated.com',
-		'mq@meh.com'
-	];
-
 	/**
 	 * @var
 	 */
@@ -39,8 +29,6 @@ class ReleasesMultiGroup
 	 */
 	public function __construct(array $options = [])
 	{
-
-		$this->mgrFromNames = implode("', '", self::$mgrPosterNames);
 		$this->mgrnzb = new NZBMultiGroup();
 		$this->pdo = new DB();
 		$this->consoleTools = new ConsoleTools(['ColorCLI' => $this->pdo->log]);
@@ -57,9 +45,10 @@ class ReleasesMultiGroup
 	 *
 	 * @return bool
 	 */
-	public static function isMultiGroup($fromName)
+	public function isMultiGroup($fromName)
 	{
-		return in_array($fromName, self::$mgrPosterNames);
+		$array = array_column($this->getAllPosters(), 'poster');
+		return in_array($fromName, $array);
 	}
 
 	/**
@@ -168,7 +157,7 @@ class ReleasesMultiGroup
 							'postdate' => $this->pdo->escapeString($collection['date']),
 							'fromname' => $fromName,
 							'size' => $collection['filesize'],
-							'categories_id' => $categorize->determineCategory($collection['group_id'], $cleanedName, $fromName),
+							'categories_id' => $categorize->determineCategory($collection['group_id'], $cleanedName),
 							'isrenamed' => ($properName === true ? 1 : 0),
 							'reqidstatus' => ($isReqID === true ? 1 : 0),
 							'predb_id' => ($preID === false ? 0 : $preID),
@@ -273,6 +262,7 @@ class ReleasesMultiGroup
 	 */
 	public function createMGRNZBs($groupID)
 	{
+		$this->mgrFromNames = Misc::convertMultiArray($this->getAllPosters(), "','");
 
 		$releases = $this->pdo->queryDirect(
 			sprintf("
@@ -306,4 +296,34 @@ class ReleasesMultiGroup
 
 		return $nzbCount;
 	}
+
+	/**
+	 * @param $poster
+	 */
+	public function addPoster($poster)
+	{
+		$this->pdo->queryInsert(sprintf('INSERT INTO mgr_posters (poster) VALUE (%s)', $this->pdo->escapeString($poster)));
+	}
+
+	/**
+	 * @param $id
+	 * @param $poster
+	 */
+	public function updatePoster($poster, $id)
+	{
+		$this->pdo->queryExec(sprintf('UPDATE mgr_posters SET poster = %s WHERE id = %d', $this->pdo->escapeString($poster), $id));
+	}
+
+	/**
+	 * @return array|bool
+	 */
+	public function getAllPosters()
+	{
+		$result = $this->pdo->query(sprintf('SELECT poster AS poster FROM mgr_posters'));
+		if (is_array($result) && !empty($result)) {
+			return $result;
+		}
+		return false;
+	}
 }
+
