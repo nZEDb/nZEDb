@@ -13,6 +13,16 @@ use nzedb\db\DB;
 
 $pdo = new DB();
 
+// Ensure compatible tmux version is installed
+if (`which tmux`) {
+        $tmux_version = shell_exec('tmux -V');
+        if ($tmux_version == "tmux 2.1\n" || $tmux_version == "tmux 2.2\n") {
+                exit($pdo->log->error("tmux versions 2.1 and 2.2 are not compatible with nZEDb. Aborting\n"));
+                }
+} else {
+        exit($pdo->log->error("tmux binary not found. Aborting\n"));
+}
+
 $tmux = new Tmux();
 $tmux_settings = $tmux->get();
 $tmux_session = (isset($tmux_settings->tmux_session)) ? $tmux_settings->tmux_session : 0;
