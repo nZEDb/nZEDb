@@ -6,9 +6,9 @@ use nzedb\Binaries;
 use nzedb\Groups;
 use nzedb\Nfo;
 use nzedb\NNTP;
-use nzedb\ReleasesMultiGroup;
 use nzedb\RequestIDLocal;
 use nzedb\processing\ProcessReleases;
+use nzedb\processing\ProcessReleasesMultiGroup;
 use nzedb\processing\PostProcess;
 use nzedb\processing\post\ProcessAdditional;
 use nzedb\db\DB;
@@ -157,7 +157,7 @@ switch ($options[1]) {
 	case 'releases':
 		$pdo = new DB();
 		$releases = new ProcessReleases(['Settings' => $pdo]);
-		$mgrreleases = new ReleasesMultiGroup(['Settings' => $pdo]);
+		$mgrreleases = new ProcessReleasesMultiGroup(['Settings' => $pdo]);
 
 		//Runs function that are per group
 		if (is_numeric($options[2])) {
@@ -232,7 +232,7 @@ switch ($options[1]) {
 			collectionCheck($pdo, $options[2]);
 
 			// Create releases.
-			processReleases(new ProcessReleases(['Settings' => $pdo]), new ReleasesMultiGroup(['Settings' => $pdo]), $options[2]);
+			processReleases(new ProcessReleases(['Settings' => $pdo]), new ProcessReleasesMultiGroup(['Settings' => $pdo]), $options[2]);
 
 			// Post process the releases.
 			(new ProcessAdditional(['Echo' => true, 'NNTP' => $nntp, 'Settings' => $pdo]))->start($options[2]);
@@ -288,7 +288,7 @@ switch ($options[1]) {
  * Create / process releases for a groupID.
  *
  * @param ProcessReleases $releases
- * @param ReleasesMultiGroup $mgrreleases
+ * @param ProcessReleasesMultiGroup $mgrreleases
  * @param int             $groupID
  */
 function processReleases($releases, $mgrreleases, $groupID)
@@ -297,8 +297,9 @@ function processReleases($releases, $mgrreleases, $groupID)
 	$releases->processIncompleteCollections($groupID);
 	$releases->processCollectionSizes($groupID);
 	$releases->deleteUnwantedCollections($groupID);
-	$releases->processCollectionSizes($groupID, true);
-	$releases->deleteUnwantedCollections($groupID, true);
+	$mgrreleases->processIncompleteMgrCollections($groupID);
+	$mgrreleases->processMgrCollectionSizes($groupID);
+	$mgrreleases->deleteUnwantedMgrCollections($groupID);
 
 	do {
 		$mgrReleasesCount = $mgrreleases->createMGRReleases($groupID);
@@ -309,6 +310,7 @@ function processReleases($releases, $mgrreleases, $groupID)
 		// This loops as long as the number of releases or nzbs added was >= the limit (meaning there are more waiting to be created)
 	} while (($releasesCount['added'] + $releasesCount['dupes'] + $mgrReleasesCount['added'] + $mgrReleasesCount['dupes']) >= $releaseCreationLimit || $nzbFilesAdded + $mgrFilesAdded >= $releaseCreationLimit);
 	$releases->deleteCollections($groupID);
+	$mgrreleases->deleteMgrCollections($groupID);
 }
 
 /**
