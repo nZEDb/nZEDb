@@ -3,10 +3,10 @@
 require_once './config.php';
 
 
-use nzedb\ReleasesMultiGroup;
+use nzedb\processing\ProcessReleasesMultiGroup;
 
 $page = new AdminPage();
-$relPosters = new ReleasesMultiGroup(['Settings' => $page->settings]);
+$relPosters = new ProcessReleasesMultiGroup(['Settings' => $page->settings]);
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
