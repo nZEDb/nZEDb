@@ -1,7 +1,7 @@
-#Create the new mgr_posters TABLE
+#Create the new multigroup_posters TABLE
 
-DROP TABLE IF EXISTS mgr_posters;
-CREATE TABLE mgr_posters (
+DROP TABLE IF EXISTS multigroup_posters;
+CREATE TABLE multigroup_posters (
   id             INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT,
   poster       VARCHAR(255)        NOT NULL DEFAULT '',
   PRIMARY KEY (id) ,

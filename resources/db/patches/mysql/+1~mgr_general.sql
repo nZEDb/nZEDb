@@ -1,6 +1,6 @@
 # Create mgr tables
-DROP TABLE IF EXISTS mgr_collections;
-CREATE TABLE         mgr_collections (
+DROP TABLE IF EXISTS multigroup_collections;
+CREATE TABLE         multigroup_collections (
   id             INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT,
   subject        VARCHAR(255)        NOT NULL DEFAULT '',
   fromname       VARCHAR(255)        NOT NULL DEFAULT '',
@@ -29,11 +29,11 @@ CREATE TABLE         mgr_collections (
   COLLATE         = utf8_unicode_ci
   AUTO_INCREMENT  = 1;
 
-DROP TABLE IF EXISTS mgr_binaries;
-CREATE TABLE mgr_binaries LIKE binaries;
+DROP TABLE IF EXISTS multigroup_binaries;
+CREATE TABLE multigroup_binaries LIKE binaries;
 
-DROP TABLE IF EXISTS mgr_parts;
-CREATE TABLE mgr_parts LIKE parts;
+# DROP TABLE IF EXISTS multigroup_parts;
+CREATE TABLE multigroup_parts LIKE parts;
 
-DROP TABLE IF EXISTS mgr_missed_parts;
-CREATE TABLE mgr_missed_parts LIKE missed_parts;
+DROP TABLE IF EXISTS multigroup_missed_parts;
+CREATE TABLE multigroup_missed_parts LIKE missed_parts;

@@ -627,7 +627,7 @@ class Binaries
 		$notYEnc = $headersBlackListed = 0;
 
 		$partsQuery = $partsCheck = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size) VALUES ', $tableNames['pname']);
-		$mgrPartsQuery = $mgrPartsCheck = sprintf('INSERT IGNORE INTO mgr_parts (binaryid, number, messageid, partnumber, size) VALUES ');
+		$mgrPartsQuery = $mgrPartsCheck = sprintf('INSERT IGNORE INTO multigroup_parts (binaryid, number, messageid, partnumber, size) VALUES ');
 
 		$this->_pdo->beginTransaction();
 		// Loop articles, figure out files/parts.
@@ -756,7 +756,7 @@ class Binaries
 					$now = time();
 
 					$xref = ($multiGroup === true ? sprintf('xref = CONCAT(xref, "\\n"%s ),', $this->_pdo->escapeString(substr($header['Xref'], 2, 255))) : '');
-					$table = $multiGroup === true ? 'mgr_collections' : $tableNames['cname'];
+					$table = $multiGroup === true ? 'multigroup_collections' : $tableNames['cname'];
 					$date = $header['Date'] > $now ? $now : $header['Date'];
 					$unixtime = is_numeric($header['Date']) ? $date : $now;
 					$collectionID = $this->_pdo->queryInsert(
@@ -795,7 +795,7 @@ class Binaries
 					$collectionID = $collectionIDs[$header['CollectionKey']];
 				}
 
-				$table = $multiGroup === true ? 'mgr_binaries' : $tableNames['bname'];
+				$table = $multiGroup === true ? 'multigroup_binaries' : $tableNames['bname'];
 				$hash = $multiGroup === true ? md5($matches[1] . $header['From']) :
 					md5($matches[1] . $header['From'] . $groupMySQL['id']);
 				$binaryID = $this->_pdo->queryInsert(
@@ -862,7 +862,7 @@ class Binaries
 		// End of processing headers.
 		$timeCleaning = number_format($startUpdate - $startCleaning, 2);
 
-		$bTable = ($multiGroup === true ? 'mgr_binaries' : $tableNames['bname']);
+		$bTable = ($multiGroup === true ? 'multigroup_binaries' : $tableNames['bname']);
 		$binariesQuery = $binariesCheck = sprintf('INSERT INTO %s (id, partsize, currentparts) VALUES ', $bTable);
 		foreach ($binariesUpdate as $binaryID => $binary) {
 			$binariesQuery .= '(' . $binaryID . ',' . $binary['Size'] . ',' . $binary['Parts'] . '),';
@@ -1419,7 +1419,7 @@ class Binaries
 	 */
 	private function addMissingMGRParts(array $numbers)
 	{
-		$insertStr = 'INSERT INTO mgr_missed_parts (numberid) VALUES ';
+		$insertStr = 'INSERT INTO multigroup_missed_parts (numberid) VALUES ';
 		foreach ($numbers as $number) {
 			$insertStr .= '(' . $number . '),';
 		}
@@ -1445,7 +1445,7 @@ class Binaries
 	}
 
 	/**
-	 * Clean up mgr_missed_parts table.
+	 * Clean up multigroup_missed_parts table.
 	 *
 	 * @param array  $numbers   The article numbers.
 	 *
@@ -1453,7 +1453,7 @@ class Binaries
 	 */
 	private function removeRepairedMGRParts($numbers)
 	{
-		$sql = 'DELETE FROM mgr_missed_parts WHERE numberid in (';
+		$sql = 'DELETE FROM multigroup_missed_parts WHERE numberid in (';
 		foreach ($numbers as $number) {
 			$sql .= $number . ',';
 		}

@@ -5,7 +5,7 @@ use nzedb\db\DB;
 
 $page   = new AdminPage();
 $pdo = new DB();
-$posterslist = $pdo->query(sprintf('SELECT * FROM mgr_posters'));
+$posterslist = $pdo->query(sprintf('SELECT * FROM multigroup_posters'));
 
 
 $poster = (isset($_REQUEST['poster']) && !empty($_REQUEST['poster']) ? $_REQUEST['poster'] : '');

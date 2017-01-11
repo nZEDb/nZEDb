@@ -409,8 +409,8 @@ class ProcessReleases
 		// Get the total size in bytes of the mgr collection for mgr collections where filecheck = 2.
 		$mgrChecked = $this->pdo->queryExec(
 			sprintf(
-				'UPDATE mgr_collections c
-				SET filesize = (SELECT COALESCE(SUM(b.partsize), 0) FROM mgr_binaries b WHERE b.collection_id = c.id),
+				'UPDATE multigroup_collections c
+				SET filesize = (SELECT COALESCE(SUM(b.partsize), 0) FROM multigroup_binaries b WHERE b.collection_id = c.id),
 				filecheck = %d
 				WHERE c.filecheck = %d
 				AND c.filesize = 0 %s',

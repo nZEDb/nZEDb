@@ -45,9 +45,9 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	protected function initiateMgrTableNames()
 	{
 		$group = [
-			'cname' => 'mgr_collections',
-			'bname' => 'mgr_binaries',
-			'pname' => 'mgr_parts'
+			'cname' => 'multigroup_collections',
+			'bname' => 'multigroup_binaries',
+			'pname' => 'multigroup_parts'
 		];
 
 		return $group;
@@ -159,7 +159,7 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	 */
 	public function addPoster($poster)
 	{
-		$this->pdo->queryInsert(sprintf('INSERT INTO mgr_posters (poster) VALUE (%s)', $this->pdo->escapeString($poster)));
+		$this->pdo->queryInsert(sprintf('INSERT INTO multigroup_posters (poster) VALUE (%s)', $this->pdo->escapeString($poster)));
 	}
 
 	/**
@@ -170,7 +170,7 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	 */
 	public function updatePoster($id, $poster)
 	{
-		$this->pdo->queryExec(sprintf('UPDATE mgr_posters SET poster = %s WHERE id = %d', $this->pdo->escapeString($poster), $id));
+		$this->pdo->queryExec(sprintf('UPDATE multigroup_posters SET poster = %s WHERE id = %d', $this->pdo->escapeString($poster), $id));
 	}
 
 	/**
@@ -180,7 +180,7 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	 */
 	public function deletePoster($id)
 	{
-		$this->pdo->queryExec(sprintf('DELETE FROM mgr_posters WHERE id = %d', $id));
+		$this->pdo->queryExec(sprintf('DELETE FROM multigroup_posters WHERE id = %d', $id));
 	}
 
 	/**
@@ -190,7 +190,7 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	 */
 	public function getAllPosters()
 	{
-		$result = $this->pdo->query(sprintf('SELECT poster AS poster FROM mgr_posters'));
+		$result = $this->pdo->query(sprintf('SELECT poster AS poster FROM multigroup_posters'));
 		if (is_array($result) && !empty($result)) {
 			return $result;
 		}

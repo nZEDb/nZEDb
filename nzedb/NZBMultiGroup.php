@@ -27,9 +27,9 @@ class NZBMultiGroup extends NZB
 	public function initiateForMgrWrite()
 	{
 		$this->_tableNames = [
-			'cName' => 'mgr_collections',
-			'bName' => 'mgr_binaries',
-			'pName' => 'mgr_parts',
+			'cName' => 'multigroup_collections',
+			'bName' => 'multigroup_binaries',
+			'pName' => 'multigroup_parts',
 		];
 
 		$this->setQueries();
