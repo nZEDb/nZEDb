@@ -297,12 +297,12 @@ function processReleases($releases, $mgrreleases, $groupID)
 	$releases->processIncompleteCollections($groupID);
 	$releases->processCollectionSizes($groupID);
 	$releases->deleteUnwantedCollections($groupID);
-	$mgrreleases->processIncompleteMgrCollections($groupID);
-	$mgrreleases->processMgrCollectionSizes($groupID);
-	$mgrreleases->deleteUnwantedMgrCollections($groupID);
+	$mgrreleases->processIncompleteCollections($groupID);
+	$mgrreleases->processCollectionSizes($groupID);
+	$mgrreleases->deleteUnwantedCollections($groupID);
 
 	do {
-		$mgrReleasesCount = $mgrreleases->createMGRReleases($groupID);
+		$mgrReleasesCount = $mgrreleases->createReleases($groupID);
 		$mgrFilesAdded = $mgrreleases->createMGRNzbs($groupID);
 		$releasesCount = $releases->createReleases($groupID);
 		$nzbFilesAdded = $releases->createNZBs($groupID);
@@ -310,7 +310,7 @@ function processReleases($releases, $mgrreleases, $groupID)
 		// This loops as long as the number of releases or nzbs added was >= the limit (meaning there are more waiting to be created)
 	} while (($releasesCount['added'] + $releasesCount['dupes'] + $mgrReleasesCount['added'] + $mgrReleasesCount['dupes']) >= $releaseCreationLimit || $nzbFilesAdded + $mgrFilesAdded >= $releaseCreationLimit);
 	$releases->deleteCollections($groupID);
-	$mgrreleases->deleteMgrCollections($groupID);
+	$mgrreleases->deleteCollections($groupID);
 }
 
 /**

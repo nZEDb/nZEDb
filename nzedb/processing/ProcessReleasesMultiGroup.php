@@ -11,12 +11,13 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	/**
 	 * @var
 	 */
-	protected $mgrFromNames;
+	protected $fromNames;
 
-	/**
-	 * @var NZBMultiGroup
-	 */
-	protected $mgrnzb;
+	protected $tables = [
+			'cname' => 'multigroup_collections',
+			'bname' => 'multigroup_binaries',
+			'pname' => 'multigroup_parts'
+		];
 
 
 	/**
@@ -27,88 +28,22 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$this->mgrnzb = new NZBMultiGroup($this->pdo);
+		$this->nzb = new NZBMultiGroup($this->pdo);
 	}
 
 	/**
-	 * @param $fromName
+	 * Add MultiGroup posters to database
 	 *
-	 * @return bool
+	 * @param $poster
 	 */
-	public function isMultiGroup($fromName)
+	public function addPoster($poster)
 	{
-		$array = array_column($this->getAllPosters(), 'poster');
-		return in_array($fromName, $array);
-	}
-
-
-	protected function initiateMgrTableNames()
-	{
-		$group = [
-			'cname' => 'multigroup_collections',
-			'bname' => 'multigroup_binaries',
-			'pname' => 'multigroup_parts'
-		];
-
-		return $group;
-	}
-
-	/**
-	 * Process incomplete MultiGroup Releases
-	 *
-	 * @param $groupID
-	 */
-	public function processIncompleteMgrCollections($groupID)
-	{
-		$tableNames = $this->initiateMgrTableNames();
-		$this->processIncompleteCollectionsMain($groupID, $tableNames);
-	}
-
-	/**
-	 * Process MultiGroup collection sizes
-	 *
-	 * @param $groupID
-	 */
-	public function processMgrCollectionSizes($groupID)
-	{
-		$tableNames = $this->initiateMgrTableNames();
-		$this->processCollectionSizesMain($groupID, $tableNames);
-	}
-
-	/**
-	 * Delete unwanted MultiGroup collections
-	 *
-	 * @param $groupID
-	 */
-	public function deleteUnwantedMgrCollections($groupID)
-	{
-		$tableNames = $this->initiateMgrTableNames();
-		$this->deleteUnwantedCollectionsMain($groupID, $tableNames);
-	}
-
-	public function deleteMgrCollections($groupID)
-	{
-		$tableNames = $this->initiateMgrTableNames();
-		$this->deleteCollectionsMain($groupID, $tableNames);
-	}
-
-	/**
-	 * Create releases from complete MultiGroup collections.
-	 *
-	 * @param $groupID
-	 *
-	 * @return array
-	 * @access public
-	 */
-	public function createMGRReleases($groupID)
-	{
-		$tableNames = $this->initiateMgrTableNames();
-		return $this->createReleasesMain($groupID, $tableNames);
+		$this->pdo->queryInsert(sprintf('INSERT INTO multigroup_posters (poster) VALUE (%s)',
+			$this->pdo->escapeString($poster)));
 	}
 
 	/**
 	 * Create NZB files from complete MultiGroup releases.
-	 *
 	 *
 	 * @param $groupID
 	 *
@@ -117,7 +52,7 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	 */
 	public function createMGRNZBs($groupID)
 	{
-		$this->mgrFromNames = Misc::convertMultiArray($this->getAllPosters(), "','");
+		$this->fromNames = Misc::convertMultiArray($this->getAllPosters(), "','");
 
 		$releases = $this->pdo->queryDirect(
 			sprintf("
@@ -128,7 +63,7 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 				INNER JOIN categories cp ON cp.id = c.parentid
 				WHERE %s r.nzbstatus = 0 AND r.fromname IN ('%s')",
 				(!empty($groupID) ? ' r.groups_id = ' . $groupID . ' AND ' : ' '),
-				$this->mgrFromNames
+				$this->fromNames
 			)
 		);
 
@@ -137,40 +72,27 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 		if ($releases && $releases->rowCount()) {
 			$total = $releases->rowCount();
 			// Init vars for writing the NZB's.
-			$this->mgrnzb->initiateForMgrWrite();
+			$this->nzb->initiateForMgrWrite();
 			foreach ($releases as $release) {
 
-				if ($this->mgrnzb->writeNZBforReleaseId($release['id'], $release['guid'], $release['name'], $release['title']) === true) {
+				if ($this->nzb->writeNZBforReleaseId($release['id'],
+						$release['guid'],
+						$release['name'],
+						$release['title']) === true
+				) {
 					$nzbCount++;
 					if ($this->echoCLI) {
-						echo $this->pdo->log->primaryOver("Creating NZBs and deleting MGR Collections:\t" . $nzbCount . '/' . $total . "\r");
+						echo $this->pdo->log->primaryOver("Creating NZBs and deleting MGR Collections:\t" .
+							$nzbCount .
+							'/' .
+							$total .
+							"\r");
 					}
 				}
 			}
 		}
 
 		return $nzbCount;
-	}
-
-	/**
-	 * Add MultiGroup posters to database
-	 *
-	 * @param $poster
-	 */
-	public function addPoster($poster)
-	{
-		$this->pdo->queryInsert(sprintf('INSERT INTO multigroup_posters (poster) VALUE (%s)', $this->pdo->escapeString($poster)));
-	}
-
-	/**
-	 * Update MultiGroup poster
-	 *
-	 * @param $id
-	 * @param $poster
-	 */
-	public function updatePoster($id, $poster)
-	{
-		$this->pdo->queryExec(sprintf('UPDATE multigroup_posters SET poster = %s WHERE id = %d', $this->pdo->escapeString($poster), $id));
 	}
 
 	/**
@@ -194,6 +116,41 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 		if (is_array($result) && !empty($result)) {
 			return $result;
 		}
+
 		return false;
+	}
+
+	/**
+	 * This method exists to prevent the parent one from over-writing the $this->tables property.
+	 *
+	 * @param $groupID Unused
+	 *
+	 * @return void
+	 */
+	protected function initiateTableNames($groupID)
+	{
+		return;
+	}
+
+	/**
+	 * @param $fromName
+	 *
+	 * @return bool
+	 */
+	public function isMultiGroup($fromName)
+	{
+		$array = array_column($this->getAllPosters(), 'poster');
+		return in_array($fromName, $array);
+	}
+
+	/**
+	 * Update MultiGroup poster
+	 *
+	 * @param $id
+	 * @param $poster
+	 */
+	public function updatePoster($id, $poster)
+	{
+		$this->pdo->queryExec(sprintf('UPDATE multigroup_posters SET poster = %s WHERE id = %d', $this->pdo->escapeString($poster), $id));
 	}
 }
