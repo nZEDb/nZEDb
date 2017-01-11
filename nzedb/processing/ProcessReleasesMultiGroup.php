@@ -121,18 +121,6 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	}
 
 	/**
-	 * This method exists to prevent the parent one from over-writing the $this->tables property.
-	 *
-	 * @param $groupID Unused
-	 *
-	 * @return void
-	 */
-	protected function initiateTableNames($groupID)
-	{
-		return;
-	}
-
-	/**
 	 * @param $fromName
 	 *
 	 * @return bool
@@ -152,5 +140,22 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	public function updatePoster($id, $poster)
 	{
 		$this->pdo->queryExec(sprintf('UPDATE multigroup_posters SET poster = %s WHERE id = %d', $this->pdo->escapeString($poster), $id));
+	}
+
+	/**
+	 * This method exists to prevent the parent one from over-writing the $this->tables property.
+	 *
+	 * @param $groupID Unused
+	 *
+	 * @return void
+	 */
+	protected function initiateTableNames($groupID)
+	{
+		$this->tables = [
+			'cname' => 'multigroup_collections',
+			'bname' => 'multigroup_binaries',
+			'pname' => 'multigroup_parts'
+		];
+		return;
 	}
 }
