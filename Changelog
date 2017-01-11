@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-01-12 DariusIII
+	Fix: Predb page link for predb search (closes issue #2356)
 2017-01-11 niel
 	Mrg: PR 2353, from kaibosh - Check for incompatible tmux versions and abort if installed.
 	Chg: Make kaibosh's fix use version_compare function.
