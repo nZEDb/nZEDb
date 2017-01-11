@@ -12,7 +12,7 @@ use nzedb\NZB;
 use nzedb\PreDb;
 use nzedb\ReleaseCleaning;
 use nzedb\ReleaseImage;
-use nzedb\ReleasesMultiGroup;
+use nzedb\processing\ProcessReleasesMultiGroup;
 use nzedb\Releases;
 use nzedb\RequestIDLocal;
 use nzedb\RequestIDWeb;
@@ -191,18 +191,20 @@ class ProcessReleases
 		$this->processIncompleteCollections($groupID);
 		$this->processCollectionSizes($groupID);
 		$this->deleteUnwantedCollections($groupID);
-		$this->deleteUnwantedCollections($groupID, true);
+		(new ProcessReleasesMultiGroup(['Settings' => $this->pdo]))->processIncompleteMgrCollections($groupID);
+		(new ProcessReleasesMultiGroup(['Settings' => $this->pdo]))->processMgrCollectionSizes($groupID);
+		(new ProcessReleasesMultiGroup(['Settings' => $this->pdo]))->deleteUnwantedMgrCollections($groupID);
 
 		$DIR = nZEDb_MISC;
 
 		$totalReleasesAdded = 0;
 		do {
 			$releasesCount = $this->createReleases($groupID);
-			$mgrReleasesCount = (new ReleasesMultiGroup(['Settings' => $this->pdo]))->createMGRReleases($groupID);
+			$mgrReleasesCount = (new ProcessReleasesMultiGroup(['Settings' => $this->pdo]))->createMGRReleases($groupID);
 			$totalReleasesAdded += $releasesCount['added'] += $mgrReleasesCount['added'];
 
 			$nzbFilesAdded = $this->createNZBs($groupID);
-			$mgrFilesAdded = (new ReleasesMultiGroup(['Settings' => $this->pdo]))->createMGRNZBs($groupID);
+			$mgrFilesAdded = (new ProcessReleasesMultiGroup(['Settings' => $this->pdo]))->createMGRNZBs($groupID);
 			if ($this->processRequestIDs === 0) {
 				$this->processRequestIDs($groupID, 5000, true);
 			} else if ($this->processRequestIDs === 1) {
@@ -305,17 +307,24 @@ class ProcessReleases
 		return $categorized;
 	}
 
+	public function processIncompleteCollections($groupID)
+	{
+		$tableNames = $this->initiateTableNames($groupID);
+		$this->processIncompleteCollectionsMain($groupID, $tableNames);
+	}
+
 	/**
 	 * Find complete collections to be processed by processCollectionSizes.
 	 *
 	 * @param int $groupID
+	 * @param     $tableNames
+	 *
 	 * @void
 	 * @access public
 	 */
-	public function processIncompleteCollections($groupID)
+	public function processIncompleteCollectionsMain($groupID, $tableNames)
 	{
 		$startTime = time();
-		$group = $this->groups->getCBPTableNames($this->tablePerGroup, $groupID);
 
 		if ($this->echoCLI) {
 			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Attempting to find complete collections."));
@@ -323,27 +332,19 @@ class ProcessReleases
 
 		$where = (!empty($groupID) ? ' AND c.group_id = ' . $groupID . ' ' : ' ');
 
-		$this->processStuckCollections($group, $where);
-		$this->collectionFileCheckStage1($group, $where);
-		$this->collectionFileCheckStage2($group, $where);
-		$this->collectionFileCheckStage3($group, $where);
-		$this->collectionFileCheckStage4($group, $where);
-		$this->collectionFileCheckStage5($group, $where);
-		$this->collectionFileCheckStage6($group, $where);
-
-		$this->processStuckCollections($group, $where, true);
-		$this->collectionFileCheckStage1($group, $where, true);
-		$this->collectionFileCheckStage2($group, $where, true);
-		$this->collectionFileCheckStage3($group, $where, true);
-		$this->collectionFileCheckStage4($group, $where, true);
-		$this->collectionFileCheckStage5($group, $where, true);
-		$this->collectionFileCheckStage6($group, $where, true);
+		$this->processStuckCollections($tableNames, $where);
+		$this->collectionFileCheckStage1($tableNames, $where);
+		$this->collectionFileCheckStage2($tableNames, $where);
+		$this->collectionFileCheckStage3($tableNames, $where);
+		$this->collectionFileCheckStage4($tableNames, $where);
+		$this->collectionFileCheckStage5($tableNames, $where);
+		$this->collectionFileCheckStage6($tableNames, $where);
 
 		if ($this->echoCLI) {
 			$count = $this->pdo->queryOneRow(
 				sprintf(
 					'SELECT COUNT(id) AS complete FROM %s c WHERE filecheck = %d %s',
-					$group['cname'],
+					$tableNames['cname'],
 					self::COLLFC_COMPPART,
 					$where
 				)
@@ -357,24 +358,30 @@ class ProcessReleases
 		}
 	}
 
+	public function processCollectionSizes($groupID)
+	{
+		$tableNames = $this->initiateTableNames($groupID);
+		$this->processCollectionSizesMain($groupID, $tableNames);
+	}
+
 	/**
 	 * Calculate the total size of a complete collection (COLLFC_COMPPART) in bytes.
 	 * Set the collection to (COLLFC_SIZED)
 	 *
 	 * @param string|int $groupID (optional)
 	 *
+	 * @param            $tableNames
+	 *
 	 * @void
 	 * @access public
 	 */
-	public function processCollectionSizes($groupID)
+	public function processCollectionSizesMain($groupID, $tableNames)
 	{
 		$startTime = time();
-		$group = $this->groups->getCBPTableNames($this->tablePerGroup, $groupID);
 
 		if ($this->echoCLI) {
 			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Calculating collection sizes (in bytes)."));
 		}
-
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
 		$checked = $this->pdo->queryExec(
 			sprintf(
@@ -383,8 +390,8 @@ class ProcessReleases
 				filecheck = %d
 				WHERE c.filecheck = %d
 				AND c.filesize = 0 %s',
-				$group['cname'],
-				$group['bname'],
+				$tableNames['cname'],
+				$tableNames['bname'],
 				self::COLLFC_SIZED,
 				self::COLLFC_COMPPART,
 				(!empty($groupID) ? ' AND c.group_id = ' . $groupID : ' ')
@@ -422,23 +429,25 @@ class ProcessReleases
 		}
 	}
 
+	public function deleteUnwantedCollections($groupID)
+	{
+		$tableNames = $this->initiateTableNames($groupID);
+		$this->deleteUnwantedCollectionsMain($groupID, $tableNames);
+	}
+
 	/**
 	 * Delete unwanted collections based on size/file count using admin settings.
 	 *
 	 * @param int|string $groupID (optional)
 	 *
-	 * @param bool       $multiGroup
+	 * @param            $tableNames
 	 *
 	 * @void
-	 * @access public
+	 * @access   public
 	 */
-	public function deleteUnwantedCollections($groupID, $multiGroup = false)
+	public function deleteUnwantedCollectionsMain($groupID, $tableNames)
 	{
 		$startTime = time();
-		$group = $this->groups->getCBPTableNames($this->tablePerGroup, $groupID);
-		$tablec = $multiGroup === true ? 'mgr_collections' : $group['cname'];
-		$tableb = $multiGroup === true ? 'mgr_binaries' : $group['bname'];
-		$tablep = $multiGroup === true ? 'mgr_parts' : $group['pname'];
 
 		if ($this->echoCLI) {
 			$this->pdo->log->doEcho(
@@ -477,7 +486,7 @@ class ProcessReleases
 			if ($this->pdo->queryOneRow(
 					sprintf(
 						'SELECT SQL_NO_CACHE id FROM %s c WHERE c.filecheck = %d AND c.filesize > 0 %s LIMIT 1',
-						$tablec,
+						$tableNames['cname'],
 						self::COLLFC_SIZED,
 						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : ''
 					)
@@ -494,9 +503,9 @@ class ProcessReleases
 						AND c.filesize > 0
 						AND GREATEST(%d, %d) > 0
 						AND c.filesize < GREATEST(%d, %d)',
-						$tablec,
-						$tableb,
-						$tablep,
+						$tableNames['cname'],
+						$tableNames['bname'],
+						$tableNames['pname'],
 						self::COLLFC_SIZED,
 						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : '',
 						$groupMinSizeSetting,
@@ -518,9 +527,9 @@ class ProcessReleases
 							LEFT JOIN %s p ON b.id = p.binaryid
 							WHERE c.filecheck = %d %s
 							AND c.filesize > %d',
-							$tablec,
-							$tableb,
-							$tablep,
+							$tableNames['cname'],
+							$tableNames['bname'],
+							$tableNames['pname'],
 							self::COLLFC_SIZED,
 							$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : '',
 							$maxSizeSetting
@@ -539,9 +548,9 @@ class ProcessReleases
 						WHERE c.filecheck = %d %s
 						AND GREATEST(%d, %d) > 0
 						AND c.totalfiles < GREATEST(%d, %d)',
-						$tablec,
-						$tableb,
-						$tablep,
+						$tableNames['cname'],
+						$tableNames['bname'],
+						$tableNames['pname'],
 						self::COLLFC_SIZED,
 						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : '',
 						$groupMinFilesSetting,
@@ -570,17 +579,40 @@ class ProcessReleases
 	}
 
 	/**
+	 * @param $groupID
+	 *
+	 * @return array
+	 */
+	protected function initiateTableNames($groupID)
+	{
+		return $this->groups->getCBPTableNames($this->tablePerGroup, $groupID);
+	}
+
+	/**
+	 * @param $groupID
+	 *
+	 * @return array
+	 */
+	public function createReleases($groupID)
+	{
+		$tableNames = $this->initiateTableNames($groupID);
+		return $this->createReleasesMain($groupID, $tableNames);
+	}
+
+
+	/**
 	 * Create releases from complete collections.
 	 *
 	 * @param int|string $groupID (optional)
 	 *
+	 * @param  array          $tableNames
+	 *
 	 * @return array
 	 * @access public
 	 */
-	public function createReleases($groupID)
+	public function createReleasesMain($groupID, $tableNames)
 	{
 		$startTime = time();
-		$group = $this->groups->getCBPTableNames($this->tablePerGroup, $groupID);
 
 		$categorize = new Categorize(['Settings' => $this->pdo]);
 		$returnCount = $duplicate = 0;
@@ -598,11 +630,11 @@ class ProcessReleases
 				INNER JOIN groups ON %s.group_id = groups.id
 				WHERE %s %s.filecheck = %d
 				AND filesize > 0 LIMIT %d',
-				$group['cname'],
-				$group['cname'],
-				$group['cname'],
+				$tableNames['cname'],
+				$tableNames['cname'],
+				$tableNames['cname'],
 				(!empty($groupID) ? ' group_id = ' . $groupID . ' AND ' : ' '),
-				$group['cname'],
+				$tableNames['cname'],
 				self::COLLFC_SIZED,
 				$this->releaseCreationLimit
 			)
@@ -694,7 +726,7 @@ class ProcessReleases
 								UPDATE %s
 								SET filecheck = %d, releaseid = %d
 								WHERE id = %d',
-								$group['cname'],
+								$tableNames['cname'],
 								self::COLLFC_INSERTED,
 								$releaseID,
 								$collection['id']
@@ -749,7 +781,7 @@ class ProcessReleases
 							INNER JOIN %s b ON(c.id=b.collection_id)
 							STRAIGHT_JOIN %s p ON(b.id=p.binaryid)
 							WHERE c.collectionhash = %s',
-							$group['cname'], $group['bname'], $group['pname'],
+							$tableNames['cname'], $tableNames['bname'], $tableNames['pname'],
 							$this->pdo->escapeString($collection['collectionhash'])
 						)
 					);
@@ -790,7 +822,7 @@ class ProcessReleases
 			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Create the NZB, delete collections/binaries/parts."));
 		}
 
-		$relMgrp = new ReleasesMultiGroup(['Settings' => $this->pdo]);
+		$relMgrp = new ProcessReleasesMultiGroup(['Settings' => $this->pdo]);
 		$posters = Misc::convertMultiArray($relMgrp->getAllPosters(), "','");
 
 		$releases = $this->pdo->queryDirect(
@@ -956,18 +988,25 @@ class ProcessReleases
 		}
 	}
 
+	public function deleteCollections($groupID)
+	{
+		$tableNames = $this->initiateTableNames($groupID);
+		$this->deleteCollectionsMain($groupID, $tableNames);
+	}
+
 	/**
 	 * Delete collections (complete/incomplete/old/etc).
 	 *
 	 * @param int|string $groupID (optional)
 	 *
+	 * @param            $tableNames
+	 *
 	 * @void
 	 * @access public
 	 */
-	public function deleteCollections($groupID)
+	public function deleteCollectionsMain($groupID, $tableNames)
 	{
 		$startTime = time();
-		$group = $this->groups->getCBPTableNames($this->tablePerGroup, $groupID);
 
 		$deletedCount = 0;
 
@@ -989,9 +1028,9 @@ class ProcessReleases
 				LEFT JOIN %s b ON (c.id=b.collection_id)
 				LEFT JOIN %s p ON (b.id=p.binaryid)
 				WHERE (c.dateadded < NOW() - INTERVAL %d HOUR) %s',
-				$group['cname'],
-				$group['bname'],
-				$group['pname'],
+				$tableNames['cname'],
+				$tableNames['bname'],
+				$tableNames['pname'],
 				Settings::value('..partretentionhours'),
 				(!empty($groupID) && $this->tablePerGroup === false ? ' AND c.group_id = ' . $groupID : '')
 			)
@@ -1029,9 +1068,9 @@ class ProcessReleases
 					LEFT JOIN %s b ON (c.id=b.collection_id)
 					LEFT JOIN %s p ON (b.id=p.binaryid)
 					WHERE (b.id IS NULL OR p.binaryid IS NULL) %s',
-					$group['cname'],
-					$group['bname'],
-					$group['pname'],
+					$tableNames['cname'],
+					$tableNames['bname'],
+					$tableNames['pname'],
 					(!empty($groupID) && $this->tablePerGroup === false ? ' AND c.group_id = ' . $groupID : '')
 				)
 			);
@@ -1063,7 +1102,7 @@ class ProcessReleases
 									LEFT JOIN %s p ON(b.id=p.binaryid)
 									LEFT JOIN %s c ON(b.collection_id=c.id)
 									WHERE (p.binaryid IS NULL OR c.id IS NULL) AND b.id < %d ',
-					$group['bname'], $group['pname'], $group['cname'], $this->maxQueryFormulator($group['bname'], 20000)
+					$tableNames['bname'], $tableNames['pname'], $tableNames['cname'], $this->maxQueryFormulator($tableNames['bname'], 20000)
 				)
 			);
 
@@ -1090,7 +1129,7 @@ class ProcessReleases
 			$deleteQuery = $this->pdo->queryExec(
 				sprintf(
 					'DELETE p FROM %s p LEFT JOIN %s b ON (p.binaryid=b.id) WHERE b.id IS NULL AND p.binaryid < %d',
-					$group['pname'], $group['bname'], $this->maxQueryFormulator($group['bname'], 20000)
+					$tableNames['pname'], $tableNames['bname'], $this->maxQueryFormulator($tableNames['bname'], 20000)
 				)
 			);
 			if ($deleteQuery !== false) {
@@ -1122,7 +1161,7 @@ class ProcessReleases
 				FROM %s c
 				INNER JOIN releases r ON r.id = c.releaseid
 				WHERE r.nzbstatus = 1',
-				$group['cname']
+				$tableNames['cname']
 			)
 		);
 
@@ -1136,9 +1175,9 @@ class ProcessReleases
 						LEFT JOIN %s b ON(c.id=b.collection_id)
 						LEFT JOIN %s p ON(b.id=p.binaryid)
 						WHERE c.id = %d',
-						$group['cname'],
-						$group['bname'],
-						$group['pname'],
+						$tableNames['cname'],
+						$tableNames['bname'],
+						$tableNames['pname'],
 						$collection['id']
 					)
 				);
@@ -1532,7 +1571,7 @@ class ProcessReleases
 	 * This means the the binary table has the same count as the file count in the subject, but
 	 * the collection might not be complete yet since we might not have all the articles in the parts table.
 	 *
-	 * @param array  $group
+	 * @param array  $tableNames
 	 * @param string $where
 	 *
 	 * @param bool   $multiGroup
@@ -1540,10 +1579,8 @@ class ProcessReleases
 	 * @void
 	 * @access private
 	 */
-	private function collectionFileCheckStage1(array &$group, &$where, $multiGroup = false)
+	private function collectionFileCheckStage1(array &$tableNames, &$where, $multiGroup = false)
 	{
-		$tablec = $multiGroup === true ? 'mgr_collections' : $group['cname'];
-		$tableb = $multiGroup === true ? 'mgr_binaries' : $group['bname'];
 
 		$this->pdo->queryExec(
 			sprintf('
@@ -1555,9 +1592,9 @@ class ProcessReleases
 					HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)
 					)
 				r ON c.id = r.id SET filecheck = %d',
-				$tablec,
-				$tablec,
-				$tableb,
+				$tableNames['cname'],
+				$tableNames['cname'],
+				$tableNames['bname'],
 				self::COLLFC_DEFAULT,
 				$where,
 				self::COLLFC_COMPCOLL
@@ -1573,7 +1610,7 @@ class ProcessReleases
 	 * at 0 then you would never get a complete collection if it starts with 1 and if it starts, you can end up creating
 	 * a incomplete collection, since you assumed it was complete.
 	 *
-	 * @param array  $group
+	 * @param array  $tableNames
 	 * @param string $where
 	 *
 	 * @param bool   $multiGroup
@@ -1581,10 +1618,8 @@ class ProcessReleases
 	 * @void
 	 * @access private
 	 */
-	private function collectionFileCheckStage2(array &$group, &$where, $multiGroup = false)
+	private function collectionFileCheckStage2(array &$tableNames, &$where, $multiGroup = false)
 	{
-		$tablec = $multiGroup === true ? 'mgr_collections' : $group['cname'];
-		$tableb = $multiGroup === true ? 'mgr_binaries' : $group['bname'];
 
 		$this->pdo->queryExec(
 			sprintf('
@@ -1597,9 +1632,9 @@ class ProcessReleases
 					GROUP BY c.id
 					)
 				r ON c.id = r.id SET c.filecheck = %d',
-				$tablec,
-				$tablec,
-				$tableb,
+				$tableNames['cname'],
+				$tableNames['cname'],
+				$tableNames['bname'],
 				self::COLLFC_COMPCOLL,
 				$where,
 				self::COLLFC_ZEROPART
@@ -1610,7 +1645,7 @@ class ProcessReleases
 				UPDATE %s c
 				SET filecheck = %d
 				WHERE filecheck = %d %s',
-				$tablec,
+				$tableNames['cname'],
 				self::COLLFC_TEMPCOMP,
 				self::COLLFC_COMPCOLL,
 				$where
@@ -1622,7 +1657,7 @@ class ProcessReleases
 	 * Check if the files (binaries table) in a complete collection has all the parts.
 	 * If we have all the parts, set binaries table partcheck to FILE_COMPLETE.
 	 *
-	 * @param array  $group
+	 * @param array  $tableNames
 	 * @param string $where
 	 *
 	 * @param bool   $multiGroup
@@ -1630,10 +1665,8 @@ class ProcessReleases
 	 * @void
 	 * @access private
 	 */
-	private function collectionFileCheckStage3(array &$group, $where, $multiGroup = false)
+	private function collectionFileCheckStage3(array &$tableNames, $where, $multiGroup = false)
 	{
-		$tablec = $multiGroup === true ? 'mgr_collections' : $group['cname'];
-		$tableb = $multiGroup === true ? 'mgr_binaries' : $group['bname'];
 
 		$this->pdo->queryExec(
 			sprintf('
@@ -1644,9 +1677,9 @@ class ProcessReleases
 					AND b.currentparts = b.totalparts
 					GROUP BY b.id, b.totalparts)
 				r ON b.id = r.id SET b.partcheck = %d',
-				$tableb,
-				$tableb,
-				$tablec,
+				$tableNames['bname'],
+				$tableNames['bname'],
+				$tableNames['cname'],
 				self::COLLFC_TEMPCOMP,
 				self::FILE_INCOMPLETE,
 				$where,
@@ -1662,9 +1695,9 @@ class ProcessReleases
 					AND b.currentparts >= (b.totalparts + 1)
 					GROUP BY b.id, b.totalparts)
 				r ON b.id = r.id SET b.partcheck = %d',
-				$tableb,
-				$tableb,
-				$tablec,
+				$tableNames['bname'],
+				$tableNames['bname'],
+				$tableNames['cname'],
 				self::COLLFC_ZEROPART,
 				self::FILE_INCOMPLETE,
 				$where,
@@ -1678,7 +1711,7 @@ class ProcessReleases
 	 * Set collections filecheck column to COLLFC_COMPPART.
 	 * This means the collection is complete.
 	 *
-	 * @param array  $group
+	 * @param array  $tableNames
 	 * @param string $where
 	 *
 	 * @param bool   $multiGroup
@@ -1686,10 +1719,8 @@ class ProcessReleases
 	 * @void
 	 * @access private
 	 */
-	private function collectionFileCheckStage4(array &$group, &$where, $multiGroup= false)
+	private function collectionFileCheckStage4(array &$tableNames, &$where, $multiGroup= false)
 	{
-		$tablec = $multiGroup === true ? 'mgr_collections' : $group['cname'];
-		$tableb = $multiGroup === true ? 'mgr_binaries' : $group['bname'];
 
 		$this->pdo->queryExec(
 			sprintf('
@@ -1699,9 +1730,9 @@ class ProcessReleases
 					WHERE b.partcheck = 1 AND c.filecheck IN (%d, %d) %s
 					GROUP BY b.collection_id, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles)
 				r ON c.id = r.id SET filecheck = %d',
-				$tablec,
-				$tablec,
-				$tableb,
+				$tableNames['cname'],
+				$tableNames['cname'],
+				$tableNames['bname'],
 				self::COLLFC_TEMPCOMP,
 				self::COLLFC_ZEROPART,
 				$where,
@@ -1714,7 +1745,7 @@ class ProcessReleases
 	 * If not all files (binaries table) had their parts on the previous stage,
 	 * reset the collection filecheck column to COLLFC_COMPCOLL so we reprocess them next time.
 	 *
-	 * @param array  $group
+	 * @param array  $tableNames
 	 * @param string $where
 	 *
 	 * @param bool   $multiGroup
@@ -1722,16 +1753,15 @@ class ProcessReleases
 	 * @void
 	 * @access private
 	 */
-	private function collectionFileCheckStage5(array &$group, &$where, $multiGroup = false)
+	private function collectionFileCheckStage5(array &$tableNames, &$where, $multiGroup = false)
 	{
-		$tablec = $multiGroup === true ? 'mgr_collections' : $group['cname'];
 
 		$this->pdo->queryExec(
 			sprintf('
 				UPDATE %s c
 				SET filecheck = %d
 				WHERE filecheck IN (%d, %d) %s',
-				$tablec,
+				$tableNames['cname'],
 				self::COLLFC_COMPCOLL,
 				self::COLLFC_TEMPCOMP,
 				self::COLLFC_ZEROPART,
@@ -1744,7 +1774,7 @@ class ProcessReleases
 	 * If a collection did not have the file count (ie: [00/12]) or the collection is incomplete after
 	 * $this->collectionDelayTime hours, set the collection to complete to create it into a release/nzb.
 	 *
-	 * @param array  $group
+	 * @param array  $tableNames
 	 * @param string $where
 	 *
 	 * @param bool   $multiGroup
@@ -1752,19 +1782,17 @@ class ProcessReleases
 	 * @void
 	 * @access private
 	 */
-	private function collectionFileCheckStage6(array &$group, &$where, $multiGroup = false)
+	private function collectionFileCheckStage6(array &$tableNames, &$where, $multiGroup = false)
 	{
-		$tablec = $multiGroup === true ? 'mgr_collections' : $group['cname'];
-		$tableb = $multiGroup === true ? 'mgr_binaries' : $group['bname'];
 
 		$this->pdo->queryExec(
 			sprintf("
 				UPDATE %s c SET filecheck = %d, totalfiles = (SELECT COUNT(b.id) FROM %s b WHERE b.collection_id = c.id)
 				WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR
 				AND c.filecheck IN (%d, %d, 10) %s",
-				$tablec,
+				$tableNames['cname'],
 				self::COLLFC_COMPPART,
-				$tableb,
+				$tableNames['bname'],
 				$this->collectionDelayTime,
 				self::COLLFC_DEFAULT,
 				self::COLLFC_COMPCOLL,
@@ -1776,7 +1804,7 @@ class ProcessReleases
 	/**
 	 * If a collection has been stuck for $this->collectionTimeout hours, delete it, it's bad.
 	 *
-	 * @param array  $group
+	 * @param array  $tableNames
 	 * @param string $where
 	 *
 	 * @param bool   $multiGroup
@@ -1784,12 +1812,9 @@ class ProcessReleases
 	 * @void
 	 * @access private
 	 */
-	private function processStuckCollections(array $group, $where, $multiGroup = false)
+	private function processStuckCollections(array $tableNames, $where, $multiGroup = false)
 	{
 		$lastRun = Settings::value('indexer.processing.last_run_time');
-		$tablec = $multiGroup === true ? 'mgr_collections' : $group['cname'];
-		$tableb = $multiGroup === true ? 'mgr_binaries' : $group['bname'];
-		$tablep = $multiGroup === true ? 'mgr_parts' : $group['pname'];
 
 		$obj = $this->pdo->queryExec(
 			sprintf("
@@ -1800,9 +1825,9 @@ class ProcessReleases
                     c.added <
                     DATE_SUB({$this->pdo->escapeString($lastRun)}, INTERVAL %d HOUR)
                 %s",
-				$tablec,
-				$tableb,
-				$tablep,
+				$tableNames['cname'],
+				$tableNames['bname'],
+				$tableNames['pname'],
 				$this->collectionTimeout,
 				$where
 			)
