@@ -541,7 +541,7 @@ class ProcessReleases
 	/**
 	 * @param $groupID
 	 *
-	 * @return array
+	 * @void
 	 */
 	protected function initiateTableNames($groupID)
 	{

@@ -156,6 +156,5 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 			'bname' => 'multigroup_binaries',
 			'pname' => 'multigroup_parts'
 		];
-		return;
 	}
 }
