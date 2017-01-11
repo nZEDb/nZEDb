@@ -166,8 +166,8 @@ switch ($options[1]) {
 				collectionCheck($pdo, $options[2]);
 			}
 
-			processReleases($releases, $mgrreleases, $options[2]);
-
+			processReleases($releases, $options[2]);
+			processReleases($mgrreleases, $options[2]);
 		} else {
 
 			// Run functions that run on releases table after all others completed.
@@ -232,7 +232,8 @@ switch ($options[1]) {
 			collectionCheck($pdo, $options[2]);
 
 			// Create releases.
-			processReleases(new ProcessReleases(['Settings' => $pdo]), new ProcessReleasesMultiGroup(['Settings' => $pdo]), $options[2]);
+			processReleases(new ProcessReleases(['Settings' => $pdo]), $options[2]);
+			processReleases(new ProcessReleasesMultiGroup(['Settings' => $pdo]), $options[2]);
 
 			// Post process the releases.
 			(new ProcessAdditional(['Echo' => true, 'NNTP' => $nntp, 'Settings' => $pdo]))->start($options[2]);
@@ -291,26 +292,20 @@ switch ($options[1]) {
  * @param ProcessReleasesMultiGroup $mgrreleases
  * @param int             $groupID
  */
-function processReleases($releases, $mgrreleases, $groupID)
+function processReleases($releases, $groupID)
 {
 	$releaseCreationLimit = (Settings::value('..maxnzbsprocessed') != '' ? (int)Settings::value('..maxnzbsprocessed') : 1000);
 	$releases->processIncompleteCollections($groupID);
 	$releases->processCollectionSizes($groupID);
 	$releases->deleteUnwantedCollections($groupID);
-	$mgrreleases->processIncompleteCollections($groupID);
-	$mgrreleases->processCollectionSizes($groupID);
-	$mgrreleases->deleteUnwantedCollections($groupID);
 
 	do {
-		$mgrReleasesCount = $mgrreleases->createReleases($groupID);
-		$mgrFilesAdded = $mgrreleases->createMGRNzbs($groupID);
 		$releasesCount = $releases->createReleases($groupID);
 		$nzbFilesAdded = $releases->createNZBs($groupID);
 
 		// This loops as long as the number of releases or nzbs added was >= the limit (meaning there are more waiting to be created)
-	} while (($releasesCount['added'] + $releasesCount['dupes'] + $mgrReleasesCount['added'] + $mgrReleasesCount['dupes']) >= $releaseCreationLimit || $nzbFilesAdded + $mgrFilesAdded >= $releaseCreationLimit);
+	} while (($releasesCount['added'] + $releasesCount['dupes']) >= $releaseCreationLimit || $nzbFilesAdded  >= $releaseCreationLimit);
 	$releases->deleteCollections($groupID);
-	$mgrreleases->deleteCollections($groupID);
 }
 
 /**
