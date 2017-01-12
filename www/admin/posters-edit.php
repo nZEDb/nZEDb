@@ -2,7 +2,7 @@
 
 require_once './config.php';
 
-
+use app\models\MultigroupPosters;
 use nzedb\processing\ProcessReleasesMultiGroup;
 
 $page = new AdminPage();
@@ -15,7 +15,8 @@ switch ($action) {
 	case 'submit':
 		if ($_POST['id'] == '') {
 			// Add a new mgr poster.
-			$relPosters->addPoster($_POST['poster']);
+			//$relPosters->addPoster($_POST['poster']);
+			MultigroupPosters::create(['poster' => $_POST['poster']]);
 		} else {
 			// Update an existing mgr poster.
 			$relPosters->updatePoster($_POST['id'], $_POST['poster']);

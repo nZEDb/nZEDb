@@ -8,7 +8,7 @@
 				<td>
 					<input type="hidden" name="id" value="{$poster.id}" />
 					<input id="poster" class="long" name="poster" type="text" value={if isset($poster)}"{$poster.poster}"{else}""{/if} />
-					<div class="hint">Name of the MGR poster</div>
+					<div class="hint">Name of the MultiGroup poster</div>
 				</td>
 			</tr>
 			<tr>
