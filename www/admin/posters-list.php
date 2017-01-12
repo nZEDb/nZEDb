@@ -1,19 +1,19 @@
 <?php
 require_once './config.php';
 
+use app\models\MultigroupPosters;
 use nzedb\db\DB;
 
 $page   = new AdminPage();
 $pdo = new DB();
-$posterslist = $pdo->query(sprintf('SELECT * FROM multigroup_posters'));
-
+$posters = MultigroupPosters::find('all', ['order' => ['poster' => 'ASC']]);
 
 $poster = (isset($_REQUEST['poster']) && !empty($_REQUEST['poster']) ? $_REQUEST['poster'] : '');
 
 $page->smarty->assign(
 	[
 		'poster' => $poster,
-		'posterslist' => $posterslist
+		'posters' => $posters
 	]
 );
 

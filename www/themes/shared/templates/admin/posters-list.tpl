@@ -3,15 +3,15 @@
 	<p>
 		Below is a list of MultiGroup posters
 	</p>
-	{if $posterslist}
+	{if $posters}
 		<table style="width:100%;" class="data table table-striped responsive-utilities sortable">
 			<tr>
 				<th>Poster name</th>
 			</tr>
-			{foreach from=$posterslist item=poster}
-				<tr id="poster" class="{cycle values=",alt"}">
+			{foreach from=$posters item=$poster}
+				<tr class="{cycle values=",alt"}">
 					<td>
-						<a href="{$smarty.const.WWW_TOP}/posters-edit.php?id={$poster.id}&poster={$poster.poster}">{$poster.poster}</a>
+						<a href="{$smarty.const.WWW_TOP}/posters-edit.php?id={$poster->id}&poster={$poster->poster}">{$poster->poster}</a>
 					</td>
 				</tr>
 			{/foreach}
