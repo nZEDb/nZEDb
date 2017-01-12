@@ -13,6 +13,11 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	 */
 	protected $fromNames;
 
+	/**
+	 * @var
+	 */
+	protected $fromNamesQuery;
+
 	protected $tables = [
 			'cname' => 'multigroup_collections',
 			'bname' => 'multigroup_binaries',
@@ -40,59 +45,6 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	{
 		$this->pdo->queryInsert(sprintf('INSERT INTO multigroup_posters (poster) VALUE (%s)',
 			$this->pdo->escapeString($poster)));
-	}
-
-	/**
-	 * Create NZB files from complete MultiGroup releases.
-	 *
-	 * @param $groupID
-	 *
-	 * @return int
-	 * @access public
-	 */
-	public function createMGRNZBs($groupID)
-	{
-		$this->fromNames = Misc::convertMultiArray($this->getAllPosters(), "','");
-
-		$releases = $this->pdo->queryDirect(
-			sprintf("
-				SELECT SQL_NO_CACHE CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title,
-					r.name, r.id, r.guid
-				FROM releases r
-				INNER JOIN categories c ON r.categories_id = c.id
-				INNER JOIN categories cp ON cp.id = c.parentid
-				WHERE %s r.nzbstatus = 0 AND r.fromname IN ('%s')",
-				(!empty($groupID) ? ' r.groups_id = ' . $groupID . ' AND ' : ' '),
-				$this->fromNames
-			)
-		);
-
-		$nzbCount = 0;
-
-		if ($releases && $releases->rowCount()) {
-			$total = $releases->rowCount();
-			// Init vars for writing the NZB's.
-			$this->nzb->initiateForMgrWrite();
-			foreach ($releases as $release) {
-
-				if ($this->nzb->writeNZBforReleaseId($release['id'],
-						$release['guid'],
-						$release['name'],
-						$release['title']) === true
-				) {
-					$nzbCount++;
-					if ($this->echoCLI) {
-						echo $this->pdo->log->primaryOver("Creating NZBs and deleting MGR Collections:\t" .
-							$nzbCount .
-							'/' .
-							$total .
-							"\r");
-					}
-				}
-			}
-		}
-
-		return $nzbCount;
 	}
 
 	/**
@@ -156,5 +108,16 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 			'bname' => 'multigroup_binaries',
 			'pname' => 'multigroup_parts'
 		];
+	}
+
+	/**
+	 * Form fromNamesQuery for creating NZBs
+	 *
+	 * @void
+	 */
+	protected function formFromNamesQuery()
+	{
+		$posters = Misc::convertMultiArray($this->getAllPosters(), "','");
+		$this->fromNamesQuery = sprintf("AND r.fromname IN('%s')", $posters);
 	}
 }

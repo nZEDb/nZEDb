@@ -12,7 +12,6 @@ use nzedb\NZB;
 use nzedb\PreDb;
 use nzedb\ReleaseCleaning;
 use nzedb\ReleaseImage;
-use nzedb\processing\ProcessReleasesMultiGroup;
 use nzedb\Releases;
 use nzedb\RequestIDLocal;
 use nzedb\RequestIDWeb;
@@ -107,6 +106,11 @@ class ProcessReleases
 	 * @var array $tables	List of table names to be using for method calls.
 	 */
 	protected $tables = [];
+
+	/**
+	 * @var string $fromNamesQuery
+	 */
+	protected $fromNamesQuery;
 
 	/**
 	 * @var int Time (hours) to wait before delete a stuck/broken collection.
@@ -209,7 +213,7 @@ class ProcessReleases
 			$totalReleasesAdded += $releasesCount['added'] += $mgrReleasesCount['added'];
 
 			$nzbFilesAdded = $this->createNZBs($groupID);
-			$mgrFilesAdded = (new ProcessReleasesMultiGroup(['Settings' => $this->pdo]))->createMGRNZBs($groupID);
+			$mgrFilesAdded = (new ProcessReleasesMultiGroup(['Settings' => $this->pdo]))->createNZBs($groupID);
 			if ($this->processRequestIDs === 0) {
 				$this->processRequestIDs($groupID, 5000, true);
 			} else if ($this->processRequestIDs === 1) {
@@ -549,6 +553,17 @@ class ProcessReleases
 	}
 
 	/**
+	 * Form fromNamesQuery for creating NZBs
+	 *
+	 * @void
+	 */
+	protected function formFromNamesQuery()
+	{
+		$posters = Misc::convertMultiArray((new ProcessReleasesMultiGroup(['Settings' => $this->pdo]))->getAllPosters(), "','");
+		$this->fromNamesQuery = sprintf("AND r.fromname NOT IN('%s')", $posters);
+	}
+
+	/**
 	 * @param int|string $groupID (optional)
 	 *
 	 * @return array
@@ -763,13 +778,11 @@ class ProcessReleases
 	public function createNZBs($groupID)
 	{
 		$startTime = time();
+		$this->formFromnamesQuery();
 
 		if ($this->echoCLI) {
 			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Create the NZB, delete collections/binaries/parts."));
 		}
-
-		$relMgrp = new ProcessReleasesMultiGroup(['Settings' => $this->pdo]);
-		$posters = Misc::convertMultiArray($relMgrp->getAllPosters(), "','");
 
 		$releases = $this->pdo->queryDirect(
 			sprintf("
@@ -778,10 +791,9 @@ class ProcessReleases
 				FROM releases r
 				INNER JOIN categories c ON r.categories_id = c.id
 				INNER JOIN categories cp ON cp.id = c.parentid
-				WHERE %s nzbstatus = 0
-				AND r.fromname NOT IN('%s')",
+				WHERE %s nzbstatus = 0 %s",
 				(!empty($groupID) ? ' r.groups_id = ' . $groupID . ' AND ' : ' '),
-				$posters
+				$this->fromNamesQuery
 			)
 		);
 
