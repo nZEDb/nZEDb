@@ -14,14 +14,15 @@ $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 switch ($action) {
 	case 'submit':
 		if ($_POST['id'] == '') {
-			// Add a new mgr poster.
-			//$relPosters->addPoster($_POST['poster']);
-			$poster = MultigroupPosters::create(['poster' => $_POST['poster']]);
-			$poster->save();
+			// Add a new mg poster.
+			$poster = MultigroupPosters::create();
 		} else {
-			// Update an existing mgr poster.
-			$relPosters->updatePoster($_POST['id'], $_POST['poster']);
+			// Update an existing mg poster.
+			$poster = MultigroupPosters::find($_POST['id']);
 		}
+		$poster->poster = $_POST['poster'];
+		$poster->save();
+
 		header("Location:" . WWW_TOP . "/posters-list.php");
 		break;
 

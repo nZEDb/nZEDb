@@ -2,6 +2,7 @@
 
 namespace nzedb\processing;
 
+use app\models\MultigroupPosters;
 use nzedb\NZBMultiGroup;
 use nzedb\utility\Misc;
 
@@ -37,61 +38,14 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	}
 
 	/**
-	 * Add MultiGroup posters to database
-	 *
-	 * @param $poster
-	 */
-	public function addPoster($poster)
-	{
-		$this->pdo->queryInsert(sprintf('INSERT INTO multigroup_posters (poster) VALUE (%s)',
-			$this->pdo->escapeString($poster)));
-	}
-
-	/**
-	 * Delete MultiGroup posters from database
-	 *
-	 * @param $id
-	 */
-	public function deletePoster($id)
-	{
-		$this->pdo->queryExec(sprintf('DELETE FROM multigroup_posters WHERE id = %d', $id));
-	}
-
-	/**
-	 * Fetch all MultiGroup posters from database
-	 *
-	 * @return array|bool
-	 */
-	public function getAllPosters()
-	{
-		$result = $this->pdo->query(sprintf('SELECT poster AS poster FROM multigroup_posters'));
-		if (is_array($result) && !empty($result)) {
-			return $result;
-		}
-
-		return false;
-	}
-
-	/**
 	 * @param $fromName
 	 *
 	 * @return bool
 	 */
 	public function isMultiGroup($fromName)
 	{
-		$array = array_column($this->getAllPosters(), 'poster');
-		return in_array($fromName, $array);
-	}
-
-	/**
-	 * Update MultiGroup poster
-	 *
-	 * @param $id
-	 * @param $poster
-	 */
-	public function updatePoster($id, $poster)
-	{
-		$this->pdo->queryExec(sprintf('UPDATE multigroup_posters SET poster = %s WHERE id = %d', $this->pdo->escapeString($poster), $id));
+		$poster = MultigroupPosters::find('first', ['condition' => ['poster' => $fromName]]);
+		return ($poster->poster == $fromName);
 	}
 
 	/**
@@ -117,7 +71,7 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	 */
 	protected function formFromNamesQuery()
 	{
-		$posters = Misc::convertMultiArray($this->getAllPosters(), "','");
+		$posters = MultigroupPosters::commaSeparatedList();
 		$this->fromNamesQuery = sprintf("AND r.fromname IN('%s')", $posters);
 	}
 }
