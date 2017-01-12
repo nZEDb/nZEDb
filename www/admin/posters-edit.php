@@ -16,7 +16,8 @@ switch ($action) {
 		if ($_POST['id'] == '') {
 			// Add a new mgr poster.
 			//$relPosters->addPoster($_POST['poster']);
-			MultigroupPosters::create(['poster' => $_POST['poster']]);
+			$poster = MultigroupPosters::create(['poster' => $_POST['poster']]);
+			$poster->save();
 		} else {
 			// Update an existing mgr poster.
 			$relPosters->updatePoster($_POST['id'], $_POST['poster']);
@@ -28,9 +29,16 @@ switch ($action) {
 	default:
 		if (!empty($_GET['id'])) {
 			$page->title = "MGR Poster Edit";
+			// Note: explicitly setting default stuff below, which could be shorted to:
+			// $entry = MultigroupPosters::find($_GET['id']);
+			$entry = MultigroupPosters::find('first',
+				[
+					'conditions' => ['id' => $_GET['id']],
+					'fields' => ['id', 'poster']
+				]);
 			$poster = [
-				'id'     => $_GET['id'],
-				'poster' => $_GET['poster']
+				'id'     => $entry->id,
+				'poster' => $entry->poster,
 			];
 		} else {
 			$page->title = "MGR Poster Add";
