@@ -44,7 +44,7 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	 */
 	public function isMultiGroup($fromName)
 	{
-		$poster = MultigroupPosters::find('first', ['condition' => ['poster' => $fromName]]);
+		$poster = MultigroupPosters::find('first', ['conditions' => ['poster' => $fromName]]);
 		return ($poster->poster == $fromName);
 	}
 
