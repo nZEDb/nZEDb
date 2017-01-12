@@ -29,7 +29,7 @@ switch ($action) {
 	default:
 		if (!empty($_GET['id'])) {
 			$page->title = "MultiGroup Poster Edit";
-			// Note: explicitly setting default stuff below, which could be shorted to:
+			// Note: explicitly setting default stuff below, which could be shortened to:
 			// $entry = MultigroupPosters::find($_GET['id']);
 			$entry = MultigroupPosters::find('first',
 				[
