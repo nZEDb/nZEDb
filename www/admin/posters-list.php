@@ -17,6 +17,6 @@ $page->smarty->assign(
 	]
 );
 
-$page->title = 'MGR Posters List';
+$page->title = 'MultiGroup Posters List';
 $page->content = $page->smarty->fetch('posters-list.tpl');
 $page->render();

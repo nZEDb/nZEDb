@@ -28,7 +28,7 @@ switch ($action) {
 	case 'view':
 	default:
 		if (!empty($_GET['id'])) {
-			$page->title = "MGR Poster Edit";
+			$page->title = "MultiGroup Poster Edit";
 			// Note: explicitly setting default stuff below, which could be shorted to:
 			// $entry = MultigroupPosters::find($_GET['id']);
 			$entry = MultigroupPosters::find('first',
@@ -41,7 +41,7 @@ switch ($action) {
 				'poster' => $entry->poster,
 			];
 		} else {
-			$page->title = "MGR Poster Add";
+			$page->title = "MultiGroup Poster Add";
 			$poster = [
 				'id'     => '',
 				'poster' => ''
