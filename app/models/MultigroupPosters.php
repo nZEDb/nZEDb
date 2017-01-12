@@ -30,6 +30,23 @@ class MultigroupPosters extends \lithium\data\Model
 			'message' => 'Empty poster value is not permitted.'
 		]
 	];
+
+	public static function commaSeparatedList()
+	{
+		$list = [];
+		$posters = MultigroupPosters::find('all',
+			[
+				'fields' => ['poster'],
+				'order'  => ['poster' => 'ASC'],
+			]
+		);
+
+		foreach ($posters as $poster) {
+			$list[] = $poster->poster;
+		}
+
+		return implode(',', $list);
+	}
 }
 
 ?>

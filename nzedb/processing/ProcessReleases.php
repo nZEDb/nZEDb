@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing;
 
+use app\models\MultigroupPosters;
 use app\models\ReleasesGroups;
 use app\models\Settings;
 use nzedb\Categorize;
@@ -559,7 +560,7 @@ class ProcessReleases
 	 */
 	protected function formFromNamesQuery()
 	{
-		$posters = Misc::convertMultiArray((new ProcessReleasesMultiGroup(['Settings' => $this->pdo]))->getAllPosters(), "','");
+		$posters = MultigroupPosters::commaSeparatedList();
 		$this->fromNamesQuery = sprintf("AND r.fromname NOT IN('%s')", $posters);
 	}
 

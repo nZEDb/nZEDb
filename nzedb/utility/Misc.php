@@ -600,21 +600,6 @@ class Misc
 	}
 
 	/**
-	 * Convert multi to single dimensional array
-	 * Code taken from http://stackoverflow.com/a/12309103
-	 *
-	 * @param $array
-	 *
-	 * @param $separator
-	 *
-	 * @return string
-	 */
-	public static function convertMultiArray($array, $separator)
-	{
-		return implode("$separator",array_map(function($mArray) {return implode(",",$mArray);},$array));
-	}
-
-	/**
 	 * Converts XML to an associative array with namespace preservation -- use if intending to JSON encode
 	 * @author Tamlyn from Outlandish.com
 	 *
