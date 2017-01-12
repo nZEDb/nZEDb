@@ -118,6 +118,6 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	protected function formFromNamesQuery()
 	{
 		$posters = Misc::convertMultiArray($this->getAllPosters(), "','");
-		$this->fromNamesQuery = sprintf("AND r.fromname IN('%s'), $posters");
+		$this->fromNamesQuery = sprintf("AND r.fromname IN('%s')", $posters);
 	}
 }

@@ -560,7 +560,7 @@ class ProcessReleases
 	protected function formFromNamesQuery()
 	{
 		$posters = Misc::convertMultiArray((new ProcessReleasesMultiGroup(['Settings' => $this->pdo]))->getAllPosters(), "','");
-		$this->fromNamesQuery = sprintf("AND r.fromname NOT IN('%s'), $posters");
+		$this->fromNamesQuery = sprintf("AND r.fromname NOT IN('%s')", $posters);
 	}
 
 	/**
