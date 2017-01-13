@@ -270,7 +270,8 @@ class NZB
 
 				$XMLWriter->startElement('groups');
 				if (preg_match_all('#(\S+):\S+#', $collection['xref'], $matches)) {
-					foreach ($matches[1] as $group) {
+					$matches = array_unique($matches[1]);
+					foreach ($matches as $group) {
 						$XMLWriter->writeElement('group', $group);
 					}
 				} else {
