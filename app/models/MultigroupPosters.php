@@ -45,7 +45,7 @@ class MultigroupPosters extends \lithium\data\Model
 			$list[] = $poster->poster;
 		}
 
-		return implode(',', $list);
+		return implode("','", $list);
 	}
 }
 
