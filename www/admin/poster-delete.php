@@ -8,7 +8,7 @@ $page = new AdminPage();
 
 if (isset($_GET['id']))
 {
-	(new MultigroupPosters)->delete($_GET['id']);
+	MultigroupPosters::remove(['id' => $_GET['id']]);
 }
 
 if (isset($_GET['from']))
