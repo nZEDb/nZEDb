@@ -85,11 +85,6 @@ class Binaries
 	protected $_pdo;
 
 	/**
-	 * @var ProcessReleasesMultiGroup
-	 */
-	protected $_multiGrp;
-
-	/**
 	 * How many days to go back on a new group?
 	 *
 	 * @var bool
@@ -180,7 +175,6 @@ class Binaries
 		$this->_colorCLI = ($options['ColorCLI'] instanceof ColorCLI ? $options['ColorCLI'] : new ColorCLI());
 		$this->_nntp = ($options['NNTP'] instanceof NNTP ? $options['NNTP'] : new NNTP(['Echo' => $this->_colorCLI, 'Settings' => $this->_pdo, 'ColorCLI' => $this->_colorCLI]));
 		$this->_collectionsCleaning = ($options['CollectionsCleaning'] instanceof CollectionsCleaning ? $options['CollectionsCleaning'] : new CollectionsCleaning(['Settings' => $this->_pdo]));
-		$this->_multiGrp = new ProcessReleasesMultiGroup(['Settings' => $this->_pdo]);
 
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 
@@ -633,7 +627,7 @@ class Binaries
 		// Loop articles, figure out files/parts.
 		foreach ($headers as $header)
 		{
-			$multiGroup = $this->_multiGrp->isMultiGroup($header['From']);
+			$multiGroup = ProcessReleasesMultiGroup::isMultiGroup($header['From']);
 
 			// Check if we got the article or not.
 			if (isset($header['Number'])) {
