@@ -217,7 +217,7 @@ while ($runVar['counts']['iterations'] > 0) {
 						$stamp = 'UNIX_TIMESTAMP(MIN(dateadded))';
 
 						switch (true) {
-							case strpos($tbl, 'collections_') !== false:
+							case strpos($tbl, 'collections') !== false:
 								$runVar['counts']['now']['collections_table'] +=
 									getTableRowCount($psTableRowCount, $tbl);
 								$added = $pdo->queryOneRow(sprintf('SELECT %s AS dateadded FROM %s', $stamp, $tbl));
@@ -227,17 +227,17 @@ while ($runVar['counts']['iterations'] > 0) {
 									$age = $added['dateadded'];
 								}
 								break;
-							case strpos($tbl, 'binaries_') !== false:
+							case strpos($tbl, 'binaries') !== false:
 								$runVar['counts']['now']['binaries_table'] +=
 									getTableRowCount($psTableRowCount, $tbl);
 								break;
 							// This case must come before the 'parts_' one.
-							case strpos($tbl, 'missed_parts_') !== false:
+							case strpos($tbl, 'missed_parts') !== false:
 								$runVar['counts']['now']['missed_parts_table'] +=
 									getTableRowCount($psTableRowCount, $tbl);
 
 								break;
-							case strpos($tbl, 'parts_') !== false:
+							case strpos($tbl, 'parts') !== false:
 								$runVar['counts']['now']['parts_table'] +=
 									getTableRowCount($psTableRowCount, $tbl);
 								break;

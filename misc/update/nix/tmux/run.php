@@ -70,7 +70,7 @@ if ($tablepergroup == 1) {
 	$ran    = 0;
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
-		if (preg_match('/collections_\d+/', $tbl)) {
+		if (preg_match('/(multigroup\_)?collections(_\d+)?/', $tbl)) {
 			$run = $pdo->queryExec('UPDATE ' . $tbl .
 								   ' SET dateadded = now() WHERE dateadded < now() - INTERVAL ' .
 								   $delaytimet . ' HOUR');

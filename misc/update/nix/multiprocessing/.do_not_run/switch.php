@@ -157,7 +157,6 @@ switch ($options[1]) {
 	case 'releases':
 		$pdo = new DB();
 		$releases = new ProcessReleases(['Settings' => $pdo]);
-		$mgrreleases = new ProcessReleasesMultiGroup(['Settings' => $pdo]);
 
 		//Runs function that are per group
 		if (is_numeric($options[2])) {
@@ -165,12 +164,12 @@ switch ($options[1]) {
 			if ($options[0] === 'python') {
 				collectionCheck($pdo, $options[2]);
 			}
-
 			processReleases($releases, $options[2]);
-			processReleases($mgrreleases, $options[2]);
+		// Run functions that run on releases table after all others completed.
 		} else {
+			// Run MGR once after all other release updates for standard groups
+			processReleases(new ProcessReleasesMultiGroup(['Settings' => $pdo]), '');
 
-			// Run functions that run on releases table after all others completed.
 			$groupCount = rtrim($options[2], '_');
 			if (!is_numeric($groupCount)) {
 				$groupCount = 1;
@@ -288,9 +287,8 @@ switch ($options[1]) {
 /**
  * Create / process releases for a groupID.
  *
- * @param ProcessReleases $releases
- * @param ProcessReleasesMultiGroup $mgrreleases
- * @param int             $groupID
+ * @param ProcessReleases|ProcessReleasesMultiGroup $releases
+ * @param int                                       $groupID
  */
 function processReleases($releases, $groupID)
 {

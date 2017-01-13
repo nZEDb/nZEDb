@@ -32,7 +32,7 @@ CREATE TABLE         multigroup_collections (
 DROP TABLE IF EXISTS multigroup_binaries;
 CREATE TABLE multigroup_binaries LIKE binaries;
 
-# DROP TABLE IF EXISTS multigroup_parts;
+DROP TABLE IF EXISTS multigroup_parts;
 CREATE TABLE multigroup_parts LIKE parts;
 
 DROP TABLE IF EXISTS multigroup_missed_parts;
