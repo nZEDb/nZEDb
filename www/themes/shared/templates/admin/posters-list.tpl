@@ -13,6 +13,11 @@
 					<td>
 						<a href="{$smarty.const.WWW_TOP}/posters-edit.php?id={$poster->id}&poster={$poster->poster}">{$poster->poster}</a>
 					</td>
+					<td>
+						<a class="confirm_action btn btn-sm btn-danger"
+						   href="{$smarty.const.WWW_TOP}/poster-delete.php?id={$poster->id} from={$smarty.server.REQUEST_URI|escape:"url"}"
+						   title="Delete Poster">Delete poster</a>
+					</td>
 				</tr>
 			{/foreach}
 		</table>
