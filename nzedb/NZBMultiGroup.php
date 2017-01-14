@@ -23,8 +23,10 @@ class NZBMultiGroup extends NZB
 	 * Initiate class vars when writing NZB's.
 	 *
 	 * @access public
+	 *
+	 * @param int $groupID
 	 */
-	public function initiateForWrite()
+	public function initiateForWrite($groupID)
 	{
 		$this->_tableNames = [
 			'cName' => 'multigroup_collections',
