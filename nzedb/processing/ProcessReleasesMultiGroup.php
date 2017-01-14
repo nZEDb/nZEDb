@@ -19,6 +19,16 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	}
 
 	/**
+	 * Form fromNamesQuery for creating NZBs
+	 *
+	 * @void
+	 */
+	protected function formFromNamesQuery()
+	{
+		$this->fromNamesQuery = '';
+	}
+
+	/**
 	 * @param $fromName
 	 *
 	 * @return bool

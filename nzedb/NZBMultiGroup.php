@@ -24,7 +24,7 @@ class NZBMultiGroup extends NZB
 	 *
 	 * @access public
 	 */
-	public function initiateForMgrWrite()
+	public function initiateForWrite()
 	{
 		$this->_tableNames = [
 			'cName' => 'multigroup_collections',

@@ -427,7 +427,7 @@ class ProcessReleases
 
 		$minSizeDeleted = $maxSizeDeleted = $minFilesDeleted = 0;
 
-		$maxSizeSetting = Settings::value('.release.maxsizetoformrelease');
+		$maxSizeSetting = Settings::value('..maxsizetoformrelease');
 		$minSizeSetting = Settings::value('.release.minsizetoformrelease');
 		$minFilesSetting = Settings::value('.release.minfilestoformrelease');
 
@@ -713,13 +713,27 @@ class ProcessReleases
 										);
 									}
 
-									$relGroups = ReleasesGroups::create(
+									$relGroupsChk = ReleasesGroups::find('first',
 										[
-											'releases_id' => $releaseID,
-											'groups_id' => $xrefGrpID,
+											'conditions' =>
+												[
+													'releases_id' => $releaseID,
+												    'groups_id'   => $xrefGrpID,
+												],
+											'fields'     => ['releases_id'],
+											'limit'      => 1,
 										]
 									);
-									$relGroups->save();
+
+									if ($relGroupsChk === null) {
+										$relGroups = ReleasesGroups::create(
+											[
+												'releases_id' => $releaseID,
+												'groups_id'   => $xrefGrpID,
+											]
+										);
+										$relGroups->save();
+									}
 								}
 							}
 						}
@@ -1592,7 +1606,6 @@ class ProcessReleases
 	 */
 	private function collectionFileCheckStage2(&$where)
 	{
-
 		$this->pdo->queryExec(
 			sprintf('
 				UPDATE %s c
