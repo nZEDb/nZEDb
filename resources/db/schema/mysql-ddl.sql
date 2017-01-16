@@ -1240,11 +1240,11 @@ CREATE TABLE video_data (
 
 DROP TABLE IF EXISTS videos;
 CREATE TABLE videos (
-  id           MEDIUMINT(11) UNSIGNED  NOT NULL AUTO_INCREMENT COMMENT 'Show ID to be used in other tables as reference.',
+  id           MEDIUMINT(11) UNSIGNED  NOT NULL AUTO_INCREMENT COMMENT 'Show\'s ID to be used in other tables as reference.',
   type         TINYINT(1) UNSIGNED     NOT NULL DEFAULT '0' COMMENT '0 = TV, 1 = Film, 2 = Anime',
   title        VARCHAR(180) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Name of the video.',
   countries_id CHAR(2) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Two character country code (FK to countries table).',
-  started      DATETIME                NOT NULL COMMENT 'Date (UTC) of production first airing',
+  started      DATETIME                NOT NULL COMMENT 'Date (UTC) of production''s first airing',
   anidb        MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0'  COMMENT 'ID number for anidb site',
   imdb         MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'ID number for IMDB site (without the ''tt'' prefix).',
   tmdb         MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'ID number for TMDB site.',
