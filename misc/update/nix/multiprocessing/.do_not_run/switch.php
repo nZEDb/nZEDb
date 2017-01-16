@@ -324,7 +324,7 @@ function charCheck($char)
 /**
  * Check if the group should be processed.
  *
- * @param Settings $pdo
+ * @param DB $pdo
  * @param int                $groupID
  */
 function collectionCheck(&$pdo, $groupID)
@@ -337,7 +337,7 @@ function collectionCheck(&$pdo, $groupID)
 /**
  * Connect to usenet, return NNTP object.
  *
- * @param Settings $pdo
+ * @param DB $pdo
  * @param bool               $alternate Use alternate NNTP provider.
  *
  * @return NNTP
