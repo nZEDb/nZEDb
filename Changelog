@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-01-16 niel
+	Fix: Work around to prevent some db versions auto-incrementing an explicit 0 for Categories Other's.
 2017-01-12 DariusIII
 	Fix: Predb page link for predb search (closes issue #2356)
 2017-01-11 niel
