@@ -41,8 +41,8 @@ if ($collections_rows instanceof \Traversable) {
 		$groupName = $groups->getNameByID($row['groups_id']);
 		echo $pdo->log->header("Processing ${groupName}");
 		//collection
-		$pdo->queryExec("INSERT IGNORE INTO collections_" . $row['groups_id'] . " (subject, fromname, date, xref, totalfiles, groups_id, collectionhash, dateadded, filecheck, filesize, releaseid) "
-			. "SELECT subject, fromname, date, xref, totalfiles, groups_id, collectionhash, dateadded, filecheck, filesize, releaseid FROM collections WHERE groups_id = ${row['groups_id']}");
+		$pdo->queryExec("INSERT IGNORE INTO collections_" . $row['groups_id'] . " (subject, fromname, date, xref, totalfiles, groups_id, collectionhash, dateadded, filecheck, filesize, releases_id) "
+			. "SELECT subject, fromname, date, xref, totalfiles, groups_id, collectionhash, dateadded, filecheck, filesize, releases_id FROM collections WHERE groups_id = ${row['groups_id']}");
 		$collections = $pdo->queryOneRow("SELECT COUNT(*) AS cnt FROM collections where groups_id = " . $row['groups_id']);
 		$ncollections = $pdo->queryOneRow("SELECT COUNT(*) AS cnt FROM collections_" . $row['groups_id']);
 		echo $pdo->log->primary("Group ${groupName}, Collections = ${collections['cnt']} [${ncollections['cnt']}]");

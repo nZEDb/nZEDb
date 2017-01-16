@@ -654,7 +654,7 @@ class ProcessReleases
 						$this->pdo->queryExec(
 							sprintf('
 								UPDATE %s
-								SET filecheck = %d, releaseid = %d
+								SET filecheck = %d, releases_id = %d
 								WHERE id = %d',
 								$group['cname'],
 								self::COLLFC_INSERTED,
@@ -1079,7 +1079,7 @@ class ProcessReleases
 			sprintf('
 				SELECT SQL_NO_CACHE c.id
 				FROM %s c
-				INNER JOIN releases r ON r.id = c.releaseid
+				INNER JOIN releases r ON r.id = c.releases_id
 				WHERE r.nzbstatus = 1',
 				$group['cname']
 			)
