@@ -562,8 +562,8 @@ CREATE TABLE         multigroup_collections (
 
 DROP TABLE IF EXISTS multigroup_posters;
 CREATE TABLE multigroup_posters (
-  id             INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT,
-  poster       VARCHAR(255)        NOT NULL DEFAULT '',
+  id           INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT COMMENT 'Primary key',
+  poster       VARCHAR(255)        NOT NULL DEFAULT '' COMMENT 'Name of the poster to track',
   PRIMARY KEY (id) ,
   UNIQUE KEY (poster)
 )
