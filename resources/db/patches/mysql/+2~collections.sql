@@ -19,7 +19,9 @@ CREATE PROCEDURE change_collections()
       IF done
       THEN LEAVE myloop; END IF;
       SET @sql1 := CONCAT("ALTER TABLE ", _table,
-                          " CHANGE COLUMN group_id groups_id INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to groups.id'");
+                          " CHANGE COLUMN group_id groups_id INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to groups.id'",
+                          ", CHANGE COLUMN releaseid releases_id INT NULL COMMENT 'Release id, added as placeholder until NZB has been created'"
+      );
       PREPARE _stmt FROM @sql1;
       EXECUTE _stmt;
       DROP PREPARE _stmt;
