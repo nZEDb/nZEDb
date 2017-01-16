@@ -32,7 +32,7 @@ if (!Settings::value('..tablepergroup')) {
 // Doing it this way in case there are tables existing not related to the active/backfill list (i.e. I don't have a clue when these tables get deleted so I'm doing any that are there).
 $tables = $pdo->queryDirect("SELECT SUBSTR(TABLE_NAME, 12) AS suffix FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE()) AND TABLE_NAME LIKE 'collections%' ORDER BY TABLE_NAME");
 
-$query1 = "ALTER table collections%s add noise char(32) not null default '' after releases_id";
+$query1 = "ALTER table collections%s add noise char(32) not null default '' after releaseid";
 
 if ($tables instanceof \Traversable) {
 	foreach ($tables as $table) {
