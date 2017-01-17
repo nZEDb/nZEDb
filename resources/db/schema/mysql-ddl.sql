@@ -239,7 +239,7 @@ CREATE TABLE         collections (
   INDEX        groups_id                    (groups_id),
   INDEX        ix_collection_filecheck      (filecheck),
   INDEX        ix_collection_dateadded      (dateadded),
-  INDEX        ix_collection_releaseid      (releaseid),
+  INDEX        ix_collection_releaseid      (releases_id),
   UNIQUE INDEX ix_collection_collectionhash (collectionhash)
 )
   ENGINE          = MYISAM
@@ -1091,8 +1091,7 @@ CREATE TABLE users (
   sabapikey      VARCHAR(255)     NULL     DEFAULT NULL,
   sabapikeytype  TINYINT(1)       NULL     DEFAULT NULL,
   sabpriority    TINYINT(1)       NULL     DEFAULT NULL,
-  queuetype      TINYINT(1)       NOT NULL DEFAULT '1'
-  COMMENT 'Type of queue, Sab or NZBGet',
+  queuetype      TINYINT(1)       NOT NULL DEFAULT '1' COMMENT 'Type of queue, Sab or NZBGet',
   nzbgeturl      VARCHAR(255)     NULL     DEFAULT NULL,
   nzbgetusername VARCHAR(255)     NULL     DEFAULT NULL,
   nzbgetpassword VARCHAR(255)     NULL     DEFAULT NULL,
