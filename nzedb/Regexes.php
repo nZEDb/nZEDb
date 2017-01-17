@@ -180,7 +180,7 @@ class Regexes
 					b.name, b.totalparts, b.currentparts, HEX(b.binaryhash) AS binaryhash,
 					c.fromname, c.collectionhash
 				FROM %s b
-				INNER JOIN %s c ON c.id = b.collection_id',
+				INNER JOIN %s c ON c.id = b.collections_id',
 				$tableNames['bname'], $tableNames['cname']
 			)
 		);
