@@ -249,7 +249,8 @@ class ProcessReleases
 
 		//Print amount of added releases and time it took.
 		if ($this->echoCLI && $this->tablePerGroup === false) {
-			$countID = $this->pdo->queryOneRow('SELECT COUNT(id) AS count FROM collections ' . (!empty($groupID) ? ' WHERE group_id = ' . $groupID : ''));
+			$countID = $this->pdo->queryOneRow('SELECT COUNT(id) AS count FROM collections ' .
+				(!empty($groupID) ? ' WHERE groups_id = ' . $groupID : ''));
 			$this->pdo->log->doEcho(
 				$this->pdo->log->primary(
 					'Completed adding ' .
@@ -338,7 +339,7 @@ class ProcessReleases
 			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Attempting to find complete collections."));
 		}
 
-		$where = (!empty($groupID) ? ' AND c.group_id = ' . $groupID . ' ' : ' ');
+		$where = (!empty($groupID) ? ' AND c.groups_id = ' . $groupID . ' ' : ' ');
 
 		$this->processStuckCollections($where);
 		$this->collectionFileCheckStage1($where);
@@ -380,11 +381,11 @@ class ProcessReleases
 		$checked = $this->pdo->queryExec(
 			sprintf('
 				UPDATE %s c
-				SET c.filesize = 
+				SET c.filesize =
 				(
 					SELECT COALESCE(SUM(b.partsize), 0)
 					FROM %s b
-					WHERE b.collection_id = c.id
+					WHERE b.collections_id = c.id
 				),
 				c.filecheck = %d
 				WHERE c.filecheck = %d
@@ -393,7 +394,7 @@ class ProcessReleases
 				$this->tables['bname'],
 				self::COLLFC_SIZED,
 				self::COLLFC_COMPPART,
-				(!empty($groupID) ? ' AND c.group_id = ' . $groupID : ' ')
+				(!empty($groupID) ? ' AND c.groups_id = ' . $groupID : ' ')
 			)
 		);
 		if ($checked !== false && $this->echoCLI) {
@@ -453,7 +454,7 @@ class ProcessReleases
 						AND c.filesize > 0 %s',
 						$this->tables['cname'],
 						self::COLLFC_SIZED,
-						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : ''
+						$this->tablePerGroup === false ? sprintf('AND c.groups_id = %d', $groupID['id']) : ''
 					)
 				) !== false
 			) {
@@ -462,8 +463,8 @@ class ProcessReleases
 					sprintf('
 						DELETE c, b, p
 						FROM %s c
-						LEFT JOIN %s b ON c.id = b.collection_id
-						LEFT JOIN %s p ON b.id = p.binaryid
+						LEFT JOIN %s b ON c.id = b.collections_id
+						LEFT JOIN %s p ON b.id = p.binaries_id
 						WHERE c.filecheck = %d %s
 						AND c.filesize > 0
 						AND GREATEST(%d, %d) > 0
@@ -472,7 +473,7 @@ class ProcessReleases
 						$this->tables['bname'],
 						$this->tables['pname'],
 						self::COLLFC_SIZED,
-						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : '',
+						$this->tablePerGroup === false ? sprintf('AND c.groups_id = %d', $groupID['id']) : '',
 						$groupMinSizeSetting,
 						$minSizeSetting,
 						$groupMinSizeSetting,
@@ -488,15 +489,15 @@ class ProcessReleases
 					$deleteQuery = $this->pdo->queryExec(
 						sprintf('
 							DELETE c, b, p FROM %s c
-							LEFT JOIN %s b ON c.id = b.collection_id
-							LEFT JOIN %s p ON b.id = p.binaryid
+							LEFT JOIN %s b ON c.id = b.collections_id
+							LEFT JOIN %s p ON b.id = p.binaries_id
 							WHERE c.filecheck = %d %s
 							AND c.filesize > %d',
 							$this->tables['cname'],
 							$this->tables['bname'],
 							$this->tables['pname'],
 							self::COLLFC_SIZED,
-							$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : '',
+							$this->tablePerGroup === false ? sprintf('AND c.groups_id = %d', $groupID['id']) : '',
 							$maxSizeSetting
 						)
 					);
@@ -508,8 +509,8 @@ class ProcessReleases
 				$deleteQuery = $this->pdo->queryExec(
 					sprintf('
 						DELETE c, b, p FROM %s c
-						LEFT JOIN %s b ON c.id = b.collection_id
-						LEFT JOIN %s p ON b.id = p.binaryid
+						LEFT JOIN %s b ON c.id = b.collections_id
+						LEFT JOIN %s p ON b.id = p.binaries_id
 						WHERE c.filecheck = %d %s
 						AND GREATEST(%d, %d) > 0
 						AND c.totalfiles < GREATEST(%d, %d)',
@@ -517,7 +518,7 @@ class ProcessReleases
 						$this->tables['bname'],
 						$this->tables['pname'],
 						self::COLLFC_SIZED,
-						$this->tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID['id']) : '',
+						$this->tablePerGroup === false ? sprintf('AND c.groups_id = %d', $groupID['id']) : '',
 						$groupMinFilesSetting,
 						$minFilesSetting,
 						$groupMinFilesSetting,
@@ -583,16 +584,17 @@ class ProcessReleases
 
 		$this->pdo->ping(true);
 
+		$groupsid = !empty($groupID) ? ' groups_id = ' . $groupID . ' AND ' : ' ';
 		$collections = $this->pdo->queryDirect(
 			sprintf('
 				SELECT SQL_NO_CACHE c.*, g.name AS gname
 				FROM %s c
-				INNER JOIN groups g ON c.group_id = g.id
+				INNER JOIN groups g ON c.groups_id = g.id
 				WHERE %s c.filecheck = %d
 				AND c.filesize > 0
 				LIMIT %d',
 				$this->tables['cname'],
-				(!empty($groupID) ? ' c.group_id = ' . $groupID . ' AND ' : ' '),
+				$groupsid,
 				self::COLLFC_SIZED,
 				$this->releaseCreationLimit
 			)
@@ -663,12 +665,12 @@ class ProcessReleases
 							'name' => $cleanRelName,
 							'searchname' => $this->pdo->escapeString(utf8_encode($cleanedName)),
 							'totalpart' => $collection['totalfiles'],
-							'groups_id' => $collection['group_id'],
+							'groups_id' => $collection['groups_id'],
 							'guid' => $this->pdo->escapeString($this->releases->createGUID()),
 							'postdate' => $this->pdo->escapeString($collection['date']),
 							'fromname' => $fromName,
 							'size' => $collection['filesize'],
-							'categories_id' => $categorize->determineCategory($collection['group_id'], $cleanedName),
+							'categories_id' => $categorize->determineCategory($collection['groups_id'], $cleanedName),
 							'isrenamed' => ($properName === true ? 1 : 0),
 							'reqidstatus' => ($isReqID === true ? 1 : 0),
 							'predb_id' => ($preID === false ? 0 : $preID),
@@ -681,7 +683,7 @@ class ProcessReleases
 						$this->pdo->queryExec(
 							sprintf('
 								UPDATE %s
-								SET filecheck = %d, releaseid = %d
+								SET filecheck = %d, releases_id = %d
 								WHERE id = %d',
 								$this->tables['cname'],
 								self::COLLFC_INSERTED,
@@ -750,8 +752,8 @@ class ProcessReleases
 						sprintf('
 							DELETE c, b, p
 							FROM %s c
-							INNER JOIN %s b ON c.id = b.collection_id
-							STRAIGHT_JOIN %s p ON b.id = p.binaryid
+							INNER JOIN %s b ON c.id = b.collections_id
+							STRAIGHT_JOIN %s p ON b.id = p.binaries_id
 							WHERE c.collectionhash = %s',
 							$this->tables['cname'],
 							$this->tables['bname'],
@@ -797,6 +799,7 @@ class ProcessReleases
 			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Create the NZB, delete collections/binaries/parts."));
 		}
 
+		$groupsid = !empty($groupID) ? ' r.groups_id = ' . $groupID . ' AND ' : ' ';
 		$releases = $this->pdo->queryDirect(
 			sprintf("
 				SELECT SQL_NO_CACHE
@@ -806,7 +809,7 @@ class ProcessReleases
 				INNER JOIN categories c ON r.categories_id = c.id
 				INNER JOIN categories cp ON cp.id = c.parentid
 				WHERE %s nzbstatus = 0 %s",
-				(!empty($groupID) ? ' r.groups_id = ' . $groupID . ' AND ' : ' '),
+				$groupsid,
 				$this->fromNamesQuery
 			)
 		);
@@ -817,8 +820,8 @@ class ProcessReleases
 			$total = $releases->rowCount();
 			// Init vars for writing the NZB's.
 			$this->nzb->initiateForWrite($groupID);
-			foreach ($releases as $release) {
-
+			foreach ($releases as $release)
+			{
 				if ($this->nzb->writeNZBforReleaseId($release['id'], $release['guid'], $release['name'], $release['title']) === true) {
 					$nzbCount++;
 					if ($this->echoCLI) {
@@ -987,18 +990,19 @@ class ProcessReleases
 		}
 
 		$deleted = 0;
+		$groupsid = !empty($groupID) && $this->tablePerGroup === false ? ' AND c.groups_id = ' . $groupID : '';
 		$deleteQuery = $this->pdo->queryExec(
 			sprintf('
 				DELETE c, b, p
 				FROM %s c
-				LEFT JOIN %s b ON c.id = b.collection_id
-				LEFT JOIN %s p ON b.id = p.binaryid
+				LEFT JOIN %s b ON c.id = b.collections_id
+				LEFT JOIN %s p ON b.id = p.binaries_id
 				WHERE (c.dateadded < NOW() - INTERVAL %d HOUR) %s',
 				$this->tables['cname'],
 				$this->tables['bname'],
 				$this->tables['pname'],
 				Settings::value('..partretentionhours'),
-				(!empty($groupID) && $this->tablePerGroup === false ? ' AND c.group_id = ' . $groupID : '')
+				$groupsid
 			)
 		);
 
@@ -1028,17 +1032,18 @@ class ProcessReleases
 			}
 
 			$deleted = 0;
+			$groupsid = !empty($groupID) && $this->tablePerGroup === false ? ' AND c.groups_id = ' . $groupID : '';
 			$deleteQuery = $this->pdo->queryExec(
 				sprintf('
 					DELETE c, b, p
 					FROM %s c
-					LEFT JOIN %s b ON c.id = b.collection_id
-					LEFT JOIN %s p ON b.id = p.binaryid
-					WHERE (b.id IS NULL OR p.binaryid IS NULL) %s',
+					LEFT JOIN %s b ON c.id = b.collections_id
+					LEFT JOIN %s p ON b.id = p.binaries_id
+					WHERE (b.id IS NULL OR p.binaries_id IS NULL) %s',
 					$this->tables['cname'],
 					$this->tables['bname'],
 					$this->tables['pname'],
-					(!empty($groupID) && $this->tablePerGroup === false ? ' AND c.group_id = ' . $groupID : '')
+					$groupsid
 				)
 			);
 
@@ -1066,9 +1071,9 @@ class ProcessReleases
 			$deleteQuery = $this->pdo->queryExec(
 				sprintf(
 					'DELETE b, p FROM %s b
-					LEFT JOIN %s p ON b.id = p.binaryid
-					LEFT JOIN %s c ON b.collection_id = c.id
-					WHERE (p.binaryid IS NULL OR c.id IS NULL)
+					LEFT JOIN %s p ON b.id = p.binaries_id
+					LEFT JOIN %s c ON b.collections_id = c.id
+					WHERE (p.binaries_id IS NULL OR c.id IS NULL)
 					AND b.id < %d',
 					$this->tables['bname'],
 					$this->tables['pname'],
@@ -1101,9 +1106,9 @@ class ProcessReleases
 				sprintf('
 					DELETE p
 					FROM %s p
-					LEFT JOIN %s b ON p.binaryid = b.id
+					LEFT JOIN %s b ON p.binaries_id = b.id
 					WHERE b.id IS NULL
-					AND p.binaryid < %d',
+					AND p.binaries_id < %d',
 					$this->tables['pname'],
 					$this->tables['bname'],
 					$this->maxQueryFormulator($this->tables['bname'], 20000)
@@ -1136,7 +1141,7 @@ class ProcessReleases
 			sprintf('
 				SELECT SQL_NO_CACHE c.id
 				FROM %s c
-				INNER JOIN releases r ON r.id = c.releaseid
+				INNER JOIN releases r ON r.id = c.releases_id
 				WHERE r.nzbstatus = 1',
 				$this->tables['cname']
 			)
@@ -1149,8 +1154,8 @@ class ProcessReleases
 					sprintf('
 						DELETE c, b, p
 						FROM %s c
-						LEFT JOIN %s b ON(c.id=b.collection_id)
-						LEFT JOIN %s p ON(b.id=p.binaryid)
+						LEFT JOIN %s b ON(c.id=b.collections_id)
+						LEFT JOIN %s p ON(b.id=p.binaries_id)
 						WHERE c.id = %d',
 						$this->tables['cname'],
 						$this->tables['bname'],
@@ -1574,10 +1579,10 @@ class ProcessReleases
 				(
 					SELECT c.id
 					FROM %s c
-					INNER JOIN %s b ON b.collection_id = c.id
+					INNER JOIN %s b ON b.collections_id = c.id
 					WHERE c.totalfiles > 0
 					AND c.filecheck = %d %s
-					GROUP BY b.collection_id, c.totalfiles, c.id
+					GROUP BY b.collections_id, c.totalfiles, c.id
 					HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)
 				) r ON c.id = r.id
 				SET filecheck = %d',
@@ -1613,7 +1618,7 @@ class ProcessReleases
 				(
 					SELECT c.id
 					FROM %s c
-					INNER JOIN %s b ON b.collection_id = c.id
+					INNER JOIN %s b ON b.collections_id = c.id
 					WHERE b.filenumber = 0
 					AND c.totalfiles > 0
 					AND c.filecheck = %d %s
@@ -1660,7 +1665,7 @@ class ProcessReleases
 				(
 					SELECT b.id
 					FROM %s b
-					INNER JOIN %s c ON c.id = b.collection_id
+					INNER JOIN %s c ON c.id = b.collections_id
 					WHERE c.filecheck = %d
 					AND b.partcheck = %d %s
 					AND b.currentparts = b.totalparts
@@ -1683,7 +1688,7 @@ class ProcessReleases
 				(
 					SELECT b.id
 					FROM %s b
-					INNER JOIN %s c ON c.id = b.collection_id
+					INNER JOIN %s c ON c.id = b.collections_id
 					WHERE c.filecheck = %d
 					AND b.partcheck = %d %s
 					AND b.currentparts >= (b.totalparts + 1)
@@ -1718,9 +1723,9 @@ class ProcessReleases
 			sprintf('
 				UPDATE %s c INNER JOIN
 					(SELECT c.id FROM %s c
-					INNER JOIN %s b ON c.id = b.collection_id
+					INNER JOIN %s b ON c.id = b.collections_id
 					WHERE b.partcheck = 1 AND c.filecheck IN (%d, %d) %s
-					GROUP BY b.collection_id, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles)
+					GROUP BY b.collections_id, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles)
 				r ON c.id = r.id SET filecheck = %d',
 				$this->tables['cname'],
 				$this->tables['cname'],
@@ -1773,7 +1778,7 @@ class ProcessReleases
 
 		$this->pdo->queryExec(
 			sprintf("
-				UPDATE %s c SET filecheck = %d, totalfiles = (SELECT COUNT(b.id) FROM %s b WHERE b.collection_id = c.id)
+				UPDATE %s c SET filecheck = %d, totalfiles = (SELECT COUNT(b.id) FROM %s b WHERE b.collections_id = c.id)
 				WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR
 				AND c.filecheck IN (%d, %d, 10) %s",
 				$this->tables['cname'],
@@ -1802,8 +1807,8 @@ class ProcessReleases
 		$obj = $this->pdo->queryExec(
 			sprintf("
                 DELETE c, b, p FROM %s c
-                LEFT JOIN %s b ON (c.id=b.collection_id)
-                LEFT JOIN %s p ON (b.id=p.binaryid)
+                LEFT JOIN %s b ON (c.id=b.collections_id)
+                LEFT JOIN %s p ON (b.id=p.binaries_id)
                 WHERE
                     c.added <
                     DATE_SUB({$this->pdo->escapeString($lastRun)}, INTERVAL %d HOUR)

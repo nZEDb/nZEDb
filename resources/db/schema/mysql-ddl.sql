@@ -109,19 +109,19 @@ CREATE TABLE audio_data (
 
 DROP TABLE IF EXISTS binaries;
 CREATE TABLE binaries (
-  id            BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  name          VARCHAR(1000)       NOT NULL DEFAULT '',
-  collection_id INT(11) UNSIGNED    NOT NULL DEFAULT 0,
-  filenumber    INT UNSIGNED        NOT NULL DEFAULT '0',
-  totalparts    INT(11) UNSIGNED    NOT NULL DEFAULT 0,
-  currentparts  INT UNSIGNED        NOT NULL DEFAULT 0,
-  binaryhash    BINARY(16)          NOT NULL DEFAULT '0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
-  partcheck     TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
-  partsize      BIGINT UNSIGNED     NOT NULL DEFAULT 0,
+  id             BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  name           VARCHAR(1000)       NOT NULL DEFAULT '',
+  collections_id INT(11) UNSIGNED    NOT NULL DEFAULT 0,
+  filenumber     INT UNSIGNED        NOT NULL DEFAULT '0',
+  totalparts     INT(11) UNSIGNED    NOT NULL DEFAULT 0,
+  currentparts   INT UNSIGNED        NOT NULL DEFAULT 0,
+  binaryhash     BINARY(16)          NOT NULL DEFAULT '0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
+  partcheck      TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+  partsize       BIGINT UNSIGNED     NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE INDEX ix_binary_binaryhash (binaryhash),
-  INDEX ix_binary_partcheck  (partcheck),
-  INDEX ix_binary_collection (collection_id)
+  INDEX ix_binaries_partcheck   (partcheck),
+  INDEX ix_binaries_collections (collections_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -225,18 +225,18 @@ CREATE TABLE         collections (
   date           DATETIME            DEFAULT NULL,
   xref           VARCHAR(255)        NOT NULL DEFAULT '',
   totalfiles     INT(11) UNSIGNED    NOT NULL DEFAULT '0',
-  group_id       INT(11) UNSIGNED    NOT NULL DEFAULT '0',
+  groups_id      INT(11) UNSIGNED    NOT NULL DEFAULT '0',
   collectionhash VARCHAR(255)        NOT NULL DEFAULT '0',
   dateadded      DATETIME            DEFAULT NULL,
   added          TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
   filecheck      TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
   filesize       BIGINT UNSIGNED     NOT NULL DEFAULT '0',
-  releaseid      INT                 NULL,
+  releases_id    INT                 NULL,
   noise          CHAR(32)            NOT NULL DEFAULT '',
   PRIMARY KEY                               (id),
   INDEX        fromname                     (fromname),
   INDEX        date                         (date),
-  INDEX        group_id                     (group_id),
+  INDEX        groups_id                    (groups_id),
   INDEX        ix_collection_filecheck      (filecheck),
   INDEX        ix_collection_dateadded      (dateadded),
   INDEX        ix_collection_releaseid      (releaseid),
@@ -458,15 +458,15 @@ CREATE TABLE menu_items (
 
 DROP TABLE IF EXISTS missed_parts;
 CREATE TABLE missed_parts (
-  id       INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
-  numberid BIGINT UNSIGNED  NOT NULL,
-  group_id INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to groups.id',
-  attempts TINYINT(1)       NOT NULL DEFAULT '0',
+  id        INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
+  numberid  BIGINT UNSIGNED  NOT NULL,
+  groups_id INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to groups.id',
+  attempts  TINYINT(1)       NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
-  INDEX ix_missed_parts_attempts                  (attempts),
-  INDEX ix_missed_parts_groupid_attempts          (group_id, attempts),
-  INDEX ix_missed_parts_numberid_groupsid_attempts (numberid, group_id, attempts),
-  UNIQUE INDEX ix_missed_parts_numberid_groupsid          (numberid, group_id)
+  INDEX ix_missed_parts_attempts                   (attempts),
+  INDEX ix_missed_parts_groupsid_attempts          (groups_id, attempts),
+  INDEX ix_missed_parts_numberid_groupsid_attempts (numberid, groups_id, attempts),
+  UNIQUE INDEX ux_missed_parts_numberid_groupsid   (numberid, groups_id)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -504,6 +504,64 @@ CREATE TABLE movieinfo (
   AUTO_INCREMENT = 1;
 
 
+DROP TABLE IF EXISTS multigroup_binaries;
+CREATE TABLE multigroup_binaries LIKE binaries;
+
+
+DROP TABLE IF EXISTS multigroup_collections;
+CREATE TABLE multigroup_collections (
+  id             INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT,
+  subject        VARCHAR(255)        NOT NULL DEFAULT '',
+  fromname       VARCHAR(255)        NOT NULL DEFAULT '',
+  date           DATETIME                     DEFAULT NULL,
+  xref           VARCHAR(510)        NOT NULL DEFAULT '',
+  totalfiles     INT(11) UNSIGNED    NOT NULL DEFAULT '0',
+  group_id       INT(11) UNSIGNED    NOT NULL DEFAULT '0',
+  collectionhash VARCHAR(255)        NOT NULL DEFAULT '0',
+  dateadded      DATETIME                     DEFAULT NULL,
+  added          TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  filecheck      TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
+  filesize       BIGINT UNSIGNED     NOT NULL DEFAULT '0',
+  releaseid      INT                 NULL,
+  noise          CHAR(32)            NOT NULL DEFAULT '',
+  PRIMARY KEY (id),
+  INDEX fromname                     (fromname),
+  INDEX date                         (date),
+  INDEX group_id                     (group_id),
+  INDEX ix_collection_filecheck      (filecheck),
+  INDEX ix_collection_dateadded      (dateadded),
+  INDEX ix_collection_releaseid      (releaseid),
+  UNIQUE INDEX ix_collection_collectionhash (collectionhash)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT = 1;
+
+
+DROP TABLE IF EXISTS multigroup_parts;
+CREATE TABLE multigroup_parts LIKE parts;
+
+
+DROP TABLE IF EXISTS multigroup_posters;
+CREATE TABLE multigroup_posters (
+  id     INT(11) UNSIGNED NOT NULL AUTO_INCREMENT
+  COMMENT 'Primary key',
+  poster VARCHAR(255)     NOT NULL DEFAULT ''
+  COMMENT 'Name of the poster to track',
+  PRIMARY KEY (id),
+  UNIQUE KEY (poster)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT = 1;
+
+
+DROP TABLE IF EXISTS multigroup_missed_parts;
+CREATE TABLE multigroup_missed_parts LIKE missed_parts;
+
+
 DROP TABLE IF EXISTS musicinfo;
 CREATE TABLE musicinfo (
   id          INT(10) UNSIGNED    NOT NULL AUTO_INCREMENT,
@@ -530,48 +588,6 @@ CREATE TABLE musicinfo (
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
 
-DROP TABLE IF EXISTS multigroup_collections;
-CREATE TABLE         multigroup_collections (
-  id             INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT,
-  subject        VARCHAR(255)        NOT NULL DEFAULT '',
-  fromname       VARCHAR(255)        NOT NULL DEFAULT '',
-  date           DATETIME            DEFAULT NULL,
-  xref           VARCHAR(510)        NOT NULL DEFAULT '',
-  totalfiles     INT(11) UNSIGNED    NOT NULL DEFAULT '0',
-  group_id       INT(11) UNSIGNED    NOT NULL DEFAULT '0',
-  collectionhash VARCHAR(255)        NOT NULL DEFAULT '0',
-  dateadded      DATETIME            DEFAULT NULL,
-  added          TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  filecheck      TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
-  filesize       BIGINT UNSIGNED     NOT NULL DEFAULT '0',
-  releaseid      INT                 NULL,
-  noise          CHAR(32)            NOT NULL DEFAULT '',
-  PRIMARY KEY                               (id),
-  INDEX        fromname                     (fromname),
-  INDEX        date                         (date),
-  INDEX        group_id                     (group_id),
-  INDEX        ix_collection_filecheck      (filecheck),
-  INDEX        ix_collection_dateadded      (dateadded),
-  INDEX        ix_collection_releaseid      (releaseid),
-  UNIQUE INDEX ix_collection_collectionhash (collectionhash)
-)
-  ENGINE          = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE         = utf8_unicode_ci
-  AUTO_INCREMENT  = 1;
-
-DROP TABLE IF EXISTS multigroup_posters;
-CREATE TABLE multigroup_posters (
-  id           INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT COMMENT 'Primary key',
-  poster       VARCHAR(255)        NOT NULL DEFAULT '' COMMENT 'Name of the poster to track',
-  PRIMARY KEY (id) ,
-  UNIQUE KEY (poster)
-)
-  ENGINE          = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE         = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
-
 
 DROP TABLE IF EXISTS page_contents;
 CREATE TABLE page_contents (
@@ -596,12 +612,12 @@ CREATE TABLE page_contents (
 
 DROP TABLE IF EXISTS parts;
 CREATE TABLE parts (
-  binaryid      BIGINT(20) UNSIGNED                      NOT NULL DEFAULT '0',
+  binaries_id   BIGINT(20) UNSIGNED                      NOT NULL DEFAULT '0',
   messageid     VARCHAR(255)        CHARACTER SET latin1 NOT NULL DEFAULT '',
   number        BIGINT UNSIGNED                          NOT NULL DEFAULT '0',
   partnumber    MEDIUMINT UNSIGNED                       NOT NULL DEFAULT '0',
   size          MEDIUMINT UNSIGNED                       NOT NULL DEFAULT '0',
-  PRIMARY KEY (binaryid,number)
+  PRIMARY KEY (binaries_id,number)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -1304,15 +1320,6 @@ CREATE TABLE         xxxinfo (
   DEFAULT CHARSET = utf8
   COLLATE         = utf8_unicode_ci
   AUTO_INCREMENT  = 1;
-
-DROP TABLE IF EXISTS multigroup_binaries;
-CREATE TABLE multigroup_binaries LIKE binaries;
-
-DROP TABLE IF EXISTS multigroup_parts;
-CREATE TABLE multigroup_parts LIKE parts;
-
-DROP TABLE IF EXISTS multigroup_missed_parts;
-CREATE TABLE multigroup_missed_parts LIKE missed_parts;
 
 
 DELIMITER $$
