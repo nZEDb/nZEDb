@@ -12,6 +12,8 @@ class Page extends BasePage
 	{
 		parent::__construct();
 
+		$this->page_template = "basepage.tpl";
+
 		define('WWW_THEMES', WWW_TOP . '/themes');
 
 		// Tell Smarty which directories to use for templates
@@ -86,7 +88,6 @@ class Page extends BasePage
 	public function render()
 	{
 		$this->smarty->assign('page', $this);
-		$this->page_template = "basepage.tpl";
 
 		parent::render();
 	}
