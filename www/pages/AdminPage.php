@@ -10,6 +10,8 @@ class AdminPage extends BasePage
 	{
 		parent::__construct();
 
+		$this->page_template = 'baseadminpage.tpl';
+
 		define('WWW_THEMES', WWW_TOP . '/../themes');
 
 		if (!$this->users->isLoggedIn() || !isset($this->userdata['role'])) {
@@ -42,8 +44,6 @@ class AdminPage extends BasePage
 
 		$admin_menu = $this->smarty->fetch('adminmenu.tpl');
 		$this->smarty->assign('admin_menu', $admin_menu);
-
-		$this->page_template = 'baseadminpage.tpl';
 
 		parent::render();
 	}
