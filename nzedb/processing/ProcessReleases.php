@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing;
 
+use app\models\Groups as GroupInfo;
 use app\models\MultigroupPosters;
 use app\models\ReleasesGroups;
 use app\models\Settings;
