@@ -36,6 +36,11 @@ class Groups extends \lithium\data\Model
 		]
 	];
 
+	public static function findByID($groupID)
+	{
+		return GroupInfo::find('first', ['conditions' => ['id' => $groupID]]);
+	}
+
 	/**
 	 * Convenience method to return the 'id' of supplied group name.
 	 *
