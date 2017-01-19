@@ -26,6 +26,16 @@ namespace app\models;
  */
 class Groups extends \lithium\data\Model
 {
+	public $validates = [
+		'name' => [
+			[
+				'notEmpty',
+				'required' => true,
+				'message' => 'You must supply a name for this group.'
+			]
+		]
+	];
+
 	/**
 	 * Convenience method to return the 'id' of supplied group name.
 	 *
@@ -52,5 +62,22 @@ class Groups extends \lithium\data\Model
 		}
 
 		return $primary;
+	}
+
+	/**
+	 * Checks group name is standard and replaces any shorthand prefixes
+	 *
+	 * @param string $groupName The full name of the usenet group being evaluated
+	 *
+	 * @return string|bool The name of the group replacing shorthand prefix or false if groupname was malformed
+	 */
+	public function isValidGroupName($groupName)
+	{
+		if (preg_match('#^([\w-]+\.)+[\w-]+$#i', $groupName)) {
+
+			return preg_replace('#^a\.b\.#i', 'alt.binaries.', $groupName, 1);
+		}
+
+		return false;
 	}
 }
