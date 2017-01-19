@@ -171,6 +171,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Bad settings data for yydecodepath.
 2017-01-20 DariusIII
 	Fix: Change leftover references to group_id in python scripts and ProcessReleases class.
+2017-01-19 niel
+	Chg: Replace nzedb\Groups::getByID array with app\model\Groups::findByID() object.
 2017-01-18 niel
 	Add: New setting (site.main.incognito) that determines if the main page is shown to vistors, or
 	    if they're redirected to the login page instead.
