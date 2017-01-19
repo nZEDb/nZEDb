@@ -53,7 +53,7 @@ class Groups extends \lithium\data\Model
 
 	public static function findByID($groupID)
 	{
-		return GroupInfo::find('first', ['conditions' => ['id' => $groupID]]);
+		return Group::find('first', ['conditions' => ['id' => $groupID]]);
 	}
 
 	/**
