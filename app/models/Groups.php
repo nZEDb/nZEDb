@@ -69,6 +69,32 @@ class Groups extends \lithium\data\Model
 		return $primary;
 	}
 
+	public static function findRange($page = 1, $limit = ITEMS_PER_PAGE, $name = '', $active = -1)
+	{
+		$options = [
+			'limit' => $limit,
+			'order' => ['name' => 'ASC'],
+			'page'  => (int)$page
+		];
+
+		$where = [];
+		if ($active > -1) {
+			$where += ['active' => $active];
+		}
+
+		if ($name != '') {
+			$where += ['name' => ['LIKE' => "%$name%"]];
+		}
+
+		if (!empty($where)) {
+			$options += ['conditions' => $where];
+		}
+
+		$result = Groups::find('all', $options);
+
+		return $result;
+	}
+
 	/**
 	 * Checks group name is standard and replaces any shorthand prefixes
 	 *
