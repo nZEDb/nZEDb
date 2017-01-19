@@ -4,6 +4,7 @@ namespace nzedb\processing;
 use app\models\MultigroupPosters;
 use app\models\ReleasesGroups;
 use app\models\Settings;
+use lithium\data\source\Result;
 use nzedb\Categorize;
 use nzedb\Category;
 use nzedb\ConsoleTools;
@@ -17,6 +18,7 @@ use nzedb\Releases;
 use nzedb\RequestIDLocal;
 use nzedb\RequestIDWeb;
 use nzedb\db\DB;
+
 
 class ProcessReleases
 {
@@ -413,13 +415,13 @@ class ProcessReleases
 
 			$groupMinSizeSetting = $groupMinFilesSetting = 0;
 
-			$groupMinimums = $this->groups->getByID($groupID['id']);
-			if ($groupMinimums !== false) {
-				if (!empty($groupMinimums['minsizetoformrelease']) && $groupMinimums['minsizetoformrelease'] > 0) {
-					$groupMinSizeSetting = (int)$groupMinimums['minsizetoformrelease'];
+			$groupInfo = GroupInfo::findByID($groupID['id']);
+			if ($groupInfo instanceof Result) {
+				if (is_numeric($groupInfo->minsizetoformrelease) && $groupInfo->minsizetoformrelease > 0) {
+					$groupMinSizeSetting = (int)$groupInfo->minsizetoformrelease;
 				}
-				if (!empty($groupMinimums['minfilestoformrelease']) && $groupMinimums['minfilestoformrelease'] > 0) {
-					$groupMinFilesSetting = (int)$groupMinimums['minfilestoformrelease'];
+				if (is_numeric($groupInfo->minfilestoformrelease) && $groupInfo->minfilestoformrelease > 0) {
+					$groupMinFilesSetting = (int)$groupInfo->minfilestoformrelease;
 				}
 			}
 
