@@ -72,10 +72,8 @@ class Settings extends \lithium\data\Model
 		],
 		'name' => [
 			[
-				'required' => true
-			],
-			[
 				'notEmpty',
+				'required' => true,
 				'message' => 'You must supply a name for this setting.'
 			]
 		],
