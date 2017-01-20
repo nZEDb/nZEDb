@@ -937,7 +937,7 @@ class ProcessReleases
 		$this->categorizeRelease(
 			$type,
 			(!empty($groupID)
-				? 'WHERE categories_id = ' . Category::OTHER_MISC . ' AND iscategorized = 0 AND group_id = ' . $groupID
+				? 'WHERE categories_id = ' . Category::OTHER_MISC . ' AND iscategorized = 0 AND groups_id = ' . $groupID
 				: 'WHERE categories_id = ' . Category::OTHER_MISC . ' AND iscategorized = 0')
 		);
 
