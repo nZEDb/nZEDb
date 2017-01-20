@@ -22,6 +22,5 @@
 				&nbsp;<a title="Last" href="{$pagerquerybase}{$pagemaximum}">Last</a>
 			{/if}
 		</div>
-		<div>Current: {$pagecurrent}, Maximum: {$pagemaximum}, Items: {$pagertotalitems}</div>
 	{/if}
 {/strip}
