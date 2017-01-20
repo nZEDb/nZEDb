@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2017-01-20 DariusIII
+	Fix: Change leftover references to group_id in python scripts and ProcessReleases class
 2017-01-17 niel
 	Mrg: dev-db branch which contains changes to binaries, collections, missed, and parts tables.
 2017-01-16 niel
