@@ -64,18 +64,6 @@ class Groups extends \lithium\data\Model
 	}
 
 	/**
-	 * Find single group item using its id field.
-	 *
-	 * @param $groupID
-	 *
-	 * @return mixed
-	 */
-	public static function findByID($groupID)
-	{
-		return Groups::find('first', ['conditions' => ['id' => $groupID]]);
-	}
-
-	/**
 	 * Convenience method to return the 'id' of supplied group name.
 	 *
 	 * @param      $group			Name of group to find 'id' of.
