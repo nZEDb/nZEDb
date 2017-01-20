@@ -8,10 +8,10 @@
 			{section name=pager start=1 loop=$pagemaximum+1}
 				{if $pagecurrent == $smarty.section.pager.index}
 					<span class="current" title="Current page {$smarty.section.pager.iteration}">{$smarty.section.pager.iteration}</span>&nbsp;
-				{elseif $smarty.section.pager.index > (($pagemaximum/2)) && $smarty.section.pager.index < (($pagemaximum/2)+10)}
+				{elseif $smarty.section.pager.index > $pagecurrent && $smarty.section.pager.index < ($pagecurrent + 10)}
 					... <a title="Goto page {$smarty.section.pager.iteration}"
 						href="{$pagerquerybase}{$smarty.section.pager.index}{$pagerquerysuffix}">{$smarty.section.pager.iteration}</a>&nbsp;
-				{elseif $smarty.section.pager.index < $pagecurrent && $smarty.section.pager.index > ($pagecurrent - 10)}
+				{elseif $smarty.section.pager.index < $pagecurrent && $smarty.section.pager.index >= ($pagecurrent - 10)}
 					&nbsp; <a title="Goto page {$smarty.section.pager.iteration}"
 						href="{$pagerquerybase}{$smarty.section.pager.index}{$pagerquerysuffix}">{$smarty.section.pager.iteration}</a>&nbsp;...&nbsp;
 				{/if}
