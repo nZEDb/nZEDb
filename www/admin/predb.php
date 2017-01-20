@@ -16,10 +16,18 @@ if (isset($_REQUEST['presearch'])) {
 	$parr = $predb->getAll($offset, ITEMS_PER_PAGE);
 }
 
+$pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
+$page->smarty->assign(
+	[
+		'pagecurrent'     => $pageno,
+		'pagemaximum'     => (int)($parr['count'] / ITEMS_PER_PAGE) + 1,
+	]
+);
+
 $page->smarty->assign('pagertotalitems', $parr['count']);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/predb.php?offset=");
+$page->smarty->assign('pagerquerybase', WWW_TOP . "/predb.php?page=");
 $page->smarty->assign('pagerquerysuffix', "#results");
 $page->smarty->assign('lastSearch', $lastSearch);
 
