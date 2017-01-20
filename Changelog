@@ -13,6 +13,10 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Change leftover references to group_id in python scripts and ProcessReleases class
 2017-01-19 niel
 	Chg: Replace nzedb\Groups::getByID array with app\model\Groups::findByID() object.
+	Add: findRange() convenience method in Groups model to mimic nzedb\Groups::getRange().
+		**NOTE** It does not JOIN with the releases table to fetch number of releases using each
+		group, as that is not used for the group list in Admin => Site Settings => Groups. I'll
+		create a separate method for that purpose if needed.
 2017-01-17 niel
 	Mrg: dev-db branch which contains changes to binaries, collections, missed, and parts tables.
 2017-01-16 niel
