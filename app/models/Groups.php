@@ -26,6 +26,13 @@ namespace app\models;
  */
 class Groups extends \lithium\data\Model
 {
+	public $hasMany = [
+		'Releases' => [
+			'to'  => 'Releases',
+			'key' => 'groups_id',
+			]
+		];
+
 	public $validates = [
 		'name' => [
 			[
@@ -117,5 +124,13 @@ class Groups extends \lithium\data\Model
 		}
 
 		return false;
+	}
+
+	public static function remove($conditions = [], array $options = [])
+	{
+		// TODO delete the releases covered by the groups to be removed. Prefereably NOT singly as
+		// is currently done.
+
+		parent::remove($conditions, $options);
 	}
 }
