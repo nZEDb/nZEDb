@@ -126,6 +126,15 @@ class Groups extends \lithium\data\Model
 		return false;
 	}
 
+	/**
+	 * Override of lithium\data\Model::remove() to allow removal of a group to chain removing the
+	 * associated Releases.
+	 *
+	 * @param array $conditions
+	 * @param array $options
+	 *
+	 * @return boolean Returns `true` if the remove operation succeeded, otherwise `false`.
+	 */
 	public static function remove($conditions = [], array $options = [])
 	{
 		// TODO delete the releases covered by the groups to be removed. Prefereably NOT singly as
