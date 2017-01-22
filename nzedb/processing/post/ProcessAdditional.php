@@ -437,7 +437,7 @@ class ProcessAdditional
 		$this->_archiveInfo->setExternalClients($clients);
 
 		$this->_killString = '"';
-		if (Settings::value('apps..timeoutpath') != '' && Settings::value('apps..timeoutpath') > 0) {
+		if (Settings::value('apps..timeoutpath') != '' && Settings::value('..timeoutseconds') > 0) {
 			$this->_killString = (
 				'"' . Settings::value('apps..timeoutpath') .
 				'" --foreground --signal=KILL ' .
