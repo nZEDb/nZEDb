@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-01-22 niel
+	Fix: Bad settings data for yydecodepath.
 2017-01-20 DariusIII
 	Fix: Change leftover references to group_id in python scripts and ProcessReleases class
 2017-01-20 niel
