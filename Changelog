@@ -11,6 +11,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2017-01-22 niel
 	Fix: Bad settings data for yydecodepath.
+2017-01-20 DariusIII
+	Fix: Change leftover references to group_id in python scripts and ProcessReleases class
 2017-01-17 niel
 	Mrg: dev-db branch which contains changes to binaries, collections, missed, and parts tables.
 2017-01-16 niel
