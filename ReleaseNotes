@@ -3,13 +3,21 @@ ChangeLog file which list *when* changes are made to the dev branches.
 
 
 0.6.9.0 2017-02-xx
+	***IMPORTANT***
+	  With the next release (in March), some required changes will be made.
+	1) The minimum version of database we support will be raised (MariaDb 10.0/MySQL 5.6).
+	 Additionally, we now strongly reccommend MariaDb for all users. It has all the features of
+	 MySQL, plus additional stability and functionality (generally faster). MySQL has changed its
+	 default settings for a number of features/modes which cause issues with nZEDb, so we will no
+	 longer be supporting it directly. If you must use MySQL, you are expected to know what you
+	 are doing and maintain it yourself. Check the comparison docs here:
+	   https://mariadb.com/kb/en/mariadb/mariadb-vs-mysql-compatibility/
+	   https://mariadb.com/kb/en/mariadb/system-variable-differences-between-mariadb-100-and-mysql-56/
+	2) Tables Per Group will become compulsory. Please convert now to avoid problems. The
+	 .../misc/testing/DB/convert_to_tpg_alt.php script (with the truncate option) is reccommended.
 Added:
 
 Changed:
-	***IMPORTANT***
-	  Tables Per Group will become compulsory with the next release. Please convert now to avoid
-	 problems. The .../misc/testing/DB/convert_to_tpg_alt.php script (with the truncate option) is
-	 reccommended.
 
 Fixed:
 
