@@ -38,8 +38,9 @@ echo $pdo->log->primary("Reseting all groups completed.");
 $arr = [
 		"videos", "tv_episodes", "tv_info", "release_nfos", "release_comments", 'sharing', 'sharing_sites',
 		"users_releases", "user_movies", "user_series", "movieinfo", "musicinfo", "release_files",
-		"audio_data", "release_subtitles", "video_data", "releaseextrafull", "releases", "anidb_titles",
-		"anidb_info", "anidb_episodes", "releases_groups"
+		"audio_data", "release_subtitles", "video_data", "releaseextrafull", "parts",
+		"missed_parts", "binaries", "collections", "releases", "anidb_titles", "anidb_info", "anidb_episodes",
+		"releases_groups"
 ];
 
 // Truncate applicable tables
