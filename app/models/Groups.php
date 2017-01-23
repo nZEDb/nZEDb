@@ -33,6 +33,14 @@ class Groups extends \lithium\data\Model
 			]
 		];
 
+	public $_meta = [
+		'connection'	=> 'default',
+		'key'			=> 'id',
+		'source'		=> 'groups',
+	];
+
+	public $_schema = [];
+
 	public $validates = [
 		'name' => [
 			[
