@@ -51,7 +51,8 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 		$this->tables = [
 			'cname' => 'multigroup_collections',
 			'bname' => 'multigroup_binaries',
-			'pname' => 'multigroup_parts'
+			'pname' => 'multigroup_parts',
+			'prname' => 'multigroup_missed_parts'
 		];
 	}
 }
