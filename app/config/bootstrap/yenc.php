@@ -41,8 +41,8 @@ if (defined('nZEDb_INSTALLER') && nZEDb_INSTALLER !== false) {
 		case extension_loaded('simple_php_yenc_decode'):
 			$adapter = 'SimplePhpYencDecode';
 			break;
-		case !empty(Settings::value('..yydecoderpath', true)) &&
-			(strpos(Settings::value('..yydecoderpath', true), 'simple_php_yenc_decode') === false):
+		case !empty(Settings::value('apps..yydecoderpath', true)) &&
+			(strpos(Settings::value('apps..yydecoderpath', true), 'simple_php_yenc_decode') === false):
 			$adapter = 'Ydecode';
 			break;
 		default:

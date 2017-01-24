@@ -79,7 +79,7 @@ class Ydecode extends \lithium\core\Object
 	{
 		parent::_init();
 
-		$path = Settings::value('..yydecoderpath', true);
+		$path = Settings::value('apps..yydecoderpath', true);
 		if (!empty($path) && strpos($path, 'simple_php_yenc_decode') === false) {
 			if (file_exists($path) && is_executable($path)) {
 				self::$silent = (Misc::isWin() ? '' : ' > /dev/null 2>&1');
