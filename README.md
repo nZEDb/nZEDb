@@ -1,6 +1,6 @@
 Stable: [![Build Status](https://travis-ci.org/nZEDb/nZEDb.svg?branch=0.x)](https://travis-ci.org/nZEDb/nZEDb)  Testing: [![Build Status](https://travis-ci.org/nZEDb/nZEDb.svg?branch=Latest-testing)](https://travis-ci.org/nZEDb/nZEDb)  Dev: [![Build Status](https://travis-ci.org/nZEDb/nZEDb.svg?branch=dev)](https://travis-ci.org/nZEDb/nZEDb)
 
-nZEDb automatically scans usenet, similar to the way google search bots scan the internet. It does this by collecting usenet headers and temporarily storing them in a database until they can be collated into posts/releases. It provides a web-based front-end providing search, browse, and programmable (API) functionality.
+nZEDb automatically scans usenet, similar to the way web spiders scan the internet. It does this by collecting usenet headers and temporarily storing them in a database until they can be collated into posts/releases. It provides a web-based front-end providing search, browse, and programmable (API) functionality.
 
 This project is a fork of the open source usenet indexer newznab plus: https://github.com/anth0/nnplus
 
@@ -18,7 +18,7 @@ nZEDb improves upon the original design, implementing several new features inclu
 
 ## Prerequisites
 
-System Administration know-how. nZEDb is not plug-n-play software. Installation and operation requires a moderate amount of administration experience. nZEDb is designed and developed with GNU/Linux operating systems. Certain features are not available on other platforms. A competent Windows administrator should be able to run nZEDb on a Windows OS.
+System Administration know-how. nZEDb is not plug-n-play software. Installation and operation requires a moderate amount of administration experience. nZEDb is designed and developed with GNU/Linux operating systems. Certain features are not available on other platforms. An experienced Windows administrator should be able to run nZEDb on a Windows OS.
 
 ### Hardware
 
