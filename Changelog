@@ -10,6 +10,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 
+2017-01-25 DariusIII
+	Fix: Wrong number of parameters in removeInstallBin function sql query
 2017-01-23 niel
 	Mrg: PR 2364, from krabsheva - Fixes typo in ProcessAdditional.php which prevented timeout
 		setting being used correctly.
