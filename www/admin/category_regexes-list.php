@@ -19,7 +19,7 @@ $page->smarty->assign(
 		'pagemaximum'		=> (int)($count / ITEMS_PER_PAGE) + 1,
 		'pager'				=> $page->smarty->fetch("pager.tpl"),
 		'pagerquerybase'	=> (WWW_TOP . "/category_regexes-list.php?" . $group . "offset="),
-		'pagertotalitems'	=> $count,
+		'pagertotalitems'	=> (int)$count,
 		'regex'				=> $regex,
 	]
 );
