@@ -18,9 +18,28 @@
  */
 namespace app\models;
 
-class AnidbTitles extends \lithium\data\Model {
-
+class AnidbTitles extends \lithium\data\Model
+{
 	public $validates = [];
+
+	public static function findRange($page = 1, $limit = ITEMS_PER_PAGE, $name = '')
+	{
+		$source = AnidbTitles::connection(); // Gives the connected data source i.e. a `Database` object.
+
+		$where = ($name != '') ? " at.title LIKE '%$name%' AND" : '';
+		$offset = $page > 1 ? ($page - 1) * $limit : '0';
+
+		$sql = <<<QUERY
+SELECT at.anidbid, GROUP_CONCAT(at.title SEPARATOR ', ') AS title
+	FROM anidb_titles AS at
+	WHERE $where at.lang = 'en'
+	GROUP BY at.anidbid
+	ORDER BY at.anidbid ASC
+	LIMIT $offset, $limit;
+QUERY;
+
+		return $source->read($sql, ['return' => 'array']);
+	}
 }
 
 ?>
