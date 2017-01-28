@@ -16,7 +16,7 @@ $page->smarty->assign(
 	[
 		'grouplist'			=> (GroupInfo::findRange($pageno, ITEMS_PER_PAGE, $groupName))->to('array'),
 		'groupname'			=> $groupName,
-		'pagecurrent'		=> $pageno,
+		'pagecurrent'		=> (int)$pageno,
 		'pagemaximum'		=> (int)($count / ITEMS_PER_PAGE) + 1,
 		'pagertotalitems'	=> $count,
 		'pagerquerybase'	=>
