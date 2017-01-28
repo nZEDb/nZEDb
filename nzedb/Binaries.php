@@ -861,11 +861,22 @@ class Binaries
 					}
 				}
 
+				if ($this->multiGroup) {
+					$ckName = '';
+					$ckId = '';
+				} else {
+					$ckName = $this->groupMySQL['name'];
+					$ckId = $this->groupMySQL['id'];
+				}
+
 				// Used to group articles together when forming the release.  MGR requires this to be group irrespective
 				$this->header['CollectionKey'] = (
-					$this->_collectionsCleaning->collectionsCleaner($this->header['matches'][1], $this->groupMySQL['name']) .
+					$this->_collectionsCleaning->collectionsCleaner(
+						$this->header['matches'][1],
+						$ckName
+					) .
 					$this->header['From'] .
-					($this->multiGroup ? $fileCount[3] : $this->groupMySQL['id'] . $fileCount[3])
+					($this->multiGroup ? $fileCount[3] : $ckId . $fileCount[3])
 				);
 
 				// If this header's collection key isn't in memory, attempt to insert the collection

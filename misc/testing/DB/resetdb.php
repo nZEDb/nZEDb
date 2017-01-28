@@ -51,7 +51,7 @@ foreach ($arr as &$value) {
 }
 unset($value);
 
-$sql = "SELECT CALL loop_cbpm('truncate)";
+$sql = "CALL loop_cbpm('truncate')";
 echo $pdo->log->primary("Truncating binaries, collections, missed_parts and parts tables...");
 $result = $pdo->query($sql);
 echo $pdo->log->primary("Truncating completed.");
@@ -60,7 +60,7 @@ echo $pdo->log->primary("Truncating completed.");
 (new SphinxSearch())->truncateRTIndex('releases_rt');
 
 // Optimize DB after Reset
-$pdo->optimise(false, 'full');
+//$pdo->optimise(false, 'full');
 
 // Delete NZBs
 echo $pdo->log->header("Deleting nzbfiles subfolders.");
