@@ -15,6 +15,9 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2017-01-28 niel
 	Fix: Bring in b3s3rk's fix, from MGR branch, for the duplicate ReleasesGroups entries.
+2017-01-25 DariusIII
+	Chg: Replace code in likeSQL function for microseconds speed gain
+	Fix: Wrong number of parameters in removeInstallBin function sql query
 2017-01-24 niel
 	Mrg: PR 2366, from kaibosh - Updates to readme.md.
 2017-01-23 niel
