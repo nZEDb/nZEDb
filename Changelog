@@ -13,6 +13,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.9.0
 
 
+2017-01-28 niel
+	Fix: Bring in b3s3rk's fix, from MGR branch, for the duplicate ReleasesGroups entries.
 2017-01-24 niel
 	Mrg: PR 2366, from kaibosh - Updates to readme.md.
 2017-01-23 niel

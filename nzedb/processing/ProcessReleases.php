@@ -686,13 +686,26 @@ class ProcessReleases
 										);
 									}
 
-									$relGroups = ReleasesGroups::create(
+									$relGroupsChk = ReleasesGroups::find('first',
 										[
-											'releases_id' => $releaseID,
-											'groups_id' => $xrefGrpID,
+											'conditions' =>
+												[
+													'releases_id' => $releaseID,
+													'groups_id'   => $xrefGrpID,
+												],
+											'fields'     => ['releases_id'],
+											'limit'      => 1,
 										]
 									);
-									$relGroups->save();
+									if ($relGroupsChk === null) {
+										$relGroups = ReleasesGroups::create(
+											[
+												'releases_id' => $releaseID,
+												'groups_id'   => $xrefGrpID,
+											]
+										);
+										$relGroups->save();
+									}
 								}
 							}
 						}
