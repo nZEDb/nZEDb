@@ -18,7 +18,6 @@ if (isset($_REQUEST['animetitle']) && !empty($_REQUEST['animetitle'])) {
 $options = $name == '' ? [] : ['conditions' => ['title' => ['LIKE' => "%$name%"]]];
 $count = AnidbTitles::find('count', $options);
 $pageno = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1;
-$pager = $page->smarty->fetch('pager.tpl');
 $search = ($name != '') ? 'animetitle=' . $name . '&amp;' : '';
 $page->smarty->assign(
 	[
@@ -26,7 +25,7 @@ $page->smarty->assign(
 		'animetitle'		=> $name,
 		'pagecurrent'		=> (int)$pageno,
 		'pagemaximum'		=> (int)($count / ITEMS_PER_PAGE) + 1,
-		'pager'				=> $pager,
+		'pager'				=> $page->smarty->fetch('pager.tpl'),
 		'pagertotalitems'	=> $count,
 		'pagerquerybase'	=> WWW_TOP . '/anidb-list.php?' . $search . '&page='
 	]
