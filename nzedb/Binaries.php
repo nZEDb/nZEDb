@@ -179,6 +179,7 @@ class Binaries
 	 * @var float microseconds time part repair was started
 	 */
 	protected $startPR;
+
 	/**
 	 * @var array The CBP/MGR tables names
 	 */
@@ -757,6 +758,8 @@ class Binaries
 			}
 		}
 
+		unset($headers); // Reclaim memory now that headers are split.
+
 		if (!empty($this->_binaryBlacklistIdsToUpdate)) {
 			$this->updateBlacklistUsage();
 		}
@@ -765,12 +768,18 @@ class Binaries
 			$this->outputHeaderInitial();
 		}
 
-		if (isset($stdHeaders) && count($stdHeaders) > 0) {
-			$this->storeHeaders($stdHeaders, false);
-		}
+		// MGR headers goes first
 		if (isset($mgrHeaders) && count($mgrHeaders) > 0) {
-			$this->tableNames = ProcessReleasesMultiGroup::returnTableNames();
+			$this->tableNames = ProcessReleasesMultiGroup::tableNames();
 			$this->storeHeaders($mgrHeaders, true);
+			unset($mgrHeaders);
+		}
+
+		// Standard headers go second so we can switch tableNames back and do part repair to standard group tables
+		if (isset($stdHeaders) && count($stdHeaders) > 0) {
+			$this->tableNames = $this->_groups->getCBPTableNames($this->_tablePerGroup, $this->groupMySQL['id']);
+			$this->storeHeaders($stdHeaders, false);
+			unset($stdHeaders);
 		}
 
 		// Start of part repair.
@@ -782,6 +791,7 @@ class Binaries
 		if ($partRepair && count($headersRepaired) > 0) {
 			$this->removeRepairedParts($headersRepaired, $this->tableNames['prname'], $this->groupMySQL['id']);
 		}
+		unset($headersRepaired);
 
 		if ($this->addToPartRepair) {
 
@@ -796,13 +806,13 @@ class Binaries
 					'warning'
 				);
 			}
+			unset($this->headersNotInserted);
 
 			// Check if we have any missing headers.
 			if (($this->last - $this->first - $this->notYEnc - $this->headersBlackListed + 1) > count($this->headersReceived)) {
 				$rangeNotReceived = array_merge($rangeNotReceived, array_diff(range($this->first, $this->last), $this->headersReceived));
 			}
 			$notReceivedCount = count($rangeNotReceived);
-
 			if ($notReceivedCount > 0) {
 				$this->addMissingParts($rangeNotReceived, $this->tableNames['prname'], $this->groupMySQL['id']);
 
@@ -815,14 +825,15 @@ class Binaries
 					);
 				}
 			}
+			unset($rangeNotReceived);
 		}
 
-		$this->outputHeaderResults();
+		$this->outputHeaderDuration();
 		return $returnArray;
 	}
 
 	/**
-	 * Parse and store retrieved headers
+	 * Parse headers into collections/binaries and store header data as parts
 	 *
 	 * @param array $headers The retrieved headers
 	 * @param bool  $multiGroup Is this task being run in MGR mode?
@@ -869,15 +880,13 @@ class Binaries
 					$ckId = $this->groupMySQL['id'];
 				}
 
-				// Used to group articles together when forming the release.  MGR requires this to be group irrespective
-				$this->header['CollectionKey'] = (
-					$this->_collectionsCleaning->collectionsCleaner(
-						$this->header['matches'][1],
-						$ckName
-					) .
-					$this->header['From'] .
-					($this->multiGroup ? $fileCount[3] : $ckId . $fileCount[3])
+				$collMatch = $this->_collectionsCleaning->collectionsCleaner(
+					$this->header['matches'][1],
+					$ckName
 				);
+
+				// Used to group articles together when forming the release.  MGR requires this to be group irrespective
+				$this->header['CollectionKey'] = $collMatch['name'] . $this->header['From'] . $ckId . $fileCount[3];
 
 				// If this header's collection key isn't in memory, attempt to insert the collection
 				if (!isset($collectionIDs[$this->header['CollectionKey']])) {
@@ -898,8 +907,8 @@ class Binaries
 					$collectionID = $this->_pdo->queryInsert(
 						sprintf("
 							INSERT INTO %s (subject, fromname, date, xref, groups_id,
-								totalfiles, collectionhash, dateadded)
-							VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %d, '%s', NOW())
+								totalfiles, collectionhash, collection_regexes_id, dateadded)
+							VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %d, '%s', %d, NOW())
 							ON DUPLICATE KEY UPDATE %s dateadded = NOW(), noise = '%s'",
 							$this->tableNames['cname'],
 							$this->_pdo->escapeString(substr(utf8_encode($this->header['matches'][1]), 0, 255)),
@@ -909,6 +918,7 @@ class Binaries
 							$this->groupMySQL['id'],
 							$fileCount[3],
 							sha1($this->header['CollectionKey']),
+							$collMatch['id'],
 							$xref,
 							bin2hex(openssl_random_pseudo_bytes(16))
 						)
@@ -963,7 +973,6 @@ class Binaries
 
 			} else {
 				$binaryID = $articles[$this->header['matches'][1]]['BinaryID'];
-				//$collectionID = $articles[$matches[1]]['CollectionID'];
 				$binariesUpdate[$binaryID]['Size'] += $this->header['Bytes'];
 				$binariesUpdate[$binaryID]['Parts']++;
 			}
@@ -1079,9 +1088,9 @@ class Binaries
 	}
 
 	/**
-	 * Outputs results of the scan function to CLI
+	 * Outputs speed metrics of the scan function to CLI
 	 */
-	protected function outputHeaderResults()
+	protected function outputHeaderDuration()
 	{
 		$currentMicroTime = microtime(true);
 		if ($this->_echoCLI) {
