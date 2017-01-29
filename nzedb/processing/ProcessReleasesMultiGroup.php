@@ -48,7 +48,7 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	 */
 	protected function initiateTableNames($groupID)
 	{
-		$this->tables = $this->tableNames();
+		$this->tables = self::tableNames();
 	}
 
 	/**
