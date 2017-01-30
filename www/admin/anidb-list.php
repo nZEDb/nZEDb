@@ -21,7 +21,7 @@ $pageno = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1;
 $search = ($name != '') ? 'animetitle=' . $name . '&amp;' : '';
 $page->smarty->assign(
 	[
-		'anidblist'			=> (AnidbTitles::findRange($pageno, ITEMS_PER_PAGE, $name)),
+		'anidblist'			=> AnidbTitles::findRange($pageno, ITEMS_PER_PAGE, $name),
 		'animetitle'		=> $name,
 		'pagecurrent'		=> (int)$pageno,
 		'pagemaximum'		=> (int)($count / ITEMS_PER_PAGE) + 1,
