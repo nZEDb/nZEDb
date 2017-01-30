@@ -172,7 +172,7 @@ class XML_Response
 	protected function returnApiRss()
 	{
 		$w = $this->xml;
-		$this->xml->startDocument('1.0', 'UTF-8');
+		$w->startDocument('1.0', 'UTF-8');
 		$this->includeRssAtom(); // Open RSS
 		$w->startElement('channel'); // Open channel
 		$this->includeRssAtomLink();
