@@ -649,7 +649,9 @@ legend {
 pager
 */
 div.pager {
-    display: inline;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    width: 70%
 }
 
 div.pager a {
