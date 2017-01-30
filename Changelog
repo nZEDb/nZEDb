@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-01-30 niel
+	Fix: Minor changes to XML_Repsonse methods to avoid potential problems.
 2017-01-24 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.6.9.0
 
