@@ -207,7 +207,7 @@ class XML_Response
 	 * Starts a new element, loops through the attribute data and ends the element
 	 * @param array $element An array with the name of the element and the attribute data
 	 */
-	protected function addNode($element)
+	protected function addNode(array $element)
 	{
 		$this->xml->startElement($element['name']);
 		foreach($element['data'] AS $attr => $val) {
