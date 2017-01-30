@@ -148,7 +148,7 @@ class XML_Response
 	 */
 	protected function returnCaps()
 	{
-		$w = $this->xml;
+		$w =& $this->xml;
 		$s = $this->server;
 
 		$w->startDocument('1.0', 'UTF-8');
@@ -171,7 +171,7 @@ class XML_Response
 	 */
 	protected function returnApiRss()
 	{
-		$w = $this->xml;
+		$w =& $this->xml;
 		$w->startDocument('1.0', 'UTF-8');
 		$this->includeRssAtom(); // Open RSS
 		$w->startElement('channel'); // Open channel
