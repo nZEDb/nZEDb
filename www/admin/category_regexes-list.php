@@ -32,12 +32,13 @@ $page->smarty->assign(
 		'group'				=> $group,
 		'pagecurrent'		=> (int)$pageno,
 		'pagemaximum'		=> (int)($count / ITEMS_PER_PAGE) + 1,
-		'pager'				=> $page->smarty->fetch('pager.tpl'),
 		'pagerquerybase'	=> (WWW_TOP . "/category_regexes-list.php?" . $group . "page="),
 		'pagertotalitems'	=> $count,
 		'regex'				=> $regex,
 	]
 );
+$pager = $page->smarty->fetch("pager.tpl");
+$page->smarty->assign('pager', $pager);
 
 $page->content = $page->smarty->fetch('category_regexes-list.tpl');
 $page->render();
