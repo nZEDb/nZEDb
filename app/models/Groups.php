@@ -99,6 +99,21 @@ class Groups extends \lithium\data\Model
 			'page'  => (int)$page
 		];
 
+		$options += Groups::getRangeWhere($name, $active);
+		$result = Groups::find('all', $options);
+
+		return $result;
+	}
+
+	public static function findRangeCount($name = '', $active = -1)
+	{
+		$options = Groups::getRangeWhere($name, $active);
+
+		return Groups::find('count', $options);
+	}
+
+	public static function getRangeWhere($name = '', $active = -1)
+	{
 		$where = [];
 		if ($active > -1) {
 			$where += ['active' => $active];
@@ -108,13 +123,12 @@ class Groups extends \lithium\data\Model
 			$where += ['name' => ['LIKE' => "%$name%"]];
 		}
 
+		$options = [];
 		if (!empty($where)) {
 			$options += ['conditions' => $where];
 		}
 
-		$result = Groups::find('all', $options);
-
-		return $result;
+		return $options;
 	}
 
 	/**
