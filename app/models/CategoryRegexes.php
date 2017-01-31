@@ -28,7 +28,6 @@ class CategoryRegexes extends Regexes
 
 	public $validates = [];
 
-
 }
 
 ?>
