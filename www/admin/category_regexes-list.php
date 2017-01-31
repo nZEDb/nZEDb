@@ -2,7 +2,6 @@
 require_once './config.php';
 
 use app\models\CategoryRegexes;
-use nzedb\Regexes;
 
 $page = new AdminPage();
 $page->title = "Category Regex List";
