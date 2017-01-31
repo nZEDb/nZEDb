@@ -8,11 +8,11 @@ $page = new AdminPage();
 $page->title = "Collections Regex List";
 
 $group = (isset($_REQUEST['group']) && !empty($_REQUEST['group']) ? $_REQUEST['group'] : '');
-$pageno = (isset($_REQUEST["page"]) ? $_REQUEST["page"] : 1);
+$pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
 
 $options = [];
 if ($group != '') {
-	$options += ['conditions' => ['group_regex' => ['LIKE' => "%$name%"]]];
+	$options += ['conditions' => ['group_regex' => ['LIKE' => "%$group%"]]];
 }
 
 $count = CollectionRegexes::find('count', $options);
