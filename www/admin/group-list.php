@@ -1,19 +1,17 @@
 <?php
 require_once './config.php';
 
-use app\models\Groups as GroupInfo;
-use nzedb\Groups;
+use app\models\Groups;
 
-$page   = new AdminPage();
-$groups = new Groups(['Settings' => $page->settings]);
+$page = new AdminPage();
 
-$count = $groups->getCount($groupName, -1);
+$count = Groups::findRangeCount($groupName, -1);
 $groupName = (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname']) ? $_REQUEST['groupname'] : '');
 $pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
 $search = $groupName != '' ? "groupname=$groupName&amp;" : '';
 $page->smarty->assign(
 	[
-		'grouplist'			=> GroupInfo::findRange($pageno, ITEMS_PER_PAGE, $groupName)->to('array'),
+		'grouplist'			=> Groups::findRange($pageno, ITEMS_PER_PAGE, $groupName)->to('array'),
 		'groupname'			=> $groupName,
 		'pagecurrent'		=> (int)$pageno,
 		'pagemaximum'		=> (int)($count / ITEMS_PER_PAGE) + 1,
