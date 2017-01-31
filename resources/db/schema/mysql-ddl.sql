@@ -219,20 +219,21 @@ CREATE TABLE category_regexes (
 
 DROP TABLE IF EXISTS collections;
 CREATE TABLE         collections (
-  id             INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT,
-  subject        VARCHAR(255)        NOT NULL DEFAULT '',
-  fromname       VARCHAR(255)        NOT NULL DEFAULT '',
-  date           DATETIME            DEFAULT NULL,
-  xref           VARCHAR(255)        NOT NULL DEFAULT '',
-  totalfiles     INT(11) UNSIGNED    NOT NULL DEFAULT '0',
-  groups_id      INT(11) UNSIGNED    NOT NULL DEFAULT '0',
-  collectionhash VARCHAR(255)        NOT NULL DEFAULT '0',
-  dateadded      DATETIME            DEFAULT NULL,
-  added          TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  filecheck      TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
-  filesize       BIGINT UNSIGNED     NOT NULL DEFAULT '0',
-  releases_id    INT                 NULL,
-  noise          CHAR(32)            NOT NULL DEFAULT '',
+  id                    INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT,
+  subject               VARCHAR(255)        NOT NULL DEFAULT '',
+  fromname              VARCHAR(255)        NOT NULL DEFAULT '',
+  date                  DATETIME            DEFAULT NULL,
+  xref                  VARCHAR(255)        NOT NULL DEFAULT '',
+  totalfiles            INT(11) UNSIGNED    NOT NULL DEFAULT '0',
+  groups_id             INT(11) UNSIGNED    NOT NULL DEFAULT '0',
+  collectionhash        VARCHAR(255)        NOT NULL DEFAULT '0',
+  collection_regexes_id INT SIGNED          NOT NULL DEFAULT '0' COMMENT 'FK to collection_regexes.id',
+  dateadded             DATETIME            DEFAULT NULL,
+  added                 TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  filecheck             TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
+  filesize              BIGINT UNSIGNED     NOT NULL DEFAULT '0',
+  releases_id           INT                 NULL,
+  noise                 CHAR(32)            NOT NULL DEFAULT '',
   PRIMARY KEY                               (id),
   INDEX        fromname                     (fromname),
   INDEX        date                         (date),
@@ -1415,30 +1416,30 @@ CREATE PROCEDURE loop_cbpm(IN method CHAR(10))
     main: BEGIN
     DECLARE done INT DEFAULT 0;
     DECLARE tname VARCHAR(255) DEFAULT '';
+    DECLARE regstr VARCHAR(255) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '';
+
     DECLARE cur1 CURSOR FOR
       SELECT TABLE_NAME
       FROM information_schema.TABLES
       WHERE
         TABLE_SCHEMA = (SELECT DATABASE())
-        AND
-        (
-          TABLE_NAME LIKE 'collections%'
-          OR TABLE_NAME LIKE 'parts%'
-          OR TABLE_NAME LIKE 'binaries%'
-          OR TABLE_NAME LIKE 'missed%'
-        )
+        AND TABLE_NAME REGEXP regstr
       ORDER BY TABLE_NAME ASC;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
     IF method NOT IN ('repair', 'analyze', 'optimize', 'drop', 'truncate')
     THEN LEAVE main; END IF;
 
+    IF method = 'drop' THEN SET regstr = '^(collections|binaries|parts|missed_parts)_[0-9]+$';
+    ELSE SET regstr = '^(multigroup_)?(collections|binaries|parts|missed_parts)(_[0-9]+)?$';
+    END IF;
+
     OPEN cur1;
-    alter_loop: LOOP FETCH cur1
+    cbpm_loop: LOOP FETCH cur1
     INTO tname;
       IF done
-      THEN LEAVE alter_loop; END IF;
-      SET @SQL := CONCAT(method, " TABLE ", tname);
+      THEN LEAVE cbpm_loop; END IF;
+      SET @SQL := CONCAT(method, ' TABLE ', tname);
       PREPARE _stmt FROM @SQL;
       EXECUTE _stmt;
       DEALLOCATE PREPARE _stmt;
@@ -1446,7 +1447,6 @@ CREATE PROCEDURE loop_cbpm(IN method CHAR(10))
     CLOSE cur1;
   END;
 $$
-
 
 CREATE PROCEDURE delete_release(IN is_numeric BOOLEAN, IN identifier VARCHAR(40))
   COMMENT 'Cascade deletes release from child tables when parent row is deleted'
