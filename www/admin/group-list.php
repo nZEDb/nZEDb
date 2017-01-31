@@ -4,6 +4,7 @@ require_once './config.php';
 use app\models\Groups;
 
 $page = new AdminPage();
+$page->title = 'Group List';
 
 $count = Groups::findRangeCount($groupName, -1);
 $groupName = (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname']) ? $_REQUEST['groupname'] : '');
@@ -15,12 +16,12 @@ $page->smarty->assign(
 		'groupname'			=> $groupName,
 		'pagecurrent'		=> (int)$pageno,
 		'pagemaximum'		=> (int)($count / ITEMS_PER_PAGE) + 1,
-		'pager'				=> $page->smarty->fetch('pager.tpl'),
 		'pagertotalitems'	=> $count,
 		'pagerquerybase'	=> WWW_TOP . "/group-list.php?" . $search . 'page='
 	]
 );
+$pager = $page->smarty->fetch("pager.tpl");
+$page->smarty->assign('pager', $pager);
 
-$page->title = 'Group List';
 $page->content = $page->smarty->fetch('group-list.tpl');
 $page->render();
