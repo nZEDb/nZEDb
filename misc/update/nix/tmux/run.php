@@ -17,8 +17,6 @@ Misc::clearScreen();
 
 $patch = Settings::value('..sqlpatch');
 $patch = ($patch != '') ? $patch : 0;
-$delaytimet = Settings::value('..delaytime');
-$delaytimet = ($delaytimet) ? (int)$delaytimet : 2;
 $nntpproxy = Settings::value('..nntpproxy');
 
 echo "Starting Tmux...\n";
@@ -46,7 +44,7 @@ $tablepergroup = ($tablepergroup != '') ? $tablepergroup : 0;
 $session = shell_exec("tmux list-session | grep $tmux_session");
 // Kill the placeholder
 exec('tmux kill-session -t placeholder');
-if (count($session) !== 0) {
+if ($session != 0) {
 	exit($pdo->log->error("tmux session: '" . $tmux_session . "' is already running, aborting.\n"));
 }
 
@@ -64,32 +62,7 @@ if ($nntpproxy == '1') {
 //reset collections dateadded to now if dateadded > delay time check
 echo $pdo->log->header("Resetting expired collections dateadded to now. This could take a minute or two. Really.");
 
-if ($tablepergroup == 1) {
-	$sql    = "SHOW table status";
-	$tables = $pdo->queryDirect($sql);
-	$ran    = 0;
-	foreach ($tables as $row) {
-		$tbl = $row['name'];
-		if (preg_match('/(multigroup\_)?collections(_\d+)?/', $tbl)) {
-			$run = $pdo->queryExec('UPDATE ' . $tbl .
-								   ' SET dateadded = now() WHERE dateadded < now() - INTERVAL ' .
-								   $delaytimet . ' HOUR');
-			if ($run !== false) {
-				$ran += $run->rowCount();
-			}
-		}
-	}
-	echo $pdo->log->primary(number_format($ran) . " collections reset.");
-} else {
-	$ran = 0;
-	$run = $pdo->queryExec('update collections set dateadded = now() WHERE dateadded < now() - INTERVAL ' .
-						   $delaytimet . ' HOUR');
-	if ($run !== false) {
-		$ran += $run->rowCount();
-	}
-	echo $pdo->log->primary(number_format($ran) . " collections reset.");
-}
-sleep(2);
+exec("cd {$DIR}/update/nix/tmux/bin/ && php resetdelaytime.php");
 
 //create tmux session
 if ($powerline == 1) {
