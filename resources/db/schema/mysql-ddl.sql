@@ -575,7 +575,7 @@ CREATE TABLE musicinfo (
   releasedate DATETIME            NULL,
   review      VARCHAR(3000)       NULL,
   year        VARCHAR(4)          NOT NULL,
-  genre_id INT(10)             NULL,
+  genre_id    INT(10)             NULL,
   tracks      VARCHAR(3000)       NULL,
   cover       TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
   createddate DATETIME            NOT NULL,
