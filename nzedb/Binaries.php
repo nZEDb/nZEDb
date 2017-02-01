@@ -687,7 +687,7 @@ class Binaries
 			return $returnArray;
 		}
 
-		$this->getHighLowArticleInfo($returnArray, $headers, $msgCount);
+		$returnArray = $this->getHighLowArticleInfo($returnArray, $headers, $msgCount);
 
 		$headersRepaired = $rangeNotReceived = $this->headersReceived = $this->headersNotInserted = [];
 
@@ -1032,7 +1032,7 @@ class Binaries
 	 * @param array $headers
 	 * @param int   $msgCount
 	 */
-	protected function getHighLowArticleInfo(array &$returnArray, array $headers, int $msgCount)
+	protected function getHighLowArticleInfo(array $returnArray, array $headers, int $msgCount)
 	{
 		// Get highest and lowest article numbers/dates.
 		$iterator1 = 0;
@@ -1058,6 +1058,8 @@ class Binaries
 				break;
 			}
 		}
+
+		return $returnArray;
 	}
 
 	/**
