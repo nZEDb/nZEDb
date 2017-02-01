@@ -1,6 +1,6 @@
 Stable: [![Build Status](https://travis-ci.org/nZEDb/nZEDb.svg?branch=0.x)](https://travis-ci.org/nZEDb/nZEDb)  Testing: [![Build Status](https://travis-ci.org/nZEDb/nZEDb.svg?branch=Latest-testing)](https://travis-ci.org/nZEDb/nZEDb)  Dev: [![Build Status](https://travis-ci.org/nZEDb/nZEDb.svg?branch=dev)](https://travis-ci.org/nZEDb/nZEDb)
 
-nZEDb automatically scans usenet, similar to the way google search bots scan the internet. It does this by collecting usenet headers and temporarily storing them in a database until they can be collated into posts/releases. It provides a web-based front-end providing search, browse, and programmable (API) functionality.
+nZEDb automatically scans usenet, similar to the way web spiders scan the internet. It does this by collecting usenet headers and temporarily storing them in a database until they can be collated into posts/releases. It provides a web-based front-end providing search, browse, and programmable (API) functionality.
 
 This project is a fork of the open source usenet indexer newznab plus: https://github.com/anth0/nnplus
 
@@ -18,7 +18,7 @@ nZEDb improves upon the original design, implementing several new features inclu
 
 ## Prerequisites
 
-System Administration know-how. nZEDb is not plug-n-play software. Installation and operation requires a moderate amount of administration experience. nZEDb is designed and developed with GNU/Linux operating systems. Certain features are not available on other platforms. A competent Windows administrator should be able to run nZEDb on a Windows OS.
+System Administration know-how. nZEDb is not plug-n-play software. Installation and operation requires a moderate amount of administration experience. nZEDb is designed and developed with GNU/Linux operating systems. Certain features are not available on other platforms. An experienced Windows administrator should be able to run nZEDb on a Windows OS.
 
 ### Hardware
 
@@ -31,13 +31,13 @@ The overall speed of nZEDb is largely governed by performance of the database. A
 ### Software
 
 	PHP 5.6+ (and various modules)
-	MySQL 5.5+ (Postgres is not supported)
-	Python 2.7 or 3.0 (and various modules)(Optional. Most useful on Windows.)
+    MariaDB 10.0 (strongly preferred database choice)
+	MySQL 5.6+ (secondary option, needs compatibily adjustments)
 The installation guides have more detailed software requirements.
 
 ### Database
 
-Most (if not all) distributions ship MySQL with a default configuration that will perform well on a Raspberry Pi. If you wish to store more that 500K releases, these default settings will quickly lead to poor performance. Expect this.
+Most (if not all) distributions ship MariaDB with a default configuration that will perform well on a Raspberry Pi. If you wish to store more that 500K releases, these default settings will quickly lead to poor performance. Expect this.
 
 As a general rule of thumb the database will need a minimum of 1-2G buffer RAM for every million releases you intend to store. That RAM should be assigned to either of these two parameters:
 - key_buffer_size			(MyISAM)
@@ -45,10 +45,9 @@ As a general rule of thumb the database will need a minimum of 1-2G buffer RAM f
 
 Use [mysqltuner.pl](http://mysqltuner.pl "MySQL tuner - Use it!") for recommendations for these and other important tuner parameters. Also refer to the project's wiki page: https://github.com/nZEDb/nZEDb/wiki/Database-tuning. This is particularly important before you start any large imports or backfills.
 
-MySQL is normally shipped using MyISAM tables by default. This is fine for running with one or a few threads and is a good way to start using nZEDb. You should migrate to the InnoDB table format if nZEDB is configured to use one of the following:
+MariaDB is normally shipped using MyISAM tables by default. This is fine for running with one or a few threads and is a good way to start using nZEDb. You should migrate to the InnoDB table format if nZEDB is configured to use one of the following:
 
 	thread counts > 5
-	TPG (Table Per Group) mode
 	tmux mode
 
 This conversion script is helpful:
@@ -65,7 +64,7 @@ Before converting to InnoDB be sure to set:
 
 Specific installation guides for common Operating Systems can be found on the nZEDb github wiki: https://github.com/nZEDb/nZEDb/wiki/Install-Guides
 
-The latest Ubuntu guide can be found in the dev branch: https://github.com/nZEDb/nZEDb/blob/dev/Ubuntu-14.04.2-Install.txt
+The latest Ubuntu guide is here: http://nzedb.readthedocs.io/
 
 ## Getting Started
 
@@ -79,11 +78,11 @@ Setting the paths to unrar/ffmpeg/mediainfo is optional, but unrar is recommende
 
 If you have set the path to unrar, deep rar inspection is recommended.
 
-Compressed headers are recommended if your provider supports XFeature gzip compression, however header retrieval may periodically hang if the nntp-proxy is not used. (XFeature GZIP compression, originally by wafflehouse : link on pastebin was removed)
+Compressed headers are recommended if your provider supports XFeature gzip compression. (XFeature GZIP compression, originally by wafflehouse : link on pastebin was removed)
 
 Once you have set all the options, you can enable one or two groups and start with the simple screen script running in single-threaded mode. Look in the misc/update directory; update_binaries.php downloads usenet articles into the local database; update_releases.php attempts to group these articles into releases and create NZB files.
 
-When you've become more familiar with the application, enable a few more groups and if needed enable multi-threading (with low thread counts i.e. < 5). We do not recommend enabling all the groups unless you have performant hardware and good database tuning knowledge.
+Once you've become more familiar with the application, enable a few more groups and if needed enable multi-threading (with low thread counts i.e. < 5). We do not recommend enabling all the groups unless you have performant hardware and good database tuning knowledge.
 
 If you want an automated way of doing this, you can use one of the scripts in the nix, or tmux folder. The Windows scripts may work.
 
