@@ -637,6 +637,12 @@ class Binaries
 		// If there was an error, try to reconnect.
 		if ($this->_nntp->isError($headers)) {
 
+			if ($this->first == $this->last) {
+				$numberId = '= ' . $this->first;
+			} else {
+				$numberId = 'IN (' . implode(',', range($this->first, $this->last)) . ')';
+			}
+
 			// Increment if part repair and return false.
 			if ($partRepair === true) {
 				$this->_pdo->queryExec(
@@ -644,7 +650,7 @@ class Binaries
 						'UPDATE %s SET attempts = attempts + 1 WHERE groups_id = %d AND numberid %s',
 						$this->tableNames['prname'],
 						$this->groupMySQL['id'],
-						($this->first == $this->last ? '= ' . $this->first : 'IN (' . implode(',', range($this->first, $this->last)) . ')')
+						$numberId
 					)
 				);
 				return $returnArray;
