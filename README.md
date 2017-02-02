@@ -64,8 +64,6 @@ Before converting to InnoDB be sure to set:
 
 Specific installation guides for common Operating Systems can be found on the nZEDb github wiki: https://github.com/nZEDb/nZEDb/wiki/Install-Guides
 
-The latest Ubuntu guide is here: http://nzedb.readthedocs.io/
-
 ## Getting Started
 
 After you have installed nZEDb and gone throught the initial web-based installation steps (step1, step2 etc.), then review the settings on the Admin-Site-Edit page.
