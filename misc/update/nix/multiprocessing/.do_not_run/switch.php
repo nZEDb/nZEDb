@@ -292,7 +292,8 @@ switch ($options[1]) {
  */
 function processReleases($releases, $groupID)
 {
-	$releaseCreationLimit = (Settings::value('..maxnzbsprocessed') != '' ? (int)Settings::value('..maxnzbsprocessed') : 1000);
+	$maxNzbProcessed = Settings::value('..maxnzbsprocessed');
+	$releaseCreationLimit = $maxNzbProcessed != '' ? (int)$maxNzbProcessed : 1000;
 	$releases->processIncompleteCollections($groupID);
 	$releases->processCollectionSizes($groupID);
 	$releases->deleteUnwantedCollections($groupID);
