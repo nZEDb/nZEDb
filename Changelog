@@ -8,7 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2017-02-02 niel
+	Mrg: PR 2376, from kaibosh - Update threaded.sh for newer fixRelNames params.
 2017-01-30 niel
 	Fix: Minor changes to XML_Repsonse methods to avoid potential problems.
 2017-01-24 niel
