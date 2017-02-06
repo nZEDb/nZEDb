@@ -52,7 +52,7 @@ class Steam
 				'publisher'   => $res->publishers,
 				'rating'      => $res->metacritic['score'],
 				'releasedate' => $res->releasedate['date'],
-				'genres'      => Misc::convertMultiArray($res->genres, ',')
+				'genres'      => implode(',', array_column($res->genres, 'description'))
 			];
 
 			return $result;
