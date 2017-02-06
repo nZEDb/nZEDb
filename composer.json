@@ -69,6 +69,7 @@
   ],
   "require": {
     "barracudanetworks/forkdaemon-php": "^1.0.7",
+    "b3rs3rk/steamfront": "dev-master",
     "ext-ctype": "*",
     "ext-curl": "*",
     "ext-exif": "*",
