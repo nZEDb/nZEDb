@@ -125,7 +125,7 @@ class Steam
 	}
 
 	/**
-	 * Downloads full Steam Store dump and imports data into local data
+	 * Downloads full Steam Store dump and imports data into local table
 	 */
 	public function populateSteamAppsTable()
 	{
@@ -139,13 +139,13 @@ class Steam
 						[
 							'conditions' =>
 								[
-									'name' => $app['name']
+									'name'  => $app['name'],
+									'appid' => $app['appid'],
 								],
-							'fields'     => ['name'],
+							'fields'     => ['appid'],
 							'limit'      => 1,
 						]
 					);
-
 
 					if ($dupeCheck === null) {
 						$steamApps = SteamApps::create(
