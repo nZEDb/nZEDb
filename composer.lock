@@ -4,9 +4,47 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "95b09c8f8777758e58437f8d40711fbb",
-    "content-hash": "9dabd6716ea9a3d34ff3e0f1e1114b9f",
+    "hash": "613d62aec9963a1b84212e918bde8134",
+    "content-hash": "d68adf1098cc3c88f5e837a4826887b0",
     "packages": [
+        {
+            "name": "b3rs3rk/steamfront",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b3rs3rk/steamfront.git",
+                "reference": "feadd9577747d90ca8a6ff5490fb14524327c1f1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b3rs3rk/steamfront/zipball/feadd9577747d90ca8a6ff5490fb14524327c1f1",
+                "reference": "feadd9577747d90ca8a6ff5490fb14524327c1f1",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "b3rs3rk\\": "source"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "b3rs3rk",
+                    "email": "b3rs3rk@protonmail.com"
+                }
+            ],
+            "description": "PHP Wrapper for Accessing the Steam Storefront API",
+            "time": "2016-12-08 13:54:05"
+        },
         {
             "name": "barracudanetworks/forkdaemon-php",
             "version": "v1.0.9",
@@ -1458,7 +1496,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/5e894ca64a07d03ad1f09230875b621d04405a21",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/49d2d46a63d6f2a94c28e392ee67b150aed4d524",
                 "reference": "49d2d46a63d6f2a94c28e392ee67b150aed4d524",
                 "shasum": ""
             },
@@ -1580,6 +1618,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "b3rs3rk/steamfront": 20,
         "giantbomb/giantbomb": 20,
         "joshpinkney/tv-maze-php-api": 20,
         "nzedb/git.php": 20,
