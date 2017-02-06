@@ -457,7 +457,7 @@ class Games
 		// Process Steam first before giantbomb
 		// Steam has more details
 		$this->_gameResults = [];
-		$this->_getGame = new Steam();
+		$this->_getGame = new Steam(['DB' => $this->pdo]);
 		$this->_classUsed = "steam";
 		$this->_getGame->cookie = $this->cookie;
 		$this->_getGame->searchTerm = $gameInfo['title'];

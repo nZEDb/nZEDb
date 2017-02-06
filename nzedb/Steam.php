@@ -3,32 +3,46 @@ namespace nzedb;
 
 use app\models\SteamApps;
 use b3rs3rk\steamfront\Main;
-use nzedb\utility\Misc;
+use nzedb\db\DB;
 
 class Steam
 {
+	const STEAM_MATCH_PERCENTAGE = 90;
 
 	/**
-	 * @var
+	 * @var string The parsed game name from searchname
 	 */
 	public $searchTerm;
 
-
 	/**
-	 * @var
+	 * @var int The ID of the Steam Game matched
 	 */
 	protected $steamGameID;
 
-	public function __construct()
+	/**
+	 * @var DB
+	 */
+	protected $pdo;
+
+	/**
+	 * Steam constructor.
+	 *
+	 * @param array $options
+	 */
+	public function __construct(array $options = [])
 	{
+		$defaults = ['DB' => null];
+		$options += $defaults;
+
+		$this->pdo = ($options['DB'] instanceof DB ? $options['DB'] : new DB());
+
 		$this->steamClient = new Main(
 			[
 				'country_code' => 'us',
-				'local_lang' => 'english'
+				'local_lang'   => 'english'
 			]
 		);
 	}
-
 
 	/**
 	 * Gets all Information for the game.
@@ -62,32 +76,57 @@ class Steam
 	}
 
 	/**
-	 * Searches for a game for a 90% match
+	 * Searches Steam Apps table for best title match -- prefers 100% match but returns highest over 90%
 	 *
-	 * @param string $searchTerm
+	 * @param string $searchTerm The parsed game name from the release searchname
 	 *
-	 * @return bool
+	 * @return false|int $bestMatch The Best match from the given search term
 	 */
 	public function search($searchTerm)
 	{
+		$bestMatch = false;
+
 		if (empty($searchTerm)) {
-			return false;
+
+			return $bestMatch;
 		}
 
-		$steamGames = SteamApps::find('all',
-			['fields' => ['name', 'appid'] ,
-			 'order' => ['name' => 'ASC']
-			]);
+		$results = $this->pdo->queryDirect("
+			SELECT name, appid
+			FROM steam_apps
+			WHERE MATCH(name) AGAINST({$this->pdo->escapeString($searchTerm)})
+			LIMIT 20"
+		);
 
-		foreach ($steamGames as $gamesArray) {
-			similar_text(strtolower($gamesArray->name), strtolower($searchTerm), $percent);
-			if ($percent > 90) {
-				return $gamesArray->appid;
+		if ($results instanceof \Traversable) {
+			$bestMatchPct = 0;
+			foreach ($results as $result) {
+				// If we have an exact string match set best match and break out
+				if ($result['name'] === $searchTerm) {
+					$bestMatch = $result['appid'];
+					break;
+				} else {
+					similar_text(strtolower($result['name']), strtolower($searchTerm), $percent);
+					// If similartext reports an exact match set best match and break out
+					if ($percent == 100) {
+						$bestMatch = $result['appid'];
+						break;
+					} else if ($percent >= self::STEAM_MATCH_PERCENTAGE) {
+						if ($percent > $bestMatchPct) {
+							$bestMatch = $result['appid'];
+							$bestMatchPct = $percent;
+						}
+					}
+				}
 			}
 		}
-		return false;
+
+		return $bestMatch;
 	}
 
+	/**
+	 * Downloads full Steam Store dump and imports data into local data
+	 */
 	public function populateSteamAppsTable()
 	{
 		$fullAppArray = $this->steamClient->getFullAppList();
@@ -109,7 +148,8 @@ class Steam
 
 
 					if ($dupeCheck === null) {
-						$steamApps = SteamApps::create([
+						$steamApps = SteamApps::create(
+							[
 								'appid' => $app['appid'],
 								'name'  => $app['name'],
 							]
