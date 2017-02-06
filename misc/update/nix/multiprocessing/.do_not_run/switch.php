@@ -30,7 +30,6 @@ switch ($options[1]) {
 	// $options[3] => (int)   backfill type from tmux settings. 1 = Backfill interval , 2 = Bakfill all
 	case 'backfill':
 		if (in_array((int)$options[3], [1, 2])) {
-			$pdo = new Settings();
 			$value = $pdo->queryOneRow("SELECT value FROM tmux WHERE setting = 'backfill_qty'");
 			if ($value !== false) {
 				$nntp = nntp($pdo);
@@ -45,7 +44,6 @@ switch ($options[1]) {
 	 * $options[3] => (int)    Quantity of articles to download.
 	 */
 	case 'backfill_all_quantity':
-		$pdo = new DB();
 		$nntp = nntp($pdo);
 		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->backfillAllGroups($options[2], $options[3]);
 		break;
@@ -53,7 +51,6 @@ switch ($options[1]) {
 	// BackFill a single group, 10000 parts.
 	// $options[2] => (string)group name, Name of group to work on.
 	case 'backfill_all_quick':
-		$pdo = new DB();
 		$nntp = nntp($pdo);
 		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo], true))->backfillAllGroups($options[2], 10000, 'normal');
 		break;
@@ -67,7 +64,6 @@ switch ($options[1]) {
 	 * $options[6] => (int)    Number of threads.
 	 */
 	case 'get_range':
-		$pdo = new DB();
 		$nntp = nntp($pdo);
 		$groups = new Groups(['Settings' => $pdo]);
 		$groupMySQL = $groups->getByName($options[3]);
@@ -137,7 +133,6 @@ switch ($options[1]) {
 	 * $options[2] => (string) Group name.
 	 */
 	case 'part_repair':
-		$pdo = new DB();
 		$groups = new Groups(['Settings' => $pdo]);
 		$groupMySQL = $groups->getByName($options[2]);
 		$nntp = nntp($pdo);
@@ -154,7 +149,6 @@ switch ($options[1]) {
 	// Process releases.
 	// $options[2] => (string)groupCount, number of groups terminated by _ | (int)groupID, group to work on
 	case 'releases':
-		$pdo = new DB();
 		$releases = new ProcessReleases(['Settings' => $pdo]);
 
 		//Runs function that are per group
@@ -194,7 +188,6 @@ switch ($options[1]) {
 	 * $options[2] => (string) Group name.
 	 */
 	case 'update_group_headers':
-		$pdo = new DB();
 		$nntp = nntp($pdo);
 		$groups = new Groups(['Settings' => $pdo]);
 		$groupMySQL = $groups->getByName($options[2]);
@@ -206,8 +199,6 @@ switch ($options[1]) {
 	// $options[2] => (int)groupID, group to work on
 	case 'update_per_group':
 		if (is_numeric($options[2])) {
-
-			$pdo = new DB();
 
 			// Get the group info from MySQL.
 			$groupMySQL = $pdo->queryOneRow(sprintf('SELECT * FROM groups WHERE id = %d', $options[2]));
@@ -244,7 +235,6 @@ switch ($options[1]) {
 	case 'pp_additional':
 	case 'pp_nfo':
 		if (charCheck($options[2])) {
-			$pdo = new DB();
 
 			// Create the connection here and pass, this is for post processing, so check for alternate.
 			$nntp = nntp($pdo, true);
@@ -276,7 +266,6 @@ switch ($options[1]) {
 	 */
 	case 'pp_tv':
 		if (charCheck($options[2])) {
-			$pdo = new DB();
 			(new PostProcess(['Settings' => $pdo]))->processTv('', $options[2], (isset($options[3]) ? $options[3] : ''));
 		}
 		break;

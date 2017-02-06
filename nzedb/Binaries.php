@@ -545,7 +545,7 @@ class Binaries
 			if ($partRepair === true) {
 				$this->_pdo->queryExec(
 					sprintf(
-						'UPDATE missed_parts SET attempts = attempts + 1 WHERE group_id = %d AND numberid %s',
+						'UPDATE missed_parts SET attempts = attempts + 1 WHERE groups_id = %d AND numberid %s',
 						$groupMySQL['id'],
 						($first == $last ? '= ' . $first : 'IN (' . implode(',', range($first, $last)) . ')')
 					)
@@ -618,7 +618,7 @@ class Binaries
 		$headersRepaired = $articles = $rangeNotReceived = $collectionIDs = $binariesUpdate = $headersReceived = $headersNotInserted = [];
 		$notYEnc = $headersBlackListed = 0;
 
-		$partsQuery = $partsCheck = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size) VALUES ', $tableNames['pname']);
+		$partsQuery = $partsCheck = sprintf('INSERT IGNORE INTO %s (binaries_id, number, messageid, partnumber, size) VALUES ', $tableNames['pname']);
 
 		$this->_pdo->beginTransaction();
 		// Loop articles, figure out files/parts.
@@ -726,7 +726,7 @@ class Binaries
 
 					$collectionID = $this->_pdo->queryInsert(
 						sprintf("
-							INSERT INTO %s (subject, fromname, date, xref, group_id,
+							INSERT INTO %s (subject, fromname, date, xref, groups_id,
 								totalfiles, collectionhash, dateadded)
 							VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %d, '%s', NOW())
 							ON DUPLICATE KEY UPDATE dateadded = NOW(), noise = '%s'",
@@ -757,7 +757,7 @@ class Binaries
 
 				$binaryID = $this->_pdo->queryInsert(
 					sprintf("
-						INSERT INTO %s (binaryhash, name, collection_id, totalparts, currentparts, filenumber, partsize)
+						INSERT INTO %s (binaryhash, name, collections_id, totalparts, currentparts, filenumber, partsize)
 						VALUES (UNHEX('%s'), %s, %d, %d, 1, %d, %d)
 						ON DUPLICATE KEY UPDATE currentparts = currentparts + 1, partsize = partsize + %d",
 						$tableNames['bname'],
@@ -957,7 +957,7 @@ class Binaries
 		$missingParts = $this->_pdo->query(
 			sprintf('
 				SELECT * FROM %s
-				WHERE group_id = %d AND attempts < %d
+				WHERE groups_id = %d AND attempts < %d
 				ORDER BY numberid ASC LIMIT %d',
 				$tableNames['prname'],
 				$groupArr['id'],
@@ -1024,7 +1024,7 @@ class Binaries
 				sprintf('
 					SELECT COUNT(id) AS num
 					FROM %s
-					WHERE group_id = %d
+					WHERE groups_id = %d
 					AND numberid <= %d',
 					$tableNames['prname'],
 					$groupArr['id'],
@@ -1043,7 +1043,7 @@ class Binaries
 					sprintf('
 						UPDATE %s
 						SET attempts = attempts + 1
-						WHERE group_id = %d
+						WHERE groups_id = %d
 						AND numberid <= %d',
 						$tableNames['prname'],
 						$groupArr['id'],
@@ -1066,7 +1066,7 @@ class Binaries
 		// Remove articles that we cant fetch after x attempts.
 		$this->_pdo->queryExec(
 			sprintf(
-				'DELETE FROM %s WHERE attempts >= %d AND group_id = %d',
+				'DELETE FROM %s WHERE attempts >= %d AND groups_id = %d',
 				$tableNames['prname'],
 				$this->_partRepairMaxTries,
 				$groupArr['id']
@@ -1102,15 +1102,15 @@ class Binaries
 					sprintf('
 						SELECT c.date AS date
 						FROM %s c
-						INNER JOIN %s b ON(c.id=b.collection_id)
-						INNER JOIN %s p ON(b.id=p.binaryid)
+						INNER JOIN %s b ON(c.id=b.collections_id)
+						INNER JOIN %s p ON(b.id=p.binaries_id)
 						WHERE p.number = %s
 						%s LIMIT 1',
 						$group['cname'],
 						$group['bname'],
 						$group['pname'],
 						$currentPost,
-						$this->_tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID) : ''
+						$this->_tablePerGroup === false ? sprintf('AND c.groups_id = %d', $groupID) : ''
 					)
 				);
 				if ($local !== false) {
@@ -1300,7 +1300,7 @@ class Binaries
 	 */
 	private function addMissingParts($numbers, $tableName, $groupID)
 	{
-		$insertStr = 'INSERT INTO ' . $tableName . ' (numberid, group_id) VALUES ';
+		$insertStr = 'INSERT INTO ' . $tableName . ' (numberid, groups_id) VALUES ';
 		foreach ($numbers as $number) {
 			$insertStr .= '(' . $number . ',' . $groupID . '),';
 		}
@@ -1322,7 +1322,7 @@ class Binaries
 		foreach ($numbers as $number) {
 			$sql .= $number . ',';
 		}
-		$this->_pdo->queryExec((rtrim($sql, ',') . ') AND group_id = ' . $groupID));
+		$this->_pdo->queryExec((rtrim($sql, ',') . ') AND groups_id = ' . $groupID));
 	}
 
 	/**
@@ -1544,7 +1544,7 @@ class Binaries
 	 */
 	public function purgeGroup($groupID)
 	{
-		$this->_pdo->queryExec(sprintf('DELETE c FROM collections c WHERE c.group_id = %d', $groupID));
+		$this->_pdo->queryExec(sprintf('DELETE c FROM collections c WHERE c.groups_id = %d', $groupID));
 	}
 
 	/**

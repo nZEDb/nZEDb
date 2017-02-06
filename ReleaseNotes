@@ -2,6 +2,38 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
+0.6.9.0 2017-02-06
+	***IMPORTANT***
+	  With the next release (in March), some required changes will be made.
+	1) The minimum version of database we support will be raised (MariaDb 10.0/MySQL 5.6).
+	 Additionally, we now strongly reccommend MariaDb for all users. It has all the features of
+	 MySQL, plus additional stability and functionality (generally faster). MySQL has changed its
+	 default settings for a number of features/modes which cause issues with nZEDb, so we will no
+	 longer be supporting it directly. If you must use MySQL, you are expected to know what you
+	 are doing and maintain it yourself. Check the comparison docs here:
+	   https://mariadb.com/kb/en/mariadb/mariadb-vs-mysql-compatibility/
+	   https://mariadb.com/kb/en/mariadb/system-variable-differences-between-mariadb-100-and-mysql-56/
+	2) Tables Per Group will become compulsory. Please convert now to avoid problems. The
+	 .../misc/testing/DB/convert_to_tpg_alt.php script (with the truncate option) is reccommended.
+Added:
+
+Changed:
+	* Updates to readme.md (PR 2366).
+
+Fixed:
+	* Check for incompatible tmux versions and abort if installed (PR 2353).
+	* Predb page link for predb search (closes issue 2356).
+	* Work around to prevent some db versions using auto-increment value on an explicit 0 for
+	 Categories Other's.
+	* Change leftover references to group_id in python scripts and ProcessReleases class.
+	* Bad settings data for yydecodepath.
+	* Adds releases_groups table to resetdb.php (PR 2365).
+	* Fixes typo in ProcessAdditional.php which prevented timeout setting being used correctly (PR 2364).
+	* Wrong number of parameters in removeInstallBin function sql query.
+	* Bring in b3s3rk's fix, from MGR branch, for the duplicate ReleasesGroups entries.
+	* Update threaded.sh for newer fixRelNames params (PR 2376).
+
+
 0.6.8.1 2017-01-09
 Fixed:
 	* Paths for install.sh script

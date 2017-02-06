@@ -32,9 +32,9 @@ if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "full" || $argv[1] ==
 		. "php $argv[0] full                    ...: To process all releases not previously renamed.\n"
 		. "php $argv[0] 2                       ...: To process all releases added in the previous 2 hours not previously renamed.\n"
 		. "php $argv[0] all                     ...: To process all releases.\n"
-		. "php $argv[0] full 155                ...: To process all releases in group_id 155 not previously renamed.\n"
-		. "php $argv[0] all 155                 ...: To process all releases in group_id 155.\n"
-		. "php $argv[0] all '(155, 140)'        ...: To process all releases in group_ids 155 and 140.\n"
+		. "php $argv[0] full 155                ...: To process all releases in group id 155 not previously renamed.\n"
+		. "php $argv[0] all 155                 ...: To process all releases in group id 155.\n"
+		. "php $argv[0] all '(155, 140)'        ...: To process all releases in group ids 155 and 140.\n"
 		. "php $argv[0] preid                   ...: To process all releases where not matched to predb.\n"
 	));
 }

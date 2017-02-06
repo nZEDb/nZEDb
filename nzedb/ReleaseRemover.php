@@ -494,7 +494,7 @@ class ReleaseRemover
 			"SELECT r.guid, r.searchname, r.id
 			FROM releases r %s
 			STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id
-			WHERE rf.name %s %s",
+			WHERE rf.name %s %s %s",
 			$ftJoin,
 			$this->pdo->likeString('install.bin', true, true),
 			$instbinFT,

@@ -11,4 +11,5 @@ INSERT INTO user_roles (id, name, apirequests, downloadrequests, defaultinvites,
 UPDATE user_roles SET id = id - 1;
 
 # Add the 0 entry for categories, as doing so in the tsv would get it converted.
-INSERT INTO categories (id, title, parentid) VALUES (0,  'Other', NULL);
+INSERT INTO categories (id, title, parentid) VALUES (1000000,  'Other', NULL);
+UPDATE categories SET id = 0 WHERE id = 1000000;
