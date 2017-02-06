@@ -200,9 +200,7 @@ while ($runVar['counts']['iterations'] > 0) {
 
 		$timer07 = time();
 		if ($runVar['constants']['tablepergroup'] == 1) {
-			$sql = 'SHOW TABLE STATUS';
-
-			$tables = $pdo->queryDirect($sql);
+			$tables = $t->cbpmTableQuery();
 			$age = time();
 
 			$runVar['counts']['now']['collections_table'] = $runVar['counts']['now']['binaries_table'] = 0;

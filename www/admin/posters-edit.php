@@ -32,21 +32,22 @@ switch ($action) {
 			$page->title = "MultiGroup Poster Edit";
 			// Note: explicitly setting default stuff below, which could be shortened to:
 			// $entry = MultigroupPosters::find($_GET['id']);
-			$entry = MultigroupPosters::find('first',
+			$poster = MultigroupPosters::find('first',
 				[
-					'conditions' => ['id' => $_GET['id']],
-					'fields' => ['id', 'poster']
-				]);
-			$poster = [
-				'id'     => $entry->id,
-				'poster' => $entry->poster,
-			];
+					'conditions' =>
+						[
+							'id' => $_GET['id']
+						],
+					'fields' =>
+						[
+							'id',
+							'poster'
+						]
+				]
+			);
 		} else {
 			$page->title = "MultiGroup Poster Add";
-			$poster = [
-				'id'     => '',
-				'poster' => ''
-			];
+			$poster = '';
 		}
 		$page->smarty->assign('poster', $poster);
 		break;
