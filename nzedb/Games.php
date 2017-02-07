@@ -469,33 +469,6 @@ class Games
 			}
 		}
 
-		/*
-		if (count($this->_gameResults) < 1) {
-			$this->_getGame = new Desura();
-			$this->_classUsed = "desura";
-			$this->_getGame->cookie = $this->cookie;
-			$this->_getGame->searchTerm = $gameInfo['title'];
-			if ($this->_getGame->search() !== false) {
-				$this->_gameResults = $this->_getGame->getAll();
-			}
-		}
-		*/
-
-		if (count($this->_gameResults) < 1) {
-			$this->_getGame = new Greenlight();
-			$this->_classUsed = "gl";
-			$this->_getGame->cookie = $this->cookie;
-			$this->_getGame->searchTerm = $gameInfo['title'];
-			if ($this->_getGame->search() !== false) {
-				$this->_gameResults = $this->_getGame->getAll();
-			}
-		}
-		if (count($this->_gameResults) < 1) {
-			$this->_gameResults = (array)$this->fetchGiantBombID($gameInfo['title']);
-			if ($this->maxHitRequest === true) {
-				return false;
-			}
-		}
 		if (empty($this->_gameResults['title'])) {
 			return false;
 		}
@@ -505,106 +478,6 @@ class Games
 		if (count($this->_gameResults) > 1) {
 		$genreName = '';
 			switch ($this->_classUsed) {
-
-				/*
-				case 'desura':
-					if (isset($this->_gameResults['cover'])) {
-						$con['coverurl'] = (string)$this->_gameResults['cover'];
-					}
-
-					if (isset($this->_gameResults['backdrop'])) {
-						$con['backdropurl'] = (string)$this->_gameResults['backdrop'];
-					}
-
-					$con['title'] = (string)$this->_gameResults['title'];
-					$con['asin'] = $this->_gameResults['desuragameid'];
-					$con['url'] = (string)$this->_gameResults['directurl'];
-
-					if (isset($this->_gameResults['gamedetails']['Publisher'])) {
-						$con['publisher'] = (string)$this->_gameResults['gamedetails']['Publisher'];
-					} else {
-						$con['publisher'] = 'Unknown';
-					}
-
-					if (isset($this->_gameResults['rating'])) {
-						$con['esrb'] = (string)$this->_gameResults['rating'];
-					} else {
-						$con['esrb'] = 'Not Rated';
-					}
-
-					if (isset($this->_gameResults['description'])) {
-						$con['review'] = trim(strip_tags((string)$this->_gameResults['description']));
-					}
-
-					if (isset($this->_gameResults['trailer'])) {
-						$con['trailer'] = (string)$this->_gameResults['trailer'];
-					}
-
-					if (isset($this->_gameResults['gamedetails']['Genre'])) {
-						$genres = (string)$this->_gameResults['gamedetails']['Genre'];
-						$genreName = $this->_matchGenre($genres);
-					}
-					break;
-				*/
-
-				case 'gb':
-					$con['coverurl'] = (string)$this->_gameResults['image']['super_url'];
-					$con['title'] = (string)$this->_gameResults['name'];
-					$con['asin'] = $this->_gameID;
-					$con['url'] = (string)$this->_gameResults['site_detail_url'];
-					if (is_array($this->_gameResults['publishers'])) {
-						while (list($key) = each($this->_gameResults['publishers'])) {
-							if ($key == 0) {
-								$con['publisher'] = (string)$this->_gameResults['publishers'][$key]['name'];
-							}
-						}
-					} else {
-						$con['publisher'] = 'Unknown';
-					}
-
-					if (is_array($this->_gameResults['original_game_rating'])) {
-						$con['esrb'] = (string)$this->_gameResults['original_game_rating'][0]['name'];
-					} else {
-						$con['esrb'] = (string)$this->_gameResults['original_game_rating']['name'];
-					}
-					$con['releasedate'] = (string)$this->_gameResults['original_release_date'];
-
-					if (isset($this->_gameResults['description'])) {
-						$con['review'] = trim(strip_tags((string)$this->_gameResults['description']));
-					}
-					if (isset($this->_gameResults['genres'][0]['name'])) {
-						$genres = (string)$this->_gameResults['genres'][0]['name'];
-						$genreName = $this->_matchGenre($genres);
-						}
-					break;
-				case 'gl':
-					if (isset($this->_gameResults['cover'])) {
-						$con['coverurl'] = (string)$this->_gameResults['cover'];
-					}
-
-					if (isset($this->_gameResults['backdrop'])) {
-						$con['backdropurl'] = (string)$this->_gameResults['backdrop'];
-					}
-
-					$con['title'] = (string)$this->_gameResults['title'];
-					$con['asin'] = $this->_gameResults['greenlightgameid'];
-					$con['url'] = (string)$this->_gameResults['directurl'];
-					$con['publisher'] = 'Unknown';
-					$con['esrb'] = 'Not Rated';
-
-					if (isset($this->_gameResults['description'])) {
-						$con['review'] = trim(strip_tags((string)$this->_gameResults['description']));
-					}
-
-					if (isset($this->_gameResults['trailer'])) {
-						$con['trailer'] = (string)$this->_gameResults['trailer'];
-					}
-
-					if (isset($this->_gameResults['gamedetails']['Genre'])) {
-						$genres = (string)$this->_gameResults['gamedetails']['Genre'];
-						$genreName = $this->_matchGenre($genres);
-					}
-					break;
 				case 'steam':
 					if (!empty($this->_gameResults['cover'])) {
 						$con['coverurl'] = (string)$this->_gameResults['cover'];
@@ -799,78 +672,6 @@ class Games
 	}
 
 	/**
-	 * Get Giantbomb ID from title
-	 *
-	 * @param string $title
-	 *
-	 * @return bool|mixed Array if no result False
-	 */
-	public function fetchGiantBombID($title = '')
-	{
-		$obj = new \GiantBomb($this->publicKey);
-		try {
-			$fields = ["api_detail_url", "name"];
-			$result = json_decode(json_encode($obj->search($title, $fields, 10, 1, ["game"])), true);
-			// We hit the maximum request.
-			if (empty($result)) {
-				$this->maxHitRequest = true;
-				return false;
-			}
-			if (!is_array($result['results']) || (int)$result['number_of_total_results'] === 0) {
-				$result = false;
-			} else {
-				$this->_resultsFound = count($result['results']) - 1;
-				if ($this->_resultsFound !== 0) {
-					for ($i = 0; $i <= $this->_resultsFound; $i++) {
-						similar_text(strtolower($result['results'][$i]['name']), strtolower($title), $p);
-						if ($p > 77) {
-							$result = $result['results'][$i];
-							preg_match('/\/\d+\-(?<asin>\d+)\//', $result['api_detail_url'], $matches);
-							$this->_gameID = (string)$matches['asin'];
-							$result = $this->fetchGiantBombArray();
-							$this->_classUsed = "gb";
-							break;
-						}
-						if ($i === $this->_resultsFound) {
-							return false;
-						}
-					}
-
-				} else {
-					return false;
-				}
-			}
-		} catch (\Exception $e) {
-			$result = false;
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Fetch Giantbomb results from GameID
-	 *
-	 * @return bool|mixed
-	 */
-	public function fetchGiantBombArray()
-	{
-		$obj = new \GiantBomb($this->publicKey);
-		try {
-			$fields = [
-				"deck", "description", "original_game_rating", "api_detail_url", "image", "genres",
-				"name", "publishers", "original_release_date", "reviews",
-				"site_detail_url"
-			];
-			$result = json_decode(json_encode($obj->game($this->_gameID, $fields)), true);
-			$result = $result['results'];
-		} catch (\Exception $e) {
-			$result = false;
-		}
-
-		return $result;
-	}
-
-	/**
 	 * Main function for retrieving and processing PC games titles
 	 */
 	public function processGamesReleases()
@@ -1007,16 +808,16 @@ class Games
 	/**
 	 * See if genre name exists
 	 *
-	 * @param $nodeName
+	 * @param $genreName
 	 *
 	 * @return false|string
 	 */
-	public function matchBrowseNode($nodeName)
+	public function matchGameGenre($genreName)
 	{
 		$str = '';
 
-		//music nodes above mp3 download nodes
-		switch ($nodeName) {
+		//Game genres list
+		switch ($genreName) {
 			case 'Action':
 			case 'Adventure':
 			case 'Arcade':
@@ -1032,7 +833,7 @@ class Games
 			case 'Sports':
 			case 'Strategy':
 			case 'Trivia':
-				$str = $nodeName;
+				$str = $genreName;
 				break;
 		}
 
@@ -1053,7 +854,7 @@ class Games
 		$tmpGenre = explode(',', $a);
 		if (is_array($tmpGenre)) {
 			foreach ($tmpGenre as $tg) {
-				$genreMatch = $this->matchBrowseNode(ucwords($tg));
+				$genreMatch = $this->matchGameGenre(ucwords($tg));
 				if ($genreMatch !== false) {
 					$genreName = (string)$genreMatch;
 					break;
