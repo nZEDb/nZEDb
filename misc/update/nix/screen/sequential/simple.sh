@@ -8,7 +8,7 @@ else
 fi
 
 export NZEDB_PATH="${NZEDB_ROOT}/misc/update"
-export THREAD_PATHED="${NZEDB_ROOT}/misc/update/nix/multiprocessing"
+export THREADED_PATH="${NZEDB_ROOT}/misc/update/nix/multiprocessing"
 export TEST_PATH="${NZEDB_ROOT}/misc/testing"
 export NZEDB_SLEEP_TIME="60" # in seconds
 LASTOPTIMIZE=`date +%s`
@@ -27,7 +27,7 @@ cd ${NZEDB_PATH}
 $PHP ${NZEDB_PATH}/update_binaries.php
 
 
-$PHP $THREAD_PATHED/releases.php
+$PHP $THREADED_PATH/releases.php
 
 cd ${TEST_PATH}
 DIFF=$(($CURRTIME-$LASTOPTIMIZE))
