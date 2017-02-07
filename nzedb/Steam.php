@@ -55,7 +55,7 @@ class Steam
 	{
 		$res = $this->steamClient->getAppDetails($appID);
 
-		if ($res !== null) {
+		if ($res !== false) {
 			$result = [
 				'title'       => $res->name,
 				'description' => $res->description['short'],
@@ -72,6 +72,9 @@ class Steam
 			return $result;
 		}
 
+		if ($res === false) {
+			$this->pdo->log->doEcho($this->pdo->log->notice('Steam did not return game data'));
+		}
 		return false;
 	}
 
@@ -87,7 +90,7 @@ class Steam
 		$bestMatch = false;
 
 		if (empty($searchTerm)) {
-
+			$this->pdo->log->doEcho($this->pdo->log->notice('Search term cannot be empty'));
 			return $bestMatch;
 		}
 
@@ -108,17 +111,18 @@ class Steam
 				} else {
 					similar_text(strtolower($result['name']), strtolower($searchTerm), $percent);
 					// If similartext reports an exact match set best match and break out
-					if ($percent == 100) {
+					if ($percent === 100) {
 						$bestMatch = $result['appid'];
 						break;
-					} else if ($percent >= self::STEAM_MATCH_PERCENTAGE) {
-						if ($percent > $bestMatchPct) {
-							$bestMatch = $result['appid'];
-							$bestMatchPct = $percent;
-						}
+					} else if ($percent >= self::STEAM_MATCH_PERCENTAGE && $percent > $bestMatchPct) {
+						$bestMatch = $result['appid'];
+						$bestMatchPct = $percent;
 					}
 				}
 			}
+		}
+		if ($bestMatch === false) {
+			$this->pdo->log->doEcho($this->pdo->log->notice('Steam search returned no valid results'));
 		}
 
 		return $bestMatch;
