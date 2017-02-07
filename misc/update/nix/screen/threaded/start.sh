@@ -9,7 +9,7 @@ fi
 
 export NZEDB_PATH="${NZEDB_ROOT}/misc/update"
 export HELP_PATH="${NZEDB_ROOT}/misc/update/nix/screen/threaded"
-export THREAD_PATH="${NZEDB_ROOT}/misc/update/nix/multiprocessing"
+export THREADED_PATH="${NZEDB_ROOT}/misc/update/nix/multiprocessing"
 export TEST_PATH="${NZEDB_ROOT}/misc/testing"
 
 command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
@@ -33,11 +33,11 @@ do
 		cd $NZEDB_PATH && $SCREEN -dmS POSTP $PHP $NZEDB_PATH/postprocess.php allinf true
 	fi
 
-	cd ${THREAD_PATH}
+	cd ${THREADED_PATH}
 		echo "Start Multi-Processing binaries.php..."
-	$PHP ${THREAD_PATH}/binaries.php 0
+	$PHP ${THREADED_PATH}/binaries.php 0
 		echo "Start Multi-Processing backfill.php..."
-	$PHP ${THREAD_PATH}/backfill.php
+	$PHP ${THREADED_PATH}/backfill.php
 
 	cd ${HELP_PATH}
 	if ! $SCREEN -list | grep -q "RELEASES"; then
