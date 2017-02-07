@@ -14,7 +14,7 @@ export RAGE_PATH="${NZEDB_ROOT}/misc/testing/PostProcess"
 export TEST_PATH="${NZEDB_ROOT}/misc/testing"
 export DEV_PATH="${NZEDB_ROOT}/misc/testing/Developers"
 export DB_PATH="${NZEDB_ROOT}/misc/testing/DB"
-export THREADED_PATH="${NZEDB_ROOT}/misc/update/python"
+export THREADED_PATH="${NZEDB_ROOT}/misc/update/nix/multiprocessing"
 export NZEDB_SLEEP_TIME="30" # in seconds
 LASTOPTIMIZE=`date +%s`
 LASTOPTIMIZE1=`date +%s`
@@ -42,7 +42,7 @@ $PHP ${NZEDB_PATH}/update_binaries.php
 #$PHP ${TEST_PATH}/nzb-import.php /home/share/nzedbdump/XXXx264/ true true false 150
 #$PHP ${TEST_PATH}/nzb-import.php /home/share/nzedbdump/TVHD/ true true false 50
 
-$PHP ${NZEDB_PATH}/update_releases.php 1 true
+$PHP $THREADED_PATH/releases.php	# Set thread count to 1 in site-admin for sequential processing
 # $PHP ${NZEDB_PATH}/decrypt_hashes.php full
 
 
