@@ -377,7 +377,7 @@ class ReleaseCleaning
 		//Replace multiple spaces with 1 space
 		$cleanerName = preg_replace('/\s\s+/i', ' ', $cleanerName);
 		//Remove invalid characters.
-		$cleanerName = trim(utf8_encode(preg_replace('/[^(\x20-\x7F)]*/', '', $cleanerName)));
+		$cleanerName = trim(preg_replace('/[^(\x20-\x7F)]*/', '', $cleanerName));
 		return $cleanerName;
 	}
 }
