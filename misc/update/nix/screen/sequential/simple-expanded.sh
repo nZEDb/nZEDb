@@ -7,7 +7,7 @@ else
 	export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
 fi
 
-export NZEDB_UNRAR=`php $NZEDB_ROOT/nzedb/db/Settings.php tmpunrarpath`
+#export NZEDB_UNRAR=`php $NZEDB_ROOT/nzedb/db/Settings.php tmpunrarpath`
 export NZEDB_PATH="${NZEDB_ROOT}/misc/update"
 export CLI_PATH="${NZEDB_ROOT}/cli/data"
 export RAGE_PATH="${NZEDB_ROOT}/misc/testing/PostProcess"
@@ -20,13 +20,13 @@ LASTOPTIMIZE=`date +%s`
 LASTOPTIMIZE1=`date +%s`
 command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
 
-#delete stale tmpunrar folders
-# we need to have this use the Db setting. No idea how yet, but this fails too often otherwise.
-export count=`find $NZEDB_UNRAR -type d -print| wc -l`
-if [ $count != 1 ]
-then
-	rm -r $NZEDB_UNRAR/*
-fi
+##delete stale tmpunrar folders
+## we need to have this use the Db setting. No idea how yet, but this fails too often otherwise.
+#export count=`find $NZEDB_UNRAR -type d -print| wc -l`
+#if [ $count != 1 ]
+#then
+#	rm -r $NZEDB_UNRAR/*
+#fi
 
 while :
 
@@ -45,6 +45,7 @@ $PHP ${NZEDB_PATH}/update_binaries.php
 $PHP $THREADED_PATH/releases.php	# Set thread count to 1 in site-admin for sequential processing
 # $PHP ${NZEDB_PATH}/decrypt_hashes.php full
 
+$PHP $NZEDB_PATH/postprocess.php all true
 
 #$PHP ${NZEDB_PATH}/requestid.php full
 #$PHP ${DB_PATH}/populate_nzb_guid.php true
