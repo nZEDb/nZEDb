@@ -31,6 +31,7 @@ Fixed:
 	* Fixes typo in ProcessAdditional.php which prevented timeout setting being used correctly (PR 2364).
 	* Wrong number of parameters in removeInstallBin function sql query.
 	* Bring in b3s3rk's fix, from MGR branch, for the duplicate ReleasesGroups entries.
+	* Update threaded.sh for newer fixRelNames params (PR 2376).
 
 
 0.6.8.1 2017-01-09

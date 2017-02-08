@@ -8,6 +8,11 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2017-02-08 niel
+	Mrg: dev-mgr (MultiGroup Releases) branch into dev. This adds new feature for matching releases
+		spread across several groups.
+
+
 2017-02-02 niel
 	Mrg: PR 2376, from kaibosh - Update threaded.sh for newer fixRelNames params.
 2017-01-30 niel

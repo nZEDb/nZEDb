@@ -649,4 +649,22 @@ class Tmux
 		}
 		return true;
 	}
+
+	/**
+	 * Retrieves and returns ALL collections, binaries, parts, and missed parts table names from the Db
+	 *
+	 * @return bool|\PDOStatement
+	 */
+	public function cbpmTableQuery()
+	{
+		$regstr = '^(multigroup_)?(collections|binaries|parts|missed_parts)(_[0-9]+)?$';
+
+		return $this->pdo->queryDirect("
+			SELECT TABLE_NAME AS name
+      		FROM information_schema.TABLES
+      		WHERE TABLE_SCHEMA = (SELECT DATABASE())
+			AND TABLE_NAME REGEXP {$this->pdo->escapeString($regstr)}
+			ORDER BY TABLE_NAME ASC"
+		);
+	}
 }

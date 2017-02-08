@@ -11,6 +11,11 @@ class Regexes
 	public $pdo;
 
 	/**
+	 * @var mixed The ID of the Regex inut string matched or the generic name
+	 */
+	public $matchedRegex;
+
+	/**
 	 * @var string Name of the current table we are working on.
 	 */
 	public $tableName;
@@ -281,6 +286,8 @@ class Regexes
 	 */
 	public function tryRegex($subject, $groupName)
 	{
+		$this->matchedRegex = 0;
+
 		$this->_fetchRegex($groupName);
 
 		$returnString = '';
@@ -295,6 +302,7 @@ class Regexes
 				$returnString = $this->_matchRegex($regex['regex'], $subject);
 				// If this regex found something, break and return, or else continue trying other regex.
 				if ($returnString) {
+					$this->matchedRegex = $regex['id'];
 					break;
 				}
 			}
@@ -318,7 +326,7 @@ class Regexes
 		// Get all regex from DB which match the current group name. Cache them for 15 minutes. #CACHEDQUERY#
 		$this->_regexCache[$groupName]['regex'] = $this->pdo->query(
 			sprintf(
-				'SELECT r.regex%s FROM %s r WHERE %s REGEXP r.group_regex AND r.status = 1 ORDER BY r.ordinal ASC, r.group_regex ASC',
+				'SELECT r.id, r.regex%s FROM %s r WHERE %s REGEXP r.group_regex AND r.status = 1 ORDER BY r.ordinal ASC, r.group_regex ASC',
 				($this->tableName === 'category_regexes' ? ', r.categories_id' : ''),
 				$this->tableName,
 				$this->pdo->escapeString($groupName)
