@@ -38,8 +38,8 @@ echo $pdo->log->primary("Reseting all groups completed.");
 $arr = [
 		"videos", "tv_episodes", "tv_info", "release_nfos", "release_comments", 'sharing', 'sharing_sites',
 		"users_releases", "user_movies", "user_series", "movieinfo", "musicinfo", "release_files",
-		"audio_data", "release_subtitles", "video_data", "releaseextrafull", "parts",
-		"missed_parts", "binaries", "collections", "releases", "anidb_titles", "anidb_info", "anidb_episodes"
+		"audio_data", "release_subtitles", "video_data", "releaseextrafull", "releases", "anidb_titles",
+		"anidb_info", "anidb_episodes", "releases_groups"
 ];
 
 // Truncate applicable tables
@@ -51,24 +51,16 @@ foreach ($arr as &$value) {
 }
 unset($value);
 
-$sql = "SHOW table status";
-
-$tables = $pdo->query($sql);
-foreach ($tables as $row) {
-	$tbl = $row['name'];
-	if (preg_match('/collections_\d+/', $tbl) || preg_match('/binaries_\d+/', $tbl) || preg_match('/parts_\d+/', $tbl) || preg_match('/missed_parts_\d+/', $tbl) || preg_match('/\d+_collections/', $tbl) || preg_match('/\d+_binaries/', $tbl) || preg_match('/\d+_parts/', $tbl) || preg_match('/\d+_missed_parts_\d+/', $tbl)) {
-		$rel = $pdo->queryDirect(sprintf('DROP TABLE %s', $tbl));
-		if ($rel !== false) {
-			echo $pdo->log->primary("Dropping ${tbl} completed.");
-		}
-	}
-}
+$sql = "CALL loop_cbpm('truncate')";
+echo $pdo->log->primary("Truncating binaries, collections, missed_parts and parts tables...");
+$result = $pdo->query($sql);
+echo $pdo->log->primary("Truncating completed.");
 
 // Truncate Sphinx Index
 (new SphinxSearch())->truncateRTIndex('releases_rt');
 
 // Optimize DB after Reset
-$pdo->optimise(false, 'full');
+//$pdo->optimise(false, 'full');
 
 // Delete NZBs
 echo $pdo->log->header("Deleting nzbfiles subfolders.");

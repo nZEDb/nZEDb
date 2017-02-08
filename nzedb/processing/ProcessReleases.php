@@ -720,7 +720,7 @@ class ProcessReleases
 											'conditions' =>
 												[
 													'releases_id' => $releaseID,
-												    'groups_id'   => $xrefGrpID,
+													'groups_id'   => $xrefGrpID,
 												],
 											'fields'     => ['releases_id'],
 											'limit'      => 1,
@@ -937,7 +937,7 @@ class ProcessReleases
 		$this->categorizeRelease(
 			$type,
 			(!empty($groupID)
-				? 'WHERE categories_id = ' . Category::OTHER_MISC . ' AND iscategorized = 0 AND group_id = ' . $groupID
+				? 'WHERE categories_id = ' . Category::OTHER_MISC . ' AND iscategorized = 0 AND groups_id = ' . $groupID
 				: 'WHERE categories_id = ' . Category::OTHER_MISC . ' AND iscategorized = 0')
 		);
 

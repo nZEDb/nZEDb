@@ -371,19 +371,24 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="yydecoderpath">yEnc Type:</label></td>
+				<td style="width:180px;"><label for="yydecoderpath">yEnc decoder path:</label></td>
 				<td>
 					<input id="yydecoderpath" class="long" name="yydecoderpath" type="text" value="{$site->yydecoderpath}"/>
 					<div class="hint">
 						If you use a binary to decode yEnc, put the full path (including
-						filename to	it here.
-						<br/>><a style="color:#0082E1" href="http://sourceforge.net/projects/yydecode/files/yydecode/0.2.10/">
-						Download yydecode from sourceforge.</a>
-						<br/>Leave this empty if you use either of the php extensions (<a style="color:#0082E1"
-						href="https://github.com/kevinlekiller/simple_php_yenc_decode">simple_php_yenc_decode.</a>)
-						we provide. They will be automatically detected and used if installed correctly.
-						<br/> The default is to use PHP code which is <strong>slow</strong>, so one of the
-						alternatives is recommended.
+						filename) to it here.
+						<a style="color:#0082E1"
+								href="http://sourceforge.net/projects/yydecode/files/yydecode/0.2.10/">
+							Download yydecode from sourceforge.</a><br />
+						Leave this empty if you use either of the php extensions
+						(<a style="color:#0082E1"
+							href="https://github.com/kevinlekiller/simple_php_yenc_decode">
+							simple_php_yenc_decode.</a> or
+						<a style="color:#0082E1" href="https://github.com/niel/php-yenc">php-yenc</a>.)
+						we provide or the default PHP code. The extensions will be automatically
+						detected and used if they are installed correctly.<br />
+						PHP code is the fallback if nothing else is provided. It
+						is <strong>slow</strong>, so one of the alternatives is recommended.
 					</div>
 				</td>
 			</tr>

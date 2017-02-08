@@ -48,10 +48,21 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	 */
 	protected function initiateTableNames($groupID)
 	{
-		$this->tables = [
+		$this->tables = self::tableNames();
+	}
+
+	/**
+	 * Returns MGR table names
+	 *
+	 * @return array
+	 */
+	public static function tableNames()
+	{
+		return [
 			'cname' => 'multigroup_collections',
 			'bname' => 'multigroup_binaries',
-			'pname' => 'multigroup_parts'
+			'pname' => 'multigroup_parts',
+			'prname' => 'multigroup_missed_parts',
 		];
 	}
 }

@@ -3,12 +3,14 @@ require_once realpath(dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SE
 
 use app\models\Settings;
 use nzedb\Category;
+use nzedb\Tmux;
 use nzedb\TmuxOutput;
 use nzedb\TmuxRun;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 $pdo = new DB();
+$tMain = new Tmux($pdo);
 $tRun = new TmuxRun($pdo);
 $tOut = new TmuxOutput($pdo);
 
@@ -200,9 +202,7 @@ while ($runVar['counts']['iterations'] > 0) {
 
 		$timer07 = time();
 		if ($runVar['constants']['tablepergroup'] == 1) {
-			$sql = 'SHOW TABLE STATUS';
-
-			$tables = $pdo->queryDirect($sql);
+			$tables = $tMain->cbpmTableQuery();
 			$age = time();
 
 			$runVar['counts']['now']['collections_table'] = $runVar['counts']['now']['binaries_table'] = 0;
