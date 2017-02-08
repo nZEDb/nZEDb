@@ -6,6 +6,8 @@ use nzedb\db\DB;
 
 class Games
 {
+	const GAME_MATCH_PERCENTAGE = 90;
+
 	const GAMES_TITLE_PARSE_REGEX =
 		'#(?P<title>[\w\s\.]+)(-(?P<relgrp>FLT|RELOADED|SKIDROW|PROPHET|RAZOR1911|CORE|REFLEX))?\s?(\s*(\(?(' .
 		'(?P<reltype>PROPER|MULTI\d|RETAIL|CRACK(FIX)?|ISO|(RE)?(RIP|PACK))|(?P<year>(19|20)\d{2})|V\s?' .
@@ -141,20 +143,47 @@ class Games
 	/**
 	 * Retrieve games info by its title
 	 *
-	 * @param $title
+	 * @param string $title
 	 *
 	 * @return array|bool
 	 */
 	public function getGamesInfoByName($title)
 	{
-		return $this->pdo->queryOneRow(
-			sprintf("
-				SELECT *
-				FROM gamesinfo
-				WHERE title = %s",
-				$this->pdo->escapeString($title)
-			)
+		$bestMatch = false;
+
+		if (empty($title)) {
+			return $bestMatch;
+		}
+
+		$results = $this->pdo->queryDirect("
+			SELECT *
+			FROM gamesinfo
+			WHERE MATCH(title) AGAINST({$this->pdo->escapeString($title)})
+			LIMIT 20"
 		);
+
+		if ($results instanceof \Traversable) {
+			$bestMatchPct = 0;
+			foreach ($results as $result) {
+				// If we have an exact string match set best match and break out
+				if ($result['title'] === $title) {
+					$bestMatch = $result;
+					break;
+				} else {
+					similar_text(strtolower($result['title']), strtolower($title), $percent);
+					// If similartext reports an exact match set best match and break out
+					if ($percent === 100) {
+						$bestMatch = $result;
+						break;
+					} else if ($percent >= self::GAME_MATCH_PERCENTAGE && $percent > $bestMatchPct) {
+						$bestMatch = $result;
+						$bestMatchPct = $percent;
+					}
+				}
+			}
+		}
+
+		return $bestMatch;
 	}
 
 	/**
