@@ -664,7 +664,7 @@ class Tmux
       		FROM information_schema.TABLES
       		WHERE TABLE_SCHEMA = (SELECT DATABASE())
 			AND TABLE_NAME REGEXP {$this->pdo->escapeString($regstr)}
-			ORDER BY TABLE_NAME ASC
+			ORDER BY TABLE_NAME ASC"
 		);
 	}
 }
