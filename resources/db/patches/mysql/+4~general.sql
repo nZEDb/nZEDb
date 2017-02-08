@@ -44,4 +44,3 @@ CREATE PROCEDURE loop_cbpm(IN method CHAR(10))
   END;
 $$
 
-DELIMITER ;
