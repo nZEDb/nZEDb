@@ -540,10 +540,6 @@ CREATE TABLE         multigroup_collections (
   AUTO_INCREMENT  = 1;
 
 
-DROP TABLE IF EXISTS multigroup_parts;
-CREATE TABLE multigroup_parts LIKE parts;
-
-
 DROP TABLE IF EXISTS multigroup_posters;
 CREATE TABLE multigroup_posters (
   id     INT(11) UNSIGNED NOT NULL AUTO_INCREMENT
@@ -624,6 +620,10 @@ CREATE TABLE parts (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
+
+
+DROP TABLE IF EXISTS multigroup_parts;
+CREATE TABLE multigroup_parts LIKE parts;
 
 
 DROP TABLE IF EXISTS predb;
