@@ -134,12 +134,8 @@ do
 ## Fix Release names options
 #
 	echo "--- FixRelNames ---"
-	$PHP ${MULTI_PATH}/fixrelnames.php nfo			#Attempt to fix release name using the nfo.
-	$PHP ${MULTI_PATH}/fixrelnames.php filename		#Attempt to fix release name using the filenames.
+	$PHP ${MULTI_PATH}/fixrelnames.php standard		#Attempt to fix release name using the nfo.
 	$PHP ${MULTI_PATH}/fixrelnames.php predbft		#Attempt to fix release name using Predb full text matching.
-	$PHP ${MULTI_PATH}/fixrelnames.php miscsorter	#Attempt to fix release name using magic.
-	$PHP ${MULTI_PATH}/fixrelnames.php md5			#Attempt to fix release name using the MD5.
-	$PHP ${MULTI_PATH}/fixrelnames.php par2			#Attempt to fix release name using the PAR2.
 #
 ### End of Multi-processing scripts
 

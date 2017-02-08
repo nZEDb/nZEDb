@@ -18,8 +18,20 @@ ChangeLog file which list *when* changes are made to the dev branches.
 Added:
 
 Changed:
+	* Updates to readme.md (PR 2366).
 
 Fixed:
+	* Check for incompatible tmux versions and abort if installed (PR 2353).
+	* Predb page link for predb search (closes issue 2356).
+	* Work around to prevent some db versions using auto-increment value on an explicit 0 for
+	 Categories Other's.
+	* Change leftover references to group_id in python scripts and ProcessReleases class.
+	* Bad settings data for yydecodepath.
+	* Adds releases_groups table to resetdb.php (PR 2365).
+	* Fixes typo in ProcessAdditional.php which prevented timeout setting being used correctly (PR 2364).
+	* Wrong number of parameters in removeInstallBin function sql query.
+	* Bring in b3s3rk's fix, from MGR branch, for the duplicate ReleasesGroups entries.
+	* Update threaded.sh for newer fixRelNames params (PR 2376).
 
 
 0.6.8.1 2017-01-09
