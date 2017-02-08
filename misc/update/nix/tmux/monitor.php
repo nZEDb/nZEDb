@@ -3,12 +3,14 @@ require_once realpath(dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SE
 
 use app\models\Settings;
 use nzedb\Category;
+use nzedb\Tmux;
 use nzedb\TmuxOutput;
 use nzedb\TmuxRun;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 $pdo = new DB();
+$tMain = new Tmux($pdo);
 $tRun = new TmuxRun($pdo);
 $tOut = new TmuxOutput($pdo);
 
@@ -200,9 +202,7 @@ while ($runVar['counts']['iterations'] > 0) {
 
 		$timer07 = time();
 		if ($runVar['constants']['tablepergroup'] == 1) {
-			$sql = 'SHOW TABLE STATUS';
-
-			$tables = $pdo->queryDirect($sql);
+			$tables = $tMain->cbpmTableQuery();
 			$age = time();
 
 			$runVar['counts']['now']['collections_table'] = $runVar['counts']['now']['binaries_table'] = 0;
@@ -217,7 +217,7 @@ while ($runVar['counts']['iterations'] > 0) {
 						$stamp = 'UNIX_TIMESTAMP(MIN(dateadded))';
 
 						switch (true) {
-							case strpos($tbl, 'collections_') !== false:
+							case strpos($tbl, 'collections') !== false:
 								$runVar['counts']['now']['collections_table'] +=
 									getTableRowCount($psTableRowCount, $tbl);
 								$added = $pdo->queryOneRow(sprintf('SELECT %s AS dateadded FROM %s', $stamp, $tbl));
@@ -227,17 +227,17 @@ while ($runVar['counts']['iterations'] > 0) {
 									$age = $added['dateadded'];
 								}
 								break;
-							case strpos($tbl, 'binaries_') !== false:
+							case strpos($tbl, 'binaries') !== false:
 								$runVar['counts']['now']['binaries_table'] +=
 									getTableRowCount($psTableRowCount, $tbl);
 								break;
 							// This case must come before the 'parts_' one.
-							case strpos($tbl, 'missed_parts_') !== false:
+							case strpos($tbl, 'missed_parts') !== false:
 								$runVar['counts']['now']['missed_parts_table'] +=
 									getTableRowCount($psTableRowCount, $tbl);
 
 								break;
-							case strpos($tbl, 'parts_') !== false:
+							case strpos($tbl, 'parts') !== false:
 								$runVar['counts']['now']['parts_table'] +=
 									getTableRowCount($psTableRowCount, $tbl);
 								break;
