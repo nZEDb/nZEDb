@@ -39,6 +39,10 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Bad settings data for yydecodepath.
 2017-01-20 DariusIII
 	Fix: Change leftover references to group_id in python scripts and ProcessReleases class.
+2017-01-18 niel
+	Add: New setting (site.main.incognito) that determines if the main page is shown to vistors, or
+	    if they're redirected to the login page instead.
+	     Currently there is no way to edit this in Site => edit.
 2017-01-17 niel
 	Mrg: dev-db branch which contains changes to binaries, collections, missed, and parts tables.
 2017-01-16 niel
