@@ -1038,7 +1038,7 @@ class Binaries
 	 * @param array $headers
 	 * @param int   $msgCount
 	 */
-	protected function getHighLowArticleInfo(array $returnArray, array $headers, int $msgCount)
+	protected function getHighLowArticleInfo(array $returnArray, array $headers, $msgCount)
 	{
 		// Get highest and lowest article numbers/dates.
 		$iterator1 = 0;
