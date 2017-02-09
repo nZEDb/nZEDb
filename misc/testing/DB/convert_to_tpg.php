@@ -102,9 +102,9 @@ while ($cdone < $clen['total']) {
 						$partsnew = substr($partsnew, 0, -2);
 						if ($debug) {
 							echo "\n\nParts insert:\n";
-							echo sprintf("\nINSERT INTO parts_%d (binaries_id, messageid, number, partnumber, size, collections_id) VALUES %s;\n\n", $collection['groups_id'], $partsnew);
+							echo sprintf("\nINSERT INTO parts_%d (binaries_id, messageid, number, partnumber, size) VALUES %s;\n\n", $collection['groups_id'], $partsnew);
 						}
-						$sql = sprintf('INSERT INTO parts_%d (binaries_id, messageid, number, partnumber, size, collections_id) VALUES %s;', $collection['groups_id'], $partsnew);
+						$sql = sprintf('INSERT INTO parts_%d (binaries_id, messageid, number, partnumber, size) VALUES %s;', $collection['groups_id'], $partsnew);
 						$pdo->queryExec($sql);
 					}
 				}
