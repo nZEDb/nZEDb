@@ -1124,21 +1124,6 @@
 		<legend>Various settings</legend>
 		<table class="input">
 			<tr>
-				<td style="width:180px;"><label for="tablepergroup">Table Per Group:</label></td>
-				<td>
-					{html_radios id="tablepergroup" name='tablepergroup' values=$yesno_ids output=$yesno_names selected=$site->tablepergroup separator='<br />'}
-					<div class="hint">This uses separate tables for collections, binaries and parts for each group.<br/>This
-						requires you to run convert_to_tpg.php or reset_truncate.php.<br/>This requires that you also run
-						.../misc/update/nix/multiprocessing/releases.php (tmux does this automatically).
-						<br/>Run: show variables like '%open%files%'; results should be higher than 10k, twice that if you
-						are using TokuDB.;
-						<br/><b>You may need to increase table_open_cache, open_files_limit and max_allowed_packet in
-							my.cnf. Also, you may need to add the following to /etc/security/limits.conf<br/>mysql soft
-							nofile 24000<br/>mysql hard nofile 32000</b>
-					</div>
-				</td>
-			</tr>
-			<tr>
 				<td style="width:180px;"><label for="maxnzbsprocessed">Maximum NZBs stage5:</label></td>
 				<td>
 					<input class="short" id="maxnzbsprocessed" name="maxnzbsprocessed" type="text" value="{$site->maxnzbsprocessed}"/>
@@ -1213,7 +1198,7 @@
 				<td style="width:180px;"><label for="releasesthreads">Update Releases Threads:</label></td>
 				<td>
 					<input class="short" id="releasesthreads" name="releasesthreads" type="text" value="{$site->releasesthreads}"/>
-					<div class="hint">The number of threads for update_releases. This is only for tablepergroup.</div>
+					<div class="hint">The number of threads for update_releases.</div>
 				</td>
 			</tr>
 			<tr>

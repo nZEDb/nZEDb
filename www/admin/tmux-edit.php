@@ -45,9 +45,9 @@ $page->smarty->assign('dehash_names', ['Disabled', 'Decrypt Hashes', 'Predb', 'A
 $page->smarty->assign('import_ids', [0, 1, 2]);
 $page->smarty->assign('import_names',
 					  ['Disabled', 'Import - Do Not Use Filenames', 'Import - Use Filenames']);
-$page->smarty->assign('releases_ids', [0, 1, 2]);
+$page->smarty->assign('releases_ids', [0, 2]);
 $page->smarty->assign('releases_names',
-					  ['Disabled', 'Update Releases', 'Update Releases Threaded']);
+					  ['Disabled', 'Update Releases Threaded']);
 $page->smarty->assign('post_ids', [0, 1, 2, 3]);
 $page->smarty->assign('post_names',
 					  ['Disabled', 'PostProcess Additional', 'PostProcess NFOs', 'All']);
