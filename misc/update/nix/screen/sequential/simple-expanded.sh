@@ -42,10 +42,10 @@ $PHP ${NZEDB_PATH}/update_binaries.php
 #$PHP ${TEST_PATH}/nzb-import.php /home/share/nzedbdump/XXXx264/ true true false 150
 #$PHP ${TEST_PATH}/nzb-import.php /home/share/nzedbdump/TVHD/ true true false 50
 
-$PHP $THREADED_PATH/releases.php	# Set thread count to 1 in site-admin for sequential processing
+$PHP ${THREADED_PATH}/releases.php	# Set thread count to 1 in site-admin for sequential processing
 # $PHP ${NZEDB_PATH}/decrypt_hashes.php full
 
-$PHP $NZEDB_PATH/postprocess.php all true
+$PHP ${NZEDB_PATH}/postprocess.php all true
 
 #$PHP ${NZEDB_PATH}/requestid.php full
 #$PHP ${DB_PATH}/populate_nzb_guid.php true

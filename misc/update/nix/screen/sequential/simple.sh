@@ -27,9 +27,9 @@ cd ${NZEDB_PATH}
 $PHP ${NZEDB_PATH}/update_binaries.php
 
 
-$PHP $THREADED_PATH/releases.php 	# Set thread count to 1 in site-admin for sequential processing
+$PHP ${THREADED_PATH}/releases.php 	# Set thread count to 1 in site-admin for sequential processing
 
-$PHP $NZEDB_PATH/postprocess.php all true
+$PHP ${NZEDB_PATH}/postprocess.php all true
 
 cd ${TEST_PATH}
 DIFF=$(($CURRTIME-$LASTOPTIMIZE))
