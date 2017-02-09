@@ -122,7 +122,6 @@ class Backfill
 		$this->_safeBackFillDate = (Settings::value('..safebackfilldate') != '') ?
 			(string)Settings::value('..safebackfilldate') : '2008-08-14';
 		$this->_safePartRepair = (Settings::value('..safepartrepair') == 1 ? 'update' : 'backfill');
-		$this->_tablePerGroup = (Settings::value('..tablepergroup') == 1 ? true : false);
 		$this->_disableBackfillGroup = (Settings::value('..disablebackfillgroup') == 1 ? true : false);
 	}
 

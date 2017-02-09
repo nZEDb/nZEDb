@@ -225,7 +225,6 @@ class Tmux
 					(%1\$s 'run_ircscraper') AS run_ircscraper,
 					(%2\$s 'sqlpatch') AS sqlpatch,
 					(%2\$s 'alternate_nntp') AS alternate_nntp,
-					(%2\$s 'tablepergroup') AS tablepergroup,
 					(%2\$s 'delaytime') AS delaytime,
 					(%2\$s 'nntpproxy') AS nntpproxy",
 					$tmuxstr,
