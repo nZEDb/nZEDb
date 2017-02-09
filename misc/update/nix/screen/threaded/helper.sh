@@ -17,7 +17,7 @@ while :
 do
 
 	cd ${NZEDB_PATH}
-	$PHP $THREADED_PATH/releases.php 
+	$PHP ${THREADED_PATH}/releases.php 
 	cd ${TEST_PATH}
 	$PHP ${TEST_PATH}/Release/removeCrapReleases.php true 1
 
