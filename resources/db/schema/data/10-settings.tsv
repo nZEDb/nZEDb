@@ -148,6 +148,7 @@ site	main	dereferrer_link		Optional URL to prepend to external links	dereferrer_
 site	main	email		Shown in the contact us page, and where the contact html form is sent to.	email
 site	main	footer	Usenet binary indexer.	Displayed in the footer section of every public page.	footer
 site	main	home_link	/	The relative path to a the landing page shown when a user logs in, or clicks the home link.	home_link
+site	main	incognito	0	Determines whether a vistor that has not logged, in sees the default page or is redirected to the login page immediately. Default behaviour is to show the page.	site.main.incognito
 site	main	logfile	/var/www/nZEDb/resources/logs/failed-login.log	Location of log file (MUST be set if logging to file is set).	logfile
 site	main	loggingopt	0	Where you would like to log failed logins to the site.	loggingopt
 site	main	menuposition	2	Where the menu should appear. Moving the menu to the top will require using a theme which widens the content panel. (not currently functional)	menuposition

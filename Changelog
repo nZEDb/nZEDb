@@ -8,6 +8,10 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
+2017-02-09 niel
+	Mrg: dev-base-template-mod branch. See commit 2017-01-18.
+	Mrg: PR 2379, from kaibosh - Update sequential scripts for mandatory TPG use.
 2017-02-08 niel
 	Mrg: dev-mgr (MultiGroup Releases) branch into dev. This adds new feature for matching releases
 		spread across several groups.
@@ -39,6 +43,10 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Bad settings data for yydecodepath.
 2017-01-20 DariusIII
 	Fix: Change leftover references to group_id in python scripts and ProcessReleases class.
+2017-01-18 niel
+	Add: New setting (site.main.incognito) that determines if the main page is shown to vistors, or
+	    if they're redirected to the login page instead.
+	     Currently there is no way to edit this in Site => edit.
 2017-01-17 niel
 	Mrg: dev-db branch which contains changes to binaries, collections, missed, and parts tables.
 2017-01-16 niel
