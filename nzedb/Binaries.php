@@ -621,7 +621,16 @@ class Binaries
 		// Check if MySQL tables exist, create if they do not, get their names at the same time.
 		$this->tableNames = $this->_groups->getCBPTableNames($this->_tablePerGroup, $this->groupMySQL['id']);
 
-		$returnArray = [];
+		$mgrPosters = $this->getMultiGroupPosters();
+
+		if(!empty($mgrPosters)) {
+			$mgrActive = true;
+			$mgrPosters = array_flip(array_column($mgrPosters, 'poster'));
+		} else {
+			$mgrActive = false;
+		}
+
+		$returnArray = $stdHeaders = $mgrHeaders = [];
 
 		$partRepair = ($type === 'partrepair');
 		$this->addToPartRepair = ($type === 'update' && $this->_partRepair);
@@ -697,7 +706,7 @@ class Binaries
 
 		$headersRepaired = $rangeNotReceived = $this->headersReceived = $this->headersNotInserted = [];
 
-		foreach($headers AS $header) {
+		foreach ($headers AS $header) {
 
 			// Check if we got the article or not.
 			if (isset($header['Number'])) {
@@ -757,7 +766,7 @@ class Binaries
 			}
 			$header['Bytes'] = (int)$header['Bytes'];
 
-			if(ProcessReleasesMultiGroup::isMultiGroup($header['From'])) {
+			if($mgrActive === true && array_key_exists($header['From'], $mgrPosters)) {
 				$mgrHeaders[] = $header;
 			} else {
 				$stdHeaders[] = $header;
@@ -775,18 +784,18 @@ class Binaries
 		}
 
 		// MGR headers goes first
-		if (isset($mgrHeaders) && count($mgrHeaders) > 0) {
+		if (!empty($mgrHeaders)) {
 			$this->tableNames = ProcessReleasesMultiGroup::tableNames();
 			$this->storeHeaders($mgrHeaders, true);
-			unset($mgrHeaders);
 		}
+		unset($mgrHeaders);
 
 		// Standard headers go second so we can switch tableNames back and do part repair to standard group tables
-		if (isset($stdHeaders) && count($stdHeaders) > 0) {
+		if (!empty($stdHeaders)) {
 			$this->tableNames = $this->_groups->getCBPTableNames($this->_tablePerGroup, $this->groupMySQL['id']);
 			$this->storeHeaders($stdHeaders, false);
-			unset($stdHeaders);
 		}
+		unset($stdHeaders);
 
 		// Start of part repair.
 		$this->startPR = microtime(true);
@@ -1783,5 +1792,20 @@ class Binaries
 				break;
 		}
 		return $ignore;
+	}
+
+	/**
+	 * Returns all multigroup poster entries from the database
+	 *
+	 * @return array
+	 */
+	protected function getMultiGroupPosters()
+	{
+		return $this->_pdo->query("
+			SELECT poster
+			FROM multigroup_posters",
+			true,
+			nZEDb_CACHE_EXPIRY_SHORT
+		);
 	}
 }
