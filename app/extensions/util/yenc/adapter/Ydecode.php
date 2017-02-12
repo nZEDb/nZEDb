@@ -45,6 +45,11 @@ class Ydecode extends \lithium\core\Object
 		if (!preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $text, $input)) {
 			throw new \Exception('Text does not look like yEnc.');
 		}
+
+		if (self::$pathBin === false) {
+			throw new \InvalidArgumentException("No valid path to yydecoder binary found!");
+		}
+
 		$data = shell_exec(
 			"echo '{$input[1]}' | '" . self::$pathBin . "' -o - " . ($ignore ? "-b " : " ") . self::$silent
 		);
