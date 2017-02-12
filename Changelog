@@ -8,6 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2017-02-12 b3rs3rk
+	Chg: Improve performance by doing poster check in PHP instead of single row MySQL queries
 2017-02-10 b3rs3rk
 	Fix: Settings issues with AniDB population preventing run.
 2017-02-10 DariusIII
