@@ -42,12 +42,14 @@ class Ydecode extends \lithium\core\Object
 
 	public static function decode(&$text, $ignore = false)
 	{
-		if (!preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $text, $input)) {
-			throw new \Exception('Text does not look like yEnc.');
-		}
-
-		if (self::$pathBin === false) {
-			throw new \InvalidArgumentException("No valid path to yydecoder binary found!");
+		switch (true) {
+			case !preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $text, $input):
+				throw new \Exception('Text does not look like yEnc.');
+				break;
+			case self::$pathBin === false:
+				throw new \InvalidArgumentException("No valid path to yydecoder binary found!");
+				break;
+			default:
 		}
 
 		$data = shell_exec(
