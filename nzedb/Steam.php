@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use app\models\Settings;
 use app\models\SteamApps;
 use b3rs3rk\steamfront\Main;
 use nzedb\db\DB;
@@ -8,6 +9,11 @@ use nzedb\db\DB;
 class Steam
 {
 	const STEAM_MATCH_PERCENTAGE = 90;
+
+	/**
+	 * @var
+	 */
+	protected $lastUpdate;
 
 	/**
 	 * @var string The parsed game name from searchname
@@ -94,6 +100,8 @@ class Steam
 			return $bestMatch;
 		}
 
+		$this->populateSteamAppsTable();
+
 		$results = $this->pdo->queryDirect("
 			SELECT name, appid
 			FROM steam_apps
@@ -133,44 +141,65 @@ class Steam
 	 */
 	public function populateSteamAppsTable()
 	{
-		$fullAppArray = $this->steamClient->getFullAppList();
-		$inserted = $dupe = 0;
-		echo 'Populating steam apps table' . PHP_EOL;
-		foreach ($fullAppArray as $appsArray) {
-			foreach ($appsArray as $appArray) {
-				foreach ($appArray as $app) {
-					$dupeCheck = SteamApps::find('first',
-						[
-							'conditions' =>
-								[
-									'name'  => $app['name'],
-									'appid' => $app['appid'],
-								],
-							'fields'     => ['appid'],
-							'limit'      => 1,
-						]
-					);
-
-					if ($dupeCheck === null) {
-						$steamApps = SteamApps::create(
+		$lastUpdate = Settings::value('APIs.Steam.last_update');
+		$this->lastUpdate = $lastUpdate > 0 ? $lastUpdate : 0;
+		if ((time() - (int)$this->lastUpdate) > 86400) {
+			// Set time we updated steam_apps table
+			$this->setLastUpdated();
+			$fullAppArray = $this->steamClient->getFullAppList();
+			$inserted = $dupe = 0;
+			echo 'Populating steam apps table' . PHP_EOL;
+			foreach ($fullAppArray as $appsArray) {
+				foreach ($appsArray as $appArray) {
+					foreach ($appArray as $app) {
+						$dupeCheck = SteamApps::find('first',
 							[
-								'appid' => $app['appid'],
-								'name'  => $app['name'],
+								'conditions' =>
+									[
+										'name'  => $app['name'],
+										'appid' => $app['appid'],
+									],
+								'fields'     => ['appid'],
+								'limit'      => 1,
 							]
 						);
-						$steamApps->save();
-						$inserted++;
-						if ($inserted % 500 == 0) {
-							echo PHP_EOL . number_format($inserted) . ' apps inserted.' . PHP_EOL;
+
+						if ($dupeCheck === null) {
+							$steamApps = SteamApps::create(
+								[
+									'appid' => $app['appid'],
+									'name'  => $app['name'],
+								]
+							);
+							$steamApps->save();
+							$inserted++;
+							if ($inserted % 500 == 0) {
+								echo PHP_EOL . number_format($inserted) . ' apps inserted.' . PHP_EOL;
+							} else {
+								echo '.';
+							}
 						} else {
-							echo '.';
+							$dupe++;
 						}
-					} else {
-						$dupe++;
 					}
 				}
 			}
+			echo PHP_EOL . 'Added ' . $inserted . ' new steam apps, ' . $dupe . ' duplicates skipped' . PHP_EOL;
+		} else {
+			echo PHP_EOL . $this->pdo->log->info(
+					'Steam has been updated within the past day, will be updated when 1 day interval passes.'
+				) . PHP_EOL;
 		}
-		echo PHP_EOL . 'Added ' . $inserted . ' new steam apps, '. $dupe . ' duplicates skipped' . PHP_EOL;
+	}
+
+	/**
+	 * Sets the database time for last full AniDB update
+	 */
+	private function setLastUpdated()
+	{
+		Settings::update(
+			['value' => time()],
+			['section' => 'APIs', 'subsection' => 'Steam', 'name' => 'last_update']
+		);
 	}
 }
