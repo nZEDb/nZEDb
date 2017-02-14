@@ -81,7 +81,7 @@
 				{* Audio *}
 				{if in_array($result.category, array('music-audio'))}
 					<a class="title" title="View category Music"
-					   href="{$smarty.const.WWW_TOP}/music">Audio</a>
+					   href="{$smarty.const.WWW_TOP}/../music">Audio</a>
 				{/if}
 				{* MP3 *}
 				{if in_array($result.category, array('MP3', 'Music: MP3'))}
@@ -262,7 +262,7 @@
 				{/if}
 				{if $result.source == srrdb}
 					<a title="Visit srrDB"
-					   href="{$site->dereferrer_link}http://www.srrdb.com/../browse/{$result.title}"
+					   href="{$site->dereferrer_link}http://www.srrdb.com/browse/{$result.title}"
 					   target="_blank">
 						srrDB
 					</a>
@@ -308,7 +308,7 @@
 					<a
 							class="requestid"
 							title="{$result.requestid}"
-							href="{$smarty.const.WWW_TOP}/search?searchadvr=&searchadvsubject={$result.requestid}
+							href="{$smarty.const.WWW_TOP}/../search?searchadvr=&searchadvsubject={$result.requestid}
 															&searchadvposter=&searchadvdaysnew=&searchadvdaysold=&searchadvgroups=-1&searchadvcat=-1
 															&searchadvsizefrom=-1&searchadvsizeto=-1&searchadvhasnfo=0&searchadvhascomments=0&search_type=adv"
 					>

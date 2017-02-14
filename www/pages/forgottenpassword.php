@@ -48,8 +48,8 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 		break;
 	case 'submit':
 		if ($captcha->getError() === false) {
-			$email = $_POST['email'];
-			if ($email == '') {
+			$email = empty($_POST['email']) ? '' : $_POST['email'];
+			if (empty($email)) {
 				$page->smarty->assign('error', "Missing Email");
 			} else {
 				// Check users exists and send an email.
