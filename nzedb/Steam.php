@@ -42,7 +42,7 @@ class Steam
 
 		$this->pdo = ($options['DB'] instanceof DB ? $options['DB'] : new DB());
 
-		$this->steamClient = new Main(
+		$this->steamFront = new Main(
 			[
 				'country_code' => 'us',
 				'local_lang'   => 'english'
@@ -59,7 +59,7 @@ class Steam
 	 */
 	public function getAll($appID)
 	{
-		$res = $this->steamClient->getAppDetails($appID);
+		$res = $this->steamFront->getAppDetails($appID);
 
 		if ($res !== false) {
 			$result = [
@@ -146,7 +146,7 @@ class Steam
 		if ((time() - (int)$this->lastUpdate) > 86400) {
 			// Set time we updated steam_apps table
 			$this->setLastUpdated();
-			$fullAppArray = $this->steamClient->getFullAppList();
+			$fullAppArray = $this->steamFront->getFullAppList();
 			$inserted = $dupe = 0;
 			echo 'Populating steam apps table' . PHP_EOL;
 			foreach ($fullAppArray as $appsArray) {
