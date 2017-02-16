@@ -51,6 +51,7 @@ overridden to use whichever theme you like.
 
 ##Pull Requests
 * Any changes to the database should be in a single SQL patch of the format +1~<table>.sql. If it
- is for more than a single table us 'multiple' as the <table> identifier. However, if a single
+ is for more than a single table use 'multiple' as the <table> identifier. However, if a single
  patch becomes to complicated or confusing to read, it is acceptable to break it up into smaller
  more concise files (increasing the initial digit for each successive file).
+* SQL that is not related to a table, should use 'general' as the <table> identifier.
