@@ -236,7 +236,7 @@ abstract class RequestID
 				if ((int)$requestID[1] > 0) {
 					return (int)$requestID[1];
 				}
-                        case preg_match('/(?:\[[a-f0-9]+\]-\[[a-f0-9\/]+\] - )\"([0-9]+)/', $name, $requestID):
+                        case preg_match('/(?:\[[a-f0-9]+\]-\[[a-f0-9\/]+\] - )\"([0-9]+)/', $this->_release['name'], $requestID):
                                 if ((int) $requestID[1] > 0) {
                                         return (int) $requestID[1];
                                 }
