@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-02-17 niel
+	Mrg: PR 2391 and 2392, from Wally73 - Updates simple.sh and simple-extended.sh scripts
 2017-02-15 niel
 	Mrg: PR 2388, from kaibosh - Default movie process quantity to 100 if not specified, else use
 	    setting.
