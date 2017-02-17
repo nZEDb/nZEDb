@@ -249,7 +249,7 @@ class NZB
 
 		foreach ($collections as $collection) {
 			$binaries = $this->pdo->queryDirect(sprintf($this->_binariesQuery, $collection['id']));
-			if (!$binaries instanceof \Traversable) {
+			if ($binaries === false) {
 				return false;
 			}
 
@@ -257,7 +257,7 @@ class NZB
 
 			foreach ($binaries as $binary) {
 				$parts = $this->pdo->queryDirect(sprintf($this->_partsQuery, $binary['id']));
-				if (!$parts instanceof \Traversable) {
+				if ($parts === false) {
 					return false;
 				}
 
