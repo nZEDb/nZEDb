@@ -31,6 +31,9 @@ $PHP ${THREADED_PATH}/releases.php 	# Set thread count to 1 in site-admin for se
 
 $PHP ${NZEDB_PATH}/postprocess.php all true
 
+$PHP ${NZEDB_PATH}/decrypt_hashes.php full show
+$PHP ${NZEDB_PATH}/match_prefiles.php 150 show 150
+
 cd ${TEST_PATH}
 DIFF=$(($CURRTIME-$LASTOPTIMIZE))
 if [ "$DIFF" -gt 900 ] || [ "$DIFF" -lt 1 ]
@@ -41,6 +44,8 @@ then
 	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 3 true other yes
 	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 5 true other yes
 	$PHP ${TEST_PATH}/Release/removeCrapReleases.php true 2
+	$PHP ${NZEDB_PATH}/decrypt_hashes.php full show
+	$PHP ${NZEDB_PATH}/match_prefiles.php full show
 fi
 
 cd ${NZEDB_PATH}
@@ -52,6 +57,8 @@ then
 	$PHP ${NZEDB_PATH}/optimise_db.php space
 	#$PHP ${NZEDB_PATH}/update_tvschedule.php
 	#$PHP ${NZEDB_PATH}/update_theaters.php
+	$PHP ${NZEDB_PATH}/decrypt_hashes.php full show
+	$PHP ${NZEDB_PATH}/match_prefiles.php full show
 fi
 
 echo "waiting ${NZEDB_SLEEP_TIME} seconds..."
