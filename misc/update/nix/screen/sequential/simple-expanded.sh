@@ -43,12 +43,12 @@ $PHP ${NZEDB_PATH}/update_binaries.php
 #$PHP ${TEST_PATH}/nzb-import.php /home/share/nzedbdump/TVHD/ true true false 50
 
 $PHP ${THREADED_PATH}/releases.php	# Set thread count to 1 in site-admin for sequential processing
-# $PHP ${NZEDB_PATH}/decrypt_hashes.php full
+
+$PHP ${NZEDB_PATH}/decrypt_hashes.php full show
+$PHP ${NZEDB_PATH}/match_prefiles.php 150 show 150
 
 $PHP ${NZEDB_PATH}/postprocess.php all true
 
-#$PHP ${NZEDB_PATH}/requestid.php full
-#$PHP ${DB_PATH}/populate_nzb_guid.php true
 
 cd ${TEST_PATH}
 DIFF=$(($CURRTIME-$LASTOPTIMIZE))
@@ -66,6 +66,8 @@ then
 	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 5 true preid no
 	#$PHP ${TEST_PATH}/Release/fixReleaseNames.php 7 true preid no
 	$PHP ${TEST_PATH}/Release/removeCrapReleases.php true full
+	$PHP ${NZEDB_PATH}/decrypt_hashes.php full show
+	$PHP ${NZEDB_PATH}/match_prefiles.php full show
 fi
 
 cd ${NZEDB_PATH}
@@ -84,6 +86,8 @@ then
 	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 6 true other no
 	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 8 true other no
 	#$PHP ${TEST_PATH}/Release/fixReleaseNames.php 6 true preid no
+	$PHP ${NZEDB_PATH}/decrypt_hashes.php full show
+	$PHP ${NZEDB_PATH}/match_prefiles.php full show
 fi
 
 echo "waiting ${NZEDB_SLEEP_TIME} seconds..."
