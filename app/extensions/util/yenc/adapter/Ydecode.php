@@ -32,10 +32,6 @@ class Ydecode extends \lithium\core\Object
 	 */
 	protected static $pathBin;
 
-	protected static $pathSource;
-
-	protected static $pathTarget;
-
 	/**
 	 * If on unix, hide yydecode CLI output.
 	 *
@@ -51,7 +47,6 @@ class Ydecode extends \lithium\core\Object
 
 		preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $text, $input);
 		file_put_contents($source, $input[1]);
-		file_put_contents($target, '');
 		Misc::runCmd(
 			"'" . self::$pathBin . "' '" .	$source . "' -o '" . $target . "' -f -b" . self::$silent
 		);
