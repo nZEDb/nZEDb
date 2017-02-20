@@ -15,7 +15,7 @@ fi
 
 run_segment() {
     # get USP settings from config.php
-    uspsetting=( $(cat ${NZEDB_ROOT}/www/config.php | awk '/NNTP/ && /SERVER|PORT/ {print $2}' | sed 's/);//' | sed "s/'//g") )
+    uspsetting=( $(cat ${NZEDB_ROOT}/nzedb/config/config.php | awk '/NNTP/ && /SERVER|PORT/ {print $2}' | sed 's/);//' | sed "s/'//g") )
 
     # Get info about primary NNTP connections.
     mainusp=`( dig ${uspsetting} A +short | tail -n1; \
