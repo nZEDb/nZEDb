@@ -2,20 +2,20 @@
 
 if [ -e "nZEDbBase.php" ]
 then
-    export NZEDB_ROOT="$(pwd)"
-elif [ -e "../../../nZEDbBase.php" ]
+    export NZEDB_CONFIGS="$(pwd)"
+elif [ -e "../../../nZEDbBase.php nZEDb_CONFIGS" ]
 then
-    export NZEDB_ROOT="$(php ../../../nZEDbBase.php)"
+    export NZEDB_CONFIGS="$(php ../../../nZEDbBase.php nZEDb_CONFIGS)"
 elif [ -e "../../../../nZEDbBase.php" ]
 then
-    export NZEDB_ROOT="$(php ../../../../nZEDbBase.php)"
+    export NZEDB_CONFIGS="$(php ../../../../nZEDbBase.php nZEDb_CONFIGS)"
 else
-    export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
+    export NZEDB_CONFIGS="$(php ../../../../../nZEDbBase.php nZEDb_CONFIGS)"
 fi
 
 run_segment() {
     # get USP settings from config.php
-    uspsetting=( $(cat ${NZEDB_ROOT}/nzedb/config/config.php | awk '/NNTP/ && /SERVER|PORT/ {print $2}' | sed 's/);//' | sed "s/'//g") )
+    uspsetting=( $(cat ${NZEDB_CONFIGS}/config.php | awk '/NNTP/ && /SERVER|PORT/ {print $2}' | sed 's/);//' | sed "s/'//g") )
 
     # Get info about primary NNTP connections.
     mainusp=`( dig ${uspsetting} A +short | tail -n1; \
