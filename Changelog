@@ -9,6 +9,9 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-02-21 niel
+	Add: Update nZEDbBase.php file to be able to return any of the 'constant' values.
+	Mrg: PR 2397, from ThePeeps - Fix for uspsetting.sh (powerline segment).
 2017-02-17 niel
 	Mrg: PR 2391 and 2392, from Wally73 - Updates simple.sh and simple-extended.sh scripts
 	Fix: Change checks in NZB to look for false from Db lookup, instead of Traversable which
