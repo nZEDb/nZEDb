@@ -262,38 +262,28 @@
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-3.3.x/dist/js/bootstrap.min.js"></script>
 	<!-- Bootstrap hover on mouseover script -->
-	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-hover-dropdown-2.2.x/bootstrap-hover-dropdown.min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/bootstrap-hover-dropdown-2.2.x/bootstrap-hover-dropdown.min.js"></script>
 	<!-- library for cookie management -->
-	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.cookie.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.cookie.js"></script>
 	<!-- data table plugin -->
-	<script type="text/javascript"
-		src='{$smarty.const.WWW_THEMES}/shared/libs/datatables-1.10.x/media/js/jquery.dataTables.min.js'></script>
+	<script type="text/javascript" src='{$smarty.const.WWW_THEMES}/shared/libs/datatables-1.10.x/media/js/jquery.dataTables.min.js'></script>
 	<!-- select or dropdown enhancer -->
-	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/{$theme}/shared/libs/chosen-1.5.x/chosen.jquery.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/chosen-1.5.x/chosen.jquery.js"></script>
 	<!-- plugin for gallery image view -->
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox-1.6.x/jquery.colorbox-min.js"></script>
 	<!-- notification plugin -->
-	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/shared/libs/noty-2.3.x/js/noty/packaged/jquery.noty.packaged.min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/noty-2.3.x/js/noty/packaged/jquery.noty.packaged.min.js"></script>
 	<!-- library for making tables responsive -->
-	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/shared/libs/responsive-tables-js-1.0.x/dist/responsivetables.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/responsive-tables-js-1.0.x/dist/responsivetables.js"></script>
 	<!-- tinymce editor -->
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/tinymce-builded/js/tinymce/tinymce.min.js"></script>
 	<!-- Charisma functions -->
-	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/{$theme}/js/charisma.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/js/charisma.js"></script>
 	<!-- nZEDb default scripts, needed for stuff to work -->
-	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/shared/libs/autosize-3.0.x/dist/autosize.min.js"></script>
-	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js"></script>
-	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/autosize-3.0.x/dist/autosize.min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip.min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>
 	<script src="{$smarty.const.WWW_THEMES}/shared/libs/html5shiv-3.7.x/dist/html5shiv.min.js"></script>
@@ -301,25 +291,18 @@
 	<![endif]-->
 
 	<!-- autogrowing textarea plugin -->
-	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.autogrow-textarea.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.autogrow-textarea.js"></script>
 	<!-- history.js for cross-browser state change on ajax -->
-	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.history.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.history.js"></script>
 	<!-- Functions with noty -->
-	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}shared/js/functions.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/functions.js"></script>
 	<!-- nZEDb default scripts, needed for stuff to work -->
-	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.colorbox-min.js"></script>
-	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip2.js"></script>
-	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox-1.6.x/jquery.colorbox-min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip2.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/js/sorttable.js"></script>
 	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>
-	<script type="text/javascript"
-		src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<script type="text/javascript" src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
 
 	<script type="text/javascript">
