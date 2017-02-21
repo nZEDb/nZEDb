@@ -37,7 +37,7 @@
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/elfinder.min.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/elfinder.theme.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/jquery.iphone.toggle.css' rel='stylesheet'>
-	<link href='{$smarty.const.WWW_THEMES}/shared/libs/animate.css-3.5.x/animate.min.css'	rel='stylesheet'>
+	<link href='{$smarty.const.WWW_THEMES}/shared/libs/animate.css/animate.min.css'	rel='stylesheet'>
 	<!-- Font Awesome Icons -->
 	<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome-4.5.x/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
 	<!-- Normalize.css -->
@@ -278,7 +278,7 @@
 		src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox-1.6.x/jquery.colorbox-min.js"></script>
 	<!-- notification plugin -->
 	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/shared/libs/noty-2.3.x/packaged/jquery.noty.packaged.js"></script>
+			src="{$smarty.const.WWW_THEMES}/shared/libs/noty-2.3.x/js/packaged/jquery.noty.packaged.js"></script>
 	<!-- library for making tables responsive -->
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/libs/responsive-tables-js-1.0.x/dist/responsivetables.js"></script>
