@@ -60,42 +60,6 @@
 					src="{$smarty.const.WWW_THEMES}/shared/img/logo.png"
 				/></a>
 			{$header_menu}
-			<!-- user dropdown starts -->
-			{if ($loggedin)=="true"}
-			<div class="btn-group pull-right">
-				<button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-					<i class="fa fa-user"></i><span class="hidden-sm hidden-xs"><span
-							class="username"> Hi, {$userdata.username}</span></span>
-					<span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu">
-					<li>
-						<a href="{$smarty.const.WWW_TOP}/profile"><i class="fa fa-user"></i><span> My Profile</span></a>
-					</li>
-					<li><a href="{$smarty.const.WWW_TOP}/cart"><i class="fa fa-shopping-basket"></i><span> My Download Basket</span></a>
-					</li>
-					<li><a href="{$smarty.const.WWW_TOP}/queue"><i class="fa fa-cloud-download"></i><span> My Queue</span></a>
-					</li>
-					<li>
-						<a href="{$smarty.const.WWW_TOP}/mymovies"><i class="fa fa-film"></i><span> My Movies</span></a>
-					</li>
-					<li><a href="{$smarty.const.WWW_TOP}/myshows"><i class="fa fa-television"></i><span> My Shows</span></a>
-					</li>
-					<li><a href="{$smarty.const.WWW_TOP}/profileedit"><i class="fa fa-cog fa-spin"></i><span> Account Settings</span></a>
-					</li>
-					{if isset($isadmin)}
-						<li><a href="{$smarty.const.WWW_TOP}/admin"><i class="fa fa-cogs fa-spin"></i><span> Admin</span></a>
-						</li>
-					{/if}
-					<li>
-						<a href="{$smarty.const.WWW_TOP}/logout"><i class="fa fa-unlock-alt"></i><span> Logout</span></a>
-					</li>
-				</ul>
-			<{else}
-				<li><a href="{$smarty.const.WWW_TOP}/login"><i class="fa fa-lock"></i><span> Login</span></a></li>
-				<li><a href="{$smarty.const.WWW_TOP}/register"><i class="fa fa-bookmark-o"></i><span> Register</span></a></li>
-			</div>
-			{/if}
 		</div>
 	</div>
 	<!-- topbar ends -->
@@ -108,46 +72,6 @@
 						<div class="nav-sm nav nav-stacked">
 						</div>
 						<ul class="nav nav-pills nav-stacked main-menu">
-							<!-- search form -->
-							{if ($loggedin)=="true"}
-							<form id="headsearch_form"
-								action="{$smarty.const.WWW_TOP}/search/"
-								method="get">
-								<input id="headsearch"
-									name="search"
-									value="{if $header_menu_search == ""}Search...{else}{$header_menu_search|escape:"htmlall"}{/if}"
-									class="form-control"
-									type="text"
-									tabindex="1$" />
-								<div class="row" style="padding-top:3px;">
-									<div class="col-md-8">
-										<select id="headcat"
-											name="t"
-											class="form-control"
-											data-search="true">
-											<option class="grouping" value="-1">All</option>
-											{foreach $parentcatlist as $parentcat}
-												<option {if $header_menu_cat==$parentcat.id}selected="selected"{/if}
-													value="{$parentcat.id}"> [{$parentcat.title}]
-												</option>
-												{foreach $parentcat.subcatlist as $subcat}
-													<option {if $header_menu_cat==$subcat.id}selected="selected"{/if}
-														value="{$subcat.id}">&nbsp;&nbsp;&nbsp;
-																			 > {$subcat.title}</option>
-												{/foreach}
-											{/foreach}
-										</select>
-									</div>
-									<div class="col-md-3">
-										<input id="headsearch_go"
-											type="submit"
-											class="btn btn-dark"
-											style="margin-top:0px; margin-left:4px;"
-											value="Go" />
-									</div>
-								</div>
-							</form>
-							<!-- /.search form -->
 							<li class="nav-header">Main</li>
 							<li>
 								<a href="{$site->home_link}"><i class="fa fa-home"></i><span> Home</span> <span
