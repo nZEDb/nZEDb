@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "95b09c8f8777758e58437f8d40711fbb",
-    "content-hash": "9dabd6716ea9a3d34ff3e0f1e1114b9f",
+    "hash": "1ce2b7e0a38bea6177f8e59a653c724f",
+    "content-hash": "c7be550b9cb4b9eb498504acd4b35341",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -284,6 +284,59 @@
             "license": [
                 "MIT"
             ]
+        },
+        {
+            "name": "bower-asset/bootswatch",
+            "version": "v3.3.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thomaspark/bootswatch.git",
+                "reference": "4b0d3762f309326a6d66fa4ea18945a7fc11f8ef"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thomaspark/bootswatch/zipball/4b0d3762f309326a6d66fa4ea18945a7fc11f8ef",
+                "reference": "4b0d3762f309326a6d66fa4ea18945a7fc11f8ef",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/bootstrap": "~3.3.7"
+            },
+            "require-dev": {
+                "bower-asset/bootstrap-sass-official": "~3.3.7",
+                "bower-asset/font-awesome": "~4.0.0",
+                "bower-asset/html5shiv": "~3.7.0",
+                "bower-asset/respond": "~1.4.2"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-ignore": [
+                    "2",
+                    "api",
+                    "assets",
+                    "bower_components",
+                    "custom",
+                    "default",
+                    "global",
+                    "help",
+                    "tests",
+                    "_config.yml",
+                    ".gitignore",
+                    ".travis.yml",
+                    "CNAME",
+                    "composer.json",
+                    "favicon.ico",
+                    "Gemfile",
+                    "Gruntfile.js",
+                    "index.html",
+                    "package.json",
+                    "*/index.html"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Bootswatch is a collection of themes for Bootstrap."
         },
         {
             "name": "bower-asset/chosen-1.5.x",
@@ -1458,7 +1511,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/5e894ca64a07d03ad1f09230875b621d04405a21",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/49d2d46a63d6f2a94c28e392ee67b150aed4d524",
                 "reference": "49d2d46a63d6f2a94c28e392ee67b150aed4d524",
                 "shasum": ""
             },

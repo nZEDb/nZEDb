@@ -29,9 +29,7 @@
 		type="text/css"
 		media="screen" />
 	<!-- The styles -->
-	<link id="bs-css"
-		href="{$smarty.const.WWW_THEMES}/{$theme}/css/bootstrap-spacelab.min.css"
-		rel="stylesheet">
+	<link id="bs-css" href="{$smarty.const.WWW_THEMES}/shared/libs/bootswatch/slate/bootstrap.min.css" rel="stylesheet">
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/css/charisma-app.css" rel="stylesheet">
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/shared/libs/chosen-1.5.x/chosen.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_THEMES}/shared/libs/colorbox-1.6.x/example3/colorbox.css' rel='stylesheet'>

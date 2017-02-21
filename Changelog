@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-02-21 DariusIII
+	Chg: Update Charisma theme to use new bootswatch library, remove unneeded css and make it use the bootswatch slate theme (make it darker)
 2017-02-21 niel
 	Add: Update nZEDbBase.php file to be able to return any of the 'constant' values.
 	Mrg: PR 2397, from ThePeeps - Fix for uspsetting.sh (powerline segment).

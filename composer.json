@@ -108,6 +108,7 @@
     "bower-asset/bootstrap-2.3.x": "~2.3.2",
     "bower-asset/bootstrap-hover-dropdown-2.2.x": "~2.2.1",
     "bower-asset/bootstrap-progressbar-0.9.x": "~0.9.0",
+    "bower-asset/bootswatch": "^3.3",
     "bower-asset/chosen-1.5.x": "~1.5.1",
     "bower-asset/colorbox-1.6.x": "~1.6.3",
     "bower-asset/DataTables-1.10.x": "~1.10.11",
