@@ -278,7 +278,7 @@
 		src="{$smarty.const.WWW_THEMES}/shared/libs/colorbox-1.6.x/jquery.colorbox-min.js"></script>
 	<!-- notification plugin -->
 	<script type="text/javascript"
-			src="{$smarty.const.WWW_THEMES}/shared/libs/noty-2.3.x/js/packaged/jquery.noty.packaged.js"></script>
+			src="{$smarty.const.WWW_THEMES}/shared/libs/noty-2.3.x/js/noty/packaged/jquery.noty.packaged.min.js"></script>
 	<!-- library for making tables responsive -->
 	<script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/libs/responsive-tables-js-1.0.x/dist/responsivetables.js"></script>
