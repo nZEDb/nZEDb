@@ -1254,16 +1254,16 @@
         },
         {
             "name": "james-heinrich/getid3",
-            "version": "v1.9.12",
+            "version": "v1.9.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/JamesHeinrich/getID3.git",
-                "reference": "41c05612d532d30f07680cad3a4a6efbec7fc7f5"
+                "reference": "b9a8564e56bdcc294dc7ade32a7f67885bed3778"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JamesHeinrich/getID3/zipball/41c05612d532d30f07680cad3a4a6efbec7fc7f5",
-                "reference": "41c05612d532d30f07680cad3a4a6efbec7fc7f5",
+                "url": "https://api.github.com/repos/JamesHeinrich/getID3/zipball/b9a8564e56bdcc294dc7ade32a7f67885bed3778",
+                "reference": "b9a8564e56bdcc294dc7ade32a7f67885bed3778",
                 "shasum": ""
             },
             "require": {
@@ -1272,7 +1272,7 @@
             "type": "library",
             "autoload": {
                 "classmap": [
-                    "getid3/getid3.php"
+                    "getid3/"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1286,7 +1286,7 @@
                 "php",
                 "tags"
             ],
-            "time": "2016-03-02 13:13:30"
+            "time": "2016-12-14 14:29:29"
         },
         {
             "name": "joshpinkney/tv-maze-php-api",
