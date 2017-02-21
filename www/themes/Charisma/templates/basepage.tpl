@@ -31,9 +31,9 @@
 	<!-- The styles -->
 	<link id="bs-css" href="{$smarty.const.WWW_THEMES}/shared/libs/bootswatch/slate/bootstrap.min.css" rel="stylesheet">
 	<link href="{$smarty.const.WWW_THEMES}/{$theme}/css/charisma-app.css" rel="stylesheet">
-	<link href='{$smarty.const.WWW_THEMES}/{$theme}/shared/libs/chosen-1.5.x/chosen.css' rel='stylesheet'>
+	<link href='{$smarty.const.WWW_THEMES}/shared/libs/chosen-1.5.x/chosen.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_THEMES}/shared/libs/colorbox-1.6.x/example3/colorbox.css' rel='stylesheet'>
-	<link href='{$smarty.const.WWW_THEMES}/{$theme}/shared/libs/responsive-tables-js-1.0.x/dist/responsivetables.css' rel='stylesheet'>
+	<link href='{$smarty.const.WWW_THEMES}/shared/libs/responsive-tables-js-1.0.x/dist/responsivetables.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/elfinder.min.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/elfinder.theme.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/jquery.iphone.toggle.css' rel='stylesheet'>
@@ -281,7 +281,7 @@
 			src="{$smarty.const.WWW_THEMES}/shared/libs/noty-2.3.x/packaged/jquery.noty.packaged.js"></script>
 	<!-- library for making tables responsive -->
 	<script type="text/javascript"
-		src="{$smarty.const.WWW_THEMES}/{$theme}/shared/libs/responsive-tables-js-1.0.x/dist/responsivetables.js"></script>
+		src="{$smarty.const.WWW_THEMES}/shared/libs/responsive-tables-js-1.0.x/dist/responsivetables.js"></script>
 	<!-- tinymce editor -->
 	<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/tinymce-builded/js/tinymce/tinymce.min.js"></script>
 	<!-- Charisma functions -->
