@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-02-24 niel
+	Chg: Move location of configuration files (config.php, settings.php, etc.) to .../configuration
 2017-02-21 DariusIII
 	Chg: Move search and user menu to headermenu.tpl in Charisma theme
 	Chg: Update Charisma theme to use new bootswatch library, remove unneeded css and make it use the bootswatch slate theme (make it darker)
