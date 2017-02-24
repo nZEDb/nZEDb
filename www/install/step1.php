@@ -141,14 +141,14 @@ if ($cfg->configCheck === false) {
 	}
 }
 
-$cfg->lockCheck = is_writable($cfg->INSTALL_DIR . 'install.lock');
+$cfg->lockCheck = is_writable($cfg->CONFIG_PATH . 'install.lock');
 if ($cfg->lockCheck === false) {
-	$cfg->lockCheck = is_file($cfg->INSTALL_DIR . 'install.lock');
+	$cfg->lockCheck = is_file($cfg->CONFIG_PATH . 'install.lock');
 	if ($cfg->lockCheck === true) {
 		$cfg->lockCheck = false;
 		$cfg->error = true;
 	} else {
-		$cfg->lockCheck = is_writable($cfg->INSTALL_DIR);
+		$cfg->lockCheck = is_writable($cfg->CONFIG_PATH);
 		if ($cfg->lockCheck === false) {
 			$cfg->error = true;
 		}

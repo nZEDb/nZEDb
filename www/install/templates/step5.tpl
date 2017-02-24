@@ -10,7 +10,7 @@
 	{/if}
 	{if !$cfg->saveLockCheck}
 		<br />
-		<h3><span class="error">Error saving {$cfg->INSTALL_DIR}/install.lock</span></h3>
+		<h3><span class="error">Error saving {$cfg->CONFIG_PATH}/install.lock</span></h3>
 		<p>Please save the install.lock yourself by creating:<br /><b>{$cfg->INSTALL_DIR}/install.lock</b></p>
 	{/if}
 {/if}
