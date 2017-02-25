@@ -73,12 +73,22 @@ use lithium\data\Connections;
 // 	'strict' => false
 // ));
 
-$config1 = LITHIUM_APP_PATH . DS . 'config' . DS . 'db-config.php';
-$config2 = nZEDb_CONFIGS . 'config.php';
-$config = file_exists($config1) ? $config1 : $config2;
+$installed = nZEDb_CONFIGS . 'install.lock';
 
-if (file_exists($config) && !defined('nZEDb_INSTALLER')) {
+// Check for install.lock first. If it exists, so should config.php
+if (file_exists($installed)) {
+	// This allows us to set up a db config separate to that created by /install
+	$config1 = LITHIUM_APP_PATH . DS . 'config' . DS . 'db-config.php';
+	$config2 = nZEDb_CONFIGS . 'config.php';
+	$config = file_exists($config1) ? $config1 : $config2;
+
+	if (!file_exists($config)) {
+		throw new \ErrorException(
+			"No valid configuration file found at '$config'"
+		);
+	}
 	require_once $config;
+
 	switch (DB_SYSTEM) {
 		case 'mysql':
 			$adapter = 'MySql';
@@ -113,10 +123,13 @@ if (file_exists($config) && !defined('nZEDb_INSTALLER')) {
 		\nzedb\utility\Misc::setCoversConstant(
 			\app\models\Settings::value('site.main.coverspath')
 		);
+	} else {
+		throw new \ErrorException(
+			"No valid database adapter provided in configuration file '$config'"
+		);
 	}
 } else {
-	/** throw new ErrorException("Couldn't open nZEDb's configuration file!"); */
-	Connections::add('default',
+	Connections::add('mock',
 		[
 			'type'     => 'database',
 			'adapter'  => 'Mock',
