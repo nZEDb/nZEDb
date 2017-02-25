@@ -50,8 +50,9 @@ if (!$cfg->error) {
 		<li>Your database credentials.</li>
 		<li>Your news server credentials.</li>
 		<li>SSH & root ability on your server (in case you need to install missing packages).</li>
-		<li>You should consider copying nZEDb/nzedb/config/settings.example.php to
-			nZEDb/nzedb/config/settings.php (Default settngs should be fine for installing).</li>
+		<li>You should consider copying <?php echo nZEDb_CONFIGS ?>settings.example.php to
+			<?php echo nZEDb_CONFIGS ?>settings.php and customising the settings (Default settings
+			should be fine for installing).</li>
 	</ol>
 	<br/><br/>
 	<p>
