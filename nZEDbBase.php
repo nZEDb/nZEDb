@@ -1,9 +1,8 @@
 <?php
-include_once 'nzedb/constants.php';
 
 if ($argc > 1) {
-	$constant = $argv[1];
 	include_once 'nzedb/constants.php';
+	$constant = $argv[1];
 	if (defined($constant)) {
 		exit(constant($constant));
 	}
