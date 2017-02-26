@@ -23,6 +23,9 @@ use nzedb\libraries\CacheException;
  */
 class DB extends \PDO
 {
+	const MINIMUM_VERSION_MARIADB = '10.0';
+	const MINIMUM_VERSION_MYSQL = '5.6';
+
 	/**
 	 * @var bool Is this a Command Line Interface instance.
 	 *
@@ -1299,7 +1302,7 @@ class DB extends \PDO
 	/**
 	 * @param string $requiredVersion The minimum version to compare against
 	 *
-	 * @return bool|null       TRUE if Db version is greater than or eaqual to $requiredVersion,
+	 * @return bool|null       TRUE if Db version is greater than or equal to $requiredVersion,
 	 * false if not, and null if the version isn't available to check against.
 	 */
 	public function isDbVersionAtLeast($requiredVersion)
@@ -1308,6 +1311,21 @@ class DB extends \PDO
 			return null;
 		}
 		return version_compare($requiredVersion, $this->version, '<=');
+	}
+
+	public function isValidVendorVersion()
+	{
+		switch (strtolower($this->vendor)) {
+			case 'mariadb':
+				return version_compare(SELF::MINIMUM_VERSION_MARIADB, $this->version, '<=');
+				break;
+			case 'percona':
+			case 'mysql':
+				return version_compare(SELF::MINIMUM_VERSION_MYSQL, $this->version, '<=');
+				break;
+		}
+
+		throw new \RuntimeException("No valid DB vendor set!");
 	}
 
 	private function fetchServerInfo()
