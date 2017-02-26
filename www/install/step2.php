@@ -125,7 +125,7 @@ if ($page->isPostBack()) {
 		$goodVersion = false;
 		if (!$cfg->error) {
 			try {
-				$goodVersion = $pdo->isDbVersionAtLeast(nZEDb_MINIMUM_MYSQL_VERSION);
+				$goodVersion = $pdo->isDbVersionAtLeast(DB::MINIMUM_VERSION_MYSQL);
 			} catch (\PDOException $e) {
 				$goodVersion   = false;
 				$cfg->error    = true;
@@ -136,8 +136,7 @@ if ($page->isPostBack()) {
 				$cfg->error = true;
 				$cfg->emessage =
 					'You are using an unsupported version of ' . $cfg->DB_SYSTEM .
-					' the minimum allowed version is ' . nZEDb_MINIMUM_MYSQL_VERSION .
-					', but you are using ' . $pdo->getDbVersion();
+					' the minimum allowed version is ' . DB::MINIMUM_VERSION_MYSQL;
 			}
 		}
 	}
