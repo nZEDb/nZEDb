@@ -64,9 +64,14 @@ class DB extends \PDO
 	private $dbSystem;
 
 	/**
+	 * @var string Name of the DBMS provider (MariaDB, MySQl, Percona, etc.)
+	 */
+	private $vendor;
+
+	/**
 	 * @var string Version of the Db server.
 	 */
-	private $dbVersion;
+	private $version;
 
 	/**
 	 * @var string	Stored copy of the dsn used to connect.
@@ -163,6 +168,8 @@ class DB extends \PDO
 				$this->_debug = false;
 			}
 		}
+
+		$this->setServerInfo();
 
 		if (defined('nZEDb_SQL_DELETE_LOW_PRIORITY') && nZEDb_SQL_DELETE_LOW_PRIORITY) {
 			$this->DELETE_LOW_PRIORITY = ' LOW_PRIORITY ';
@@ -1284,9 +1291,9 @@ class DB extends \PDO
 	 *
 	 * @return string
 	 */
-	public function getDbVersion()
+	public function getVersion()
 	{
-		return $this->dbVersion;
+		return $this->version;
 	}
 
 	/**
@@ -1297,22 +1304,25 @@ class DB extends \PDO
 	 */
 	public function isDbVersionAtLeast($requiredVersion)
 	{
-		if (empty($this->dbVersion)) {
+		if (empty($this->version)) {
 			return null;
 		}
-		return version_compare($requiredVersion, $this->dbVersion, '<=');
+		return version_compare($requiredVersion, $this->version, '<=');
 	}
 
-	/**
-	 * Performs the fetch from the Db server and stores the resulting Major.Minor.Version number.
-	 */
-	private function fetchDbVersion()
+	private function fetchServerInfo()
 	{
-		$result = $this->queryOneRow("SELECT VERSION() AS version");
-		if (!empty($result)) {
-			$dummy = explode('-', $result['version'], 2);
-			$this->dbVersion = $dummy[0];
+		$info = [];
+		$result = $this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION);
+		if ($result === null) {
+			throw new \RuntimeException("Could not fetch Database server version!");
+		} else {
+			$result = explode('-', $result);
+			$info['vendor'] = $result[count($result) - 1];
+			$info['version'] = $result[count($result) - 2];
 		}
+
+		return $info;
 	}
 
 	/**
@@ -1334,4 +1344,11 @@ class DB extends \PDO
 		return true;
 	}
 
+	private function setServerInfo()
+	{
+		$dummy = $this->fetchServerInfo();
+
+		$this->vendor = $dummy['vendor'];
+		$this->version = $dummy['version'];
+	}
 }
