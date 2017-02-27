@@ -102,7 +102,7 @@ if (file_exists($installed)) {
 
 	if (isset($adapter)) {
 		if (empty(DB_SOCKET)) {
-			$host = empty(DB_PORT) ? DB_HOST : DB_HOST.':'.DB_PORT;
+			$host = empty(DB_PORT) ? DB_HOST : DB_HOST . ':' . DB_PORT;
 		} else {
 			$host = DB_SOCKET;
 		}
@@ -128,6 +128,44 @@ if (file_exists($installed)) {
 			"No valid database adapter provided in configuration file '$config'"
 		);
 	}
+} else if (file_exists(nZEDb_CONFIGS . 'dev-config.json')) {
+	$config = json_decode(file_get_contents(nZEDb_CONFIGS . 'dev-config.json'), true);
+	$db =& $config['db'];
+
+	switch ($db['system']) {
+		case 'mysql':
+			$adapter = 'MySql';
+			break;
+		case 'pgsql':
+			$adapter = 'PostgreSql';
+			break;
+		default:
+			throw new \RuntimeException("Invalid database system in dev-config file!");
+			break;
+	}
+
+	if (empty($db['socket'])) {
+		$host = empty($db['port']) ? $db['host'] : $db['host'] . ':' . $db['port'];
+	} else {
+		$host = $db['socket'];
+	}
+
+	Connections::add('default',
+		[
+			'type'       => 'database',
+			'adapter'    => $adapter,
+			'host'       => $host,
+			'login'      => $db['user'],
+			'password'   => $db['password'],
+			'database'   => $db['database'],
+			'encoding'   => 'UTF-8',
+			'persistent' => $db['persist'],
+		]
+	);
+
+	\nzedb\utility\Misc::setCoversConstant(
+		\app\models\Settings::value('site.main.coverspath')
+	);
 } else {
 	Connections::add('mock',
 		[
