@@ -61,13 +61,6 @@ class Backfill
 	protected $_echoCLI;
 
 	/**
-	 * Should we use tpg?
-	 *
-	 * @var bool
-	 */
-	protected $_tablePerGroup;
-
-	/**
 	 * How far back should we go on safe back fill?
 	 *
 	 * @var string
