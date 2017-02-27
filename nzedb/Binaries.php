@@ -120,13 +120,6 @@ class Binaries
 	protected $_showDroppedYEncParts;
 
 	/**
-	 * Should we use table per group?
-	 *
-	 * @var bool
-	 */
-	protected $_tablePerGroup;
-
-	/**
 	 * Echo to cli?
 	 *
 	 * @var bool

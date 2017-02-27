@@ -38,11 +38,6 @@ class ProcessReleases
 	public $groups;
 
 	/**
-	 * @var bool
-	 */
-	public $tablePerGroup;
-
-	/**
 	 * @var int
 	 */
 	public $collectionDelayTime;

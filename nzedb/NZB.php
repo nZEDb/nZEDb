@@ -21,14 +21,6 @@ class NZB
 	const NZB_XML_NS = 'http://www.newzbin.com/DTD/2003/nzb';
 
 	/**
-	 * Determines if the site setting table per group is enabled.
-	 *
-	 * @var bool
-	 * @access private
-	 */
-	private $tablePerGroup;
-
-	/**
 	 * Levels deep to store NZB files.
 	 *
 	 * @var int
