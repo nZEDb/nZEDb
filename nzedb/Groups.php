@@ -589,28 +589,22 @@ class Groups
 	 */
 	public function getCBPTableNames($groupID)
 	{
-		$groupKey = ($groupID . '_' . (int)1);
+		$groupKey = $groupID;
 
 		// Check if buffered and return. Prevents re-querying MySQL when TPG is on.
 		if (isset($this->cbppTableNames[$groupKey])) {
 			return $this->cbppTableNames[$groupKey];
 		}
 
-		$tables = [];
-
-		if ($groupID === '') {
-			exit('Error: You must use .../misc/update/nix/multiprocessing/releases.php !');
-		}
-
-		if ($this->createNewTPGTables($groupID) === false && nZEDb_ECHOCLI) {
+		if (nZEDb_ECHOCLI && $this->createNewTPGTables($groupID) === false) {
 			exit('There is a problem creating new TPG tables for this group ID: ' . $groupID . PHP_EOL);
 		}
 
-		$groupEnding = '_' . $groupID;
-		$tables['cname'] .= $groupEnding;
-		$tables['bname'] .= $groupEnding;
-		$tables['pname'] .= $groupEnding;
-		$tables['prname'] .= $groupEnding;
+		$tables           = [];
+		$tables['cname']  = 'collections_' . $groupID;
+		$tables['bname']  = 'binaries_' . $groupID;
+		$tables['pname']  = 'parts_' . $groupID;
+		$tables['prname'] = 'missed_parts_' . $groupID;
 
 		// Buffer.
 		$this->cbppTableNames[$groupKey] = $tables;
