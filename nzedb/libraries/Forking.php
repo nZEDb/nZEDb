@@ -1086,13 +1086,6 @@ class Forking extends \fork_daemon
 	private $maxProcesses = 1;
 
 	/**
-	 * Are we using tablePerGroup?
-	 *
-	 * @var bool
-	 */
-	private $tablePerGroup = false;
-
-	/**
 	 * Group used for safe backfill.
 	 *
 	 * @var string
