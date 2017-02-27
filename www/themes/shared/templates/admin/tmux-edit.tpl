@@ -335,9 +335,7 @@
 			<td>
 				{html_options style="width:180px;" class="siteeditstyle" id="releases" name='releases' values=$releases_ids output=$releases_names selected=$ftmux->releases}
 				<div class="hint">Create releases, this is really only necessary to turn off when you only want to post
-					process. This runs "Categorizes releases in misc sections using the search name" on first loop and
-					has 33% chance of running on any other loop. Then runs update_releases.php 1 false to create new
-					releases.<br/>Threaded is only used with tablepergroup and is required if using tpg.
+					process.
 				</div>
 			</td>
 		</tr>
