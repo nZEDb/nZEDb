@@ -604,7 +604,6 @@ class TmuxRun extends Tmux
 					$releases = 'echo "\nreleases have been disabled/terminated by Releases"';
 					break;
 				case 1:
-				case 2:
 					$releases = sprintf(
 						'%s %s;',
 						$runVar['scripts']['releases'],
