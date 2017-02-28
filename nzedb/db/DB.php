@@ -1331,13 +1331,13 @@ class DB extends \PDO
 	private function fetchServerInfo()
 	{
 		$info = [];
-		$result = $this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION);
+		$result = $this->pdo->queryOneRow("SELECT VERSION() as version");
 		if ($result === null) {
 			throw new \RuntimeException("Could not fetch Database server version!");
 		} else {
 			$result = explode('-', $result);
-			$info['vendor'] = $result[count($result) - 1];
-			$info['version'] = $result[count($result) - 2];
+			$info['version'] = $result[0];
+			$info['vendor'] = count($result) > 1 ? $result[1] : 'mysql';
 		}
 
 		return $info;
