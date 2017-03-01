@@ -129,15 +129,11 @@ if ($cfg->videoCoversCheck === false) {
 
 $cfg->configCheck = is_writable(nZEDb_CONFIGS);
 if ($cfg->configCheck === false) {
-	$cfg->configCheck = is_file(nZEDb_CONFIGS);
-	if ($cfg->configCheck === true) {
-		$cfg->configCheck = false;
+	$cfg->error = true;
+} else {
+	$cfg->configCheck = !is_file(nZEDb_CONFIGS);
+	if ($cfg->configCheck === false) {
 		$cfg->error = true;
-	} else {
-		$cfg->configCheck = is_writable(nZEDb_CONFIGS);
-		if ($cfg->configCheck === false) {
-			$cfg->error = true;
-		}
 	}
 }
 
