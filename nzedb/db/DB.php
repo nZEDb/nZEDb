@@ -1337,7 +1337,16 @@ class DB extends \PDO
 		} else {
 			$result = explode('-', $result);
 			$info['version'] = $result[0];
-			$info['vendor'] = count($result) > 1 ? $result[1] : 'mysql';
+			$info['vendor'] = count($result) > 1 ? strtolower($result[1]) : 'mysql';
+
+			switch ($info['vendor']) {
+				case 'mariadb':
+				case 'mysql':
+				case 'percona':
+					break;
+				default:
+					$info['vendor'] = 'mysql';
+			}
 		}
 
 		return $info;
