@@ -11,6 +11,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2017-03-01 niel
 	Fix: Alter the logic for checking the Config files location during install step 1.
+	Fix: Update Travis configuration for location of config files.
 2017-02-24 niel
 	Chg: Move location of configuration files (config.php, settings.php, etc.) to .../configuration
 		***NOTE*** See v0.7.0.0 entry at https://github.com/nZEDb/nZEDb/wiki/Update-Guide for
