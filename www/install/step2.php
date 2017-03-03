@@ -125,7 +125,7 @@ if ($page->isPostBack()) {
 		$goodVersion = false;
 		if (!$cfg->error) {
 			try {
-				$goodVersion = $pdo->isDbVersionAtLeast(DB::MINIMUM_VERSION_MYSQL);
+				$goodVersion = $pdo->isVendorVersionValid();
 			} catch (\PDOException $e) {
 				$goodVersion   = false;
 				$cfg->error    = true;
