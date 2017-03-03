@@ -32,7 +32,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	    setting.
 2017-02-13 niel
 	Mrg: dev-log-bad-regex branch. This adds logging of failed (as in errors, not zero results)
-		regexes to the nZEDb log. **NOTE** This surpresses warning messages in the PHP log.
+		regexes to the nZEDb log. **NOTE** This supresses warning messages in the PHP log.
 2017-02-12 b3rs3rk
 	Chg: Improve performance by doing poster check in PHP instead of single row MySQL queries
 2017-02-10 b3rs3rk
