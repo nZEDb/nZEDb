@@ -1290,6 +1290,16 @@ class DB extends \PDO
 	}
 
 	/**
+	 * Returns the stored Db vendor string.
+	 *
+	 * @return string
+	 */
+	public function getVendor()
+	{
+		return $this->vendor;
+	}
+
+	/**
 	 * Returns the stored Db version string.
 	 *
 	 * @return string
@@ -1313,7 +1323,7 @@ class DB extends \PDO
 		return version_compare($requiredVersion, $this->version, '<=');
 	}
 
-	public function isValidVendorVersion()
+	public function isVendorVersionValid()
 	{
 		switch (strtolower($this->vendor)) {
 			case 'mariadb':
