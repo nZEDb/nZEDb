@@ -184,7 +184,8 @@ class DB extends \PDO
 					default:
 						$minVersion = 'mysql';
 				}
-				throw new \RuntimeException("Minimum version for vendor '{$this->vendor}' is {$minVersion}, current version is: {$this->version}");
+				throw new \RuntimeException("Minimum version for vendor '{$this->vendor}' is {$minVersion}, current version is: {$this->version}",
+					1);
 			}
 		}
 
@@ -1349,7 +1350,7 @@ class DB extends \PDO
 				break;
 		}
 
-		throw new \RuntimeException("No valid DB vendor set!");
+		throw new \RuntimeException("No valid DB vendor set!", 4);
 	}
 
 	private function fetchServerInfo()
@@ -1357,7 +1358,7 @@ class DB extends \PDO
 		$info = [];
 		$result = $this->pdo->queryOneRow("SELECT VERSION() as version");
 		if ($result === null) {
-			throw new \RuntimeException("Could not fetch Database server version!");
+			throw new \RuntimeException("Could not fetch Database server version!", 5);
 		} else {
 			$result = explode('-', $result);
 			$info['version'] = $result[0];
