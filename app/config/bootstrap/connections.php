@@ -73,12 +73,22 @@ use lithium\data\Connections;
 // 	'strict' => false
 // ));
 
-$config1 = LITHIUM_APP_PATH . DS . 'config' . DS . 'db-config.php';
-$config2 = nZEDb_ROOT . 'nzedb' . DS . 'config' . DS . 'config.php';
-$config = file_exists($config1) ? $config1 : $config2;
+$installed = nZEDb_CONFIGS . 'install.lock';
 
-if (file_exists($config) && !defined('nZEDb_INSTALLER')) {
+// Check for install.lock first. If it exists, so should config.php
+if (file_exists($installed)) {
+	// This allows us to set up a db config separate to that created by /install
+	$config1 = LITHIUM_APP_PATH . DS . 'config' . DS . 'db-config.php';
+	$config2 = nZEDb_CONFIGS . 'config.php';
+	$config = file_exists($config1) ? $config1 : $config2;
+
+	if (!file_exists($config)) {
+		throw new \ErrorException(
+			"No valid configuration file found at '$config'"
+		);
+	}
 	require_once $config;
+
 	switch (DB_SYSTEM) {
 		case 'mysql':
 			$adapter = 'MySql';
@@ -92,7 +102,7 @@ if (file_exists($config) && !defined('nZEDb_INSTALLER')) {
 
 	if (isset($adapter)) {
 		if (empty(DB_SOCKET)) {
-			$host = empty(DB_PORT) ? DB_HOST : DB_HOST.':'.DB_PORT;
+			$host = empty(DB_PORT) ? DB_HOST : DB_HOST . ':' . DB_PORT;
 		} else {
 			$host = DB_SOCKET;
 		}
@@ -113,10 +123,51 @@ if (file_exists($config) && !defined('nZEDb_INSTALLER')) {
 		\nzedb\utility\Misc::setCoversConstant(
 			\app\models\Settings::value('site.main.coverspath')
 		);
+	} else {
+		throw new \ErrorException(
+			"No valid database adapter provided in configuration file '$config'"
+		);
 	}
-} else {
-	/** throw new ErrorException("Couldn't open nZEDb's configuration file!"); */
+} else if (file_exists(nZEDb_CONFIGS . 'dev-config.json')) {
+	$config = json_decode(file_get_contents(nZEDb_CONFIGS . 'dev-config.json'), true);
+	$db =& $config['db'];
+
+	switch ($db['system']) {
+		case 'mysql':
+			$adapter = 'MySql';
+			break;
+		case 'pgsql':
+			$adapter = 'PostgreSql';
+			break;
+		default:
+			throw new \RuntimeException("Invalid database system in dev-config file!");
+			break;
+	}
+
+	if (empty($db['socket'])) {
+		$host = empty($db['port']) ? $db['host'] : $db['host'] . ':' . $db['port'];
+	} else {
+		$host = $db['socket'];
+	}
+
 	Connections::add('default',
+		[
+			'type'       => 'database',
+			'adapter'    => $adapter,
+			'host'       => $host,
+			'login'      => $db['user'],
+			'password'   => $db['password'],
+			'database'   => $db['database'],
+			'encoding'   => 'UTF-8',
+			'persistent' => $db['persist'],
+		]
+	);
+
+	\nzedb\utility\Misc::setCoversConstant(
+		\app\models\Settings::value('site.main.coverspath')
+	);
+} else {
+	Connections::add('mock',
 		[
 			'type'     => 'database',
 			'adapter'  => 'Mock',

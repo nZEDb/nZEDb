@@ -217,7 +217,7 @@
 		<td>Checking if the install.lock file is writable:
 			{if !$cfg->lockCheck}<br />
 				<span class="error">
-						The installer cannot write to {$cfg->INSTALL_DIR}/install.lock.<br />
+						The installer cannot write to {$cfg->CONFIG_PATH}/install.lock.<br />
 						A quick solution is to run:<br />
 						chmod 777 {$cfg->INSTALL_DIR}
 					{$fixString}

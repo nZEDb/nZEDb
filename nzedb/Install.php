@@ -128,7 +128,7 @@ class Install
 
 	public function isLocked()
 	{
-		return (file_exists($this->INSTALL_DIR . '/install.lock') ? true : false);
+		return (file_exists($this->CONFIG_PATH . '/install.lock') ? true : false);
 	}
 
 	public function setConfig($tmpCfg)
@@ -179,7 +179,7 @@ class Install
 
 	public function saveInstallLock()
 	{
-		return @file_put_contents($this->INSTALL_DIR . DS . 'install.lock', '');
+		return @file_put_contents($this->CONFIG_PATH . DS . 'install.lock', '');
 	}
 
 }

@@ -14,8 +14,8 @@ test.php
 /.idea/
 /app/libraries/*
 /app/resources/tmp/*
-/nzedb/config/config.php
-/nzedb/config/settings.php
+/configuration/config.php
+/configuration/settings.php
 /nzedb/config/ircscraper_settings.php
 /nzedb/config/ircscraper.php
 /nzedb/config/opensssl.php
