@@ -117,7 +117,7 @@ class DB extends \PDO
 		$this->cli = Misc::isCLI();
 
 		$defaults = [
-			'checkVersion'	=> false,
+			'checkVersion'	=> true,
 			'createDb'		=> false, // create dbname if it does not exist?
 			'ct'			=> new ConsoleTools(),
 			'dbhost'		=> defined('DB_HOST') ? DB_HOST : '',
@@ -173,6 +173,20 @@ class DB extends \PDO
 		}
 
 		$this->setServerInfo();
+
+		if ($options['checkVersion'] === true) {
+			if (!$this->isVendorVersionValid()) {
+				switch (strtolower($this->vendor)) {
+					case 'mariadb':
+						$minVersion = self::MINIMUM_VERSION_MARIADB;
+						break;
+					case 'percona':
+					default:
+						$minVersion = 'mysql';
+				}
+				throw new \RuntimeException("Minimum version for vendor '{$this->vendor}' is {$minVersion}, current version is: {$this->version}");
+			}
+		}
 
 		if (defined('nZEDb_SQL_DELETE_LOW_PRIORITY') && nZEDb_SQL_DELETE_LOW_PRIORITY) {
 			$this->DELETE_LOW_PRIORITY = ' LOW_PRIORITY ';
@@ -1310,7 +1324,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * @param string $requiredVersion The minimum version to compare against
+	 * @param string $requiredVersion The minimum version to compare against.
 	 *
 	 * @return bool|null       TRUE if Db version is greater than or equal to $requiredVersion,
 	 * false if not, and null if the version isn't available to check against.
