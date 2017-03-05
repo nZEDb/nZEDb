@@ -111,7 +111,10 @@ class Update extends \app\extensions\console\Command
 			return;
 		}
 
-		$this->out($this->git->pull());
+		$output = $this->git->pull();
+		$this->out($output);
+		
+		return trim($output);
 	}
 
 	public function nzedb()
