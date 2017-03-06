@@ -1,6 +1,6 @@
 #nZEDb Code Style
 
-nZEDb uses a code style based on Lithium's [LSR-0](http://li3.me/docs/specs/accepted/LSR-0-coding.md),
+nZEDb uses a code style based on Lithium's [LSR-0](http://li3.me/docs/specs/accepted/LSR-0-coding),
 with a few modifications for features that have been releases since PHP 5.3, or that are not
 mentioned in it at all.
 
@@ -11,7 +11,8 @@ overridden to use whichever theme you like.
 
 ##Changes
 * Namespace declarations, if they exist, should follow our license header/comments.
-* Protected fields/methods are NOT preceded by an underscore. - This makes refactoring easier.
+* Protected fields/methods are NOT preceded by an underscore, except if required to extend the
+ framework. - This makes refactoring easier.
 * Functions/methods have the opening brace (curly bracket) on a new line.
 * Functions/methods should have one blank line before any return statement.
 
@@ -41,8 +42,8 @@ overridden to use whichever theme you like.
 
 
 * Fields referencing fields in other tables (usually Primary Keys or indexed fields), should use
- the table name followed by the field name, separated by an underderscore.
-  i.e. videos_id is a reference to videos.id (the id field in the videos table).
+ the singular version of the table name followed by the field name, separated by an underderscore.
+  i.e. video_id is a reference to videos.id (the id field in the videos table).
  Fields using ids from an external source (such as IMDb, AniDb, etc.) should not have the
  underscore.
   i.e. anidbid, imdbid.
@@ -50,6 +51,7 @@ overridden to use whichever theme you like.
 
 ##Pull Requests
 * Any changes to the database should be in a single SQL patch of the format +1~<table>.sql. If it
- is for more than a single table us 'multiple' as the <table> identifier. However, if a single
+ is for more than a single table use 'multiple' as the <table> identifier. However, if a single
  patch becomes to complicated or confusing to read, it is acceptable to break it up into smaller
  more concise files (increasing the initial digit for each successive file).
+* SQL that is not related to a table, should use 'general' as the <table> identifier.

@@ -1,3 +1,5 @@
 config.php
+db-config.php
+dev-config.json
 settings.php
 updated.txt

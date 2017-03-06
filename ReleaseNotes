@@ -2,6 +2,40 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
+0.7.0.0 2017-03-06:
+Added:
+	* New setting (site.main.incognito) that determines if the main page is shown to vistors, or if
+	 they are redirected to the login page instead.
+      Currently there is no way to edit this in Site => edit.
+    * dev-mgr (MultiGroup Releases) branch. This adds new feature for matching releases spread
+     across several groups.
+    * New setting (site.main.incognito) that determines if the main page is shown to vistors, or if
+     they're redirected to the login page instead.
+      Currently there is no way to edit this in Site => edit.
+    * This adds logging of failed (as in errors, not zero results) regexes to the nZEDb log.
+      **NOTE** This supresses warning messages in the PHP log.
+    * Update nZEDbBase.php file to be able to return any of the 'constant' values.
+
+Changed:
+	* Update sequential scripts for mandatory TPG use, (PR 2379).
+	* Improve performance by doing poster check in PHP instead of single row MySQL queries.
+	* Updates to simple.sh and simple-extended.sh scripts (PR 2391 and 2392).
+	* Move search and user menu to headermenu.tpl in Charisma theme.
+	* Update Charisma theme to use new bootswatch library, remove unneeded css and make it use the
+	 bootswatch slate theme (make it darker).
+	* Move location of configuration files (config.php, settings.php, etc.) to .../configuration
+      ***NOTE*** See v0.7.0.0 entry at https://github.com/nZEDb/nZEDb/wiki/Update-Guide for
+     additional instructions.
+
+Fixed:
+	* Search by reqid link in predb.tpl (closes issue 2381).
+	* Settings issues with AniDB population preventing run.
+	* Default movie process quantity to 100 if not specified, else use setting (PR 2388).
+	* Change checks in NZB to look for false from Db lookup, instead of Traversable which does not
+	 guarantee useful data.
+	* Fix for uspsetting.sh - powerline segment (PR 2397).
+
+
 0.6.9.0 2017-02-06
 	***IMPORTANT***
 	  With the next release (in March), some required changes will be made.

@@ -56,7 +56,8 @@
 		<td>{if $cfg->timelimitCheck}<span class="success">OK</span>{else}<span class="warn">Warning</span>{/if}</td>
 	</tr>
 	<tr class="">
-		<td>Checking PHP memory_limit:{if !$cfg->memlimitCheck}<br /><span class="warn">Your PHP installation's memory_limit setting is low, please consider increasing it >= 1024M.</span>{/if}</td>
+		<td>Checking PHP memory_limit:{if !$cfg->memlimitCheck}<br /><span class="warn">Your PHP
+			installation&apos;s memory_limit setting is low, please consider increasing it >= 1GB.</span>{/if}</td>
 		<td>{if $cfg->memlimitCheck}<span class="success">OK</span>{else}<span class="warn">Warning</span>{/if}</td>
 	</tr>
 	<tr class="alt">
@@ -67,7 +68,7 @@
 						A quick solution is to run:<br />
 						chmod 777 {$cfg->SMARTY_COMPILED_TEMPLATES}
 					{$fixString}
-					</span>
+				</span>
 			{/if}
 		</td>
 		<td>{if $cfg->cacheCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
@@ -217,7 +218,7 @@
 		<td>Checking if the install.lock file is writable:
 			{if !$cfg->lockCheck}<br />
 				<span class="error">
-						The installer cannot write to {$cfg->INSTALL_DIR}/install.lock.<br />
+						The installer cannot write to {$cfg->CONFIG_PATH}/install.lock.<br />
 						A quick solution is to run:<br />
 						chmod 777 {$cfg->INSTALL_DIR}
 					{$fixString}

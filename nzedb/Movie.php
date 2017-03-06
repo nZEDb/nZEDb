@@ -166,7 +166,7 @@ class Movie
 		$this->fanartapikey = Settings::value('APIs..fanarttvkey');
 		$this->imdburl = (Settings::value('indexer.categorise.imdburl') == 0 ? false : true);
 		$result = Settings::value('..maximdbprocessed');
-		$this->movieqty = empty($result) ? $result : 100;
+		$this->movieqty = empty($result) ? 100 : $result;
 		$this->searchEngines = true;
 		$this->showPasswords = Releases::showPasswords();
 

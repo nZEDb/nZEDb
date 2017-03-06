@@ -5,25 +5,26 @@ use app\models\Settings;
 use nzedb\db\DB;
 
 $pdo = new DB();
-$tablepergroup = Settings::value('..tablepergroup');
-$tablepergroup = (isset($tablepergroup)) ? $tablepergroup : 0;
 
-//reset collections dateadded to now
-echo $pdo->log->header("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.");
-if ($tablepergroup == 1) {
-	$sql = 'SHOW tables';
-	$tables = $pdo->query($sql);
-	$ran = 0;
-	foreach ($tables as $row) {
-		$tbl = $row['tables_in_' . DB_NAME];
-		if (preg_match('/collections_\d+/', $tbl)) {
-			$run = $pdo->queryExec('UPDATE ' . $tbl . ' SET dateadded = now()');
+$delaytimet = Settings::value('..delaytime');
+$delaytimet = ($delaytimet) ? (int)$delaytimet : 2;
+
+//reset collections past interval of creation to now
+$tables = $pdo->queryDirect("SHOW TABLE STATUS");
+$ran = 0;
+
+foreach ($tables as $row) {
+	if (preg_match('/(multigroup\_)?collections(_\d+)?/', $row['name'])) {
+		$run = $pdo->queryExec(
+			"UPDATE {$row['name']}
+			SET dateadded = NOW()
+			WHERE dateadded < (NOW() - INTERVAL {$delaytimet} HOUR)"
+		);
+		if ($run !== false) {
 			$ran += $run->rowCount();
 		}
 	}
-	echo $pdo->log->primary(number_format($ran) . " collections reset.");
-} else {
-	$run = $pdo->queryExec('update collections set dateadded = now()');
-	echo $pdo->log->primary(number_format($run->rowCount()) . " collections reset.");
 }
+echo $pdo->log->primary(number_format($ran) . " collections reset.");
+
 sleep(2);

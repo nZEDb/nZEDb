@@ -219,20 +219,21 @@ CREATE TABLE category_regexes (
 
 DROP TABLE IF EXISTS collections;
 CREATE TABLE         collections (
-  id             INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT,
-  subject        VARCHAR(255)        NOT NULL DEFAULT '',
-  fromname       VARCHAR(255)        NOT NULL DEFAULT '',
-  date           DATETIME            DEFAULT NULL,
-  xref           VARCHAR(255)        NOT NULL DEFAULT '',
-  totalfiles     INT(11) UNSIGNED    NOT NULL DEFAULT '0',
-  groups_id      INT(11) UNSIGNED    NOT NULL DEFAULT '0',
-  collectionhash VARCHAR(255)        NOT NULL DEFAULT '0',
-  dateadded      DATETIME            DEFAULT NULL,
-  added          TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  filecheck      TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
-  filesize       BIGINT UNSIGNED     NOT NULL DEFAULT '0',
-  releases_id    INT                 NULL,
-  noise          CHAR(32)            NOT NULL DEFAULT '',
+  id                    INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT,
+  subject               VARCHAR(255)        NOT NULL DEFAULT '',
+  fromname              VARCHAR(255)        NOT NULL DEFAULT '',
+  date                  DATETIME            DEFAULT NULL,
+  xref                  VARCHAR(255)        NOT NULL DEFAULT '',
+  totalfiles            INT(11) UNSIGNED    NOT NULL DEFAULT '0',
+  groups_id             INT(11) UNSIGNED    NOT NULL DEFAULT '0',
+  collectionhash        VARCHAR(255)        NOT NULL DEFAULT '0',
+  collection_regexes_id INT SIGNED          NOT NULL DEFAULT '0' COMMENT 'FK to collection_regexes.id',
+  dateadded             DATETIME            DEFAULT NULL,
+  added                 TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  filecheck             TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
+  filesize              BIGINT UNSIGNED     NOT NULL DEFAULT '0',
+  releases_id           INT                 NULL,
+  noise                 CHAR(32)            NOT NULL DEFAULT '',
   PRIMARY KEY                               (id),
   INDEX        fromname                     (fromname),
   INDEX        date                         (date),
@@ -504,6 +505,60 @@ CREATE TABLE movieinfo (
   AUTO_INCREMENT = 1;
 
 
+DROP TABLE IF EXISTS multigroup_binaries;
+CREATE TABLE multigroup_binaries LIKE binaries;
+
+
+DROP TABLE IF EXISTS multigroup_collections;
+CREATE TABLE         multigroup_collections (
+  id             INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT COMMENT 'Primary key',
+  subject        VARCHAR(255)        NOT NULL DEFAULT '' COMMENT 'Collection subject',
+  fromname       VARCHAR(255)        NOT NULL DEFAULT '' COMMENT 'Collection poster',
+  date           DATETIME            DEFAULT NULL COMMENT 'Collection post date',
+  xref           VARCHAR(510)        NOT NULL DEFAULT '' COMMENT 'Groups collection is posted in',
+  totalfiles     INT(11) UNSIGNED    NOT NULL DEFAULT '0' COMMENT 'Total number of files',
+  groups_id      INT(11) UNSIGNED    NOT NULL DEFAULT '0' COMMENT 'FK to groups.id',
+  collectionhash VARCHAR(255)        NOT NULL DEFAULT '0' COMMENT 'MD5 hash of the collection',
+  dateadded      DATETIME            DEFAULT NULL COMMENT 'Date collection is added',
+  added          TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  filecheck      TINYINT(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'Status of the collection',
+  filesize       BIGINT UNSIGNED     NOT NULL DEFAULT '0' COMMENT 'Total calculated size of the collection',
+  releases_id    INT                 NULL COMMENT 'FK to releases.id',
+  noise          CHAR(32)            NOT NULL DEFAULT '',
+  PRIMARY KEY                               (id),
+  INDEX        fromname                     (fromname),
+  INDEX        date                         (date),
+  INDEX        group_id                     (groups_id),
+  INDEX        ix_collection_filecheck      (filecheck),
+  INDEX        ix_collection_dateadded      (dateadded),
+  INDEX        ix_collection_releaseid      (releases_id),
+  UNIQUE INDEX ix_collection_collectionhash (collectionhash)
+)
+  ENGINE          = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE         = utf8_unicode_ci
+  AUTO_INCREMENT  = 1;
+
+
+DROP TABLE IF EXISTS multigroup_posters;
+CREATE TABLE multigroup_posters (
+  id     INT(11) UNSIGNED NOT NULL AUTO_INCREMENT
+  COMMENT 'Primary key',
+  poster VARCHAR(255)     NOT NULL DEFAULT ''
+  COMMENT 'Name of the poster to track',
+  PRIMARY KEY (id),
+  UNIQUE KEY (poster)
+)
+  ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT = 1;
+
+
+DROP TABLE IF EXISTS multigroup_missed_parts;
+CREATE TABLE multigroup_missed_parts LIKE missed_parts;
+
+
 DROP TABLE IF EXISTS musicinfo;
 CREATE TABLE musicinfo (
   id          INT(10) UNSIGNED    NOT NULL AUTO_INCREMENT,
@@ -516,7 +571,7 @@ CREATE TABLE musicinfo (
   releasedate DATETIME            NULL,
   review      VARCHAR(3000)       NULL,
   year        VARCHAR(4)          NOT NULL,
-  genre_id INT(10)             NULL,
+  genre_id    INT(10)             NULL,
   tracks      VARCHAR(3000)       NULL,
   cover       TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
   createddate DATETIME            NOT NULL,
@@ -565,6 +620,10 @@ CREATE TABLE parts (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
+
+
+DROP TABLE IF EXISTS multigroup_parts;
+CREATE TABLE multigroup_parts LIKE parts;
 
 
 DROP TABLE IF EXISTS predb;
@@ -1201,7 +1260,7 @@ CREATE TABLE videos (
   type         TINYINT(1) UNSIGNED     NOT NULL DEFAULT '0' COMMENT '0 = TV, 1 = Film, 2 = Anime',
   title        VARCHAR(180) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Name of the video.',
   countries_id CHAR(2) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Two character country code (FK to countries table).',
-  started      DATETIME                NOT NULL COMMENT 'Date (UTC) of production''s first airing.',
+  started      DATETIME                NOT NULL COMMENT 'Date (UTC) of production''s first airing',
   anidb        MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0'  COMMENT 'ID number for anidb site',
   imdb         MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'ID number for IMDB site (without the ''tt'' prefix).',
   tmdb         MEDIUMINT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'ID number for TMDB site.',
@@ -1261,7 +1320,6 @@ CREATE TABLE         xxxinfo (
   DEFAULT CHARSET = utf8
   COLLATE         = utf8_unicode_ci
   AUTO_INCREMENT  = 1;
-
 
 
 DELIMITER $$
@@ -1358,30 +1416,30 @@ CREATE PROCEDURE loop_cbpm(IN method CHAR(10))
     main: BEGIN
     DECLARE done INT DEFAULT 0;
     DECLARE tname VARCHAR(255) DEFAULT '';
+    DECLARE regstr VARCHAR(255) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '';
+
     DECLARE cur1 CURSOR FOR
       SELECT TABLE_NAME
       FROM information_schema.TABLES
       WHERE
         TABLE_SCHEMA = (SELECT DATABASE())
-        AND
-        (
-          TABLE_NAME LIKE 'collections%'
-          OR TABLE_NAME LIKE 'parts%'
-          OR TABLE_NAME LIKE 'binaries%'
-          OR TABLE_NAME LIKE 'missed%'
-        )
+        AND TABLE_NAME REGEXP regstr
       ORDER BY TABLE_NAME ASC;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
     IF method NOT IN ('repair', 'analyze', 'optimize', 'drop', 'truncate')
     THEN LEAVE main; END IF;
 
+    IF method = 'drop' THEN SET regstr = '^(collections|binaries|parts|missed_parts)_[0-9]+$';
+    ELSE SET regstr = '^(multigroup_)?(collections|binaries|parts|missed_parts)(_[0-9]+)?$';
+    END IF;
+
     OPEN cur1;
-    alter_loop: LOOP FETCH cur1
+    cbpm_loop: LOOP FETCH cur1
     INTO tname;
       IF done
-      THEN LEAVE alter_loop; END IF;
-      SET @SQL := CONCAT(method, " TABLE ", tname);
+      THEN LEAVE cbpm_loop; END IF;
+      SET @SQL := CONCAT(method, ' TABLE ', tname);
       PREPARE _stmt FROM @SQL;
       EXECUTE _stmt;
       DEALLOCATE PREPARE _stmt;
@@ -1389,7 +1447,6 @@ CREATE PROCEDURE loop_cbpm(IN method CHAR(10))
     CLOSE cur1;
   END;
 $$
-
 
 CREATE PROCEDURE delete_release(IN is_numeric BOOLEAN, IN identifier VARCHAR(40))
   COMMENT 'Cascade deletes release from child tables when parent row is deleted'

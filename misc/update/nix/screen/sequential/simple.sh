@@ -8,6 +8,7 @@ else
 fi
 
 export NZEDB_PATH="${NZEDB_ROOT}/misc/update"
+export THREADED_PATH="${NZEDB_ROOT}/misc/update/nix/multiprocessing"
 export TEST_PATH="${NZEDB_ROOT}/misc/testing"
 export NZEDB_SLEEP_TIME="60" # in seconds
 LASTOPTIMIZE=`date +%s`
@@ -19,14 +20,19 @@ while :
  do
 CURRTIME=`date +%s`
 
-tmux kill-session -t NNTPProxy
-$PHP ${NZEDB_PATH}/nntpproxy.php
+#tmux kill-session -t NNTPProxy
+#$PHP ${NZEDB_PATH}/nntpproxy.php
 
 cd ${NZEDB_PATH}
 $PHP ${NZEDB_PATH}/update_binaries.php
 
 
-$PHP ${NZEDB_PATH}/update_releases.php 1 true
+$PHP ${THREADED_PATH}/releases.php 	# Set thread count to 1 in site-admin for sequential processing
+
+$PHP ${NZEDB_PATH}/postprocess.php all true
+
+$PHP ${NZEDB_PATH}/decrypt_hashes.php full show
+$PHP ${NZEDB_PATH}/match_prefiles.php 150 show 150
 
 cd ${TEST_PATH}
 DIFF=$(($CURRTIME-$LASTOPTIMIZE))
@@ -38,6 +44,8 @@ then
 	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 3 true other yes
 	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 5 true other yes
 	$PHP ${TEST_PATH}/Release/removeCrapReleases.php true 2
+	$PHP ${NZEDB_PATH}/decrypt_hashes.php full show
+	$PHP ${NZEDB_PATH}/match_prefiles.php full show
 fi
 
 cd ${NZEDB_PATH}
@@ -48,7 +56,9 @@ then
 	echo "Optimizing DB..."
 	$PHP ${NZEDB_PATH}/optimise_db.php space
 	#$PHP ${NZEDB_PATH}/update_tvschedule.php
-	$PHP ${NZEDB_PATH}/update_theaters.php
+	#$PHP ${NZEDB_PATH}/update_theaters.php
+	$PHP ${NZEDB_PATH}/decrypt_hashes.php full show
+	$PHP ${NZEDB_PATH}/match_prefiles.php full show
 fi
 
 echo "waiting ${NZEDB_SLEEP_TIME} seconds..."

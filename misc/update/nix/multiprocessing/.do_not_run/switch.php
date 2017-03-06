@@ -8,6 +8,7 @@ use nzedb\Nfo;
 use nzedb\NNTP;
 use nzedb\RequestIDLocal;
 use nzedb\processing\ProcessReleases;
+use nzedb\processing\ProcessReleasesMultiGroup;
 use nzedb\processing\PostProcess;
 use nzedb\processing\post\ProcessAdditional;
 use nzedb\db\DB;
@@ -157,12 +158,12 @@ switch ($options[1]) {
 			if ($options[0] === 'python') {
 				collectionCheck($pdo, $options[2]);
 			}
-
-			processReleases($pdo, $releases, $options[2]);
-
+			processReleases($releases, $options[2]);
+		// Run functions that run on releases table after all others completed.
 		} else {
+			// Run MGR once after all other release updates for standard groups
+			processReleases(new ProcessReleasesMultiGroup(['Settings' => $pdo]), '');
 
-			// Run functions that run on releases table after all others completed.
 			$groupCount = rtrim($options[2], '_');
 			if (!is_numeric($groupCount)) {
 				$groupCount = 1;
@@ -221,7 +222,8 @@ switch ($options[1]) {
 			collectionCheck($pdo, $options[2]);
 
 			// Create releases.
-			processReleases($pdo, new ProcessReleases(['Settings' => $pdo]), $options[2]);
+			processReleases(new ProcessReleases(['Settings' => $pdo]), $options[2]);
+			processReleases(new ProcessReleasesMultiGroup(['Settings' => $pdo]), $options[2]);
 
 			// Post process the releases.
 			(new ProcessAdditional(['Echo' => true, 'NNTP' => $nntp, 'Settings' => $pdo]))->start($options[2]);
@@ -274,14 +276,13 @@ switch ($options[1]) {
 /**
  * Create / process releases for a groupID.
  *
- * @param Settings        $pdo
- * @param ProcessReleases $releases
- * @param int             $groupID
+ * @param ProcessReleases|ProcessReleasesMultiGroup $releases
+ * @param int                                       $groupID
  */
-function processReleases($pdo, $releases, $groupID)
+function processReleases($releases, $groupID)
 {
-	$releaseCreationLimit = (Settings::value('..maxnzbsprocessed') != '' ?
-		(int)Settings::value('..maxnzbsprocessed') : 1000);
+	$maxNzbProcessed = Settings::value('..maxnzbsprocessed');
+	$releaseCreationLimit = $maxNzbProcessed != '' ? (int)$maxNzbProcessed : 1000;
 	$releases->processIncompleteCollections($groupID);
 	$releases->processCollectionSizes($groupID);
 	$releases->deleteUnwantedCollections($groupID);
@@ -291,7 +292,7 @@ function processReleases($pdo, $releases, $groupID)
 		$nzbFilesAdded = $releases->createNZBs($groupID);
 
 		// This loops as long as the number of releases or nzbs added was >= the limit (meaning there are more waiting to be created)
-	} while (($releasesCount['added'] + $releasesCount['dupes']) >= $releaseCreationLimit || $nzbFilesAdded >= $releaseCreationLimit);
+	} while (($releasesCount['added'] + $releasesCount['dupes']) >= $releaseCreationLimit || $nzbFilesAdded  >= $releaseCreationLimit);
 	$releases->deleteCollections($groupID);
 }
 
@@ -313,7 +314,7 @@ function charCheck($char)
 /**
  * Check if the group should be processed.
  *
- * @param Settings $pdo
+ * @param DB $pdo
  * @param int                $groupID
  */
 function collectionCheck(&$pdo, $groupID)
@@ -326,7 +327,7 @@ function collectionCheck(&$pdo, $groupID)
 /**
  * Connect to usenet, return NNTP object.
  *
- * @param Settings $pdo
+ * @param DB $pdo
  * @param bool               $alternate Use alternate NNTP provider.
  *
  * @return NNTP

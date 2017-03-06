@@ -135,10 +135,9 @@ if ($page->isPostBack()) {
 			if ($goodVersion === false) {
 				$cfg->error = true;
 				$cfg->emessage =
-					'You are using an unsupported version of ' .
-					$cfg->DB_SYSTEM .
-					' the minimum allowed version is ' .
-					nZEDb_MINIMUM_MYSQL_VERSION;
+					'You are using an unsupported version of ' . $cfg->DB_SYSTEM .
+					' the minimum allowed version is ' . nZEDb_MINIMUM_MYSQL_VERSION .
+					', but you are using ' . $pdo->getDbVersion();
 			}
 		}
 	}

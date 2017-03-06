@@ -11,6 +11,11 @@ class Regexes
 	public $pdo;
 
 	/**
+	 * @var mixed The ID of the Regex inut string matched or the generic name
+	 */
+	public $matchedRegex;
+
+	/**
 	 * @var string Name of the current table we are working on.
 	 */
 	public $tableName;
@@ -281,6 +286,8 @@ class Regexes
 	 */
 	public function tryRegex($subject, $groupName)
 	{
+		$this->matchedRegex = 0;
+
 		$this->_fetchRegex($groupName);
 
 		$returnString = '';
@@ -295,6 +302,7 @@ class Regexes
 				$returnString = $this->_matchRegex($regex['regex'], $subject);
 				// If this regex found something, break and return, or else continue trying other regex.
 				if ($returnString) {
+					$this->matchedRegex = $regex['id'];
 					break;
 				}
 			}
@@ -318,7 +326,7 @@ class Regexes
 		// Get all regex from DB which match the current group name. Cache them for 15 minutes. #CACHEDQUERY#
 		$this->_regexCache[$groupName]['regex'] = $this->pdo->query(
 			sprintf(
-				'SELECT r.regex%s FROM %s r WHERE %s REGEXP r.group_regex AND r.status = 1 ORDER BY r.ordinal ASC, r.group_regex ASC',
+				'SELECT r.id, r.regex%s FROM %s r WHERE %s REGEXP r.group_regex AND r.status = 1 ORDER BY r.ordinal ASC, r.group_regex ASC',
 				($this->tableName === 'category_regexes' ? ', r.categories_id' : ''),
 				$this->tableName,
 				$this->pdo->escapeString($groupName)
@@ -341,24 +349,28 @@ class Regexes
 	protected function _matchRegex($regex, $subject)
 	{
 		$returnString = '';
-		if (preg_match($regex, $subject, $matches)) {
-			if (count($matches) > 0) {
-				// Sort the keys, the named key matches will be concatenated in this order.
-				ksort($matches);
-				foreach ($matches as $key => $value) {
-					switch ($this->tableName) {
-						case 'collection_regexes': // Put this at the top since it's the most important for performance.
-						case 'release_naming_regexes':
-							// Ignore non-named capture groups. Only named capture groups are important.
-							if (is_int($key) || preg_match('#reqid|parts#i', $key)) {
-								continue 2;
-							}
-							$returnString .= $value; // Concatenate the string to return.
-							break;
-						case 'category_regexes':
-							$returnString = $this->_categoriesID; // Regex matched, so return the category ID.
-							break 2;
-					}
+		if (@preg_match($regex, $subject, $matches) === false) {
+			if (nZEDb_LOGGING) {
+				$message = "Regex match failed - table: {$this->tableName}, regex: $regex";
+				$logger = new Logger();
+				$logger->log(__CLASS__, __METHOD__, $message, Logger::LOG_ERROR);
+			}
+		} else if (count($matches) > 0) {
+			// Sort the keys, the named key matches will be concatenated in this order.
+			ksort($matches);
+			foreach ($matches as $key => $value) {
+				switch ($this->tableName) {
+					case 'collection_regexes': // Put this at the top since it's the most important for performance.
+					case 'release_naming_regexes':
+						// Ignore non-named capture groups. Only named capture groups are important.
+						if (is_int($key) || preg_match('#reqid|parts#i', $key)) {
+							continue 2;
+						}
+						$returnString .= $value; // Concatenate the string to return.
+						break;
+					case 'category_regexes':
+						$returnString = $this->_categoriesID; // Regex matched, so return the category ID.
+						break 2;
 				}
 			}
 		}

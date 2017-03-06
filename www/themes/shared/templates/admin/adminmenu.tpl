@@ -103,6 +103,12 @@
 						<li class="last"><a href="{$smarty.const.WWW_TOP}/nzb-export.php">Export</a></li>
 					</ul>
 				</li>
+				<li class="has-sub"><a href="#">Multi Group</a>
+					<ul class="nav child_menu" style="display: none">
+						<li><a href="{$smarty.const.WWW_TOP}/posters-edit.php">Edit Multi Group Posters</a></li>
+						<li><a href="{$smarty.const.WWW_TOP}/posters-list.php">Multi Group Posters List</a></li>
+					</ul>
+				</li>
 				<li><a href="{$smarty.const.WWW_TOP}/predb.php">Pre Database</a></li>
 				<li><a href="{$smarty.const.WWW_TOP}/opcachestats.php">Opcache Statistics</a></li>
 				<li><a href="{$smarty.const.WWW_TOP}/db-optimise.php" class="confirm_action">Optimise Tables</a></li>
