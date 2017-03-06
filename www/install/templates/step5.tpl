@@ -4,8 +4,8 @@
 	<form action="step6.php"><input type="submit" value="Step six: Setup admin user" /></form>
 {else}
 	{if !$cfg->saveConfigCheck}
-		<h3><span class="error">Error saving {$cfg->nZEDb_WWW}/config.php.</span></h3>
-		<p>Please save the config.php yourself by creating:<br /><b>{$cfg->nZEDb_WWW}/config.php</b><br />and setting its contents to the following:</p>
+		<h3><span class="error">Error saving {$cfg->CONFIG_PATH}/config.php.</span></h3>
+		<p>Please save the config.php yourself by creating:<br /><b>{$cfg->CONFIG_PATH}/config.php</b><br />and setting its contents to the following:</p>
 		<p><textarea cols="100" rows="60">{$cfg->COMPILED_CONFIG}</textarea></p>
 	{/if}
 	{if !$cfg->saveLockCheck}
