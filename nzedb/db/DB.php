@@ -137,6 +137,10 @@ class DB extends \PDO
 			$this->initialiseDatabase();
 		}
 
+		if ($this->opts['checkVersion']) {
+			$this->fetchDbVersion();
+		}
+
 		$this->cacheEnabled = (defined('nZEDb_CACHE_TYPE') && (nZEDb_CACHE_TYPE > 0) ? true : false);
 
 		if ($this->cacheEnabled) {
@@ -158,11 +162,6 @@ class DB extends \PDO
 			} catch (LoggerException $error) {
 				$this->_debug = false;
 			}
-		}
-
-
-		if ($this->opts['checkVersion']) {
-			$this->fetchDbVersion();
 		}
 
 		if (defined('nZEDb_SQL_DELETE_LOW_PRIORITY') && nZEDb_SQL_DELETE_LOW_PRIORITY) {
