@@ -177,7 +177,7 @@ class Regexes
 			return [];
 		}
 
-		$tableNames = $groups->getCBPTableNames(true, $groupID);
+		$tableNames = $groups->getCBPTableNames($groupID);
 
 		$rows = $this->pdo->query(
 			sprintf(

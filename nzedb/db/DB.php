@@ -23,6 +23,9 @@ use nzedb\libraries\CacheException;
  */
 class DB extends \PDO
 {
+	const MINIMUM_VERSION_MARIADB = '10.0';
+	const MINIMUM_VERSION_MYSQL = '5.6';
+
 	/**
 	 * @var bool Is this a Command Line Interface instance.
 	 *
@@ -64,9 +67,14 @@ class DB extends \PDO
 	private $dbSystem;
 
 	/**
+	 * @var string Name of the DBMS provider (MariaDB, MySQl, Percona, etc.)
+	 */
+	private $vendor = null;
+
+	/**
 	 * @var string Version of the Db server.
 	 */
-	private $dbVersion;
+	private $version = null;
 
 	/**
 	 * @var string	Stored copy of the dsn used to connect.
@@ -109,7 +117,7 @@ class DB extends \PDO
 		$this->cli = Misc::isCLI();
 
 		$defaults = [
-			'checkVersion'	=> false,
+			'checkVersion'	=> true,
 			'createDb'		=> false, // create dbname if it does not exist?
 			'ct'			=> new ConsoleTools(),
 			'dbhost'		=> defined('DB_HOST') ? DB_HOST : '',
@@ -137,6 +145,10 @@ class DB extends \PDO
 			$this->initialiseDatabase();
 		}
 
+		if ($this->opts['checkVersion']) {
+			$this->fetchDbVersion();
+		}
+
 		$this->cacheEnabled = (defined('nZEDb_CACHE_TYPE') && (nZEDb_CACHE_TYPE > 0) ? true : false);
 
 		if ($this->cacheEnabled) {
@@ -160,9 +172,10 @@ class DB extends \PDO
 			}
 		}
 
+		$this->setServerInfo();
 
-		if ($this->opts['checkVersion']) {
-			$this->fetchDbVersion();
+		if ($options['checkVersion'] === true) {
+			$this->validateVendorVersion();
 		}
 
 		if (defined('nZEDb_SQL_DELETE_LOW_PRIORITY') && nZEDb_SQL_DELETE_LOW_PRIORITY) {
@@ -361,6 +374,8 @@ class DB extends \PDO
 		// removed try/catch to let the instantiating code handle the problem (Install for
 		// instance can output a message that connecting failed.
 		$this->pdo = new \PDO($dsn, $this->opts['dbuser'], $this->opts['dbpass'], $options);
+
+		$this->validateVendorVersion();
 
 		if ($this->opts['dbname'] != '') {
 			if ($this->opts['createDb']) {
@@ -1281,39 +1296,76 @@ class DB extends \PDO
 	}
 
 	/**
+	 * Returns the stored Db vendor string.
+	 *
+	 * @return string
+	 */
+	public function getVendor()
+	{
+		return $this->vendor;
+	}
+
+	/**
 	 * Returns the stored Db version string.
 	 *
 	 * @return string
 	 */
-	public function getDbVersion()
+	public function getVersion()
 	{
-		return $this->dbVersion;
+		return $this->version;
 	}
 
 	/**
-	 * @param string $requiredVersion The minimum version to compare against
+	 * @param string $requiredVersion The minimum version to compare against.
 	 *
-	 * @return bool|null       TRUE if Db version is greater than or eaqual to $requiredVersion,
+	 * @return bool|null       TRUE if Db version is greater than or equal to $requiredVersion,
 	 * false if not, and null if the version isn't available to check against.
 	 */
 	public function isDbVersionAtLeast($requiredVersion)
 	{
-		if (empty($this->dbVersion)) {
+		if (empty($this->version)) {
 			return null;
 		}
-		return version_compare($requiredVersion, $this->dbVersion, '<=');
+		return version_compare($requiredVersion, $this->version, '<=');
 	}
 
-	/**
-	 * Performs the fetch from the Db server and stores the resulting Major.Minor.Version number.
-	 */
-	private function fetchDbVersion()
+	public function isVendorVersionValid()
 	{
-		$result = $this->queryOneRow("SELECT VERSION() AS version");
-		if (!empty($result)) {
-			$dummy = explode('-', $result['version'], 2);
-			$this->dbVersion = $dummy[0];
+		switch (strtolower($this->vendor)) {
+			case 'mariadb':
+				return version_compare(SELF::MINIMUM_VERSION_MARIADB, $this->version, '<=');
+				break;
+			case 'percona':
+			case 'mysql':
+				return version_compare(SELF::MINIMUM_VERSION_MYSQL, $this->version, '<=');
+				break;
 		}
+
+		throw new \RuntimeException("No valid DB vendor set!", 4);
+	}
+
+	private function fetchServerInfo()
+	{
+		$info = [];
+		$result = $this->queryOneRow("SELECT VERSION() as version");
+		if ($result === null) {
+			throw new \RuntimeException("Could not fetch Database server version!", 5);
+		} else {
+			$result = explode('-', $result);
+			$info['version'] = $result[0];
+			$info['vendor'] = count($result) > 1 ? strtolower($result[1]) : 'mysql';
+
+			switch ($info['vendor']) {
+				case 'mariadb':
+				case 'mysql':
+				case 'percona':
+					break;
+				default:
+					$info['vendor'] = 'mysql';
+			}
+		}
+
+		return $info;
 	}
 
 	/**
@@ -1335,4 +1387,31 @@ class DB extends \PDO
 		return true;
 	}
 
+	private function setServerInfo()
+	{
+		$dummy = $this->fetchServerInfo();
+
+		$this->vendor = $dummy['vendor'];
+		$this->version = $dummy['version'];
+	}
+
+	private function validateVendorVersion()
+	{
+		if ($this->vendor === null) {
+			$this->fetchServerInfo();
+		}
+
+		if (!$this->isVendorVersionValid()) {
+			switch (strtolower($this->vendor)) {
+				case 'mariadb':
+					$minVersion = self::MINIMUM_VERSION_MARIADB;
+					break;
+				case 'percona':
+				default:
+					$minVersion = 'mysql';
+			}
+			throw new \RuntimeException("Minimum version for vendor '{$this->vendor}' is {$minVersion}, current version is: {$this->version}",
+				1);
+		}
+	}
 }

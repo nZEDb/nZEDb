@@ -120,13 +120,6 @@ class Binaries
 	protected $_showDroppedYEncParts;
 
 	/**
-	 * Should we use table per group?
-	 *
-	 * @var bool
-	 */
-	protected $_tablePerGroup;
-
-	/**
 	 * Echo to cli?
 	 *
 	 * @var bool
@@ -290,7 +283,6 @@ class Binaries
 		$this->_partRepairMaxTries = (Settings::value('..partrepairmaxtries') != '' ?
 			(int)Settings::value('..partrepairmaxtries') : 3);
 		$this->_showDroppedYEncParts = (Settings::value('..showdroppedyencparts') == 1 ? true : false);
-		$this->_tablePerGroup = (Settings::value('..tablepergroup') == 1 ? true : false);
 
 		$this->blackList = $this->whiteList = [];
 	}
@@ -619,7 +611,7 @@ class Binaries
 		$this->notYEnc = $this->headersBlackListed = 0;
 
 		// Check if MySQL tables exist, create if they do not, get their names at the same time.
-		$this->tableNames = $this->_groups->getCBPTableNames($this->_tablePerGroup, $this->groupMySQL['id']);
+		$this->tableNames = $this->_groups->getCBPTableNames($this->groupMySQL['id']);
 
 		$mgrPosters = $this->getMultiGroupPosters();
 
@@ -791,8 +783,8 @@ class Binaries
 		unset($mgrHeaders);
 
 		// Standard headers go second so we can switch tableNames back and do part repair to standard group tables
-		if (!empty($stdHeaders)) {
-			$this->tableNames = $this->_groups->getCBPTableNames($this->_tablePerGroup, $this->groupMySQL['id']);
+		if (isset($stdHeaders) && count($stdHeaders) > 0) {
+			$this->tableNames = $this->_groups->getCBPTableNames($this->groupMySQL['id']);
 			$this->storeHeaders($stdHeaders, false);
 		}
 		unset($stdHeaders);
@@ -1156,7 +1148,7 @@ class Binaries
 	 */
 	public function partRepair($groupArr)
 	{
-		$tableNames = $this->_groups->getCBPTableNames($this->_tablePerGroup, $groupArr['id']);
+		$tableNames = $this->_groups->getCBPTableNames($groupArr['id']);
 		// Get all parts in partrepair table.
 		$missingParts = $this->_pdo->query(
 			sprintf('
@@ -1292,7 +1284,7 @@ class Binaries
 		$groupID = $this->_groups->getIDByName($groupData['group']);
 		$group = [];
 		if ($groupID !== '') {
-			$group = $this->_groups->getCBPTableNames($this->_tablePerGroup, $groupID);
+			$group = $this->_groups->getCBPTableNames($groupID);
 		}
 
 		$currentPost = $post;
@@ -1309,12 +1301,11 @@ class Binaries
 						INNER JOIN %s b ON(c.id=b.collections_id)
 						INNER JOIN %s p ON(b.id=p.binaries_id)
 						WHERE p.number = %s
-						%s LIMIT 1',
+						LIMIT 1',
 						$group['cname'],
 						$group['bname'],
 						$group['pname'],
-						$currentPost,
-						$this->_tablePerGroup === false ? sprintf('AND c.groups_id = %d', $groupID) : ''
+						$currentPost
 					)
 				);
 				if ($local !== false) {

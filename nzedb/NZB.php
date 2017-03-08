@@ -21,14 +21,6 @@ class NZB
 	const NZB_XML_NS = 'http://www.newzbin.com/DTD/2003/nzb';
 
 	/**
-	 * Determines if the site setting table per group is enabled.
-	 *
-	 * @var bool
-	 * @access private
-	 */
-	private $tablePerGroup;
-
-	/**
 	 * Levels deep to store NZB files.
 	 *
 	 * @var int
@@ -127,7 +119,6 @@ class NZB
 	{
 		$this->pdo = ($pdo instanceof DB ? $pdo : new DB());
 
-		$this->tablePerGroup = (Settings::value('..tablepergroup') == 0 ? false : true);
 		$nzbSplitLevel = Settings::value('nzbsplitlevel');
 		$this->nzbSplitLevel = (empty($nzbSplitLevel) ? 1 : $nzbSplitLevel);
 		$this->siteNzbPath = (string)Settings::value('nzbpath');
@@ -162,22 +153,14 @@ class NZB
 	{
 		$this->groupID = $groupID;
 		// Set table names
-		if ($this->tablePerGroup === true) {
-			if ($this->groupID == '') {
-				exit("{$this->groupID} is missing\n");
-			}
-			$this->_tableNames = [
-				'cName' => 'collections_' . $this->groupID,
-				'bName' => 'binaries_' . $this->groupID,
-				'pName' => 'parts_' . $this->groupID
-			];
-		} else {
-			$this->_tableNames = [
-				'cName' => 'collections',
-				'bName' => 'binaries',
-				'pName' => 'parts'
-			];
+		if ($this->groupID == '') {
+			exit("{$this->groupID} is missing\n");
 		}
+		$this->_tableNames = [
+			'cName' => 'collections_' . $this->groupID,
+			'bName' => 'binaries_' . $this->groupID,
+			'pName' => 'parts_' . $this->groupID
+		];
 
 		$this->setQueries();
 	}

@@ -112,11 +112,13 @@ if ($page->isPostBack()) {
 				case 1:
 				case 2:
 				case 3:
+				case 4:
+				case 5:
 					$cfg->error    = true;
 					$cfg->emessage = $e->getMessage();
+					trigger_error($e->getMessage(), E_USER_ERROR);
 					break;
 				default:
-					var_dump($e);
 					throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
 			}
 		}
@@ -125,7 +127,7 @@ if ($page->isPostBack()) {
 		$goodVersion = false;
 		if (!$cfg->error) {
 			try {
-				$goodVersion = $pdo->isDbVersionAtLeast(nZEDb_MINIMUM_MYSQL_VERSION);
+				$goodVersion = $pdo->isVendorVersionValid();
 			} catch (\PDOException $e) {
 				$goodVersion   = false;
 				$cfg->error    = true;
@@ -134,10 +136,15 @@ if ($page->isPostBack()) {
 
 			if ($goodVersion === false) {
 				$cfg->error = true;
-				$cfg->emessage =
-					'You are using an unsupported version of ' . $cfg->DB_SYSTEM .
-					' the minimum allowed version is ' . nZEDb_MINIMUM_MYSQL_VERSION .
-					', but you are using ' . $pdo->getDbVersion();
+				switch (strtolower($cfg->DB_SYSTEM)) {
+					case 'mariadb':
+						$version = DB::MINIMUM_VERSION_MARIADB;
+						break;
+					default:
+						$version = DB::MINIMUM_VERSION_MYSQL;
+				}
+				$cfg->emessage = 'You are using an unsupported version of ' . $cfg->DB_SYSTEM .
+					' the minimum allowed version is ' . $version;
 			}
 		}
 	}
