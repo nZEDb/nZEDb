@@ -1347,7 +1347,7 @@ class DB extends \PDO
 	private function fetchServerInfo()
 	{
 		$info = [];
-		$result = $this->pdo->queryOneRow("SELECT VERSION() as version");
+		$result = $this->queryOneRow("SELECT VERSION() as version");
 		if ($result === null) {
 			throw new \RuntimeException("Could not fetch Database server version!", 5);
 		} else {
