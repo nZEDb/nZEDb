@@ -69,12 +69,12 @@ class DB extends \PDO
 	/**
 	 * @var string Name of the DBMS provider (MariaDB, MySQl, Percona, etc.)
 	 */
-	private $vendor;
+	private $vendor = null;
 
 	/**
 	 * @var string Version of the Db server.
 	 */
-	private $version;
+	private $version = null;
 
 	/**
 	 * @var string	Stored copy of the dsn used to connect.
@@ -175,18 +175,7 @@ class DB extends \PDO
 		$this->setServerInfo();
 
 		if ($options['checkVersion'] === true) {
-			if (!$this->isVendorVersionValid()) {
-				switch (strtolower($this->vendor)) {
-					case 'mariadb':
-						$minVersion = self::MINIMUM_VERSION_MARIADB;
-						break;
-					case 'percona':
-					default:
-						$minVersion = 'mysql';
-				}
-				throw new \RuntimeException("Minimum version for vendor '{$this->vendor}' is {$minVersion}, current version is: {$this->version}",
-					1);
-			}
+			$this->validateVendorVersion();
 		}
 
 		if (defined('nZEDb_SQL_DELETE_LOW_PRIORITY') && nZEDb_SQL_DELETE_LOW_PRIORITY) {
@@ -385,6 +374,8 @@ class DB extends \PDO
 		// removed try/catch to let the instantiating code handle the problem (Install for
 		// instance can output a message that connecting failed.
 		$this->pdo = new \PDO($dsn, $this->opts['dbuser'], $this->opts['dbpass'], $options);
+
+		$this->validateVendorVersion();
 
 		if ($this->opts['dbname'] != '') {
 			if ($this->opts['createDb']) {
@@ -1402,5 +1393,25 @@ class DB extends \PDO
 
 		$this->vendor = $dummy['vendor'];
 		$this->version = $dummy['version'];
+	}
+
+	private function validateVendorVersion()
+	{
+		if ($this->vendor === null) {
+			$this->fetchServerInfo();
+		}
+
+		if (!$this->isVendorVersionValid()) {
+			switch (strtolower($this->vendor)) {
+				case 'mariadb':
+					$minVersion = self::MINIMUM_VERSION_MARIADB;
+					break;
+				case 'percona':
+				default:
+					$minVersion = 'mysql';
+			}
+			throw new \RuntimeException("Minimum version for vendor '{$this->vendor}' is {$minVersion}, current version is: {$this->version}",
+				1);
+		}
 	}
 }
