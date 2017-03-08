@@ -146,7 +146,7 @@ class DB extends \PDO
 		}
 
 		if ($this->opts['checkVersion']) {
-			$this->fetchDbVersion();
+			$this->validateVendorVersion();
 		}
 
 		$this->cacheEnabled = (defined('nZEDb_CACHE_TYPE') && (nZEDb_CACHE_TYPE > 0) ? true : false);
@@ -170,12 +170,6 @@ class DB extends \PDO
 			} catch (LoggerException $error) {
 				$this->_debug = false;
 			}
-		}
-
-		$this->setServerInfo();
-
-		if ($options['checkVersion'] === true) {
-			$this->validateVendorVersion();
 		}
 
 		if (defined('nZEDb_SQL_DELETE_LOW_PRIORITY') && nZEDb_SQL_DELETE_LOW_PRIORITY) {
@@ -1341,7 +1335,7 @@ class DB extends \PDO
 				break;
 		}
 
-		throw new \RuntimeException("No valid DB vendor set!", 4);
+		throw new \RuntimeException("No valid DB vendor set!\n'{$this->vendor}'", 4);
 	}
 
 	private function fetchServerInfo()
@@ -1351,7 +1345,7 @@ class DB extends \PDO
 		if ($result === null) {
 			throw new \RuntimeException("Could not fetch Database server version!", 5);
 		} else {
-			$result = explode('-', $result);
+			$result = explode('-', $result['version']);
 			$info['version'] = $result[0];
 			$info['vendor'] = count($result) > 1 ? strtolower($result[1]) : 'mysql';
 
@@ -1398,7 +1392,7 @@ class DB extends \PDO
 	private function validateVendorVersion()
 	{
 		if ($this->vendor === null) {
-			$this->fetchServerInfo();
+			$this->setServerInfo();
 		}
 
 		if (!$this->isVendorVersionValid()) {
