@@ -136,9 +136,15 @@ if ($page->isPostBack()) {
 
 			if ($goodVersion === false) {
 				$cfg->error = true;
-				$cfg->emessage =
-					'You are using an unsupported version of ' . $cfg->DB_SYSTEM .
-					' the minimum allowed version is ' . DB::MINIMUM_VERSION_MYSQL;
+				switch (strtolower($cfg->DB_SYSTEM)) {
+					case 'mariadb':
+						$version = DB::MINIMUM_VERSION_MARIADB;
+						break;
+					default:
+						$version = DB::MINIMUM_VERSION_MYSQL;
+				}
+				$cfg->emessage = 'You are using an unsupported version of ' . $cfg->DB_SYSTEM .
+					' the minimum allowed version is ' . $version;
 			}
 		}
 	}
