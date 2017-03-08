@@ -37,7 +37,7 @@ class Configure
 		],
 	];
 
-	public function __construct($environment = 'indexer')
+	public function __construct($environment = null)
 	{
 		$this->loadEnvironment($environment);
 	}
@@ -124,7 +124,9 @@ class Configure
 
 	private function loadEnvironment($environment)
 	{
-		if (array_key_exists($environment, $this->environments)) {
+		if (empty($environment)) {
+			return;
+		} else if (array_key_exists($environment, $this->environments)) {
 			foreach ($this->environments[$environment] as $config => $throwException) {
 				$this->loadSettings($config, $throwException);
 			}

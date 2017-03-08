@@ -128,7 +128,7 @@ Libraries::add('app', array('default' => true));
 // 	Libraries::add(basename($path), array('path' => $path));
 // }
 
-if (!defined('nZEDb_INSTALLER') || nZEDb_INSTALLER !== true) {
+if (file_exists(nZEDb_CONFIGS . 'install.lock')) {
 	Libraries::add('nzedb',
 	[
 		'bootstrap'	=> 'bootstrap.php',

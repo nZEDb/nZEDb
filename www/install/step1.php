@@ -7,6 +7,7 @@
 require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install.php');
 
 use nzedb\Install;
+use nzedb\utility\Misc;
 
 $page = new InstallPage();
 $page->title = "Preflight Checklist";
@@ -166,9 +167,11 @@ if ($cfg->schemaCheck === false) {
 }
 
 // Don't set error = true for these as we only want to display a warning.
+$enoughRAM = Misc::returnBytes(ini_get('memory_limit')) >= 1073741824 ? true : false;
+$unlimitedRAM = ini_get('memory_limit') == -1 ? true : false;
+$cfg->memlimitCheck = $unlimitedRAM || $enoughRAM;
 $cfg->phpCheck = (version_compare(PHP_VERSION, nZEDb_MINIMUM_PHP_VERSION, '>=')) ? true : false;
 $cfg->timelimitCheck = (ini_get('max_execution_time') >= 120) ? true : false;
-$cfg->memlimitCheck = (ini_get('memory_limit') >= 1024 || ini_get('memory_limit') == -1) ? true : false;
 $cfg->opensslCheck = extension_loaded("openssl");
 $cfg->exifCheck = extension_loaded("exif");
 $cfg->timezoneCheck = (ini_get('date.timezone') != "");

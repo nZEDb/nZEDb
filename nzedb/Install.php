@@ -174,12 +174,12 @@ class Install
 		$tmpCfg = str_replace('%%nZEDb_SSL_ALLOW_SELF_SIGNED%%', $this->nZEDb_SSL_ALLOW_SELF_SIGNED, $tmpCfg);
 
 		$this->COMPILED_CONFIG = $tmpCfg;
-		return @file_put_contents(nZEDb_CONFIGS . DS . 'config.php', $tmpCfg);
+		return @file_put_contents(nZEDb_CONFIGS . 'config.php', $tmpCfg, LOCK_EX);
 	}
 
 	public function saveInstallLock()
 	{
-		return @file_put_contents($this->CONFIG_PATH . DS . 'install.lock', '');
+		return @file_put_contents($this->CONFIG_PATH . DS . 'install.lock', '', LOCK_EX);
 	}
 
 }
