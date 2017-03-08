@@ -10,7 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2017-03-08 niel
-	Mrg: dev-db branch which adds checking for different vendor and their associated minimum
+	Mrg: dev-db branch which adds checking for different vendors and their associated minimum
 		version.
 2017-03-06 niel
 	Mrg: PR 2406, from egyptianbman - Fix `zed update nzedb`.
