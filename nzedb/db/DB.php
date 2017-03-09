@@ -148,7 +148,7 @@ class DB extends \PDO
 		}
 
 		if (empty($options['dbtype'])) {
-			throw new \RuntimeException("No Database system surplied. Currently this must be one of: " . implode(',', $this->validTypes), 1);
+			throw new \RuntimeException("No Database system supplied. Currently this must be one of: " . implode(',', $this->validTypes), 1);
 		} else {
 			$this->system = strtolower($options['dbtype']);
 		}
