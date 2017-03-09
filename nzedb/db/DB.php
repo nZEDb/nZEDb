@@ -322,7 +322,7 @@ class DB extends \PDO
 
 	public function getTableList()
 	{
-		$query  = ($this->system === 'mysql' ? 'SHOW DATABASES' : 'SELECT datname AS Database FROM pg_database');
+		$query  = ($this->system === 'mysql' ? 'SHOW DATABASES' : 'SELECT datname AS database FROM pg_database');
 		$result = $this->pdo->query($query);
 		return $result->fetchAll(\PDO::FETCH_ASSOC);
 	}
