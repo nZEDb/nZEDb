@@ -9,8 +9,14 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-03-08 niel
+	Mrg: dev-db branch which adds checking for different vendors and their associated minimum
+		version.
+	Mrg: dev-refactor-tpg, which removes conditional checking for TPG as it is no longer optional.
 2017-03-06 niel
 	Mrg: PR 2406, from egyptianbman - Fix `zed update nzedb`.
+
+
 2017-03-01 niel
 	Fix: Alter the logic for checking the Config files location during install step 1.
 	Fix: Update Travis configuration for location of config files.
