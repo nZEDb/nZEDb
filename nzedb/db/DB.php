@@ -163,7 +163,7 @@ class DB extends \PDO
 
 		if ($options['createDb']) {
 			// Note this only ensures the database exists, not the tables.
-			$this->initialiseDatabase();
+			$this->initialiseDatabase($options);
 		}
 
 		$this->consoleTools =& $options['ct'];
