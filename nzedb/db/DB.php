@@ -1444,7 +1444,7 @@ class DB extends \PDO
 					break;
 				case 'percona':
 				default:
-					$minVersion = 'mysql';
+					$minVersion = self::MINIMUM_VERSION_MYSQL;
 			}
 			throw new \RuntimeException("Minimum version for vendor '{$this->vendor}' is {$minVersion}, current version is: {$this->version}",
 				1);
