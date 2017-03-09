@@ -36,7 +36,7 @@ class DB extends \PDO
 	/**
 	 * @var object Instance of \nzedb\ConsoleTools class.
 	 */
-	public $ct;
+	public $consoleTools;
 
 	/**
 	 * @var \nzedb\ColorCLI	Instance variable for logging object. Currently only ColorCLI supported,
@@ -57,44 +57,14 @@ class DB extends \PDO
 	protected $_debug;
 
 	/**
-	 * @var object Class instance debugging.
+	 * @var bool Should we cache the results of the query method?
 	 */
-	private $debugging;
-
-	/**
-	 * @var string Lower-cased name of DBMS in use.
-	 */
-	private $dbSystem;
-
-	/**
-	 * @var string Name of the DBMS provider (MariaDB, MySQl, Percona, etc.)
-	 */
-	private $vendor = null;
-
-	/**
-	 * @var string Version of the Db server.
-	 */
-	private $version = null;
-
-	/**
-	 * @var string	Stored copy of the dsn used to connect.
-	 */
-	private $dsn;
-
-	/**
-	 * @var array    Options passed into the constructor or defaulted.
-	 */
-	private $opts;
+	private $cacheEnabled = false;
 
 	/**
 	 * @var null|\nzedb\libraries\Cache
 	 */
 	private $cacheServer = null;
-
-	/**
-	 * @var bool Should we cache the results of the query method?
-	 */
-	private $cacheEnabled = false;
 
 	/**
 	 * @var string MySQL LOW_PRIORITY DELETE option.
@@ -105,6 +75,47 @@ class DB extends \PDO
 	 * @var string MYSQL QUICK DELETE option.
 	 */
 	private $DELETE_QUICK = '';
+
+	/**
+	 * @var object Class instance debugging.
+	 */
+	private $debugging;
+
+	/**
+	 * @var string    Stored copy of the dsn used to connect.
+	 */
+	private $dsn;
+
+	private $host;
+
+	private $name;
+
+	private $password;
+
+	private $persist;
+
+	private $port;
+
+	private $socket;
+
+	/**
+	 * @var string Lower-cased name of DBMS type in use. Currently only mysql is valid.
+	 */
+	private $system;
+
+	private $user;
+
+	private $validTypes = ['mysql'];
+
+	/**
+	 * @var string Name of the DBMS provider (MariaDB, MySQl, Percona, etc.)
+	 */
+	private $vendor = null;
+
+	/**
+	 * @var string Version of the Db server.
+	 */
+	private $version = null;
 
 	/**
 	 * Constructor. Sets up all necessary properties. Instantiates a PDO object
@@ -135,19 +146,28 @@ class DB extends \PDO
 		if (!$this->cli) {
 			$options['log'] = null;
 		}
-		$this->opts = $options;
 
-		if (!empty($this->opts['dbtype'])) {
-			$this->dbSystem = strtolower($this->opts['dbtype']);
+		if (empty($options['dbtype'])) {
+			throw new \RuntimeException("No Database system surplied. Currently this must be one of: " . implode(',', $this->validTypes), 1);
+		} else {
+			$this->system = strtolower($options['dbtype']);
 		}
 
-		if (!($this->pdo instanceof \PDO)) {
+		$this->connect($options);
+
+		$this->setServerInfo();
+
+		if ($options['checkVersion']) {
+			$this->validateVendorVersion();
+		}
+
+		if ($options['createDb']) {
+			// Note this only ensures the database exists, not the tables.
 			$this->initialiseDatabase();
 		}
 
-		if ($this->opts['checkVersion']) {
-			$this->fetchDbVersion();
-		}
+		$this->consoleTools =& $options['ct'];
+		$this->log =& $options['log'];
 
 		$this->cacheEnabled = (defined('nZEDb_CACHE_TYPE') && (nZEDb_CACHE_TYPE > 0) ? true : false);
 
@@ -160,9 +180,6 @@ class DB extends \PDO
 			}
 		}
 
-		$this->ct = $this->opts['ct'];
-		$this->log = $this->opts['log'];
-
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 		if ($this->_debug) {
 			try {
@@ -170,12 +187,6 @@ class DB extends \PDO
 			} catch (LoggerException $error) {
 				$this->_debug = false;
 			}
-		}
-
-		$this->setServerInfo();
-
-		if ($options['checkVersion'] === true) {
-			$this->validateVendorVersion();
 		}
 
 		if (defined('nZEDb_SQL_DELETE_LOW_PRIORITY') && nZEDb_SQL_DELETE_LOW_PRIORITY) {
@@ -201,12 +212,8 @@ class DB extends \PDO
 		return is_array($result) ? $result['value'] : $result;
 	}
 
-	public function checkDbExists($name = null)
+	public function checkDbExists($name)
 	{
-		if (empty($name)) {
-			$name = $this->opts['dbname'];
-		}
-
 		$found  = false;
 		$tables = self::getTableList();
 		foreach ($tables as $table) {
@@ -315,7 +322,7 @@ class DB extends \PDO
 
 	public function getTableList()
 	{
-		$query  = ($this->opts['dbtype'] === 'mysql' ? 'SHOW DATABASES' : 'SELECT datname AS Database FROM pg_database');
+		$query  = ($this->system === 'mysql' ? 'SHOW DATABASES' : 'SELECT datname AS Database FROM pg_database');
 		$result = $this->pdo->query($query);
 		return $result->fetchAll(\PDO::FETCH_ASSOC);
 	}
@@ -332,14 +339,14 @@ class DB extends \PDO
 	public function isLocalDb()
 	{
 		$local = false;
-		if (!empty($this->opts['dbsock']) || $this->opts['dbhost'] == 'localhost') {
+		if (!empty($this->socket) || $this->host == 'localhost') {
 			$local = true;
 		} else {
 			preg_match_all('/inet' . '6?' . ' addr: ?([^ ]+)/', `ifconfig`, $ips);
 
 			// Check for dotted quad - if exists compare against local IP number(s)
-			if (preg_match('#^\d+\.\d+\.\d+\.\d+$#', $this->opts['dbhost'])) {
-				if (in_array($this->opts['dbhost'], $ips[1])) {
+			if (preg_match('#^\d+\.\d+\.\d+\.\d+$#', $this->host)) {
+				if (in_array($this->host, $ips[1])) {
 					$local = true;
 				}
 			}
@@ -348,74 +355,89 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Init PDO instance.
+	 * Initialise the database. Not the tables.
 	 */
-	private function initialiseDatabase()
+	private function initialiseDatabase(array $options)
 	{
+		if ($options['dbname'] != '') {
+			if ($options['createDb']) {
+				$found = self::checkDbExists($options['dbname']);
+				if ($found) {
+					try {
+						$this->pdo->query("DROP DATABASE " . $options['dbname']);
+					} catch (\Exception $e) {
+						throw new \RuntimeException("Error trying to drop your old database: '{$options['dbname']}'", 2);
+					}
+					$found = self::checkDbExists($options['dbname']);
+				}
 
-		if (!empty($this->opts['dbsock'])) {
-			$dsn = $this->dbSystem . ':unix_socket=' . $this->opts['dbsock'];
+				if ($found) {
+					//var_dump(self::getTableList());
+					throw new \RuntimeException("Could not drop your old database: '{$options['dbname']}'", 2);
+				} else {
+					$this->pdo->query("CREATE DATABASE `{$options['dbname']}`  DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
+
+					if (!self::checkDbExists($options['dbname'])) {
+						throw new \RuntimeException("Could not create new database: '{$options['dbname']}'", 3);
+					}
+				}
+			}
+			$this->pdo->query("USE {$options['dbname']}");
+		}
+	}
+
+	protected function connect(array $options)
+	{
+		if (!empty($options['dbsock'])) {
+			$dsn = $this->system . ':unix_socket=' . $options['dbsock'];
 		} else {
-			$dsn = $this->dbSystem . ':host=' . $this->opts['dbhost'];
-			if (!empty($this->opts['dbport'])) {
-				$dsn .= ';port=' . $this->opts['dbport'];
+			$dsn = $this->system . ':host=' . $options['dbhost'];
+			if (!empty($options['dbport'])) {
+				$dsn .= ';port=' . $options['dbport'];
 			}
 		}
 		$dsn .= ';charset=utf8';
 
-		$options = [
-			\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-			\PDO::ATTR_TIMEOUT => 180,
-			\PDO::ATTR_PERSISTENT => $this->opts['persist'],
+		$this->dsn = $dsn;
+
+		$connectionOptions = [
+			\PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
+			\PDO::ATTR_TIMEOUT            => 180,
+			\PDO::ATTR_PERSISTENT         => $options['persist'],
 			\PDO::MYSQL_ATTR_LOCAL_INFILE => true
 		];
 
-		$this->dsn = $dsn;
 		// removed try/catch to let the instantiating code handle the problem (Install for
 		// instance can output a message that connecting failed.
-		$this->pdo = new \PDO($dsn, $this->opts['dbuser'], $this->opts['dbpass'], $options);
+		$this->pdo = new \PDO($dsn, $options['dbuser'], $options['dbpass'], $connectionOptions);
 
-		$this->validateVendorVersion();
-
-		if ($this->opts['dbname'] != '') {
-			if ($this->opts['createDb']) {
-				$found = self::checkDbExists();
-				if ($found) {
-					try {
-						$this->pdo->query("DROP DATABASE " . $this->opts['dbname']);
-					} catch (\Exception $e) {
-						throw new \RuntimeException("Error trying to drop your old database: '{$this->opts['dbname']}'", 2);
-					}
-					$found = self::checkDbExists();
-				}
-
-				if ($found) {
-					var_dump(self::getTableList());
-					throw new \RuntimeException("Could not drop your old database: '{$this->opts['dbname']}'", 2);
-				} else {
-					$this->pdo->query("CREATE DATABASE `{$this->opts['dbname']}`  DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
-
-					if (!self::checkDbExists()) {
-						throw new \RuntimeException("Could not create new database: '{$this->opts['dbname']}'", 3);
-					}
-				}
-			}
-			$this->pdo->query("USE {$this->opts['dbname']}");
-		}
+		// For backwards compatibility, no need for a patch.
+		// This forces field names to always be lower-cased and returned rows to be associative
+		// arrays not numerical
+		$this->pdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_LOWER);
+		$this->pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 
 		// In case PDO is not set to produce exceptions (PHP's default behaviour).
 		if ($this->pdo === false) {
+			$message = "Unable to create connection to the Database!";
 			$this->echoError(
-				 "Unable to create connection to the Database!",
-				 'initialiseDatabase',
-				 1,
-				 true
+				$message,
+				'connect',
+				1,
+				true
 			);
+			throw new \ErrorException($message, 1);
 		}
 
-		// For backwards compatibility, no need for a patch.
-		$this->pdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_LOWER);
-		$this->pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+		$this->host		= $options['dbhost'];
+		$this->name		= $options['dbname'];
+		$this->password	= $options['dbpass'];
+		$this->persist	= $options['persist'];
+		$this->port		= $options['dbport'];
+		$this->socket	= $options['dbsock'];
+		$this->user		= $options['dbuser'];
+
+		return true;
 	}
 
 	/**
@@ -446,7 +468,7 @@ class DB extends \PDO
 	 */
 	public function DbSystem()
 	{
-		return $this->dbSystem;
+		return $this->system;
 	}
 
 	/**
@@ -513,7 +535,7 @@ class DB extends \PDO
 									 ($i - 1) . ")",
 									 'queryInsert',
 									 4);
-					$this->ct->showsleep($i * ($i / 2));
+					$this->consoleTools->showsleep($i * ($i / 2));
 					$i++;
 				} else {
 					break;
@@ -571,7 +593,7 @@ class DB extends \PDO
 				$error = $result['message'];
 				if ($result['deadlock'] === true) {
 					$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping. (" . ($i - 1) . ")", 'queryExec', 4);
-					$this->ct->showsleep($i * ($i / 2));
+					$this->consoleTools->showsleep($i * ($i / 2));
 					$i++;
 				} else {
 					break;
@@ -873,7 +895,20 @@ class DB extends \PDO
 	 */
 	protected function _reconnect()
 	{
-		$this->initialiseDatabase();
+		$options = [
+			'checkVersion'	=> false,
+			'createDb'		=> false,
+			'dbhost'		=> $this->host,
+			'dbname'		=> $this->name,
+			'dbpass'		=> $this->password,
+			'dbport'		=> $this->port,
+			'dbsock'		=> $this->socket,
+			'dbtype'		=> $this->system,
+			'dbuser'		=> $this->user,
+			'persist'		=> $this->persist,
+			];
+
+		$this->connect();
 
 		// Check if we are really connected to MySQL.
 		if ($this->ping() === false) {
@@ -1237,10 +1272,11 @@ class DB extends \PDO
 			return (bool)$this->pdo->query('SELECT 1+1');
 		} catch (\PDOException $e) {
 			if ($restart == true) {
-				$this->initialiseDatabase();
+				return $this->connect();
 			}
-			return false;
 		}
+
+		return false;
 	}
 
 	/**
@@ -1398,7 +1434,7 @@ class DB extends \PDO
 	private function validateVendorVersion()
 	{
 		if ($this->vendor === null) {
-			$this->fetchServerInfo();
+			$this->setServerInfo();
 		}
 
 		if (!$this->isVendorVersionValid()) {

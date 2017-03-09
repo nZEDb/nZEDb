@@ -131,7 +131,7 @@ if ($page->isPostBack()) {
 			} catch (\PDOException $e) {
 				$goodVersion   = false;
 				$cfg->error    = true;
-				$cfg->emessage = 'Could not get version from SQL server.';
+				$cfg->emessage = 'Could not get version from SQL server.\n' . $e->getMessage();
 			}
 
 			if ($goodVersion === false) {
@@ -146,6 +146,8 @@ if ($page->isPostBack()) {
 				$cfg->emessage = 'You are using an unsupported version of ' . $cfg->DB_SYSTEM .
 					' the minimum allowed version is ' . $version;
 			}
+
+			$pdo->connect();
 		}
 	}
 
