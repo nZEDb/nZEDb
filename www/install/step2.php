@@ -122,33 +122,6 @@ if ($page->isPostBack()) {
 					throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
 			}
 		}
-
-		// Check if the MySQL version is correct.
-		$goodVersion = false;
-		if (!$cfg->error) {
-			try {
-				$goodVersion = $pdo->isVendorVersionValid();
-			} catch (\PDOException $e) {
-				$goodVersion   = false;
-				$cfg->error    = true;
-				$cfg->emessage = 'Could not get version from SQL server.\n' . $e->getMessage();
-			}
-
-			if ($goodVersion === false) {
-				$cfg->error = true;
-				switch (strtolower($cfg->DB_SYSTEM)) {
-					case 'mariadb':
-						$version = DB::MINIMUM_VERSION_MARIADB;
-						break;
-					default:
-						$version = DB::MINIMUM_VERSION_MYSQL;
-				}
-				$cfg->emessage = 'You are using an unsupported version of ' . $cfg->DB_SYSTEM .
-					' the minimum allowed version is ' . $version;
-			}
-
-			$pdo->connect();
-		}
 	}
 
 	// Start inserting data into the DB.
