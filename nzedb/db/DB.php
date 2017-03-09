@@ -217,7 +217,7 @@ class DB extends \PDO
 		$found  = false;
 		$tables = self::getTableList();
 		foreach ($tables as $table) {
-			if ($table['Database'] == $name) {
+			if ($table['database'] == $name) {
 				$found = true;
 				break;
 			}
