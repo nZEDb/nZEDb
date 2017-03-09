@@ -1387,7 +1387,7 @@ class DB extends \PDO
 		if ($result === null) {
 			throw new \RuntimeException("Could not fetch Database server version!", 5);
 		} else {
-			$result = explode('-', $result);
+			$result = explode('-', $result['version']);
 			$info['version'] = $result[0];
 			$info['vendor'] = count($result) > 1 ? strtolower($result[1]) : 'mysql';
 
