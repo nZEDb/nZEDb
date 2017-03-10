@@ -99,6 +99,11 @@ class DB extends \PDO
 	private $dsn;
 
 	/**
+	 * @var Database name to use.
+	 */
+	private $name = null;
+
+	/**
 	 * @var array    Options passed into the constructor or defaulted.
 	 */
 	private $opts;
