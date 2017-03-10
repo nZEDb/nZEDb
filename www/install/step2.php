@@ -137,10 +137,16 @@ if ($page->isPostBack()) {
 
 			if ($goodVersion === false) {
 				$cfg->error = true;
-				$cfg->emessage =
-					'You are using an unsupported version of ' . $cfg->DB_SYSTEM .
-					' the minimum allowed version is ' . nZEDb_MINIMUM_MYSQL_VERSION .
-					', but you are using ' . $pdo->getDbVersion();
+				$vendor = $pdo->getVendor();
+				switch (strtolower($vendor)) {
+					case 'mariadb':
+						$version = DB::MINIMUM_VERSION_MARIADB;
+						break;
+					default:
+						$version = DB::MINIMUM_VERSION_MYSQL;
+				}
+				$cfg->emessage = 'You are using an unsupported version of the ' . $vendor .
+					' server, the minimum allowed version is ' . $version;
 			}
 		}
 	}
