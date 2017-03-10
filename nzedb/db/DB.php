@@ -1372,4 +1372,24 @@ class DB extends \PDO
 		$this->vendor = $dummy['vendor'];
 		$this->version = $dummy['version'];
 	}
+
+	private function validateVendorVersion()
+	{
+		if ($this->vendor === null) {
+			$this->setServerInfo();
+		}
+
+		if (!$this->isVendorVersionValid()) {
+			switch (strtolower($this->vendor)) {
+				case 'mariadb':
+					$minVersion = self::MINIMUM_VERSION_MARIADB;
+					break;
+				case 'percona':
+				default:
+					$minVersion = self::MINIMUM_VERSION_MYSQL;
+			}
+			throw new \RuntimeException("Minimum version for vendor '{$this->vendor}' is {$minVersion}, current version is: '{$this->version}''",
+				1);
+		}
+	}
 }
