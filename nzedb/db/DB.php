@@ -1365,4 +1365,11 @@ class DB extends \PDO
 		return true;
 	}
 
+	private function setServerInfo()
+	{
+		$dummy = $this->fetchServerInfo();
+
+		$this->vendor = $dummy['vendor'];
+		$this->version = $dummy['version'];
+	}
 }
