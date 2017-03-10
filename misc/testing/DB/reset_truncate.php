@@ -19,8 +19,8 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop")) {
 		}
 	}
 	unset($value);
-	$sql = 'SHOW table status';
 
+	$sql = 'SHOW table status';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
@@ -45,6 +45,6 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop")) {
 	exit($pdo->log->error("\nThis script removes releases with no NZBs, resets all groups, truncates or drops(tpg) \n"
 		. "article tables. All other releases are left alone.\n"
 		. "php $argv[0] [true, drop]   ...: To reset all groups and truncate/drop the tables.\n"
-	)
+		)
 	);
 }
