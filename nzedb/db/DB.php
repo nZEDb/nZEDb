@@ -153,10 +153,8 @@ class DB extends \PDO
 			$this->initialiseDatabase();
 		}
 
-		$this->setServerInfo();
-
 		if ($this->opts['checkVersion']) {
-			$this->isVendorVersionValid();
+			$this->validateVendorVersion();
 		}
 
 		$this->cacheEnabled = (defined('nZEDb_CACHE_TYPE') && (nZEDb_CACHE_TYPE > 0) ? true : false);
@@ -181,7 +179,6 @@ class DB extends \PDO
 				$this->_debug = false;
 			}
 		}
-
 
 		if (defined('nZEDb_SQL_DELETE_LOW_PRIORITY') && nZEDb_SQL_DELETE_LOW_PRIORITY) {
 			$this->DELETE_LOW_PRIORITY = ' LOW_PRIORITY ';
@@ -354,6 +351,10 @@ class DB extends \PDO
 
 	public function isVendorVersionValid()
 	{
+		if (empty($this->vendor) || empty($this->version)) {
+			$this->setServerInfo();
+		}
+
 		switch (strtolower($this->vendor)) {
 			case 'mariadb':
 				return version_compare(SELF::MINIMUM_VERSION_MARIADB, $this->version, '<=');
@@ -1240,6 +1241,22 @@ class DB extends \PDO
 		);
 	}
 
+	public function validateVendorVersion()
+	{
+		if (!$this->isVendorVersionValid()) {
+			switch (strtolower($this->vendor)) {
+				case 'mariadb':
+					$minVersion = self::MINIMUM_VERSION_MARIADB;
+					break;
+				case 'percona':
+				default:
+					$minVersion = self::MINIMUM_VERSION_MYSQL;
+			}
+			throw new \RuntimeException("Minimum version for vendor '{$this->vendor}' is {$minVersion}, current version is: '{$this->version}''",
+				1);
+		}
+	}
+
 	/**
 	 * Checks whether the connection to the server is working. Optionally restart a new connection.
 	 * NOTE: Restart does not happen if PDO is not using exceptions (PHP's default configuration).
@@ -1399,25 +1416,5 @@ class DB extends \PDO
 
 		$this->vendor = $dummy['vendor'];
 		$this->version = $dummy['version'];
-	}
-
-	private function validateVendorVersion()
-	{
-		if ($this->vendor === null) {
-			$this->setServerInfo();
-		}
-
-		if (!$this->isVendorVersionValid()) {
-			switch (strtolower($this->vendor)) {
-				case 'mariadb':
-					$minVersion = self::MINIMUM_VERSION_MARIADB;
-					break;
-				case 'percona':
-				default:
-					$minVersion = self::MINIMUM_VERSION_MYSQL;
-			}
-			throw new \RuntimeException("Minimum version for vendor '{$this->vendor}' is {$minVersion}, current version is: '{$this->version}''",
-				1);
-		}
 	}
 }
