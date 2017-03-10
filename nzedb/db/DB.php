@@ -104,6 +104,17 @@ class DB extends \PDO
 	private $opts;
 
 	/**
+	 * @var string Name of the DBMS provider (MariaDB, MySQl, Percona, etc.)
+	 */
+	private $vendor = null;
+
+	/**
+	 * @var string Version of the Db server.
+	 */
+	private $version = null;
+
+
+	/**
 	 * Constructor. Sets up all necessary properties. Instantiates a PDO object
 	 * if needed, otherwise returns the current one.
 	 *
@@ -114,7 +125,7 @@ class DB extends \PDO
 		$this->cli = Misc::isCLI();
 
 		$defaults = [
-			'checkVersion'	=> false,
+			'checkVersion'	=> true,
 			'createDb'		=> false, // create dbname if it does not exist?
 			'ct'			=> new ConsoleTools(),
 			'dbhost'		=> defined('DB_HOST') ? DB_HOST : '',
@@ -142,6 +153,12 @@ class DB extends \PDO
 			$this->initialiseDatabase();
 		}
 
+		$this->setServerInfo();
+
+		if ($this->opts['checkVersion']) {
+			$this->isVendorVersionValid();
+		}
+
 		$this->cacheEnabled = (defined('nZEDb_CACHE_TYPE') && (nZEDb_CACHE_TYPE > 0) ? true : false);
 
 		if ($this->cacheEnabled) {
@@ -165,10 +182,6 @@ class DB extends \PDO
 			}
 		}
 
-
-		if ($this->opts['checkVersion']) {
-			$this->fetchDbVersion();
-		}
 
 		if (defined('nZEDb_SQL_DELETE_LOW_PRIORITY') && nZEDb_SQL_DELETE_LOW_PRIORITY) {
 			$this->DELETE_LOW_PRIORITY = ' LOW_PRIORITY ';
