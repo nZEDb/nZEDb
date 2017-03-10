@@ -158,20 +158,22 @@ class DB extends \PDO
 			throw new \RuntimeException("No Database system supplied. Currently this must be one of: " .
 				implode(',', $this->validTypes), 1);
 		} else {
-			$this->dbSystem = strtolower($options['dbtype']);
+			$this->dbSystem = $options['dbtype'];
 		}
 
-		if (!empty($this->opts['dbtype'])) {
-			$this->dbSystem = strtolower($this->opts['dbtype']);
-		}
-
-		if (!($this->pdo instanceof \PDO)) {
-			$this->initialiseDatabase();
-		}
+		$this->connect($options);
 
 		if ($this->opts['checkVersion']) {
 			$this->validateVendorVersion();
 		}
+
+		if ($options['createDb']) {
+			// Note this only ensures the database exists, not the tables.
+			$this->initialiseDatabase($options);
+		}
+
+		$this->consoleTools =& $options['ct'];
+		$this->log =& $options['log'];
 
 		$this->cacheEnabled = (defined('nZEDb_CACHE_TYPE') && (nZEDb_CACHE_TYPE > 0) ? true : false);
 
@@ -183,9 +185,6 @@ class DB extends \PDO
 				$this->echoError($error->getMessage(), '__construct', 4);
 			}
 		}
-
-		$this->consoleTools = $this->opts['ct'];
-		$this->log = $this->opts['log'];
 
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 		if ($this->_debug) {
