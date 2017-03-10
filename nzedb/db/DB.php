@@ -1197,7 +1197,7 @@ class DB extends \PDO
 	public function validateVendorVersion()
 	{
 		// 'name' == '' means it is a Sphinx connection.
-		if ($this->opts['name'] != '' && !$this->isVendorVersionValid()) {
+		if ($this->opts['dbname'] != '' && !$this->isVendorVersionValid()) {
 			switch (strtolower($this->vendor)) {
 				case 'mariadb':
 					$minVersion = self::MINIMUM_VERSION_MARIADB;
