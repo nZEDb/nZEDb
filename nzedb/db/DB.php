@@ -339,6 +339,21 @@ class DB extends \PDO
 		return $local;
 	}
 
+	public function isVendorVersionValid()
+	{
+		switch (strtolower($this->vendor)) {
+			case 'mariadb':
+				return version_compare(SELF::MINIMUM_VERSION_MARIADB, $this->version, '<=');
+				break;
+			case 'percona':
+			case 'mysql':
+				return version_compare(SELF::MINIMUM_VERSION_MYSQL, $this->version, '<=');
+				break;
+		}
+
+		throw new \RuntimeException("No valid DB vendor set!\n'{$this->vendor}'", 4);
+	}
+
 	/**
 	 * Init PDO instance.
 	 */
