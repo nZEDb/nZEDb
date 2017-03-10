@@ -217,6 +217,14 @@ class DB extends \PDO
 		return true;
 	}
 
+	/**
+	 * Fetch a list of indexes on a specified column of a table.
+	 *
+	 * @param $table
+	 * @param $column
+	 *
+	 * @return array|boolean The array of indexes if found, or false if not.
+	 */
 	public function checkColumnIndex($table, $column)
 	{
 		$result = $this->pdo->query(
@@ -233,6 +241,13 @@ class DB extends \PDO
 		return $result->fetchAll(\PDO::FETCH_ASSOC);
 	}
 
+	/**
+	 * Compare a name against a list of databases found on the server.
+	 *
+	 * @param string $name
+	 *
+	 * @return boolean True if the name exists on the server, otherwise false.
+	 */
 	public function checkDbExists($name = null)
 	{
 		if (empty($name)) {
@@ -240,7 +255,7 @@ class DB extends \PDO
 		}
 
 		$found  = false;
-		$tables = self::getTableList();
+		$tables = self::getDatabasesList();
 		foreach ($tables as $table) {
 			if ($table['Database'] == $name) {
 				$found = true;
@@ -296,12 +311,18 @@ class DB extends \PDO
 		return $this->dbSystem;
 	}
 
+	/**
+	 * Disable debugging info to the shell.
+	 */
 	public function debugDisable()
 	{
 		unset($this->debugging);
 		$this->_debug = false;
 	}
 
+	/**
+	 * Enable debugging info to the shell.
+	 */
 	public function debugEnable()
 	{
 		$this->_debug = true;
@@ -427,6 +448,13 @@ class DB extends \PDO
 		return $this->dbVersion;
 	}
 
+	/**
+	 * Fetches the value for a specified setting from the settings table.
+	 *
+	 * @param $name
+	 *
+	 * @return string|boolean	String of settings' value, or false.
+	 */
 	public function getSetting($name)
 	{
 		$result = $this->queryOneRow("SELECT value FROM settings WHERE setting = '$name' LIMIT 1");
@@ -466,7 +494,12 @@ class DB extends \PDO
 		return $tree;
 	}
 
-	public function getTableList()
+	/**
+	 * Fetches a list (array) of databases on the server. NOTE it only lists those the user can see.
+	 *
+	 * @return array
+	 */
+	public function getDatabasesList()
 	{
 		$query  = ($this->opts['dbtype'] === 'mysql' ? 'SHOW DATABASES' : 'SELECT datname AS Database FROM pg_database');
 		$result = $this->pdo->query($query);
@@ -525,6 +558,10 @@ class DB extends \PDO
 		return $local;
 	}
 
+	/**
+	 * @return boolean true if the version is valid for server's vendor, false otherwise.
+	 * @throws \RuntimeException if the vendor is not valid.
+	 */
 	public function isVendorVersionValid()
 	{
 		if (empty($this->vendor) || empty($this->version)) {
@@ -1021,6 +1058,13 @@ class DB extends \PDO
 		return true;
 	}
 
+	/**
+	 * Converts the result from a query of the settings table into an array.
+	 *
+	 * @param array $rows
+	 *
+	 * @return array|bool|mixed
+	 */
 	public function rowsToArray(array $rows)
 	{
 		foreach ($rows as $row) {
@@ -1032,11 +1076,21 @@ class DB extends \PDO
 		return $this->settings;
 	}
 
+	/**
+	 * Take the provided row and adds it to the settings array.
+	 *
+	 * @param array $row
+	 */
 	public function rowToArray(array $row)
 	{
 		$this->settings[$row['setting']] = $row['value'];
 	}
 
+	/**
+	 * Fetch the cavers patch setting from the database and assign it to a constant.
+	 *
+	 * @return void
+	 */
 	public function setCovers()
 	{
 		$path = app\models\Settings::value([
@@ -1048,6 +1102,13 @@ class DB extends \PDO
 		Misc::setCoversConstant($path);
 	}
 
+	/**
+	 * Update the Settings table using provided form data, which is first validated.
+	 *
+	 * @param $form
+	 *
+	 * @return int|null
+	 */
 	public function settingsUpdate($form)
 	{
 		$error = $this->settingsValidate($form);
@@ -1121,6 +1182,13 @@ class DB extends \PDO
 		);
 	}
 
+	/**
+	 * Use the 'vendor' and 'version' fields to check if the server meets the minimum required
+	 * version for the DBMS's vendor.
+	 *
+	 * @return boolean
+	 * @throws \RuntimeException if the version is not supported for the vendor.
+	 */
 	public function validateVendorVersion()
 	{
 		if (!$this->isVendorVersionValid()) {
@@ -1247,6 +1315,13 @@ class DB extends \PDO
 		return true;
 	}
 
+	/**
+	 * Validate the provided array, which should be from the settings edit page.
+	 *
+	 * @param array $fields
+	 *
+	 * @return int|null
+	 */
 	protected function settingsValidate(array $fields)
 	{
 		$defaults = [
@@ -1311,6 +1386,12 @@ class DB extends \PDO
 		}
 	}
 
+	/**
+	 * Fetch information from the server returned by the SQL VERSION() function. This is parsed
+	 * into an array for returning.
+	 *
+	 * @return array
+	 */
 	private function fetchServerInfo()
 	{
 		$info = [];
@@ -1337,7 +1418,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Init PDO instance.
+	 * Initialise the database. NOTE this does not include the tables it just creates the database.
 	 */
 	private function initialiseDatabase()
 	{
@@ -1377,7 +1458,7 @@ class DB extends \PDO
 				}
 
 				if ($found) {
-					var_dump(self::getTableList());
+					var_dump(self::getDatabasesList());
 					throw new \RuntimeException("Could not drop your old database: '{$this->opts['dbname']}'", 2);
 				} else {
 					$this->pdo->query("CREATE DATABASE `{$this->opts['dbname']}`  DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
