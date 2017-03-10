@@ -23,6 +23,11 @@ use nzedb\libraries\CacheException;
  */
 class DB extends \PDO
 {
+	const MINIMUM_VERSION_MARIADB = '10.0';
+
+	const MINIMUM_VERSION_MYSQL = '5.6';
+
+
 	/**
 	 * @var bool Is this a Command Line Interface instance.
 	 *
