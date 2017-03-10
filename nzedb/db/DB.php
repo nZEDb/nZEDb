@@ -54,12 +54,17 @@ class DB extends \PDO
 	protected $_debug;
 
 	/**
-	 * @var object Class instance debugging.
+	 * @var bool Should we cache the results of the query method?
 	 */
-	private $debugging;
+	private $cacheEnabled = false;
 
 	/**
-	 * @var string Lower-cased name of DBMS in use.
+	 * @var null|\nzedb\libraries\Cache
+	 */
+	private $cacheServer = null;
+
+	/**
+	 * @var string Lower-cased name of DBMS type (MySQl/Postgres, etc.) in use.
 	 */
 	private $dbSystem;
 
@@ -69,24 +74,9 @@ class DB extends \PDO
 	private $dbVersion;
 
 	/**
-	 * @var string	Stored copy of the dsn used to connect.
+	 * @var object Class instance debugging.
 	 */
-	private $dsn;
-
-	/**
-	 * @var array    Options passed into the constructor or defaulted.
-	 */
-	private $opts;
-
-	/**
-	 * @var null|\nzedb\libraries\Cache
-	 */
-	private $cacheServer = null;
-
-	/**
-	 * @var bool Should we cache the results of the query method?
-	 */
-	private $cacheEnabled = false;
+	private $debugging;
 
 	/**
 	 * @var string MySQL LOW_PRIORITY DELETE option.
@@ -97,6 +87,16 @@ class DB extends \PDO
 	 * @var string MYSQL QUICK DELETE option.
 	 */
 	private $DELETE_QUICK = '';
+
+	/**
+	 * @var string	Stored copy of the dsn used to connect.
+	 */
+	private $dsn;
+
+	/**
+	 * @var array    Options passed into the constructor or defaulted.
+	 */
+	private $opts;
 
 	/**
 	 * Constructor. Sets up all necessary properties. Instantiates a PDO object
