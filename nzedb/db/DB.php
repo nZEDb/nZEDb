@@ -33,7 +33,7 @@ class DB extends \PDO
 	/**
 	 * @var object Instance of \nzedb\ConsoleTools class.
 	 */
-	public $ct;
+	public $consoleTools;
 
 	/**
 	 * @var \nzedb\ColorCLI	Instance variable for logging object. Currently only ColorCLI supported,
@@ -148,7 +148,7 @@ class DB extends \PDO
 			}
 		}
 
-		$this->ct = $this->opts['ct'];
+		$this->consoleTools = $this->opts['ct'];
 		$this->log = $this->opts['log'];
 
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
@@ -498,7 +498,7 @@ class DB extends \PDO
 									 ($i - 1) . ")",
 									 'queryInsert',
 									 4);
-					$this->ct->showsleep($i * ($i / 2));
+					$this->consoleTools->showsleep($i * ($i / 2));
 					$i++;
 				} else {
 					break;
@@ -556,7 +556,7 @@ class DB extends \PDO
 				$error = $result['message'];
 				if ($result['deadlock'] === true) {
 					$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping. (" . ($i - 1) . ")", 'queryExec', 4);
-					$this->ct->showsleep($i * ($i / 2));
+					$this->consoleTools->showsleep($i * ($i / 2));
 					$i++;
 				} else {
 					break;
