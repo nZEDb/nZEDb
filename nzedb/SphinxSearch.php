@@ -32,7 +32,8 @@ class SphinxSearch
 					'dbname'		=> '',
 					'dbport'		=> nZEDb_SPHINXQL_PORT,
 					'dbhost'		=> nZEDb_SPHINXQL_HOST_NAME,
-					'dbsock'		=> nZEDb_SPHINXQL_SOCK_FILE
+					'dbsock'		=> nZEDb_SPHINXQL_SOCK_FILE,
+					'dbtype'		=> 'sphinx'
 				]
 			);
 		}

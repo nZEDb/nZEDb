@@ -109,6 +109,11 @@ class DB extends \PDO
 	private $opts;
 
 	/**
+	 * @var array List of valid DBMS systems (mysql, postgres, etc.).
+	 */
+	private $validTypes = ['mysql', 'sphinx'];
+
+	/**
 	 * @var string Name of the DBMS provider (MariaDB, MySQl, Percona, etc.)
 	 */
 	private $vendor = null;
@@ -148,7 +153,13 @@ class DB extends \PDO
 		if (!$this->cli) {
 			$options['log'] = null;
 		}
-		$this->opts = $options;
+
+		if (empty($options['dbtype'])) {
+			throw new \RuntimeException("No Database system supplied. Currently this must be one of: " .
+				implode(',', $this->validTypes), 1);
+		} else {
+			$this->dbSystem = strtolower($options['dbtype']);
+		}
 
 		if (!empty($this->opts['dbtype'])) {
 			$this->dbSystem = strtolower($this->opts['dbtype']);
