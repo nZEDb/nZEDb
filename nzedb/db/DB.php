@@ -444,6 +444,20 @@ class DB extends \PDO
 	}
 
 	/**
+	 * Fetches a list (array) of databases on the server. NOTE it only lists those the user can see.
+	 *
+	 * @return array
+	 */
+	public function getDatabasesList()
+	{
+		$query = ($this->opts['dbtype'] === 'mysql' ? 'SHOW DATABASES' :
+			'SELECT datname AS Database FROM pg_database');
+		$result = $this->pdo->query($query);
+
+		return $result->fetchAll(\PDO::FETCH_ASSOC);
+	}
+
+	/**
 	 * Returns the stored Db version string.
 	 *
 	 * @return string
@@ -500,15 +514,23 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Fetches a list (array) of databases on the server. NOTE it only lists those the user can see.
+	 * Accessor for DB::$vendor field.
 	 *
-	 * @return array
+	 * @return string The vendor.
 	 */
-	public function getDatabasesList()
+	public function getVendor()
 	{
-		$query  = ($this->opts['dbtype'] === 'mysql' ? 'SHOW DATABASES' : 'SELECT datname AS Database FROM pg_database');
-		$result = $this->pdo->query($query);
-		return $result->fetchAll(\PDO::FETCH_ASSOC);
+		return $this->vendor;
+	}
+
+	/**
+	 * Accessor for DB::$version field.
+	 *
+	 * @return string The version.
+	 */
+	public function getVersion()
+	{
+		return $this->version;
 	}
 
 	/**
