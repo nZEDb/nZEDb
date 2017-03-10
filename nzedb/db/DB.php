@@ -1252,6 +1252,68 @@ class DB extends \PDO
 	}
 
 	/**
+	 * Connect to database
+	 *
+	 * @param array $options
+	 *
+	 * @return bool
+	 * @throws \ErrorException
+	 */
+	protected function connect(array $options)
+	{
+		if (!empty($options['dbsock'])) {
+			$dsn = $this->system . ':unix_socket=' . $options['dbsock'];
+		} else {
+			$dsn = $this->system . ':host=' . $options['dbhost'];
+			if (!empty($options['dbport'])) {
+				$dsn .= ';port=' . $options['dbport'];
+			}
+		}
+		$dsn .= ';charset=utf8';
+
+		$this->dsn = $dsn;
+
+		$connectionOptions = [
+			\PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
+			\PDO::ATTR_TIMEOUT            => 180,
+			\PDO::ATTR_PERSISTENT         => $options['persist'],
+			\PDO::MYSQL_ATTR_LOCAL_INFILE => true
+		];
+
+		// removed try/catch to let the instantiating code handle the problem (Install for
+		// instance can output a message that connecting failed.
+		$this->pdo = new \PDO($dsn, $options['dbuser'], $options['dbpass'], $connectionOptions);
+
+		// For backwards compatibility, no need for a patch.
+		// This forces field names to always be lower-cased and returned rows to be associative
+		// arrays not numerical
+		$this->pdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_LOWER);
+		$this->pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+
+		// In case PDO is not set to produce exceptions (PHP's default behaviour).
+		if ($this->pdo === false) {
+			$message = "Unable to create connection to the Database!";
+			$this->echoError(
+				$message,
+				'connect',
+				1,
+				true
+			);
+			throw new \ErrorException($message, 1);
+		}
+
+		$this->host		= $options['dbhost'];
+		$this->name		= $options['dbname'];
+		$this->password	= $options['dbpass'];
+		$this->persist	= $options['persist'];
+		$this->port		= $options['dbport'];
+		$this->socket	= $options['dbsock'];
+		$this->user		= $options['dbuser'];
+
+		return true;
+	}
+
+	/**
 	 * Echo error, optionally exit.
 	 *
 	 * @param string $error    The error message.
@@ -1448,70 +1510,36 @@ class DB extends \PDO
 	/**
 	 * Initialise the database. NOTE this does not include the tables it just creates the database.
 	 */
-	private function initialiseDatabase()
+	private function initialiseDatabase(array $options)
 	{
-
-		if (!empty($this->opts['dbsock'])) {
-			$dsn = $this->dbSystem . ':unix_socket=' . $this->opts['dbsock'];
-		} else {
-			$dsn = $this->dbSystem . ':host=' . $this->opts['dbhost'];
-			if (!empty($this->opts['dbport'])) {
-				$dsn .= ';port=' . $this->opts['dbport'];
-			}
-		}
-		$dsn .= ';charset=utf8';
-
-		$options = [
-			\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-			\PDO::ATTR_TIMEOUT => 180,
-			\PDO::ATTR_PERSISTENT => $this->opts['persist'],
-			\PDO::MYSQL_ATTR_LOCAL_INFILE => true
-		];
-
-		$this->dsn = $dsn;
-		// removed try/catch to let the instantiating code handle the problem (Install for
-		// instance can output a message that connecting failed.
-		$this->pdo = new \PDO($dsn, $this->opts['dbuser'], $this->opts['dbpass'], $options);
-
-		if ($this->opts['dbname'] != '') {
-			if ($this->opts['createDb']) {
-				$found = self::checkDbExists();
+		if ($options['dbname'] != '') {
+			if ($options['createDb']) {
+				$found = self::checkDbExists($options['dbname']);
 				if ($found) {
 					try {
-						$this->pdo->query("DROP DATABASE " . $this->opts['dbname']);
+						$this->pdo->query("DROP DATABASE " . $options['dbname']);
 					} catch (\Exception $e) {
-						throw new \RuntimeException("Error trying to drop your old database: '{$this->opts['dbname']}'", 2);
+						throw new \RuntimeException("Error trying to drop your old database: '{$options['dbname']}'",
+							2);
 					}
-					$found = self::checkDbExists();
+					$found = self::checkDbExists($options['dbname']);
 				}
 
 				if ($found) {
-					var_dump(self::getDatabasesList());
-					throw new \RuntimeException("Could not drop your old database: '{$this->opts['dbname']}'", 2);
+					//var_dump(self::getTableList());
+					throw new \RuntimeException("Could not drop your old database: '{$options['dbname']}'",
+						2);
 				} else {
-					$this->pdo->query("CREATE DATABASE `{$this->opts['dbname']}`  DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
+					$this->pdo->query("CREATE DATABASE `{$options['dbname']}`  DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
 
-					if (!self::checkDbExists()) {
-						throw new \RuntimeException("Could not create new database: '{$this->opts['dbname']}'", 3);
+					if (!self::checkDbExists($options['dbname'])) {
+						throw new \RuntimeException("Could not create new database: '{$options['dbname']}'",
+							3);
 					}
 				}
 			}
-			$this->pdo->query("USE {$this->opts['dbname']}");
+			$this->pdo->query("USE {$options['dbname']}");
 		}
-
-		// In case PDO is not set to produce exceptions (PHP's default behaviour).
-		if ($this->pdo === false) {
-			$this->echoError(
-				 "Unable to create connection to the Database!",
-				 'initialiseDatabase',
-				 1,
-				 true
-			);
-		}
-
-		// For backwards compatibility, no need for a patch.
-		$this->pdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_LOWER);
-		$this->pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 	}
 
 	/**
