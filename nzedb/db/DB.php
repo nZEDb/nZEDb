@@ -1321,6 +1321,31 @@ class DB extends \PDO
 		}
 	}
 
+	private function fetchServerInfo()
+	{
+		$info = [];
+		$result = $this->queryOneRow("SELECT VERSION() as version");
+
+		if ($result === null) {
+			throw new \RuntimeException("Could not fetch database server info!", 5);
+		} else {
+			$result = explode('-', $result['version']);
+			$info['vendor'] = count($result) > 1 ? strtolower($result[1]) : 'mysql';
+			$info['version'] = $result[0];
+
+			switch ($info['vendor']) {
+				case 'mariadb':
+				case 'mysql':
+				case 'percona':
+					break;
+				default:
+					$info['vendor'] = 'mysql';
+			}
+		}
+
+		return $info;
+	}
+
 	/**
 	 * Checks if the query is empty. Cleans the query of whitespace if needed.
 	 *
