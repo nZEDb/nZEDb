@@ -129,7 +129,7 @@ class DB extends \PDO
 			'createDb'		=> false, // create dbname if it does not exist?
 			'ct'			=> new ConsoleTools(),
 			'dbhost'		=> defined('DB_HOST') ? DB_HOST : '',
-			'dbname'		=> defined('DB_NAME') ? DB_NAME : '',
+			'dbname'		=> defined('DB_NAME') ? DB_NAME : '', // '' means it is a Sphinx connection
 			'dbpass'		=> defined('DB_PASSWORD') ? DB_PASSWORD : '',
 			'dbport'		=> defined('DB_PORT') ? DB_PORT : '',
 			'dbsock'		=> defined('DB_SOCKET') ? DB_SOCKET : '',
@@ -1191,7 +1191,8 @@ class DB extends \PDO
 	 */
 	public function validateVendorVersion()
 	{
-		if (!$this->isVendorVersionValid()) {
+		// 'name' == '' means it is a Sphinx connection.
+		if ($this->opts['name'] != '' && !$this->isVendorVersionValid()) {
 			switch (strtolower($this->vendor)) {
 				case 'mariadb':
 					$minVersion = self::MINIMUM_VERSION_MARIADB;
