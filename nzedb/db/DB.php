@@ -334,7 +334,7 @@ class DB extends \PDO
 	 *
 	 * @return bool
 	 */
-	public function Commit()
+	public function commit()
 	{
 		if (nZEDb_USE_SQL_TRANSACTIONS) {
 			return $this->pdo->commit();
