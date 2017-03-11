@@ -28,10 +28,12 @@ class SphinxSearch
 			}
 			$this->sphinxQL = new DB(
 				[
-					'dbname' => '',
-					'dbport' => nZEDb_SPHINXQL_PORT,
-					'dbhost' => nZEDb_SPHINXQL_HOST_NAME,
-					'dbsock' => nZEDb_SPHINXQL_SOCK_FILE
+					'checkVersion'	=> false,
+					'dbname'		=> '',
+					'dbport'		=> nZEDb_SPHINXQL_PORT,
+					'dbhost'		=> nZEDb_SPHINXQL_HOST_NAME,
+					'dbsock'		=> nZEDb_SPHINXQL_SOCK_FILE,
+					'dbtype'		=> 'sphinx'
 				]
 			);
 		}

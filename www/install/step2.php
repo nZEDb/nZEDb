@@ -116,10 +116,37 @@ if ($page->isPostBack()) {
 				case 5:
 					$cfg->error    = true;
 					$cfg->emessage = $e->getMessage();
-					trigger_error($e->getMessage(), E_USER_ERROR);
+					trigger_error($e->getMessage(), E_USER_WARNING);
 					break;
 				default:
+					var_dump($e);
 					throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
+			}
+		}
+
+		// Check if the MySQL version is correct.
+		$goodVersion = false;
+		if (!$cfg->error) {
+			try {
+				$goodVersion = $pdo->isVendorVersionValid();
+			} catch (\PDOException $e) {
+				$goodVersion   = false;
+				$cfg->error    = true;
+				$cfg->emessage = 'Could not get version from SQL server.';
+			}
+
+			if ($goodVersion === false) {
+				$cfg->error = true;
+				$vendor = $pdo->getVendor();
+				switch (strtolower($vendor)) {
+					case 'mariadb':
+						$version = DB::MINIMUM_VERSION_MARIADB;
+						break;
+					default:
+						$version = DB::MINIMUM_VERSION_MYSQL;
+				}
+				$cfg->emessage = 'You are using an unsupported version of the ' . $vendor .
+					' server, the minimum allowed version is ' . $version;
 			}
 		}
 	}

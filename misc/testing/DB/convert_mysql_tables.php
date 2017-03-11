@@ -45,7 +45,11 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
-		if ($tbl !== 'release_search_data' && $tbl !== 'bookinfo' && $tbl !== 'consoleinfo' && $tbl !== 'musicinfo') {
+		if ($tbl !== 'release_search_data' &&
+			$tbl !== 'bookinfo' &&
+			$tbl !== 'consoleinfo' &&
+			$tbl !== 'musicinfo'
+		) {
 			printf($cli->header("Converting $tbl"));
 			$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 		}
@@ -62,7 +66,12 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
-		if ($tbl !== 'release_nfos' && $tbl !== 'release_search_data' && $tbl !== 'bookinfo' && $tbl !== 'consoleinfo' && $tbl !== 'musicinfo') {
+		if ($tbl !== 'release_nfos' &&
+			$tbl !== 'release_search_data' &&
+			$tbl !== 'bookinfo' &&
+			$tbl !== 'consoleinfo' &&
+			$tbl !== 'musicinfo'
+		) {
 			printf($cli->header("Converting $tbl"));
 			$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 		}
@@ -86,7 +95,13 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
-		if ($tbl !== 'release_nfos' && $tbl !== 'release_search_data' && $tbl !== 'bookinfo' && $tbl !== 'consoleinfo' && $tbl !== 'musicinfo' && !preg_match('/parts/', $tbl)) {
+		if ($tbl !== 'release_nfos' &&
+			$tbl !== 'release_search_data' &&
+			$tbl !== 'bookinfo' &&
+			$tbl !== 'consoleinfo' &&
+			$tbl !== 'musicinfo' &&
+			!preg_match('/parts/', $tbl)
+		) {
 			printf($cli->header("Converting $tbl"));
 			$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 		}
@@ -113,7 +128,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 	}
 } else if (isset($argv[1]) && $argv[1] == "collections") {
-	$arr = array("parts", "binaries", "collections");
+	$arr = ["parts", "binaries", "collections"];
 	foreach ($arr as $row) {
 		$tbl = $row;
 		printf($cli->header("Converting $tbl"));

@@ -1,4 +1,9 @@
 <?php
+if (!file_exists(nZEDb_CONFIGS . 'install.lock')) {
+	header('Location: install');
+	exit();
+}
+
 require_once 'smarty.php';
 
 use app\models\Settings;
