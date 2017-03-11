@@ -74,9 +74,9 @@ class DB extends \PDO
 	private $dbSystem;
 
 	/**
-	 * @var string Version of the Db server.
+	 * @var string The Db server info.
 	 */
-	private $dbVersion;
+	private $dbInfo;
 
 	/**
 	 * @var object Class instance debugging.
@@ -107,11 +107,6 @@ class DB extends \PDO
 	 * @var Database name to use.
 	 */
 	private $name = null;
-
-	/**
-	 * @var array    Options passed into the constructor or defaulted.
-	 */
-	private $opts;
 
 	/**
 	 * @var string password to use for connection to database server.
@@ -502,9 +497,9 @@ class DB extends \PDO
 	 *
 	 * @return string
 	 */
-	public function getDbVersion()
+	public function getDbInfo()
 	{
-		return $this->dbVersion;
+		return $this->dbInfo;
 	}
 
 	/**
@@ -571,21 +566,6 @@ class DB extends \PDO
 	public function getVersion()
 	{
 		return $this->version;
-	}
-
-	/**
-	 * @param string $requiredVersion The minimum version to compare against
-	 *
-	 * @return bool|null       TRUE if Db version is greater than or eaqual to $requiredVersion,
-	 * false if not, and null if the version isn't available to check against.
-	 */
-	public function isDbVersionAtLeast($requiredVersion)
-	{
-		if (empty($this->dbVersion)) {
-			return null;
-		}
-
-		return version_compare($requiredVersion, $this->dbVersion, '<=');
 	}
 
 	/**
@@ -1504,20 +1484,6 @@ class DB extends \PDO
 		return $error;
 	}
 
-
-
-	/**
-	 * Performs the fetch from the Db server and stores the resulting Major.Minor.Version number.
-	 */
-	private function fetchDbVersion()
-	{
-		$result = $this->queryOneRow("SELECT VERSION() AS version");
-		if (!empty($result)) {
-			$dummy = explode('-', $result['version'], 2);
-			$this->dbVersion = $dummy[0];
-		}
-	}
-
 	/**
 	 * Fetch information from the server returned by the SQL VERSION() function. This is parsed
 	 * into an array for returning.
@@ -1532,6 +1498,7 @@ class DB extends \PDO
 		if ($result === null) {
 			throw new \RuntimeException("Could not fetch database server info!", 5);
 		} else {
+			$this->dbInfo = $result['version'];
 			$result = explode('-', $result['version']);
 			$info['vendor'] = count($result) > 1 ? strtolower($result[1]) : 'mysql';
 			$info['version'] = $result[0];
