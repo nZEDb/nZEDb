@@ -104,7 +104,7 @@ if ($page->isPostBack()) {
 			);
 			$cfg->dbConnCheck = true;
 		} catch (\PDOException $e) {
-			$cfg->emessage = 'Unable to connect to the SQL server.';
+			$cfg->emessage = 'Unable to connect to the SQL server.\n' . $e->getMessage();
 			$cfg->error = true;
 			$cfg->dbConnCheck = false;
 		} catch (\RuntimeException $e) {
