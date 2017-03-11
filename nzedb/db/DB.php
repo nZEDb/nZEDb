@@ -413,10 +413,10 @@ class DB extends \PDO
 		} catch (\PDOException $e) {
 
 			// Check if we lost connection to MySQL.
-			if ($this->_checkGoneAway($e->getMessage()) !== false) {
+			if ($this->checkGoneAway($e->getMessage()) !== false) {
 
 				// Reconnect to MySQL.
-				if ($this->_reconnect() === true) {
+				if ($this->reconnect() === true) {
 
 					// If we reconnected, retry the query.
 					return $this->exec($query, $silent);
@@ -731,7 +731,7 @@ class DB extends \PDO
 			return (bool)$this->pdo->query('SELECT 1+1');
 		} catch (\PDOException $e) {
 			if ($restart == true) {
-				$this->initialiseDatabase();
+				$this->connect();
 			}
 
 			return false;
@@ -943,10 +943,10 @@ class DB extends \PDO
 		} catch (\PDOException $e) {
 
 			// Check if we lost connection to MySQL.
-			if ($this->_checkGoneAway($e->getMessage()) !== false) {
+			if ($this->checkGoneAway($e->getMessage()) !== false) {
 
 				// Reconnect to MySQL.
-				if ($this->_reconnect() === true) {
+				if ($this->reconnect() === true) {
 
 					// If we reconnected, retry the query.
 					$result = $this->queryDirect($query);
@@ -1262,15 +1262,11 @@ class DB extends \PDO
 	 *
 	 * @param string $errorMessage
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
-	protected function _checkGoneAway($errorMessage)
+	protected function checkGoneAway($errorMessage)
 	{
-		if (stripos($errorMessage, 'MySQL server has gone away') !== false) {
-			return true;
-		}
-
-		return false;
+		return (stripos($errorMessage, 'MySQL server has gone away') !== false);
 	}
 
 	/**
@@ -1393,10 +1389,10 @@ class DB extends \PDO
 				return ['deadlock' => true, 'message' => $e->getMessage()];
 			} // Check if we lost connection to MySQL.
 			else {
-				if ($this->_checkGoneAway($e->getMessage()) !== false) {
+				if ($this->checkGoneAway($e->getMessage()) !== false) {
 
 					// Reconnect to MySQL.
-					if ($this->_reconnect() === true) {
+					if ($this->reconnect() === true) {
 
 						// If we reconnected, retry the query.
 						return $this->queryExecHelper($query, $insert);
@@ -1411,20 +1407,14 @@ class DB extends \PDO
 	/**
 	 * Reconnect to MySQL when the connection has been lost.
 	 *
-	 * @see ping(), _checkGoneAway() for checking the connection.
+	 * @see ping(), checkGoneAway() for checking the connection.
 	 * @return bool
 	 */
-	protected function _reconnect()
+	protected function reconnect()
 	{
-		$this->initialiseDatabase();
+		$this->connect();
 
-		// Check if we are really connected to MySQL.
-		if ($this->ping() === false) {
-			// If we are not reconnected, return false.
-			return false;
-		}
-
-		return true;
+		return $this->ping();
 	}
 
 	/**

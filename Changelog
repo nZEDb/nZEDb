@@ -14,6 +14,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		minimum version checking dependant on the vendor of MySQL variant. Relevant options are
 		stored in individual fields, instead of storing the whole options array, after a
 		successful connection.
+		 Thanks to b3s3rk for finding and fixing the issue with Sphinx and to crapz for
+		helping debug.
 	Fix Redirect from index page to Install when 'install.lock' does not exist.
 2017-03-08 niel
 	Mrg: dev-refactor-tpg, which removes conditional checking for TPG as it is no longer optional.
