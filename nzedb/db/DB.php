@@ -99,6 +99,11 @@ class DB extends \PDO
 	private $dsn;
 
 	/**
+	 * @var string server's host to connect to.
+	 */
+	private $host;
+
+	/**
 	 * @var Database name to use.
 	 */
 	private $name = null;
@@ -107,6 +112,31 @@ class DB extends \PDO
 	 * @var array    Options passed into the constructor or defaulted.
 	 */
 	private $opts;
+
+	/**
+	 * @var string password to use for connection to database server.
+	 */
+	private $password;
+
+	/**
+	 * @var boolean Whether the connection to the database server dhould be persistent.
+	 */
+	private $persist = false;
+
+	/**
+	 * @var string Port to use when connecting to the database server.
+	 */
+	private $port;
+
+	/**
+	 * @var string Unix socket to use when connecting to the database server.
+	 */
+	private $socket;
+
+	/**
+	 * @var string Username to use when connecting to the database server.
+	 */
+	private $user;
 
 	/**
 	 * @var array List of valid DBMS systems (mysql, postgres, etc.).
@@ -163,7 +193,7 @@ class DB extends \PDO
 
 		$this->connect($options);
 
-		if ($this->opts['checkVersion']) {
+		if ($options['checkVersion']) {
 			$this->validateVendorVersion();
 		}
 
@@ -266,7 +296,7 @@ class DB extends \PDO
 	public function checkDbExists($name = null)
 	{
 		if (empty($name)) {
-			$name = $this->opts['dbname'];
+			$name = $this->name;
 		}
 
 		$found  = false;
@@ -460,7 +490,7 @@ class DB extends \PDO
 	 */
 	public function getDatabasesList()
 	{
-		$query = ($this->opts['dbtype'] === 'mysql' ? 'SHOW DATABASES' :
+		$query = ($this->dbSystem === 'mysql' ? 'SHOW DATABASES' :
 			'SELECT datname AS database FROM pg_database');
 		$result = $this->pdo->query($query);
 
@@ -580,14 +610,14 @@ class DB extends \PDO
 	public function isLocalDb()
 	{
 		$local = false;
-		if (!empty($this->opts['dbsock']) || $this->opts['dbhost'] == 'localhost') {
+		if (!empty($this->socket) || $this->host == 'localhost') {
 			$local = true;
 		} else {
 			preg_match_all('/inet' . '6?' . ' addr: ?([^ ]+)/', `ifconfig`, $ips);
 
 			// Check for dotted quad - if exists compare against local IP number(s)
-			if (preg_match('#^\d+\.\d+\.\d+\.\d+$#', $this->opts['dbhost'])) {
-				if (in_array($this->opts['dbhost'], $ips[1])) {
+			if (preg_match('#^\d+\.\d+\.\d+\.\d+$#', $this->host)) {
+				if (in_array($this->host, $ips[1])) {
 					$local = true;
 				}
 			}
@@ -1231,7 +1261,7 @@ class DB extends \PDO
 	public function validateVendorVersion()
 	{
 		// 'name' == '' means it is a Sphinx connection.
-		if ($this->opts['dbname'] != '' && !$this->isVendorVersionValid()) {
+		if ($this->name != '' && !$this->isVendorVersionValid()) {
 			switch (strtolower($this->vendor)) {
 				case 'mariadb':
 					$minVersion = self::MINIMUM_VERSION_MARIADB;
