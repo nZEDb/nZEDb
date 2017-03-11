@@ -84,16 +84,6 @@ class DB extends \PDO
 	private $debugging;
 
 	/**
-	 * @var string MySQL LOW_PRIORITY DELETE option.
-	 */
-	private $DELETE_LOW_PRIORITY = '';
-
-	/**
-	 * @var string MYSQL QUICK DELETE option.
-	 */
-	private $DELETE_QUICK = '';
-
-	/**
 	 * @var string	Stored copy of the dsn used to connect.
 	 */
 	private $dsn;
@@ -127,6 +117,16 @@ class DB extends \PDO
 	 * @var string Unix socket to use when connecting to the database server.
 	 */
 	private $socket;
+
+	/**
+	 * @var string MySQL LOW_PRIORITY DELETE option.
+	 */
+	private $sqlDeleteLowPriority = '';
+
+	/**
+	 * @var string MYSQL QUICK DELETE option.
+	 */
+	private $sqlDeleteQuick = '';
 
 	/**
 	 * @var string Username to use when connecting to the database server.
@@ -221,11 +221,11 @@ class DB extends \PDO
 		}
 
 		if (defined('nZEDb_SQL_DELETE_LOW_PRIORITY') && nZEDb_SQL_DELETE_LOW_PRIORITY) {
-			$this->DELETE_LOW_PRIORITY = ' LOW_PRIORITY ';
+			$this->sqlDeleteLowPriority = ' LOW_PRIORITY ';
 		}
 
 		if (defined('nZEDb_SQL_DELETE_QUICK') && nZEDb_SQL_DELETE_QUICK) {
-			$this->DELETE_QUICK = ' QUICK ';
+			$this->sqlDeleteQuick = ' QUICK ';
 		}
 
 		return $this->pdo;
@@ -914,8 +914,8 @@ class DB extends \PDO
 		if (preg_match('#(.*?[^a-z0-9]|^)DELETE\s+(.+?)$#is', $query, $matches)) {
 			$query = $matches[1] .
 				'DELETE ' .
-				$this->DELETE_LOW_PRIORITY .
-				$this->DELETE_QUICK .
+				$this->sqlDeleteLowPriority .
+				$this->sqlDeleteQuick .
 				$matches[2];
 		}
 
