@@ -9,6 +9,9 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-03-11 niel
+	Chg: Refactored DB class. This cleans it up and streamlines the constructor as well as adding
+		minimum version checking dependant on the vendor of MySQL variant.
 2017-03-08 niel
 	Mrg: dev-refactor-tpg, which removes conditional checking for TPG as it is no longer optional.
 2017-03-06 niel

@@ -915,6 +915,8 @@ class DB extends \PDO
 	/**
 	 * Query without returning an empty array like our function query(). http://php.net/manual/en/pdo.query.php
 	 *
+	 * Uses the parentquery
+	 *
 	 * @param string $query  The query to run.
 	 * @param bool   $ignore Ignore errors, do not log them?
 	 *
@@ -1272,9 +1274,9 @@ class DB extends \PDO
 	protected function connect(array $options)
 	{
 		if (!empty($options['dbsock'])) {
-			$dsn = $this->system . ':unix_socket=' . $options['dbsock'];
+			$dsn = $this->dbSystem . ':unix_socket=' . $options['dbsock'];
 		} else {
-			$dsn = $this->system . ':host=' . $options['dbhost'];
+			$dsn = $this->dbSystem . ':host=' . $options['dbhost'];
 			if (!empty($options['dbport'])) {
 				$dsn .= ';port=' . $options['dbport'];
 			}
