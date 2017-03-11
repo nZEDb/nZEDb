@@ -149,6 +149,9 @@ class AEBN
 	{
 		if ($ret = $this->_html->find("div#md-boxCover, img[itemprop=thumbnailUrl]", 1)) {
 			$ret = trim($ret->src);
+			if (strpos($ret, '//') === 0) {
+				$ret = 'http:' . $ret;
+			}
 			$this->_res['boxcover'] = str_ireplace("160w.jpg", "xlf.jpg", $ret);
 			$this->_res['backcover'] = str_ireplace("160w.jpg", "xlb.jpg", $ret);
 		}
@@ -320,8 +323,9 @@ class AEBN
 		if (is_array($this->genres())) {
 			$results = array_merge($results, $this->genres());
 		}
-		if (is_array($this->covers())) {
-			$results = array_merge($results, $this->covers());
+		$covers = $this->covers();
+		if (is_array($covers)) {
+			$results = array_merge($results, $covers);
 		}
 		if (is_array($this->trailers())) {
 			$results = array_merge($results, $this->trailers());
