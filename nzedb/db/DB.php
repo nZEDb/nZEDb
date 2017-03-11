@@ -272,7 +272,7 @@ class DB extends \PDO
 		$found  = false;
 		$tables = self::getDatabasesList();
 		foreach ($tables as $table) {
-			if ($table['Database'] == $name) {
+			if ($table['database'] == $name) {
 				$found = true;
 				break;
 			}
@@ -461,7 +461,7 @@ class DB extends \PDO
 	public function getDatabasesList()
 	{
 		$query = ($this->opts['dbtype'] === 'mysql' ? 'SHOW DATABASES' :
-			'SELECT datname AS Database FROM pg_database');
+			'SELECT datname AS database FROM pg_database');
 		$result = $this->pdo->query($query);
 
 		return $result->fetchAll(\PDO::FETCH_ASSOC);
