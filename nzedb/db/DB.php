@@ -192,12 +192,12 @@ class DB extends \PDO
 			$this->validateVendorVersion();
 		}
 
-		if ($options['createDb']) {
-			// Note this only ensures the database exists, not the tables.
-			$this->initialiseDatabase($options);
-		}
-
 		if (!empty($options['dbname'])) {
+			if ($options['createDb']) {
+			// Note this only ensures the database exists, not the tables.
+				$this->initialiseDatabase($options);
+			}
+
 			$this->pdo->query("USE {$options['dbname']}");
 		}
 
@@ -1512,34 +1512,38 @@ class DB extends \PDO
 
 	/**
 	 * Initialise the database. NOTE this does not include the tables it just creates the database.
+	 *
+	 * @param string $name	The name of the database.
+	 *
+	 * @throws \RuntimeException
 	 */
-	private function initialiseDatabase(array $options)
+	private function initialiseDatabase($name)
 	{
-		if ($options['dbname'] != '') {
-			if ($options['createDb']) {
-				$found = self::checkDbExists($options['dbname']);
-				if ($found) {
-					try {
-						$this->pdo->query("DROP DATABASE " . $options['dbname']);
-					} catch (\Exception $e) {
-						throw new \RuntimeException("Error trying to drop your old database: '{$options['dbname']}'",
-							2);
-					}
-					$found = self::checkDbExists($options['dbname']);
-				}
+		if (empty($name)) {
+			throw new \RuntimeException("No database name passed to " . __METHOD__, 1);
+		}
+		$name = $this->escapeString($name);
+		$found = self::checkDbExists($name);
+		if ($found) {
+			try {
+				$this->pdo->query("DROP DATABASE " . $name);
+			} catch (\Exception $e) {
+				throw new \RuntimeException("Error trying to drop your old database: '{$name}'",
+					2);
+			}
+			$found = self::checkDbExists($name);
+		}
 
-				if ($found) {
-					//var_dump(self::getTableList());
-					throw new \RuntimeException("Could not drop your old database: '{$options['dbname']}'",
-						2);
-				} else {
-					$this->pdo->query("CREATE DATABASE `{$options['dbname']}`  DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
+		if ($found) {
+			//var_dump(self::getTableList());
+			throw new \RuntimeException("Could not drop your old database: '{$name}'",
+				2);
+		} else {
+			$this->pdo->query("CREATE DATABASE `{$name}`  DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
 
-					if (!self::checkDbExists($options['dbname'])) {
-						throw new \RuntimeException("Could not create new database: '{$options['dbname']}'",
-							3);
-					}
-				}
+			if (!self::checkDbExists($name)) {
+				throw new \RuntimeException("Could not create new database: '{$name}'",
+					3);
 			}
 		}
 	}
