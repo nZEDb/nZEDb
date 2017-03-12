@@ -735,7 +735,18 @@ class DB extends \PDO
 			return (bool)$this->pdo->query('SELECT 1+1');
 		} catch (\PDOException $e) {
 			if ($restart == true) {
-				$this->connect();
+				$this->connect([
+					'checkVersion' => false,
+					'createDb'     => false,
+					'dbhost'       => $this->host,
+					'dbname'       => $this->name, // '' means it is a Sphinx connection
+					'dbpass'       => $this->password,
+					'dbport'       => $this->port,
+					'dbsock'       => $this->socket,
+					'dbtype'       => $this->dbSystem,
+					'dbuser'       => $this->user,
+					'persist'      => $this->persist,
+				]);
 			}
 
 			return false;
