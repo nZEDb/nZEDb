@@ -46,6 +46,7 @@ before_script:
   # Create mysql user.
   - mysql -u root -e "GRANT ALL ON nzedb.* TO 'nzedb'@'localhost' IDENTIFIED BY 'nzedb';"
   - mysql -u root -e "GRANT FILE ON *.* TO 'nzedb'@'localhost';"
+  - mysql -u root -e "GRANT SUPER ON *.* TO 'nzedb'@'localhost';"
   # Disable apparmor.
   - if service apparmor status; then service apparmor stop; update-rc.d -f apparmor remove; service apparmor teardown; fi
   # Change MySQL settings.
