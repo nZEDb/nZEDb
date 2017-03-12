@@ -1017,7 +1017,7 @@ class Binaries
 				);
 			}
 			if (((strlen($partsQuery) === strlen($partsCheck)) ? true : $this->_pdo->queryExec(rtrim($partsQuery, ',')))) {
-				$this->_pdo->Commit();
+				$this->_pdo->commit();
 			} else {
 				if ($this->addToPartRepair) {
 					$this->headersNotInserted += $this->headersReceived;

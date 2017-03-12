@@ -74,9 +74,9 @@ class DB extends \PDO
 	private $dbSystem;
 
 	/**
-	 * @var string Version of the Db server.
+	 * @var string The Db server info.
 	 */
-	private $dbVersion;
+	private $dbInfo;
 
 	/**
 	 * @var object Class instance debugging.
@@ -84,19 +84,14 @@ class DB extends \PDO
 	private $debugging;
 
 	/**
-	 * @var string MySQL LOW_PRIORITY DELETE option.
-	 */
-	private $DELETE_LOW_PRIORITY = '';
-
-	/**
-	 * @var string MYSQL QUICK DELETE option.
-	 */
-	private $DELETE_QUICK = '';
-
-	/**
 	 * @var string	Stored copy of the dsn used to connect.
 	 */
 	private $dsn;
+
+	/**
+	 * @var string server's host to connect to.
+	 */
+	private $host;
 
 	/**
 	 * @var Database name to use.
@@ -104,9 +99,39 @@ class DB extends \PDO
 	private $name = null;
 
 	/**
-	 * @var array    Options passed into the constructor or defaulted.
+	 * @var string password to use for connection to database server.
 	 */
-	private $opts;
+	private $password;
+
+	/**
+	 * @var boolean Whether the connection to the database server dhould be persistent.
+	 */
+	private $persist = false;
+
+	/**
+	 * @var string Port to use when connecting to the database server.
+	 */
+	private $port;
+
+	/**
+	 * @var string Unix socket to use when connecting to the database server.
+	 */
+	private $socket;
+
+	/**
+	 * @var string MySQL LOW_PRIORITY DELETE option.
+	 */
+	private $sqlDeleteLowPriority = '';
+
+	/**
+	 * @var string MYSQL QUICK DELETE option.
+	 */
+	private $sqlDeleteQuick = '';
+
+	/**
+	 * @var string Username to use when connecting to the database server.
+	 */
+	private $user;
 
 	/**
 	 * @var array List of valid DBMS systems (mysql, postgres, etc.).
@@ -163,13 +188,17 @@ class DB extends \PDO
 
 		$this->connect($options);
 
-		if ($this->opts['checkVersion']) {
+		if ($options['checkVersion']) {
 			$this->validateVendorVersion();
 		}
 
-		if ($options['createDb']) {
+		if (!empty($options['dbname'])) {
+			if ($options['createDb']) {
 			// Note this only ensures the database exists, not the tables.
-			$this->initialiseDatabase($options);
+				$this->initialiseDatabase($options);
+			}
+
+			$this->pdo->query("USE {$options['dbname']}");
 		}
 
 		$this->consoleTools =& $options['ct'];
@@ -196,11 +225,11 @@ class DB extends \PDO
 		}
 
 		if (defined('nZEDb_SQL_DELETE_LOW_PRIORITY') && nZEDb_SQL_DELETE_LOW_PRIORITY) {
-			$this->DELETE_LOW_PRIORITY = ' LOW_PRIORITY ';
+			$this->sqlDeleteLowPriority = ' LOW_PRIORITY ';
 		}
 
 		if (defined('nZEDb_SQL_DELETE_QUICK') && nZEDb_SQL_DELETE_QUICK) {
-			$this->DELETE_QUICK = ' QUICK ';
+			$this->sqlDeleteQuick = ' QUICK ';
 		}
 
 		return $this->pdo;
@@ -266,7 +295,7 @@ class DB extends \PDO
 	public function checkDbExists($name = null)
 	{
 		if (empty($name)) {
-			$name = $this->opts['dbname'];
+			$name = $this->name;
 		}
 
 		$found  = false;
@@ -309,7 +338,7 @@ class DB extends \PDO
 	 *
 	 * @return bool
 	 */
-	public function Commit()
+	public function commit()
 	{
 		if (nZEDb_USE_SQL_TRANSACTIONS) {
 			return $this->pdo->commit();
@@ -388,10 +417,10 @@ class DB extends \PDO
 		} catch (\PDOException $e) {
 
 			// Check if we lost connection to MySQL.
-			if ($this->_checkGoneAway($e->getMessage()) !== false) {
+			if ($this->checkGoneAway($e->getMessage()) !== false) {
 
 				// Reconnect to MySQL.
-				if ($this->_reconnect() === true) {
+				if ($this->reconnect() === true) {
 
 					// If we reconnected, retry the query.
 					return $this->exec($query, $silent);
@@ -460,7 +489,7 @@ class DB extends \PDO
 	 */
 	public function getDatabasesList()
 	{
-		$query = ($this->opts['dbtype'] === 'mysql' ? 'SHOW DATABASES' :
+		$query = ($this->dbSystem === 'mysql' ? 'SHOW DATABASES' :
 			'SELECT datname AS database FROM pg_database');
 		$result = $this->pdo->query($query);
 
@@ -472,9 +501,9 @@ class DB extends \PDO
 	 *
 	 * @return string
 	 */
-	public function getDbVersion()
+	public function getDbInfo()
 	{
-		return $this->dbVersion;
+		return $this->dbInfo;
 	}
 
 	/**
@@ -544,21 +573,6 @@ class DB extends \PDO
 	}
 
 	/**
-	 * @param string $requiredVersion The minimum version to compare against
-	 *
-	 * @return bool|null       TRUE if Db version is greater than or eaqual to $requiredVersion,
-	 * false if not, and null if the version isn't available to check against.
-	 */
-	public function isDbVersionAtLeast($requiredVersion)
-	{
-		if (empty($this->dbVersion)) {
-			return null;
-		}
-
-		return version_compare($requiredVersion, $this->dbVersion, '<=');
-	}
-
-	/**
 	 * Verify if pdo var is instance of PDO class.
 	 *
 	 * @return bool
@@ -580,14 +594,14 @@ class DB extends \PDO
 	public function isLocalDb()
 	{
 		$local = false;
-		if (!empty($this->opts['dbsock']) || $this->opts['dbhost'] == 'localhost') {
+		if (!empty($this->socket) || $this->host == 'localhost') {
 			$local = true;
 		} else {
 			preg_match_all('/inet' . '6?' . ' addr: ?([^ ]+)/', `ifconfig`, $ips);
 
 			// Check for dotted quad - if exists compare against local IP number(s)
-			if (preg_match('#^\d+\.\d+\.\d+\.\d+$#', $this->opts['dbhost'])) {
-				if (in_array($this->opts['dbhost'], $ips[1])) {
+			if (preg_match('#^\d+\.\d+\.\d+\.\d+$#', $this->host)) {
+				if (in_array($this->host, $ips[1])) {
 					$local = true;
 				}
 			}
@@ -721,7 +735,7 @@ class DB extends \PDO
 			return (bool)$this->pdo->query('SELECT 1+1');
 		} catch (\PDOException $e) {
 			if ($restart == true) {
-				$this->initialiseDatabase();
+				$this->connect();
 			}
 
 			return false;
@@ -904,8 +918,8 @@ class DB extends \PDO
 		if (preg_match('#(.*?[^a-z0-9]|^)DELETE\s+(.+?)$#is', $query, $matches)) {
 			$query = $matches[1] .
 				'DELETE ' .
-				$this->DELETE_LOW_PRIORITY .
-				$this->DELETE_QUICK .
+				$this->sqlDeleteLowPriority .
+				$this->sqlDeleteQuick .
 				$matches[2];
 		}
 
@@ -933,10 +947,10 @@ class DB extends \PDO
 		} catch (\PDOException $e) {
 
 			// Check if we lost connection to MySQL.
-			if ($this->_checkGoneAway($e->getMessage()) !== false) {
+			if ($this->checkGoneAway($e->getMessage()) !== false) {
 
 				// Reconnect to MySQL.
-				if ($this->_reconnect() === true) {
+				if ($this->reconnect() === true) {
 
 					// If we reconnected, retry the query.
 					$result = $this->queryDirect($query);
@@ -1231,7 +1245,7 @@ class DB extends \PDO
 	public function validateVendorVersion()
 	{
 		// 'name' == '' means it is a Sphinx connection.
-		if ($this->opts['dbname'] != '' && !$this->isVendorVersionValid()) {
+		if ($this->name != '' && !$this->isVendorVersionValid()) {
 			switch (strtolower($this->vendor)) {
 				case 'mariadb':
 					$minVersion = self::MINIMUM_VERSION_MARIADB;
@@ -1252,15 +1266,11 @@ class DB extends \PDO
 	 *
 	 * @param string $errorMessage
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
-	protected function _checkGoneAway($errorMessage)
+	protected function checkGoneAway($errorMessage)
 	{
-		if (stripos($errorMessage, 'MySQL server has gone away') !== false) {
-			return true;
-		}
-
-		return false;
+		return (stripos($errorMessage, 'MySQL server has gone away') !== false);
 	}
 
 	/**
@@ -1383,10 +1393,10 @@ class DB extends \PDO
 				return ['deadlock' => true, 'message' => $e->getMessage()];
 			} // Check if we lost connection to MySQL.
 			else {
-				if ($this->_checkGoneAway($e->getMessage()) !== false) {
+				if ($this->checkGoneAway($e->getMessage()) !== false) {
 
 					// Reconnect to MySQL.
-					if ($this->_reconnect() === true) {
+					if ($this->reconnect() === true) {
 
 						// If we reconnected, retry the query.
 						return $this->queryExecHelper($query, $insert);
@@ -1401,20 +1411,14 @@ class DB extends \PDO
 	/**
 	 * Reconnect to MySQL when the connection has been lost.
 	 *
-	 * @see ping(), _checkGoneAway() for checking the connection.
+	 * @see ping(), checkGoneAway() for checking the connection.
 	 * @return bool
 	 */
-	protected function _reconnect()
+	protected function reconnect()
 	{
-		$this->initialiseDatabase();
+		$this->connect();
 
-		// Check if we are really connected to MySQL.
-		if ($this->ping() === false) {
-			// If we are not reconnected, return false.
-			return false;
-		}
-
-		return true;
+		return $this->ping();
 	}
 
 	/**
@@ -1474,20 +1478,6 @@ class DB extends \PDO
 		return $error;
 	}
 
-
-
-	/**
-	 * Performs the fetch from the Db server and stores the resulting Major.Minor.Version number.
-	 */
-	private function fetchDbVersion()
-	{
-		$result = $this->queryOneRow("SELECT VERSION() AS version");
-		if (!empty($result)) {
-			$dummy = explode('-', $result['version'], 2);
-			$this->dbVersion = $dummy[0];
-		}
-	}
-
 	/**
 	 * Fetch information from the server returned by the SQL VERSION() function. This is parsed
 	 * into an array for returning.
@@ -1502,6 +1492,7 @@ class DB extends \PDO
 		if ($result === null) {
 			throw new \RuntimeException("Could not fetch database server info!", 5);
 		} else {
+			$this->dbInfo = $result['version'];
 			$result = explode('-', $result['version']);
 			$info['vendor'] = count($result) > 1 ? strtolower($result[1]) : 'mysql';
 			$info['version'] = $result[0];
@@ -1521,36 +1512,39 @@ class DB extends \PDO
 
 	/**
 	 * Initialise the database. NOTE this does not include the tables it just creates the database.
+	 *
+	 * @param string $name	The name of the database.
+	 *
+	 * @throws \RuntimeException
 	 */
-	private function initialiseDatabase(array $options)
+	private function initialiseDatabase($name)
 	{
-		if ($options['dbname'] != '') {
-			if ($options['createDb']) {
-				$found = self::checkDbExists($options['dbname']);
-				if ($found) {
-					try {
-						$this->pdo->query("DROP DATABASE " . $options['dbname']);
-					} catch (\Exception $e) {
-						throw new \RuntimeException("Error trying to drop your old database: '{$options['dbname']}'",
-							2);
-					}
-					$found = self::checkDbExists($options['dbname']);
-				}
-
-				if ($found) {
-					//var_dump(self::getTableList());
-					throw new \RuntimeException("Could not drop your old database: '{$options['dbname']}'",
-						2);
-				} else {
-					$this->pdo->query("CREATE DATABASE `{$options['dbname']}`  DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
-
-					if (!self::checkDbExists($options['dbname'])) {
-						throw new \RuntimeException("Could not create new database: '{$options['dbname']}'",
-							3);
-					}
-				}
+		if (empty($name)) {
+			throw new \RuntimeException("No database name passed to " . __METHOD__, 1);
+		}
+		$name = $this->escapeString($name);
+		$found = self::checkDbExists($name);
+		if ($found) {
+			try {
+				$this->pdo->query("DROP DATABASE " . $name);
+			} catch (\Exception $e) {
+				throw new \RuntimeException("Error trying to drop your old database: '{$name}'",
+					2);
 			}
-			$this->pdo->query("USE {$options['dbname']}");
+			$found = self::checkDbExists($name);
+		}
+
+		if ($found) {
+			//var_dump(self::getTableList());
+			throw new \RuntimeException("Could not drop your old database: '{$name}'",
+				2);
+		} else {
+			$this->pdo->query("CREATE DATABASE `{$name}`  DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
+
+			if (!self::checkDbExists($name)) {
+				throw new \RuntimeException("Could not create new database: '{$name}'",
+					3);
+			}
 		}
 	}
 
