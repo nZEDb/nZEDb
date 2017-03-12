@@ -3,6 +3,7 @@ namespace nzedb;
 
 use app\models\Settings;
 use nzedb\db\DB;
+use nzedb\processing\ProcessReleasesMultiGroup;
 
 /**
  * Class Binaries
@@ -119,13 +120,6 @@ class Binaries
 	protected $_showDroppedYEncParts;
 
 	/**
-	 * Should we use table per group?
-	 *
-	 * @var bool
-	 */
-	protected $_tablePerGroup;
-
-	/**
 	 * Echo to cli?
 	 *
 	 * @var bool
@@ -150,6 +144,96 @@ class Binaries
 	protected $_binaryBlacklistIdsToUpdate = array();
 
 	/**
+	 * @var float microseconds time of cleaning process start
+	 */
+	protected $startCleaning;
+
+	/**
+	 * @var float microseconds time of the start of the scan function
+	 */
+	protected $startLoop;
+
+	/**
+	 * @var bool Is this retrieved header a multigroup one?
+	 */
+	protected $multiGroup;
+
+	/**
+	 * @var string How long it took in seconds to download headers
+	 */
+	protected $timeHeaders;
+
+	/**
+	 * @var string How long it took in seconds to clean/parse headers
+	 */
+	protected $timeCleaning;
+
+	/**
+	 * @var float microseconds time part repair was started
+	 */
+	protected $startPR;
+
+	/**
+	 * @var array The CBP/MGR tables names
+	 */
+	protected $tableNames;
+
+	/**
+	 * @var float microseconds time header update was started
+	 */
+	protected $startUpdate;
+
+	/**
+	 * @var string The time it took to insert the headers
+	 */
+	protected $timeInsert;
+
+	/**
+	 * @var array the header currently being scanned
+	 */
+	protected $header;
+
+	/**
+	 * @var bool Should we add parts to part repair queue?
+	 */
+	protected $addToPartRepair;
+
+	/**
+	 * @var array Numbers of Headers received from the USP
+	 */
+	protected $headersReceived;
+
+	/**
+	 * @var array The current newsgroup information being updated
+	 */
+	protected $groupMySQL;
+
+	/**
+	 * @var int the last article number in the range
+	 */
+	protected $last;
+
+	/**
+	 * @var int the first article number in the range
+	 */
+	protected $first;
+
+	/**
+	 * @var int How many received headers were not yEnc encoded
+	 */
+	protected $notYEnc;
+
+	/**
+	 * @var int How many received headers were blacklist matched
+	 */
+	protected $headersBlackListed;
+
+	/**
+	 * @var array Header numbers that were not inserted
+	 */
+	protected $headersNotInserted;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array $options Class instances / echo to CLI?
@@ -160,7 +244,7 @@ class Binaries
 			'Echo'                => true,
 			'CollectionsCleaning' => null,
 			'ColorCLI'            => null,
-			'Logger'           => null,
+			'Logger'              => null,
 			'Groups'              => null,
 			'NNTP'                => null,
 			'Settings'            => null,
@@ -199,7 +283,6 @@ class Binaries
 		$this->_partRepairMaxTries = (Settings::value('..partrepairmaxtries') != '' ?
 			(int)Settings::value('..partrepairmaxtries') : 3);
 		$this->_showDroppedYEncParts = (Settings::value('..showdroppedyencparts') == 1 ? true : false);
-		$this->_tablePerGroup = (Settings::value('..tablepergroup') == 1 ? true : false);
 
 		$this->blackList = $this->whiteList = [];
 	}
@@ -520,34 +603,55 @@ class Binaries
 	public function scan($groupMySQL, $first, $last, $type = 'update', $missingParts = null)
 	{
 		// Start time of scan method and of fetching headers.
-		$startLoop = microtime(true);
+		$this->startLoop = microtime(true);
+		$this->groupMySQL = $groupMySQL;
+		$this->last = $last;
+		$this->first = $first;
+
+		$this->notYEnc = $this->headersBlackListed = 0;
 
 		// Check if MySQL tables exist, create if they do not, get their names at the same time.
-		$tableNames = $this->_groups->getCBPTableNames($this->_tablePerGroup, $groupMySQL['id']);
+		$this->tableNames = $this->_groups->getCBPTableNames($this->groupMySQL['id']);
 
-		$returnArray = [];
+		$mgrPosters = $this->getMultiGroupPosters();
+
+		if(!empty($mgrPosters)) {
+			$mgrActive = true;
+			$mgrPosters = array_flip(array_column($mgrPosters, 'poster'));
+		} else {
+			$mgrActive = false;
+		}
+
+		$returnArray = $stdHeaders = $mgrHeaders = [];
 
 		$partRepair = ($type === 'partrepair');
-		$addToPartRepair = ($type === 'update' && $this->_partRepair);
+		$this->addToPartRepair = ($type === 'update' && $this->_partRepair);
 
 		// Download the headers.
 		if ($partRepair === true) {
 			// This is slower but possibly is better with missing headers.
-			$headers = $this->_nntp->getOverview($first . '-' . $last, true, false);
+			$headers = $this->_nntp->getOverview($this->first . '-' . $this->last, true, false);
 		} else {
-			$headers = $this->_nntp->getXOVER($first . '-' . $last);
+			$headers = $this->_nntp->getXOVER($this->first . '-' . $this->last);
 		}
 
 		// If there was an error, try to reconnect.
 		if ($this->_nntp->isError($headers)) {
 
+			if ($this->first == $this->last) {
+				$numberId = '= ' . $this->first;
+			} else {
+				$numberId = 'IN (' . implode(',', range($this->first, $this->last)) . ')';
+			}
+
 			// Increment if part repair and return false.
 			if ($partRepair === true) {
 				$this->_pdo->queryExec(
 					sprintf(
-						'UPDATE missed_parts SET attempts = attempts + 1 WHERE group_id = %d AND numberid %s',
-						$groupMySQL['id'],
-						($first == $last ? '= ' . $first : 'IN (' . implode(',', range($first, $last)) . ')')
+						'UPDATE %s SET attempts = attempts + 1 WHERE groups_id = %d AND numberid %s',
+						$this->tableNames['prname'],
+						$this->groupMySQL['id'],
+						$numberId
 					)
 				);
 				return $returnArray;
@@ -560,15 +664,15 @@ class Binaries
 			}
 
 			// Re-select group, download headers again without compression and re-enable compression.
-			$this->_nntp->selectGroup($groupMySQL['name']);
-			$headers = $this->_nntp->getXOVER($first . '-' . $last);
+			$this->_nntp->selectGroup($this->groupMySQL['name']);
+			$headers = $this->_nntp->getXOVER($this->first . '-' . $this->last);
 			$this->_nntp->enableCompression();
 
 			// Check if the non-compression headers have an error.
 			if ($this->_nntp->isError($headers)) {
 				$message = ($headers->code == 0 ? 'Unknown error' : $headers->message);
 				$this->log(
-					"Code {$headers->code}: $message\nSkipping group: {$groupMySQL['name']}",
+					"Code {$headers->code}: $message\nSkipping group: {$this->groupMySQL['name']}",
 					__FUNCTION__,
 					Logger::LOG_WARNING,
 					'error'
@@ -578,10 +682,10 @@ class Binaries
 		}
 
 		// Start of processing headers.
-		$startCleaning = microtime(true);
+		$this->startCleaning = microtime(true);
 
 		// End of the getting data from usenet.
-		$timeHeaders = number_format($startCleaning - $startLoop, 2);
+		$this->timeHeaders = number_format($this->startCleaning - $this->startLoop, 2);
 
 		// Check if we got headers.
 		$msgCount = count($headers);
@@ -590,45 +694,17 @@ class Binaries
 			return $returnArray;
 		}
 
-		// Get highest and lowest article numbers/dates.
-		$iterator1 = 0;
-		$iterator2 = $msgCount - 1;
-		while (true) {
-			if (!isset($returnArray['firstArticleNumber']) && isset($headers[$iterator1]['Number'])) {
-				$returnArray['firstArticleNumber'] = $headers[$iterator1]['Number'];
-				$returnArray['firstArticleDate'] = $headers[$iterator1]['Date'];
-			}
+		$returnArray = $this->getHighLowArticleInfo($returnArray, $headers, $msgCount);
 
-			if (!isset($returnArray['lastArticleNumber']) && isset($headers[$iterator2]['Number'])) {
-				$returnArray['lastArticleNumber'] = $headers[$iterator2]['Number'];
-				$returnArray['lastArticleDate'] = $headers[$iterator2]['Date'];
-			}
+		$headersRepaired = $rangeNotReceived = $this->headersReceived = $this->headersNotInserted = [];
 
-			// Break if we found non empty articles.
-			if (isset($returnArray['firstArticleNumber']) && isset($returnArray['lastArticleNumber'])) {
-				break;
-			}
-
-			// Break out if we couldn't find anything.
-			if ($iterator1++ >= $msgCount - 1 || $iterator2-- <= 0) {
-				break;
-			}
-		}
-
-		$headersRepaired = $articles = $rangeNotReceived = $collectionIDs = $binariesUpdate = $headersReceived = $headersNotInserted = [];
-		$notYEnc = $headersBlackListed = 0;
-
-		$partsQuery = $partsCheck = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size) VALUES ', $tableNames['pname']);
-
-		$this->_pdo->beginTransaction();
-		// Loop articles, figure out files/parts.
-		foreach ($headers as $header) {
+		foreach ($headers AS $header) {
 
 			// Check if we got the article or not.
 			if (isset($header['Number'])) {
-				$headersReceived[] = $header['Number'];
+				$this->headersReceived[] = $header['Number'];
 			} else {
-				if ($addToPartRepair) {
+				if ($this->addToPartRepair) {
 					$rangeNotReceived[] = $header['Number'];
 				}
 				continue;
@@ -655,125 +731,241 @@ class Binaries
 			 * \((\d+)\/(\d+)\) Gets the part count.
 			 * No ending ($) as there are cases of subjects with extra data after the part count.
 			 */
-			if (preg_match('/^\s*(?!"Usenet Index Post)(.+)\s+\((\d+)\/(\d+)\)/', $header['Subject'], $matches)) {
+			if (preg_match('/^\s*(?!"Usenet Index Post)(.+)\s+\((\d+)\/(\d+)\)/', $header['Subject'], $header['matches'])) {
 				// Add yEnc to subjects that do not have them, but have the part number at the end of the header.
 				if (!stristr($header['Subject'], 'yEnc')) {
-					$matches[1] .= ' yEnc';
+					$header['matches'][1] .= ' yEnc';
 				}
 			} else {
 				if ($this->_showDroppedYEncParts === true && strpos($header['Subject'], '"Usenet Index Post') !== 0) {
 					file_put_contents(
-						nZEDb_LOGS . 'not_yenc' . $groupMySQL['name'] . '.dropped.log',
+						nZEDb_LOGS . 'not_yenc' . $this->groupMySQL['name'] . '.dropped.log',
 						$header['Subject'] . PHP_EOL, FILE_APPEND
 					);
 				}
-				$notYEnc++;
+				$this->notYEnc++;
 				continue;
 			}
 
 			// Filter subject based on black/white list.
-			if ($this->isBlackListed($header, $groupMySQL['name'])) {
-				$headersBlackListed++;
+			if ($this->isBlackListed($header, $this->groupMySQL['name'])) {
+				$this->headersBlackListed++;
 				continue;
 			}
 
 			if (!isset($header['Bytes'])) {
-				$header['Bytes'] = (isset($header[':bytes']) ? $header[':bytes'] : 0);
+				$header['Bytes'] = (isset($this->header[':bytes']) ? $header[':bytes'] : 0);
 			}
 			$header['Bytes'] = (int)$header['Bytes'];
 
+			if($mgrActive === true && array_key_exists($header['From'], $mgrPosters)) {
+				$mgrHeaders[] = $header;
+			} else {
+				$stdHeaders[] = $header;
+			}
+		}
+
+		unset($headers); // Reclaim memory now that headers are split.
+
+		if (!empty($this->_binaryBlacklistIdsToUpdate)) {
+			$this->updateBlacklistUsage();
+		}
+
+		if ($this->_echoCLI && $partRepair === false) {
+			$this->outputHeaderInitial();
+		}
+
+		// MGR headers goes first
+		if (!empty($mgrHeaders)) {
+			$this->tableNames = ProcessReleasesMultiGroup::tableNames();
+			$this->storeHeaders($mgrHeaders, true);
+		}
+		unset($mgrHeaders);
+
+		// Standard headers go second so we can switch tableNames back and do part repair to standard group tables
+		if (isset($stdHeaders) && count($stdHeaders) > 0) {
+			$this->tableNames = $this->_groups->getCBPTableNames($this->groupMySQL['id']);
+			$this->storeHeaders($stdHeaders, false);
+		}
+		unset($stdHeaders);
+
+		// Start of part repair.
+		$this->startPR = microtime(true);
+
+		// End of inserting.
+		$this->timeInsert = number_format($this->startPR - $this->startUpdate, 2);
+
+		if ($partRepair && count($headersRepaired) > 0) {
+			$this->removeRepairedParts($headersRepaired, $this->tableNames['prname'], $this->groupMySQL['id']);
+		}
+		unset($headersRepaired);
+
+		if ($this->addToPartRepair) {
+
+			$notInsertedCount = count($this->headersNotInserted);
+			if ($notInsertedCount > 0) {
+				$this->addMissingParts($this->headersNotInserted, $this->tableNames['prname'], $this->groupMySQL['id']);
+
+				$this->log(
+					$notInsertedCount . ' articles failed to insert!',
+					__FUNCTION__,
+					Logger::LOG_WARNING,
+					'warning'
+				);
+			}
+			unset($this->headersNotInserted);
+
+			// Check if we have any missing headers.
+			if (($this->last - $this->first - $this->notYEnc - $this->headersBlackListed + 1) > count($this->headersReceived)) {
+				$rangeNotReceived = array_merge($rangeNotReceived, array_diff(range($this->first, $this->last), $this->headersReceived));
+			}
+			$notReceivedCount = count($rangeNotReceived);
+			if ($notReceivedCount > 0) {
+				$this->addMissingParts($rangeNotReceived, $this->tableNames['prname'], $this->groupMySQL['id']);
+
+				if ($this->_echoCLI) {
+					$this->_colorCLI->doEcho(
+						$this->_colorCLI->alternate(
+							'Server did not return ' . $notReceivedCount .
+							' articles from ' . $this->groupMySQL['name'] . '.'
+						), true
+					);
+				}
+			}
+			unset($rangeNotReceived);
+		}
+
+		$this->outputHeaderDuration();
+		return $returnArray;
+	}
+
+	/**
+	 * Parse headers into collections/binaries and store header data as parts
+	 *
+	 * @param array $headers The retrieved headers
+	 * @param bool  $multiGroup Is this task being run in MGR mode?
+	 */
+	protected function storeHeaders(array $headers, $multiGroup)
+	{
+		$this->multiGroup = $multiGroup;
+		$binariesUpdate = $collectionIDs = $articles = [];
+
+		$this->_pdo->beginTransaction();
+
+		$partsQuery = $partsCheck =
+			"INSERT IGNORE INTO {$this->tableNames['pname']} (binaries_id, number, messageid, partnumber, size) VALUES ";
+
+		// Loop articles, figure out files/parts.
+		foreach ($headers as $this->header)
+		{
 			// Set up the info for inserting into parts/binaries/collections tables.
-			if (!isset($articles[$matches[1]])) {
+			if (!isset($articles[$this->header['matches'][1]])) {
 
 				// check whether file count should be ignored (XXX packs for now only).
 				$whitelistMatch = false;
-				if ($this->_ignoreFileCount($groupMySQL['name'], $matches[1])) {
+				if ($this->_ignoreFileCount($this->groupMySQL['name'], $this->header['matches'][1])) {
 					$whitelistMatch = true;
 					$fileCount[1] = $fileCount[3] = 0;
 				}
 
 				// Attempt to find the file count. If it is not found, set it to 0.
-				if (!$whitelistMatch && !preg_match('/[[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[])\s$:]/i', $matches[1], $fileCount)) {
+				if (!$whitelistMatch && !preg_match('/[[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[])\s$:]/i', $this->header['matches'][1], $fileCount)) {
 					$fileCount[1] = $fileCount[3] = 0;
-
 					if ($this->_showDroppedYEncParts === true) {
 						file_put_contents(
-							nZEDb_LOGS . 'no_files' . $groupMySQL['name'] . '.log',
-							$header['Subject'] . PHP_EOL, FILE_APPEND
+							nZEDb_LOGS . 'no_files' . $this->groupMySQL['name'] . '.log',
+							$this->header['Subject'] . PHP_EOL, FILE_APPEND
 						);
 					}
 				}
 
-				// Used to group articles together when forming the release/nzb.
-				$header['CollectionKey'] = (
-					$this->_collectionsCleaning->collectionsCleaner($matches[1], $groupMySQL['name']) .
-					$header['From'] .
-					$groupMySQL['id'] .
-					$fileCount[3]
+				if ($this->multiGroup) {
+					$ckName = '';
+					$ckId = '';
+				} else {
+					$ckName = $this->groupMySQL['name'];
+					$ckId = $this->groupMySQL['id'];
+				}
+
+				$collMatch = $this->_collectionsCleaning->collectionsCleaner(
+					$this->header['matches'][1],
+					$ckName
 				);
 
+				// Used to group articles together when forming the release.  MGR requires this to be group irrespective
+				$this->header['CollectionKey'] = $collMatch['name'] . $this->header['From'] . $ckId . $fileCount[3];
 
-				if (!isset($collectionIDs[$header['CollectionKey']])) {
+				// If this header's collection key isn't in memory, attempt to insert the collection
+				if (!isset($collectionIDs[$this->header['CollectionKey']])) {
 
 					/* Date from header should be a string this format:
 					 * 31 Mar 2014 15:36:04 GMT or 6 Oct 1998 04:38:40 -0500
 					 * Still make sure it's not unix time, convert it to unix time if it is.
 					 */
-					$header['Date'] = (is_numeric($header['Date']) ? $header['Date'] : strtotime($header['Date']));
+					$this->header['Date'] = (is_numeric($this->header['Date']) ? $this->header['Date'] : strtotime($this->header['Date']));
 
 					// Get the current unixtime from PHP.
 					$now = time();
 
+					$xref = ($this->multiGroup === true ? sprintf('xref = CONCAT(xref, "\\n"%s ),', $this->_pdo->escapeString(substr($this->header['Xref'], 2, 255))) : '');
+					$date = $this->header['Date'] > $now ? $now : $this->header['Date'];
+					$unixtime = is_numeric($this->header['Date']) ? $date : $now;
+
 					$collectionID = $this->_pdo->queryInsert(
 						sprintf("
-							INSERT INTO %s (subject, fromname, date, xref, group_id,
-								totalfiles, collectionhash, dateadded)
-							VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %d, '%s', NOW())
-							ON DUPLICATE KEY UPDATE dateadded = NOW(), noise = '%s'",
-							$tableNames['cname'],
-							$this->_pdo->escapeString(substr(utf8_encode($matches[1]), 0, 255)),
-							$this->_pdo->escapeString(utf8_encode($header['From'])),
-							(is_numeric($header['Date']) ? ($header['Date'] > $now ? $now : $header['Date']) : $now),
-							$this->_pdo->escapeString(substr($header['Xref'], 0, 255)),
-							$groupMySQL['id'],
+							INSERT INTO %s (subject, fromname, date, xref, groups_id,
+								totalfiles, collectionhash, collection_regexes_id, dateadded)
+							VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %d, '%s', %d, NOW())
+							ON DUPLICATE KEY UPDATE %s dateadded = NOW(), noise = '%s'",
+							$this->tableNames['cname'],
+							$this->_pdo->escapeString(substr(utf8_encode($this->header['matches'][1]), 0, 255)),
+							$this->_pdo->escapeString(utf8_encode($this->header['From'])),
+							$unixtime,
+							$this->_pdo->escapeString(substr($this->header['Xref'], 0, 255)),
+							$this->groupMySQL['id'],
 							$fileCount[3],
-							sha1($header['CollectionKey']),
+							sha1($this->header['CollectionKey']),
+							$collMatch['id'],
+							$xref,
 							bin2hex(openssl_random_pseudo_bytes(16))
 						)
 					);
 
 					if ($collectionID === false) {
-						if ($addToPartRepair) {
-							$headersNotInserted[] = $header['Number'];
+						if ($this->addToPartRepair) {
+							$this->headersNotInserted[] = $this->header['Number'];
 						}
 						$this->_pdo->Rollback();
 						$this->_pdo->beginTransaction();
 						continue;
 					}
-					$collectionIDs[$header['CollectionKey']] = $collectionID;
+					$collectionIDs[$this->header['CollectionKey']] = $collectionID;
 				} else {
-					$collectionID = $collectionIDs[$header['CollectionKey']];
+					$collectionID = $collectionIDs[$this->header['CollectionKey']];
 				}
+
+				// MGR or Standard, Binary Hash should be unique to the group
+				$hash = md5($this->header['matches'][1] . $this->header['From'] . $this->groupMySQL['id']);
 
 				$binaryID = $this->_pdo->queryInsert(
 					sprintf("
-						INSERT INTO %s (binaryhash, name, collection_id, totalparts, currentparts, filenumber, partsize)
+						INSERT INTO %s (binaryhash, name, collections_id, totalparts, currentparts, filenumber, partsize)
 						VALUES (UNHEX('%s'), %s, %d, %d, 1, %d, %d)
 						ON DUPLICATE KEY UPDATE currentparts = currentparts + 1, partsize = partsize + %d",
-						$tableNames['bname'],
-						md5($matches[1] . $header['From'] . $groupMySQL['id']),
-						$this->_pdo->escapeString(utf8_encode($matches[1])),
+						$this->tableNames['bname'],
+						$hash,
+						$this->_pdo->escapeString(utf8_encode($this->header['matches'][1])),
 						$collectionID,
-						$matches[3],
+						$this->header['matches'][3],
 						$fileCount[1],
-						$header['Bytes'],
-						$header['Bytes']
+						$this->header['Bytes'],
+						$this->header['Bytes']
 					)
 				);
 
 				if ($binaryID === false) {
-					if ($addToPartRepair) {
-						$headersNotInserted[] = $header['Number'];
+					if ($this->addToPartRepair) {
+						$this->headersNotInserted[] = $this->header['Number'];
 					}
 					$this->_pdo->Rollback();
 					$this->_pdo->beginTransaction();
@@ -783,33 +975,31 @@ class Binaries
 				$binariesUpdate[$binaryID]['Size'] = 0;
 				$binariesUpdate[$binaryID]['Parts'] = 0;
 
-				$articles[$matches[1]]['CollectionID'] = $collectionID;
-				$articles[$matches[1]]['BinaryID'] = $binaryID;
+				$articles[$this->header['matches'][1]]['CollectionID'] = $collectionID;
+				$articles[$this->header['matches'][1]]['BinaryID'] = $binaryID;
 
 			} else {
-				$binaryID = $articles[$matches[1]]['BinaryID'];
-				$collectionID = $articles[$matches[1]]['CollectionID'];
-				$binariesUpdate[$binaryID]['Size'] += $header['Bytes'];
+				$binaryID = $articles[$this->header['matches'][1]]['BinaryID'];
+				$binariesUpdate[$binaryID]['Size'] += $this->header['Bytes'];
 				$binariesUpdate[$binaryID]['Parts']++;
 			}
 
 			// Strip the < and >, saves space in DB.
-			$header['Message-ID'][0] = "'";
+			$this->header['Message-ID'][0] = "'";
 
 			$partsQuery .=
-				'(' . $binaryID . ',' . $header['Number'] . ',' . rtrim($header['Message-ID'], '>') . "'," .
-				$matches[2] . ',' . $header['Bytes'] . '),';
-
+				'(' . $binaryID . ',' . $this->header['Number'] . ',' . rtrim($this->header['Message-ID'], '>') . "'," .
+				$this->header['matches'][2] . ',' . $this->header['Bytes'] . '),';
 		}
+
 		unset($headers); // Reclaim memory.
 
 		// Start of inserting into SQL.
-		$startUpdate = microtime(true);
+		$this->startUpdate = microtime(true);
 
 		// End of processing headers.
-		$timeCleaning = number_format($startUpdate - $startCleaning, 2);
-
-		$binariesQuery = $binariesCheck = sprintf('INSERT INTO %s (id, partsize, currentparts) VALUES ', $tableNames['bname']);
+		$this->timeCleaning = number_format($this->startUpdate - $this->startCleaning, 2);
+		$binariesQuery = $binariesCheck = sprintf('INSERT INTO %s (id, partsize, currentparts) VALUES ', $this->tableNames['bname']);
 		foreach ($binariesUpdate as $binaryID => $binary) {
 			$binariesQuery .= '(' . $binaryID . ',' . $binary['Size'] . ',' . $binary['Parts'] . '),';
 		}
@@ -821,105 +1011,111 @@ class Binaries
 			if ($this->_debug) {
 				$this->_colorCLI->doEcho(
 					$this->_colorCLI->debug(
-						'Sending ' . round(strlen($partsQuery) / 1024, 2) . ' KB of parts to MySQL'
+						'Sending ' . round(strlen($partsQuery) / 1024, 2) .
+						' KB of' . ($this->multiGroup ? ' MGR' : '') . ' parts to MySQL'
 					)
 				);
 			}
-
 			if (((strlen($partsQuery) === strlen($partsCheck)) ? true : $this->_pdo->queryExec(rtrim($partsQuery, ',')))) {
-				$this->_pdo->Commit();
+				$this->_pdo->commit();
 			} else {
-				if ($addToPartRepair) {
-					$headersNotInserted += $headersReceived;
+				if ($this->addToPartRepair) {
+					$this->headersNotInserted += $this->headersReceived;
 				}
 				$this->_pdo->Rollback();
 			}
 		} else {
-			if ($addToPartRepair) {
-				$headersNotInserted += $headersReceived;
+			if ($this->addToPartRepair) {
+				$this->headersNotInserted += $this->headersReceived;
 			}
 			$this->_pdo->Rollback();
 		}
+	}
 
-		if ($this->_echoCLI && $partRepair === false) {
-			$this->_colorCLI->doEcho(
-				$this->_colorCLI->primary(
-					'Received ' . count($headersReceived) .
-					' articles of ' . (number_format($last - $first + 1)) . ' requested, ' .
-					$headersBlackListed . ' blacklisted, ' . $notYEnc . ' not yEnc.'
-				)
-			);
-		}
-
-		if (!empty($this->_binaryBlacklistIdsToUpdate)) {
-			$this->_pdo->queryExec(
-				sprintf('UPDATE binaryblacklist SET last_activity = NOW() WHERE id IN (%s)',
-					implode(',', $this->_binaryBlacklistIdsToUpdate)
-				)
-			);
-			$this->_binaryBlacklistIdsToUpdate = [];
-		}
-
-		// Start of part repair.
-		$startPR = microtime(true);
-
-		// End of inserting.
-		$timeInsert = number_format($startPR - $startUpdate, 2);
-
-		if ($partRepair && count($headersRepaired) > 0) {
-			$this->removeRepairedParts($headersRepaired, $tableNames['prname'], $groupMySQL['id']);
-		}
-
-		if ($addToPartRepair) {
-
-			$notInsertedCount = count($headersNotInserted);
-			if ($notInsertedCount > 0) {
-				$this->addMissingParts($headersNotInserted, $tableNames['prname'], $groupMySQL['id']);
-
-				$this->log(
-					$notInsertedCount . ' articles failed to insert!',
-					__FUNCTION__,
-					Logger::LOG_WARNING,
-					'warning'
-				);
+	/**
+	 * Gets the First and Last Article Number and Date for the received headers
+	 *
+	 * @param array $returnArray
+	 * @param array $headers
+	 * @param int   $msgCount
+	 */
+	protected function getHighLowArticleInfo(array $returnArray, array $headers, $msgCount)
+	{
+		// Get highest and lowest article numbers/dates.
+		$iterator1 = 0;
+		$iterator2 = $msgCount - 1;
+		while (true) {
+			if (!isset($returnArray['firstArticleNumber']) && isset($headers[$iterator1]['Number'])) {
+				$returnArray['firstArticleNumber'] = $headers[$iterator1]['Number'];
+				$returnArray['firstArticleDate'] = $headers[$iterator1]['Date'];
 			}
 
-			// Check if we have any missing headers.
-			if (($last - $first - $notYEnc - $headersBlackListed + 1) > count($headersReceived)) {
-				$rangeNotReceived = array_merge($rangeNotReceived, array_diff(range($first, $last), $headersReceived));
+			if (!isset($returnArray['lastArticleNumber']) && isset($headers[$iterator2]['Number'])) {
+				$returnArray['lastArticleNumber'] = $headers[$iterator2]['Number'];
+				$returnArray['lastArticleDate'] = $headers[$iterator2]['Date'];
 			}
-			$notReceivedCount = count($rangeNotReceived);
 
-			if ($notReceivedCount > 0) {
-				$this->addMissingParts($rangeNotReceived, $tableNames['prname'], $groupMySQL['id']);
+			// Break if we found non empty articles.
+			if (isset($returnArray['firstArticleNumber']) && isset($returnArray['lastArticleNumber'])) {
+				break;
+			}
 
-				if ($this->_echoCLI) {
-					$this->_colorCLI->doEcho(
-						$this->_colorCLI->alternate(
-							'Server did not return ' . $notReceivedCount .
-							' articles from ' . $groupMySQL['name'] . '.'
-						), true
-					);
-				}
+			// Break out if we couldn't find anything.
+			if ($iterator1++ >= $msgCount - 1 || $iterator2-- <= 0) {
+				break;
 			}
 		}
 
+		return $returnArray;
+	}
+
+	/**
+	 * Updates Blacklist Regex Timers in DB to reflect last usage
+	 */
+	protected function updateBlacklistUsage()
+	{
+		$this->_pdo->queryExec(
+			sprintf('UPDATE binaryblacklist SET last_activity = NOW() WHERE id IN (%s)',
+				implode(',', $this->_binaryBlacklistIdsToUpdate)
+			)
+		);
+		$this->_binaryBlacklistIdsToUpdate = [];
+	}
+
+	/**
+	 * Outputs the initial header scan results after yEnc check and blacklist routines
+	 */
+	protected function outputHeaderInitial()
+	{
+		$this->_colorCLI->doEcho(
+			$this->_colorCLI->primary(
+				'Received ' . count($this->headersReceived) .
+				' articles of ' . (number_format($this->last - $this->first + 1)) . ' requested, ' .
+				$this->headersBlackListed . ' blacklisted, ' . $this->notYEnc . ' not yEnc.'
+			)
+		);
+	}
+
+	/**
+	 * Outputs speed metrics of the scan function to CLI
+	 */
+	protected function outputHeaderDuration()
+	{
 		$currentMicroTime = microtime(true);
 		if ($this->_echoCLI) {
 			$this->_colorCLI->doEcho(
-				$this->_colorCLI->alternateOver($timeHeaders . 's') .
+				$this->_colorCLI->alternateOver($this->timeHeaders . 's') .
 				$this->_colorCLI->primaryOver(' to download articles, ') .
-				$this->_colorCLI->alternateOver($timeCleaning . 's') .
+				$this->_colorCLI->alternateOver($this->timeCleaning . 's') .
 				$this->_colorCLI->primaryOver(' to process collections, ') .
-				$this->_colorCLI->alternateOver($timeInsert . 's') .
+				$this->_colorCLI->alternateOver($this->timeInsert . 's') .
 				$this->_colorCLI->primaryOver(' to insert binaries/parts, ') .
-				$this->_colorCLI->alternateOver(number_format($currentMicroTime - $startPR, 2) . 's') .
+				$this->_colorCLI->alternateOver(number_format($currentMicroTime - $this->startPR, 2) . 's') .
 				$this->_colorCLI->primaryOver(' for part repair, ') .
-				$this->_colorCLI->alternateOver(number_format($currentMicroTime - $startLoop, 2) . 's') .
+				$this->_colorCLI->alternateOver(number_format($currentMicroTime - $this->startLoop, 2) . 's') .
 				$this->_colorCLI->primary(' total.')
 			);
 		}
-		return $returnArray;
 	}
 
 	/**
@@ -952,12 +1148,12 @@ class Binaries
 	 */
 	public function partRepair($groupArr)
 	{
-		$tableNames = $this->_groups->getCBPTableNames($this->_tablePerGroup, $groupArr['id']);
+		$tableNames = $this->_groups->getCBPTableNames($groupArr['id']);
 		// Get all parts in partrepair table.
 		$missingParts = $this->_pdo->query(
 			sprintf('
 				SELECT * FROM %s
-				WHERE group_id = %d AND attempts < %d
+				WHERE groups_id = %d AND attempts < %d
 				ORDER BY numberid ASC LIMIT %d',
 				$tableNames['prname'],
 				$groupArr['id'],
@@ -1024,7 +1220,7 @@ class Binaries
 				sprintf('
 					SELECT COUNT(id) AS num
 					FROM %s
-					WHERE group_id = %d
+					WHERE groups_id = %d
 					AND numberid <= %d',
 					$tableNames['prname'],
 					$groupArr['id'],
@@ -1043,7 +1239,7 @@ class Binaries
 					sprintf('
 						UPDATE %s
 						SET attempts = attempts + 1
-						WHERE group_id = %d
+						WHERE groups_id = %d
 						AND numberid <= %d',
 						$tableNames['prname'],
 						$groupArr['id'],
@@ -1066,7 +1262,7 @@ class Binaries
 		// Remove articles that we cant fetch after x attempts.
 		$this->_pdo->queryExec(
 			sprintf(
-				'DELETE FROM %s WHERE attempts >= %d AND group_id = %d',
+				'DELETE FROM %s WHERE attempts >= %d AND groups_id = %d',
 				$tableNames['prname'],
 				$this->_partRepairMaxTries,
 				$groupArr['id']
@@ -1088,7 +1284,7 @@ class Binaries
 		$groupID = $this->_groups->getIDByName($groupData['group']);
 		$group = [];
 		if ($groupID !== '') {
-			$group = $this->_groups->getCBPTableNames($this->_tablePerGroup, $groupID);
+			$group = $this->_groups->getCBPTableNames($groupID);
 		}
 
 		$currentPost = $post;
@@ -1102,15 +1298,14 @@ class Binaries
 					sprintf('
 						SELECT c.date AS date
 						FROM %s c
-						INNER JOIN %s b ON(c.id=b.collection_id)
-						INNER JOIN %s p ON(b.id=p.binaryid)
+						INNER JOIN %s b ON(c.id=b.collections_id)
+						INNER JOIN %s p ON(b.id=p.binaries_id)
 						WHERE p.number = %s
-						%s LIMIT 1',
+						LIMIT 1',
 						$group['cname'],
 						$group['bname'],
 						$group['pname'],
-						$currentPost,
-						$this->_tablePerGroup === false ? sprintf('AND c.group_id = %d', $groupID) : ''
+						$currentPost
 					)
 				);
 				if ($local !== false) {
@@ -1300,7 +1495,7 @@ class Binaries
 	 */
 	private function addMissingParts($numbers, $tableName, $groupID)
 	{
-		$insertStr = 'INSERT INTO ' . $tableName . ' (numberid, group_id) VALUES ';
+		$insertStr = 'INSERT INTO ' . $tableName . ' (numberid, groups_id) VALUES ';
 		foreach ($numbers as $number) {
 			$insertStr .= '(' . $number . ',' . $groupID . '),';
 		}
@@ -1316,13 +1511,13 @@ class Binaries
 	 *
 	 * @return void
 	 */
-	private function removeRepairedParts($numbers, $tableName, $groupID)
+	private function removeRepairedParts(array $numbers, $tableName, $groupID)
 	{
 		$sql = 'DELETE FROM ' . $tableName . ' WHERE numberid in (';
 		foreach ($numbers as $number) {
 			$sql .= $number . ',';
 		}
-		$this->_pdo->queryExec((rtrim($sql, ',') . ') AND group_id = ' . $groupID));
+		$this->_pdo->queryExec((rtrim($sql, ',') . ') AND groups_id = ' . $groupID));
 	}
 
 	/**
@@ -1544,7 +1739,7 @@ class Binaries
 	 */
 	public function purgeGroup($groupID)
 	{
-		$this->_pdo->queryExec(sprintf('DELETE c FROM collections c WHERE c.group_id = %d', $groupID));
+		$this->_pdo->queryExec(sprintf('DELETE c FROM collections c WHERE c.groups_id = %d', $groupID));
 	}
 
 	/**
@@ -1588,5 +1783,20 @@ class Binaries
 				break;
 		}
 		return $ignore;
+	}
+
+	/**
+	 * Returns all multigroup poster entries from the database
+	 *
+	 * @return array
+	 */
+	protected function getMultiGroupPosters()
+	{
+		return $this->_pdo->query("
+			SELECT poster
+			FROM multigroup_posters",
+			true,
+			nZEDb_CACHE_EXPIRY_SHORT
+		);
 	}
 }

@@ -138,7 +138,7 @@ class ReleaseSearch
 					$word = trim($word, "-\n\t\r\0\x0B ");
 					if ($wordCount == 0 && (strpos($word, '^') === 0)) {
 						$return .= sprintf(' AND r.%s %s', $columnName, $this->pdo->likeString(substr($word, 1), false));
-					} else if (substr($word, 0, 2) == '--') {
+					} else if (strpos($word, '--') === 0) {
 						$return .= sprintf(' AND r.%s NOT %s', $columnName, $this->pdo->likeString(substr($word, 2)));
 					} else {
 						$return .= sprintf(' AND r.%s %s', $columnName, $this->pdo->likeString($word));

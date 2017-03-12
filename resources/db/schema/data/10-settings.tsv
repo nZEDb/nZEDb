@@ -80,7 +80,7 @@ section,subsection,name,value,hint,setting
 		registerstatus	0	The status of registrations to the site.	registerstatus
 		releasecompletion	95	The minimum completion % to keep a release. Set to 0 to disable.	releasecompletion
 		releaseretentiondays	0	!!THIS IS NOT HEADER RETENTION!! The number of days releases will be retained for use throughout site. Set to 0 to disable.	releaseretentiondays
-		releasesthreads	1	The number of threads for update_releases. This is only for tablepergroup.	releasesthreads
+		releasesthreads	1	The number of threads for update_releases.	releasesthreads
 		replacenzbs	0	NZBs that are crossposted, instead of deleting, replace with the nzb grabbed.(This is not necessary, was added before I understood how crossposted nzbs work).	replacenzbs
 		reqidthreads	1	The number of threads for local request id processing.	reqidthreads
 		request_hours	1	The maximum hours after a release is added to recheck for a Request ID match.	request_hours
@@ -93,7 +93,7 @@ section,subsection,name,value,hint,setting
 		showpasswordedrelease	10	Whether to show passworded or potentially passworded releases in browse, search, api and rss feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected. (*yes): Unprocessed releases are hidden. (*no): Unprocessed releases are displayed.	showpasswordedrelease
 		sqlpatch	0		sqlpatch
 		storeuserips	0	Whether to store the users ip address when they signup or login.	storeuserips
-		tablepergroup	0	This uses separate tables for collections, binaries and parts for each group.<br />This requires you to run convert_to_tpg.php or reset_truncate.php.<br />This requires that you also run releases_threaded.py.<br />Run: show variables like '%open%f	tablepergroup
+		tablepergroup	1	This uses separate tables for collections, binaries and parts for each group.<br />This requires you to run convert_to_tpg.php or reset_truncate.php.<br />This requires that you also run releases_threaded.py.<br />Run: show variables like '%open%f	tablepergroup
 		timeoutseconds	0	How much time to wait for unrar/7zip/mediainfo/ffmpeg/avconv before killing it, set to 0 to disable. 60 is a good value. Requires the GNU Timeout path to be set.	timeoutseconds
 		tmpunrarpath		The path to where unrar puts files. WARNING: This directory will have its contents deleted.<br/>Use forward slashes in windows c:/temp/path/stuff/will/be/unpacked/to	tmpunrarpath
 	release	minfilestoformrelease	1	The minimum number of files to make a release. i.e. if set to two, then releases which only contain one file will not be created.	minfilestoformrelease
@@ -148,6 +148,7 @@ site	main	dereferrer_link		Optional URL to prepend to external links	dereferrer_
 site	main	email		Shown in the contact us page, and where the contact html form is sent to.	email
 site	main	footer	Usenet binary indexer.	Displayed in the footer section of every public page.	footer
 site	main	home_link	/	The relative path to a the landing page shown when a user logs in, or clicks the home link.	home_link
+site	main	incognito	0	Determines whether a vistor that has not logged, in sees the default page or is redirected to the login page immediately. Default behaviour is to show the page.	site.main.incognito
 site	main	logfile	/var/www/nZEDb/resources/logs/failed-login.log	Location of log file (MUST be set if logging to file is set).	logfile
 site	main	loggingopt	0	Where you would like to log failed logins to the site.	loggingopt
 site	main	menuposition	2	Where the menu should appear. Moving the menu to the top will require using a theme which widens the content panel. (not currently functional)	menuposition

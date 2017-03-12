@@ -23,6 +23,7 @@ notifications:
 php:
   - '5.6'
   - '7.0'
+  - '7.1'
 
 addons:
   mariadb: '10.0'
@@ -78,15 +79,15 @@ before_script:
   - sed -i "s?NZEDBPATH=\".*\"?NZEDBPATH=\"$(pwd)\"?" test_nzedb_installer.sh
   - sed -i 's/HOST=".*"/HOST="127.0.0.1"/' test_nzedb_installer.sh
   # Configure nZEDb settings.
-  - cp nzedb/config/settings.example.php nzedb/config/settings.php
-  - sed -i "s/'nZEDb_DEBUG', false/'nZEDb_DEBUG', true/" nzedb/config/settings.php
-  - sed -i "s/'nZEDb_LOGGING', false/'nZEDb_LOGGING', true/" nzedb/config/settings.php
-  - sed -i "s/'nZEDb_LOGINFO', false/'nZEDb_LOGINFO', true/" nzedb/config/settings.php
-  - sed -i "s/'nZEDb_LOGNOTICE', false/'nZEDb_LOGNOTICE', true/" nzedb/config/settings.php
-  - sed -i "s/'nZEDb_LOGWARNING', false/'nZEDb_LOGWARNING', true/" nzedb/config/settings.php
-  - sed -i "s/'nZEDb_LOGERROR', false/'nZEDb_LOGERROR', true/" nzedb/config/settings.php
-  - sed -i "s/'nZEDb_LOGFATAL', false/'nZEDb_LOGFATAL', true/" nzedb/config/settings.php
-  - sed -i "s/'nZEDb_LOGQUERIES', false/'nZEDb_LOGQUERIES', true/" nzedb/config/settings.php
+  - cp configuration/settings.example.php configuration/settings.php
+  - sed -i "s/'nZEDb_DEBUG', false/'nZEDb_DEBUG', true/" configuration/settings.php
+  - sed -i "s/'nZEDb_LOGGING', false/'nZEDb_LOGGING', true/" configuration/settings.php
+  - sed -i "s/'nZEDb_LOGINFO', false/'nZEDb_LOGINFO', true/" configuration/settings.php
+  - sed -i "s/'nZEDb_LOGNOTICE', false/'nZEDb_LOGNOTICE', true/" configuration/settings.php
+  - sed -i "s/'nZEDb_LOGWARNING', false/'nZEDb_LOGWARNING', true/" configuration/settings.php
+  - sed -i "s/'nZEDb_LOGERROR', false/'nZEDb_LOGERROR', true/" configuration/settings.php
+  - sed -i "s/'nZEDb_LOGFATAL', false/'nZEDb_LOGFATAL', true/" configuration/settings.php
+  - sed -i "s/'nZEDb_LOGQUERIES', false/'nZEDb_LOGQUERIES', true/" configuration/settings.php
 
 script:
   # Run nZEDb installer test script.

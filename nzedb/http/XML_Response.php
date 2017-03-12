@@ -148,7 +148,7 @@ class XML_Response
 	 */
 	protected function returnCaps()
 	{
-		$w = $this->xml;
+		$w =& $this->xml;
 		$s = $this->server;
 
 		$w->startDocument('1.0', 'UTF-8');
@@ -171,8 +171,8 @@ class XML_Response
 	 */
 	protected function returnApiRss()
 	{
-		$w = $this->xml;
-		$this->xml->startDocument('1.0', 'UTF-8');
+		$w =& $this->xml;
+		$w->startDocument('1.0', 'UTF-8');
 		$this->includeRssAtom(); // Open RSS
 		$w->startElement('channel'); // Open channel
 		$this->includeRssAtomLink();
@@ -207,7 +207,7 @@ class XML_Response
 	 * Starts a new element, loops through the attribute data and ends the element
 	 * @param array $element An array with the name of the element and the attribute data
 	 */
-	protected function addNode($element)
+	protected function addNode(array $element)
 	{
 		$this->xml->startElement($element['name']);
 		foreach($element['data'] AS $attr => $val) {

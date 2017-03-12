@@ -17,8 +17,6 @@ Misc::clearScreen();
 
 $patch = Settings::value('..sqlpatch');
 $patch = ($patch != '') ? $patch : 0;
-$delaytimet = Settings::value('..delaytime');
-$delaytimet = ($delaytimet) ? (int)$delaytimet : 2;
 $nntpproxy = Settings::value('..nntpproxy');
 
 echo "Starting Tmux...\n";
@@ -39,14 +37,12 @@ $tmux_session = (isset($tmux->tmux_session)) ? $tmux->tmux_session : 0;
 $seq = (isset($tmux->sequential)) ? $tmux->sequential : 0;
 $powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
 $import = (isset($tmux->import)) ? $tmux->import : 0;
-$tablepergroup = Settings::value('..tablepergroup');
-$tablepergroup = ($tablepergroup != '') ? $tablepergroup : 0;
 
 //check if session exists
 $session = shell_exec("tmux list-session | grep $tmux_session");
 // Kill the placeholder
 exec('tmux kill-session -t placeholder');
-if (count($session) !== 0) {
+if ($session != 0) {
 	exit($pdo->log->error("tmux session: '" . $tmux_session . "' is already running, aborting.\n"));
 }
 
@@ -64,32 +60,7 @@ if ($nntpproxy == '1') {
 //reset collections dateadded to now if dateadded > delay time check
 echo $pdo->log->header("Resetting expired collections dateadded to now. This could take a minute or two. Really.");
 
-if ($tablepergroup == 1) {
-	$sql    = "SHOW table status";
-	$tables = $pdo->queryDirect($sql);
-	$ran    = 0;
-	foreach ($tables as $row) {
-		$tbl = $row['name'];
-		if (preg_match('/collections_\d+/', $tbl)) {
-			$run = $pdo->queryExec('UPDATE ' . $tbl .
-								   ' SET dateadded = now() WHERE dateadded < now() - INTERVAL ' .
-								   $delaytimet . ' HOUR');
-			if ($run !== false) {
-				$ran += $run->rowCount();
-			}
-		}
-	}
-	echo $pdo->log->primary(number_format($ran) . " collections reset.");
-} else {
-	$ran = 0;
-	$run = $pdo->queryExec('update collections set dateadded = now() WHERE dateadded < now() - INTERVAL ' .
-						   $delaytimet . ' HOUR');
-	if ($run !== false) {
-		$ran += $run->rowCount();
-	}
-	echo $pdo->log->primary(number_format($ran) . " collections reset.");
-}
-sleep(2);
+exec("cd {$DIR}/update/nix/tmux/bin/ && php resetdelaytime.php");
 
 //create tmux session
 if ($powerline == 1) {

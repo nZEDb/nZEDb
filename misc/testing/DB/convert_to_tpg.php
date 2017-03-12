@@ -62,18 +62,18 @@ while ($cdone < $clen['total']) {
 			$collection['collectionhash'] = $pdo->escapeString($collection['collectionhash']);
 			$collection['dateadded'] = $pdo->escapeString($collection['dateadded']);
 			$collection['xref'] = $pdo->escapeString($collection['xref']);
-			$collection['releaseid'] = $pdo->escapeString($collection['releaseid']);
+			$collection['releases_id'] = $pdo->escapeString($collection['releases_id']);
 			$oldcid = array_shift($collection);
 			if ($debug) {
 				echo "\n\nCollection insert:\n";
 				print_r($collection);
-				echo sprintf("\nINSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, group_id, collectionhash, dateadded, filecheck, filesize, releaseid) VALUES (%s)\n\n", $collection['group_id'], implode(', ', $collection));
+				echo sprintf("\nINSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, groups_id, collectionhash, dateadded, filecheck, filesize, releases_id) VALUES (%s)\n\n", $collection['groups_id'], implode(', ', $collection));
 			}
-			$newcid = array('collection_id' => $pdo->queryInsert(sprintf('INSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, group_id, collectionhash, dateadded, filecheck, filesize, releaseid) VALUES (%s);', $collection['group_id'], implode(', ', $collection))));
+			$newcid = array('collections_id' => $pdo->queryInsert(sprintf('INSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, groups_id, collectionhash, dateadded, filecheck, filesize, releases_id) VALUES (%s);', $collection['groups_id'], implode(', ', $collection))));
 			$consoletools->overWrite('Collections Completed: ' . $consoletools->percentString($ccount, $clen['total']));
 
 			//Get binaries and split to correct group tables.
-			$binaries = $pdo->queryAssoc('SELECT name, collection_id, filenumber, totalparts, currentparts, HEX(binaryhash) AS binaryhash, partcheck, partsize FROM binaries WHERE collection_id = ' . $oldcid . ';');
+			$binaries = $pdo->queryAssoc('SELECT name, collections_id, filenumber, totalparts, currentparts, HEX(binaryhash) AS binaryhash, partcheck, partsize FROM binaries WHERE collections_id = ' . $oldcid . ';');
 
 			if ($binaries instanceof \Traversable) {
 				foreach ($binaries as $binary) {
@@ -84,9 +84,9 @@ while ($cdone < $clen['total']) {
 					if ($debug) {
 						echo "\n\nBinary insert:\n";
 						print_r($binarynew);
-						echo sprintf("\nINSERT INTO binaries_%d (name, collection_id, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s)\n\n", $collection['group_id'], implode(', ', $binarynew));
+						echo sprintf("\nINSERT INTO binaries_%d (name, collections_id, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s)\n\n", $collection['groups_id'], implode(', ', $binarynew));
 					}
-					$newbid = array('binaryid' => $pdo->queryInsert(sprintf('INSERT INTO binaries_%d (name, collection_id, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s);', $collection['group_id'], implode(', ', $binarynew))));
+					$newbid = array('binaries_id' => $pdo->queryInsert(sprintf('INSERT INTO binaries_%d (name, collections_id, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s);', $collection['groups_id'], implode(', ', $binarynew))));
 
 					//Get parts and split to correct group tables.
 					$parts = $pdo->queryAssoc('SELECT * FROM parts WHERE binaryID = ' . $oldbid . ';');
@@ -102,9 +102,9 @@ while ($cdone < $clen['total']) {
 						$partsnew = substr($partsnew, 0, -2);
 						if ($debug) {
 							echo "\n\nParts insert:\n";
-							echo sprintf("\nINSERT INTO parts_%d (binaryid, messageid, number, partnumber, size, collection_id) VALUES %s;\n\n", $collection['group_id'], $partsnew);
+							echo sprintf("\nINSERT INTO parts_%d (binaries_id, messageid, number, partnumber, size) VALUES %s;\n\n", $collection['groups_id'], $partsnew);
 						}
-						$sql = sprintf('INSERT INTO parts_%d (binaryid, messageid, number, partnumber, size, collection_id) VALUES %s;', $collection['group_id'], $partsnew);
+						$sql = sprintf('INSERT INTO parts_%d (binaries_id, messageid, number, partnumber, size) VALUES %s;', $collection['groups_id'], $partsnew);
 						$pdo->queryExec($sql);
 					}
 				}
@@ -119,22 +119,22 @@ if ($DoPartRepair === true) {
 	foreach ($actgroups as $group) {
 		$pcount = 1;
 		$pdone = 0;
-		$sql = sprintf('SELECT COUNT(*) AS total FROM missed_parts where group_id = %d;', $group['id']);
+		$sql = sprintf('SELECT COUNT(*) AS total FROM missed_parts where groups_id = %d;', $group['id']);
 		$plen = $pdo->queryOneRow($sql);
 		while ($pdone < $plen['total']) {
 			// Only load 10000 partrepair records per loop to not overload memory.
-			$partrepairs = $pdo->queryAssoc(sprintf('select * from missed_parts where group_id = %d limit %d, 10000;', $group['id'], $pdone));
+			$partrepairs = $pdo->queryAssoc(sprintf('select * from missed_parts where groups_id = %d limit %d, 10000;', $group['id'], $pdone));
 			if ($partrepairs instanceof \Traversable) {
 				foreach ($partrepairs as $partrepair) {
 					$partrepair['numberid'] = $pdo->escapeString($partrepair['numberid']);
-					$partrepair['group_id'] = $pdo->escapeString($partrepair['group_id']);
+					$partrepair['groups_id'] = $pdo->escapeString($partrepair['groups_id']);
 					$partrepair['attempts'] = $pdo->escapeString($partrepair['attempts']);
 					if ($debug) {
 						echo "\n\nPart Repair insert:\n";
 						print_r($partrepair);
-						echo sprintf("\nINSERT INTO missed_parts_%d (numberid, group_id, attempts) VALUES (%s, %s, %s)\n\n", $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']);
+						echo sprintf("\nINSERT INTO missed_parts_%d (numberid, groups_id, attempts) VALUES (%s, %s, %s)\n\n", $group['id'], $partrepair['numberid'], $partrepair['groups_id'], $partrepair['attempts']);
 					}
-					$pdo->queryExec(sprintf('INSERT INTO missed_parts_%d (numberid, group_id, attempts) VALUES (%s, %s, %s);', $group['id'], $partrepair['numberid'], $partrepair['group_id'], $partrepair['attempts']));
+					$pdo->queryExec(sprintf('INSERT INTO missed_parts_%d (numberid, groups_id, attempts) VALUES (%s, %s, %s);', $group['id'], $partrepair['numberid'], $partrepair['groupsd'], $partrepair['attempts']));
 					$consoletools->overWrite('Part Repairs Completed for ' . $group['name'] . ':' . $consoletools->percentString($pcount, $plen['total']));
 					$pcount++;
 				}
@@ -156,8 +156,6 @@ if (isset($argv[2]) && $argv[2] == 'delete') {
 	$pdo->queryDirect('TRUNCATE TABLE missed_parts');
 	echo "Complete.\n";
 }
-// Update TPG setting in site-edit.
-$pdo->queryExec('UPDATE settings SET value = 1 where setting = \'tablepergroup\';');
 $pdo->queryExec('UPDATE tmux SET value = 2 where setting = \'releases\';');
 echo "New tables have been created.\nTable Per Group has been set to  to \"TRUE\" in site-edit.\nUpdate Releases has been set to Threaded in tmux-edit.\n";
 

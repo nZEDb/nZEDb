@@ -3,12 +3,14 @@ require_once realpath(dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SE
 
 use app\models\Settings;
 use nzedb\Category;
+use nzedb\Tmux;
 use nzedb\TmuxOutput;
 use nzedb\TmuxRun;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 $pdo = new DB();
+$tMain = new Tmux($pdo);
 $tRun = new TmuxRun($pdo);
 $tOut = new TmuxOutput($pdo);
 
@@ -90,10 +92,7 @@ while ($runVar['counts']['iterations'] > 0) {
 	$runVar['constants']['pre_lim'] = ($runVar['counts']['iterations'] > 1 ? '7' : '');
 
 	//assign scripts
-	$runVar['scripts']['releases'] = ($runVar['constants']['tablepergroup'] == 0
-		? "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/update_releases.php 1 false"
-		: "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/releases.php"
-	);
+	$runVar['scripts']['releases'] = "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/releases.php";
 
 	switch ((int)$runVar['settings']['binaries_run']) {
 		case 1:
@@ -199,59 +198,55 @@ while ($runVar['counts']['iterations'] > 0) {
 		$runVar['timers']['query']['proc31_time'] = (time() - $timer01);
 
 		$timer07 = time();
-		if ($runVar['constants']['tablepergroup'] == 1) {
-			$sql = 'SHOW TABLE STATUS';
+		$tables = $tMain->cbpmTableQuery();
+		$age = time();
 
-			$tables = $pdo->queryDirect($sql);
-			$age = time();
+		$runVar['counts']['now']['collections_table'] = $runVar['counts']['now']['binaries_table'] = 0;
+		$runVar['counts']['now']['parts_table'] = $runVar['counts']['now']['parterpair_table'] = 0;
 
-			$runVar['counts']['now']['collections_table'] = $runVar['counts']['now']['binaries_table'] = 0;
-			$runVar['counts']['now']['parts_table'] = $runVar['counts']['now']['parterpair_table'] = 0;
+		if ($psTableRowCount === false) {
+			echo "Unable to prepare statement, skipping monitor updates!";
+		} else {
+			if ($tables instanceof \Traversable) {
+				foreach ($tables as $row) {
+					$tbl = $row['name'];
+					$stamp = 'UNIX_TIMESTAMP(MIN(dateadded))';
 
-			if ($psTableRowCount === false) {
-				echo "Unable to prepare statement, skipping monitor updates!";
-			} else {
-				if ($tables instanceof \Traversable) {
-					foreach ($tables as $row) {
-						$tbl = $row['name'];
-						$stamp = 'UNIX_TIMESTAMP(MIN(dateadded))';
+					switch (true) {
+						case strpos($tbl, 'collections') !== false:
+							$runVar['counts']['now']['collections_table'] +=
+								getTableRowCount($psTableRowCount, $tbl);
+							$added = $pdo->queryOneRow(sprintf('SELECT %s AS dateadded FROM %s', $stamp, $tbl));
+							if (isset($added['dateadded']) && is_numeric($added['dateadded']) &&
+								$added['dateadded'] < $age
+							) {
+								$age = $added['dateadded'];
+							}
+							break;
+						case strpos($tbl, 'binaries') !== false:
+							$runVar['counts']['now']['binaries_table'] +=
+								getTableRowCount($psTableRowCount, $tbl);
+							break;
+						// This case must come before the 'parts_' one.
+						case strpos($tbl, 'missed_parts') !== false:
+							$runVar['counts']['now']['missed_parts_table'] +=
+								getTableRowCount($psTableRowCount, $tbl);
 
-						switch (true) {
-							case strpos($tbl, 'collections_') !== false:
-								$runVar['counts']['now']['collections_table'] +=
-									getTableRowCount($psTableRowCount, $tbl);
-								$added = $pdo->queryOneRow(sprintf('SELECT %s AS dateadded FROM %s', $stamp, $tbl));
-								if (isset($added['dateadded']) && is_numeric($added['dateadded']) &&
-									$added['dateadded'] < $age
-								) {
-									$age = $added['dateadded'];
-								}
-								break;
-							case strpos($tbl, 'binaries_') !== false:
-								$runVar['counts']['now']['binaries_table'] +=
-									getTableRowCount($psTableRowCount, $tbl);
-								break;
-							// This case must come before the 'parts_' one.
-							case strpos($tbl, 'missed_parts_') !== false:
-								$runVar['counts']['now']['missed_parts_table'] +=
-									getTableRowCount($psTableRowCount, $tbl);
-
-								break;
-							case strpos($tbl, 'parts_') !== false:
-								$runVar['counts']['now']['parts_table'] +=
-									getTableRowCount($psTableRowCount, $tbl);
-								break;
-							default:
-						}
+							break;
+						case strpos($tbl, 'parts') !== false:
+							$runVar['counts']['now']['parts_table'] +=
+								getTableRowCount($psTableRowCount, $tbl);
+							break;
+						default:
 					}
-					$runVar['timers']['newOld']['oldestcollection'] = $age;
-
-					//free up memory used by now stale data
-					unset($age, $added, $tables);
-
-					$runVar['timers']['query']['tpg_time']  = (time() - $timer07);
-					$runVar['timers']['query']['tpg1_time'] = (time() - $timer01);
 				}
+				$runVar['timers']['newOld']['oldestcollection'] = $age;
+
+				//free up memory used by now stale data
+				unset($age, $added, $tables);
+
+				$runVar['timers']['query']['tpg_time'] = (time() - $timer07);
+				$runVar['timers']['query']['tpg1_time'] = (time() - $timer01);
 			}
 		}
 		$runVar['timers']['timer2'] = time();
@@ -369,7 +364,7 @@ while ($runVar['counts']['iterations'] > 0) {
 			$tRun->runPane('nonamazon', $runVar);
 		}
 
-	} else  if ($runVar['settings']['is_running'] === '0') {
+	} else if ($runVar['settings']['is_running'] === '0') {
 		$tRun->runPane('notrunning', $runVar);
 	}
 

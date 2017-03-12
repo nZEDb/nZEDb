@@ -1,4 +1,9 @@
 <?php
+if (!file_exists(nZEDb_CONFIGS . 'install.lock')) {
+	header('Location: install');
+	exit();
+}
+
 require_once 'smarty.php';
 
 use app\models\Settings;
@@ -45,7 +50,6 @@ switch ($page->page) {
 	case 'nfo':
 	case 'nzbgetqueuedata':
 	case 'post_edit':
-	case 'predb':
 	case 'profile':
 	case 'profileedit':
 	case 'queue':
@@ -63,9 +67,16 @@ switch ($page->page) {
 	case 'xxx':
 	case 'xxxmodal':
 		// Don't show these pages if it's an API-only site.
-		if (!$page->users->isLoggedIn() && Settings::value('..registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
-			header("Location: " . Settings::value('site.main.code'));
-			break;
+		if (!$page->users->isLoggedIn()) {
+			if (Settings::value('..registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
+				header("Location: " . Settings::value('site.main.code'));
+				break;
+			} else if (
+				!in_array($page->page, ['register', 'forgottenpassword']) &&
+				Settings::value('site.main.incognito', true) == true
+			) {
+				$page->page = 'login';
+			}
 		}
 	case 'api':
 	case 'failed':

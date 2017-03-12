@@ -33,6 +33,21 @@ class CollectionsCleaning
 	const REGEX_SUBJECT_SIZE = '[-_\s]{0,3}\d+([.,]\d+)? [kKmMgG][bB][-_\s]{0,3}';
 
 	/**
+	 * Collection subject failed to match any regular expression
+	 */
+	const REGEX_NO_MATCH = 0;
+
+	/**
+	 * Collection subject matched the Generic regular expression
+	 */
+	const REGEX_GENERIC_MATCH = -10;
+
+	/**
+	 * Collection subject matched the Music generic regular expression
+	 */
+	const REGEX_MUSIC_MATCH = -20;
+
+	/**
 	 * @var string
 	 */
 	public $e0;
@@ -92,7 +107,7 @@ class CollectionsCleaning
 	 * @param string $subject   Subject to parse.
 	 * @param string $groupName Group to work in.
 	 *
-	 * @return string
+	 * @return array The ID of the Regex Matched and the cleaned collection name
 	 */
 	public function collectionsCleaner($subject, $groupName)
 	{
@@ -102,7 +117,10 @@ class CollectionsCleaning
 		// Try DB regex first.
 		$potentialString = $this->_regexes->tryRegex($subject, $groupName);
 		if ($potentialString) {
-			return $potentialString;
+			return [
+				'id'   => $this->_regexes->matchedRegex,
+				'name' => $potentialString
+			];
 		}
 
 		switch ($groupName) {
@@ -132,13 +150,19 @@ class CollectionsCleaning
 			// Random stuff.
 			$cleanSubject = preg_replace('/AutoRarPar\d{1,5}|\(\d+\)( |  )yEnc|\d+(Amateur|Classic)| \d{4,}[a-z]{4,} |part\d+/i', ' ', $cleanSubject);
 			// Multi spaces.
-			return utf8_encode(trim(preg_replace('/\s\s+/', ' ', $cleanSubject)));
+			return [
+				'id'   => self::REGEX_GENERIC_MATCH,
+				'name' => utf8_encode(trim(preg_replace('/\s\s+/', ' ', $cleanSubject)))
+			];
 		} // Music groups.
 		else {
 			// Try some music group regexes.
 			$musicSubject = $this->musicSubject();
 			if ($musicSubject !== false) {
-				return $musicSubject;
+				return [
+					'id'   => self::REGEX_MUSIC_MATCH,
+					'name' => $musicSubject
+				];
 				// Parts/files
 			} else {
 				$cleanSubject = preg_replace('/((( \(\d\d\) -|(\d\d)? - \d\d\.|\d{4} \d\d -) | - \d\d-| \d\d\. [a-z]).+| \d\d of \d\d| \dof\d)\.mp3"?|(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|-\d{1,3}-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $this->subject);
@@ -171,9 +195,15 @@ class CollectionsCleaning
 				}
 				$newName = preg_replace('/".+?"/', '', $this->subject);
 				$newName = preg_replace('/[a-z0-9]|' . $this->e0 . '/i', '', $newName);
-				return $cleanSubject . $newName . $x;
+				return [
+					'id'   => self::REGEX_MUSIC_MATCH,
+					'name' => $cleanSubject . $newName . $x
+				];
 			} else {
-				return $cleanSubject;
+				return [
+					'id'   => self::REGEX_MUSIC_MATCH,
+					'name' => $cleanSubject
+				];
 			}
 		}
 	}

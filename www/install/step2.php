@@ -81,9 +81,11 @@ if ($page->isPostBack()) {
 	$cfg->DB_SYSTEM = strtolower(trim($_POST['db_system']));
 	$cfg->error = false;
 
-	// Check if user selected right DB type.
-	if (!in_array($cfg->DB_SYSTEM, ['mysql'])) {
-		$cfg->emessage = 'Invalid database system. Must be: mysql ; Not: ' . $cfg->DB_SYSTEM;
+	$validTypes = ['mysql'];
+	// Check if user selected a valid DB type.
+	if (!in_array($cfg->DB_SYSTEM, $validTypes)) {
+		$cfg->emessage = 'Invalid database system. Must be one of: [' . implode(', ', $validTypes) .
+			']; Not: ' . $cfg->DB_SYSTEM;
 		$cfg->error = true;
 	} else {
 		// Connect to the SQL server.
@@ -104,7 +106,7 @@ if ($page->isPostBack()) {
 			);
 			$cfg->dbConnCheck = true;
 		} catch (\PDOException $e) {
-			$cfg->emessage = 'Unable to connect to the SQL server.';
+			$cfg->emessage = "Unable to connect to the SQL server.\n" . $e->getMessage();
 			$cfg->error = true;
 			$cfg->dbConnCheck = false;
 		} catch (\RuntimeException $e) {
@@ -112,8 +114,11 @@ if ($page->isPostBack()) {
 				case 1:
 				case 2:
 				case 3:
+				case 4:
+				case 5:
 					$cfg->error    = true;
 					$cfg->emessage = $e->getMessage();
+					trigger_error($e->getMessage(), E_USER_WARNING);
 					break;
 				default:
 					var_dump($e);
@@ -125,7 +130,7 @@ if ($page->isPostBack()) {
 		$goodVersion = false;
 		if (!$cfg->error) {
 			try {
-				$goodVersion = $pdo->isDbVersionAtLeast(nZEDb_MINIMUM_MYSQL_VERSION);
+				$goodVersion = $pdo->isVendorVersionValid();
 			} catch (\PDOException $e) {
 				$goodVersion   = false;
 				$cfg->error    = true;
@@ -134,11 +139,16 @@ if ($page->isPostBack()) {
 
 			if ($goodVersion === false) {
 				$cfg->error = true;
-				$cfg->emessage =
-					'You are using an unsupported version of ' .
-					$cfg->DB_SYSTEM .
-					' the minimum allowed version is ' .
-					nZEDb_MINIMUM_MYSQL_VERSION;
+				$vendor = $pdo->getVendor();
+				switch (strtolower($vendor)) {
+					case 'mariadb':
+						$version = DB::MINIMUM_VERSION_MARIADB;
+						break;
+					default:
+						$version = DB::MINIMUM_VERSION_MYSQL;
+				}
+				$cfg->emessage = 'You are using an unsupported version of the ' . $vendor .
+					' server, the minimum allowed version is ' . $version;
 			}
 		}
 	}

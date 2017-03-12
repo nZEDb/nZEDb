@@ -42,9 +42,15 @@ class Ydecode extends \lithium\core\Object
 
 	public static function decode(&$text, $ignore = false)
 	{
-		if (!preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $text, $input)) {
-			throw new \Exception('Text does not look like yEnc.');
+		$result = preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $text, $input);
+		switch (true) {
+			case !$result:
+				throw new \Exception('Text does not look like yEnc.');
+			case self::$pathBin === false:
+				throw new \InvalidArgumentException("No valid path to yydecoder binary found!");
+			default:
 		}
+
 		$data = shell_exec(
 			"echo '{$input[1]}' | '" . self::$pathBin . "' -o - " . ($ignore ? "-b " : " ") . self::$silent
 		);
@@ -79,7 +85,7 @@ class Ydecode extends \lithium\core\Object
 	{
 		parent::_init();
 
-		$path = Settings::value('..yydecoderpath', true);
+		$path = Settings::value('apps..yydecoderpath', true);
 		if (!empty($path) && strpos($path, 'simple_php_yenc_decode') === false) {
 			if (file_exists($path) && is_executable($path)) {
 				self::$silent = (Misc::isWin() ? '' : ' > /dev/null 2>&1');

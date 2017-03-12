@@ -1,6 +1,7 @@
 <?php
 require_once nZEDb_ROOT . 'app' . DS . 'config' . DS . 'bootstrap' . DS . 'libraries.php';
 
+use nzedb\Category;
 use nzedb\Users;
 
 class AdminPage extends BasePage
@@ -8,6 +9,8 @@ class AdminPage extends BasePage
 	public function __construct($allowModerator = false)
 	{
 		parent::__construct();
+
+		$this->page_template = 'baseadminpage.tpl';
 
 		define('WWW_THEMES', WWW_TOP . '/../themes');
 
@@ -22,6 +25,9 @@ class AdminPage extends BasePage
 		) {
 			$this->show403(true);
 		}
+
+		$category = new Category();
+		$this->smarty->assign('catClass', $category);
 
 		$this->smarty->setTemplateDir(
 			[
@@ -38,8 +44,6 @@ class AdminPage extends BasePage
 
 		$admin_menu = $this->smarty->fetch('adminmenu.tpl');
 		$this->smarty->assign('admin_menu', $admin_menu);
-
-		$this->page_template = 'baseadminpage.tpl';
 
 		parent::render();
 	}

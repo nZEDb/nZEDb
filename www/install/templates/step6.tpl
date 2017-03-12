@@ -41,9 +41,7 @@
 			{if $cfg->error}
 				<div>
 					The following error(s) were encountered:<br />
-					{if $cfg->ADMIN_USER == ''}<span class="error">&bull; Invalid username</span><br />{/if}
-					{if $cfg->ADMIN_PASS == ''}<span class="error">&bull; Invalid password</span><br />{/if}
-					{if $cfg->ADMIN_EMAIL == ''}<span class="error">&bull; Invalid email</span><br />{/if}
+					{$cfg->errMessage}
 					<br />
 				</div>
 			{/if}

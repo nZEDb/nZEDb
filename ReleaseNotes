@@ -2,6 +2,107 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
+0.7.0.0 2017-03-06:
+Added:
+	* New setting (site.main.incognito) that determines if the main page is shown to vistors, or if
+	 they are redirected to the login page instead.
+      Currently there is no way to edit this in Site => edit.
+    * dev-mgr (MultiGroup Releases) branch. This adds new feature for matching releases spread
+     across several groups.
+    * New setting (site.main.incognito) that determines if the main page is shown to vistors, or if
+     they're redirected to the login page instead.
+      Currently there is no way to edit this in Site => edit.
+    * This adds logging of failed (as in errors, not zero results) regexes to the nZEDb log.
+      **NOTE** This supresses warning messages in the PHP log.
+    * Update nZEDbBase.php file to be able to return any of the 'constant' values.
+
+Changed:
+	* Update sequential scripts for mandatory TPG use, (PR 2379).
+	* Improve performance by doing poster check in PHP instead of single row MySQL queries.
+	* Updates to simple.sh and simple-extended.sh scripts (PR 2391 and 2392).
+	* Move search and user menu to headermenu.tpl in Charisma theme.
+	* Update Charisma theme to use new bootswatch library, remove unneeded css and make it use the
+	 bootswatch slate theme (make it darker).
+	* Move location of configuration files (config.php, settings.php, etc.) to .../configuration
+      ***NOTE*** See v0.7.0.0 entry at https://github.com/nZEDb/nZEDb/wiki/Update-Guide for
+     additional instructions.
+
+Fixed:
+	* Search by reqid link in predb.tpl (closes issue 2381).
+	* Settings issues with AniDB population preventing run.
+	* Default movie process quantity to 100 if not specified, else use setting (PR 2388).
+	* Change checks in NZB to look for false from Db lookup, instead of Traversable which does not
+	 guarantee useful data.
+	* Fix for uspsetting.sh - powerline segment (PR 2397).
+
+
+0.6.9.0 2017-02-06
+	***IMPORTANT***
+	  With the next release (in March), some required changes will be made.
+	1) The minimum version of database we support will be raised (MariaDb 10.0/MySQL 5.6).
+	 Additionally, we now strongly reccommend MariaDb for all users. It has all the features of
+	 MySQL, plus additional stability and functionality (generally faster). MySQL has changed its
+	 default settings for a number of features/modes which cause issues with nZEDb, so we will no
+	 longer be supporting it directly. If you must use MySQL, you are expected to know what you
+	 are doing and maintain it yourself. Check the comparison docs here:
+	   https://mariadb.com/kb/en/mariadb/mariadb-vs-mysql-compatibility/
+	   https://mariadb.com/kb/en/mariadb/system-variable-differences-between-mariadb-100-and-mysql-56/
+	2) Tables Per Group will become compulsory. Please convert now to avoid problems. The
+	 .../misc/testing/DB/convert_to_tpg_alt.php script (with the truncate option) is reccommended.
+Added:
+
+Changed:
+	* Updates to readme.md (PR 2366).
+
+Fixed:
+	* Check for incompatible tmux versions and abort if installed (PR 2353).
+	* Predb page link for predb search (closes issue 2356).
+	* Work around to prevent some db versions using auto-increment value on an explicit 0 for
+	 Categories Other's.
+	* Change leftover references to group_id in python scripts and ProcessReleases class.
+	* Bad settings data for yydecodepath.
+	* Adds releases_groups table to resetdb.php (PR 2365).
+	* Fixes typo in ProcessAdditional.php which prevented timeout setting being used correctly (PR 2364).
+	* Wrong number of parameters in removeInstallBin function sql query.
+	* Bring in b3s3rk's fix, from MGR branch, for the duplicate ReleasesGroups entries.
+	* Update threaded.sh for newer fixRelNames params (PR 2376).
+
+
+0.6.8.1 2017-01-09
+Fixed:
+	* Paths for install.sh script
+
+
+0.6.8.0 2017-01-02
+Added:
+	* dev-releases_groups branch. This provides the ability to have more than one group
+     assocciated with a release.
+	* Created new bash script to clone and use composer install. The script can be run from the
+	 directory you want nZEDb installed to (usually /var/www) using:
+		bash <(curl -s https://raw.githubusercontent.com/nZEDb/nZEDb/0.x/_install/install.sh)
+
+Changed:
+	* Sort contents of 10-settings.tsv to make findind incorrect/missing entries easier ;-)
+	* Move tmux Monitor pane logging to resources/logs folder, fixes notice in monitor pane when
+	 starting tmux.
+	* Disable Desura lookups for now, site has changed ownership and is not functional currently.
+	* Improve release renaming.
+	* Make match_prefiles more precise with match attempts and reduce initial memory usage.
+	* Updates tmux configuration for using newer versions (PR 2343).
+	* Move predb from frontpage to admin area.
+
+Fixed:
+	* Verify settings_table failing for PHP 5.6 users, because of reversed list() parameter, due to
+	 misreading the documentation (Fixes issue 2319).
+	* Gamma Console cover view not displaying releases grouped by Console ID.
+	* Fix post processing for tv shows (PR 2326).
+	* Books processing variable incorrect, causing only one category to run.
+	* postprocessing_non_amazon and postprocessing_additional PHP Notice/PHP Warning (Issue 2330).
+	* Update delete_release stored procedure to use separate queries and no CONCATs for the WHERE
+	 clause.
+	* Correct powerline tmux config (PR 2346).
+
+
 0.6.7.0 2016-12-05
 Added:
 	* Unit test and console command to check that the settings table has all entries from

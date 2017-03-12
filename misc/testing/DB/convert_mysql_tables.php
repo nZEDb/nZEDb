@@ -7,7 +7,6 @@ use nzedb\db\DB;
 $cli = new ColorCLI();
 
 $pdo = new DB(['checkVersion' => true]);
-$ftinnodb = $pdo->isDbVersionAtLeast('5.6');
 
 if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 	$tbl = $argv[1];
@@ -19,20 +18,12 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 	$pdo->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=DYNAMIC");
 } else if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "cinnodb") {
 	$tbl = $argv[1];
-	if ($ftinnodb || (!$ftinnodb && $tbl !== 'release_search_data' && $tbl !== 'bookinfo' && $tbl !== 'consoleinfo' && $tbl !== 'musicinfo')) {
-		printf($cli->header("Converting $tbl"));
-		$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
-	} else {
-		printf($cli->header("Not converting bookinfo / consoleinfo / musicinfo / release_search_data as your INNODB version does not support fulltext indexes"));
-	}
+	printf($cli->header("Converting $tbl"));
+	$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 } else if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "dinnodb") {
 	$tbl = $argv[1];
-	if ($ftinnodb || (!$ftinnodb && $tbl !== 'release_search_data' && $tbl !== 'bookinfo' && $tbl !== 'consoleinfo' && $tbl !== 'musicinfo')) {
-		printf($cli->header("Converting $tbl"));
-		$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
-	} else {
-		printf($cli->header("Not converting bookinfo / consoleinfo / musicinfo / release_search_data as your INNODB version does not support fulltext indexes"));
-	}
+	printf($cli->header("Converting $tbl"));
+	$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 } else if (isset($argv[1]) && $argv[1] == "fmyisam") {
 	$sql = 'SHOW TABLE STATUS WHERE (Engine != "MyIsam" OR Row_format != "FIXED") AND Engine != "SPHINX"';
 	$tables = $pdo->query($sql);
@@ -54,28 +45,33 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
-		if ($tbl !== 'release_search_data' && $tbl !== 'bookinfo' && $tbl !== 'consoleinfo' && $tbl !== 'musicinfo') {
+		if ($tbl !== 'release_search_data' &&
+			$tbl !== 'bookinfo' &&
+			$tbl !== 'consoleinfo' &&
+			$tbl !== 'musicinfo'
+		) {
 			printf($cli->header("Converting $tbl"));
 			$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 		}
 	}
-	if ($ftinnodb) {
-		$sql = 'SHOW TABLE STATUS WHERE Name IN ("release_search_data", "bookinfo", "consoleinfo", "musicinfo") AND (Engine != "InnoDB" || Row_format != "Dynamic")';
-		$tables = $pdo->query($sql);
-		foreach ($tables as $row) {
-			$tbl = $row['name'];
-			printf($cli->header("Converting $tbl"));
-			$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
-		}
-	} else {
-		printf($cli->header("Not converting bookinfo / consoleinfo / musicinfo / release_search_data as your INNODB version does not support fulltext indexes"));
+	$sql = 'SHOW TABLE STATUS WHERE Name IN ("release_search_data", "bookinfo", "consoleinfo", "musicinfo") AND (Engine != "InnoDB" || Row_format != "Dynamic")';
+	$tables = $pdo->query($sql);
+	foreach ($tables as $row) {
+		$tbl = $row['name'];
+		printf($cli->header("Converting $tbl"));
+		$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 	}
 } else if (isset($argv[1]) && $argv[1] == "cinnodb") {
 	$sql = 'SHOW TABLE STATUS WHERE (Engine != "InnoDB" OR Row_format != "Compressed") AND Engine != "SPHINX"';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
-		if ($tbl !== 'release_nfos' && $tbl !== 'release_search_data' && $tbl !== 'bookinfo' && $tbl !== 'consoleinfo' && $tbl !== 'musicinfo') {
+		if ($tbl !== 'release_nfos' &&
+			$tbl !== 'release_search_data' &&
+			$tbl !== 'bookinfo' &&
+			$tbl !== 'consoleinfo' &&
+			$tbl !== 'musicinfo'
+		) {
 			printf($cli->header("Converting $tbl"));
 			$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 		}
@@ -87,23 +83,25 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		printf($cli->header("Converting $tbl"));
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 	}
-	if ($ftinnodb) {
-		$sql = 'SHOW TABLE STATUS WHERE Name IN ("release_search_data", "bookinfo", "consoleinfo", "musicinfo") AND (Engine != "InnoDB" || Row_format != "Compressed")';
-		$tables = $pdo->query($sql);
-		foreach ($tables as $row) {
-			$tbl = $row['name'];
-			printf($cli->header("Converting $tbl"));
-			$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
-		}
-	} else {
-		printf($cli->header("Not converting bookinfo / consoleinfo / musicinfo / release_search_data as your INNODB version does not support fulltext indexes"));
+	$sql = 'SHOW TABLE STATUS WHERE Name IN ("release_search_data", "bookinfo", "consoleinfo", "musicinfo") AND (Engine != "InnoDB" || Row_format != "Compressed")';
+	$tables = $pdo->query($sql);
+	foreach ($tables as $row) {
+		$tbl = $row['name'];
+		printf($cli->header("Converting $tbl"));
+		$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 	}
 } else if (isset($argv[1]) && $argv[1] == "cinnodb-noparts") {
 	$sql = 'SHOW TABLE STATUS WHERE (Engine != "InnoDB" OR Row_format != "Compressed") AND Engine != "SPHINX"';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
-		if ($tbl !== 'release_nfos' && $tbl !== 'release_search_data' && $tbl !== 'bookinfo' && $tbl !== 'consoleinfo' && $tbl !== 'musicinfo' && !preg_match('/parts/', $tbl)) {
+		if ($tbl !== 'release_nfos' &&
+			$tbl !== 'release_search_data' &&
+			$tbl !== 'bookinfo' &&
+			$tbl !== 'consoleinfo' &&
+			$tbl !== 'musicinfo' &&
+			!preg_match('/parts/', $tbl)
+		) {
 			printf($cli->header("Converting $tbl"));
 			$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 		}
@@ -122,19 +120,15 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		printf($cli->header("Converting $tbl"));
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=MyISAM ROW_FORMAT=DYNAMIC");
 	}
-	if ($ftinnodb) {
-		$sql = 'SHOW TABLE STATUS WHERE Name IN ("release_search_data", "bookinfo", "consoleinfo", "musicinfo") AND (Engine != "InnoDB" || Row_format != "Compressed")';
-		$tables = $pdo->query($sql);
-		foreach ($tables as $row) {
-			$tbl = $row['name'];
-			printf($cli->header("Converting $tbl"));
-			$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
-		}
-	} else {
-		printf($cli->header("Not converting bookinfo / consoleinfo / musicinfo / release_search_data as your INNODB version does not support fulltext indexes"));
+	$sql = 'SHOW TABLE STATUS WHERE Name IN ("release_search_data", "bookinfo", "consoleinfo", "musicinfo") AND (Engine != "InnoDB" || Row_format != "Compressed")';
+	$tables = $pdo->query($sql);
+	foreach ($tables as $row) {
+		$tbl = $row['name'];
+		printf($cli->header("Converting $tbl"));
+		$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 	}
 } else if (isset($argv[1]) && $argv[1] == "collections") {
-	$arr = array("parts", "binaries", "collections");
+	$arr = ["parts", "binaries", "collections"];
 	foreach ($arr as $row) {
 		$tbl = $row;
 		printf($cli->header("Converting $tbl"));

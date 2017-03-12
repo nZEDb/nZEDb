@@ -456,7 +456,7 @@ class AniDB
 	{
 		Settings::update(
 			['value' => time()],
-			['section' => 'APIs', 'anidb' => 'AniDB', 'name' => 'last_full_update']
+			['section' => 'APIs', 'subsection' => 'AniDB', 'name' => 'last_full_update']
 		);
 	}
 

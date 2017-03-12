@@ -35,7 +35,7 @@ elif sys.argv[1] == "nfo":
 
 # You can limit postprocessing for additional and nfo by group_id or categories_id
 if len(sys.argv) == 3 and sys.argv[2].isdigit() and len(sys.argv[2]) < 4:
-	group_id = 'AND group_id = '+sys.argv[2]
+	group_id = 'AND groups_id = '+sys.argv[2]
 	print(bcolors.HEADER + "Using group_id "+sys.argv[2] + bcolors.ENDC)
 elif len(sys.argv) == 3 and sys.argv[2].isdigit() and len(sys.argv[2]) == 4:
 	if sys.argv[2] == '1000':
