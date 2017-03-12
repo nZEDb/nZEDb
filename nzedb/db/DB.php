@@ -197,6 +197,10 @@ class DB extends \PDO
 			$this->initialiseDatabase($options);
 		}
 
+		if (!empty($options['dbname'])) {
+			$this->pdo->query("USE {$options['dbname']}");
+		}
+
 		$this->consoleTools =& $options['ct'];
 		$this->log =& $options['log'];
 
@@ -1537,7 +1541,6 @@ class DB extends \PDO
 					}
 				}
 			}
-			$this->pdo->query("USE {$options['dbname']}");
 		}
 	}
 
