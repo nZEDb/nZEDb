@@ -1427,7 +1427,18 @@ class DB extends \PDO
 	 */
 	protected function reconnect()
 	{
-		$this->connect();
+		$this->connect([
+			'checkVersion' => false,
+			'createDb'     => false,
+			'dbhost'       => $this->host,
+			'dbname'       => $this->name, // '' means it is a Sphinx connection
+			'dbpass'       => $this->password,
+			'dbport'       => $this->port,
+			'dbsock'       => $this->socket,
+			'dbtype'       => $this->dbSystem,
+			'dbuser'       => $this->user,
+			'persist'      => $this->persist,
+		]);
 
 		return $this->ping();
 	}
