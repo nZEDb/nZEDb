@@ -1544,7 +1544,7 @@ class DB extends \PDO
 		if (empty($name)) {
 			throw new \RuntimeException("No database name passed to " . __METHOD__, 1);
 		}
-		$name = $this->escapeString($name);
+
 		$found = self::checkDbExists($name);
 		if ($found) {
 			try {
