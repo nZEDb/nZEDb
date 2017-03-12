@@ -195,7 +195,7 @@ class DB extends \PDO
 		if (!empty($options['dbname'])) {
 			if ($options['createDb']) {
 			// Note this only ensures the database exists, not the tables.
-				$this->initialiseDatabase($options);
+				$this->initialiseDatabase($options['dbname']);
 			}
 
 			$this->pdo->query("USE {$options['dbname']}");
@@ -1526,9 +1526,10 @@ class DB extends \PDO
 		$found = self::checkDbExists($name);
 		if ($found) {
 			try {
-				$this->pdo->query("DROP DATABASE " . $name);
+				$this->pdo->query("DROP DATABASE $name");
 			} catch (\Exception $e) {
-				throw new \RuntimeException("Error trying to drop your old database: '{$name}'",
+				throw new \RuntimeException("Error trying to drop your old database: '{$name}'\n" .
+					$e->getMessage(),
 					2);
 			}
 			$found = self::checkDbExists($name);
@@ -1536,10 +1537,10 @@ class DB extends \PDO
 
 		if ($found) {
 			//var_dump(self::getTableList());
-			throw new \RuntimeException("Could not drop your old database: '{$name}'",
+			throw new \RuntimeException("Could not drop your old database: '{$name}'" ,
 				2);
 		} else {
-			$this->pdo->query("CREATE DATABASE `{$name}`  DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
+			$this->pdo->query("CREATE DATABASE `{$name}` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
 
 			if (!self::checkDbExists($name)) {
 				throw new \RuntimeException("Could not create new database: '{$name}'",
