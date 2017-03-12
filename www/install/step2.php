@@ -81,9 +81,11 @@ if ($page->isPostBack()) {
 	$cfg->DB_SYSTEM = strtolower(trim($_POST['db_system']));
 	$cfg->error = false;
 
-	// Check if user selected right DB type.
-	if (!in_array($cfg->DB_SYSTEM, ['mysql'])) {
-		$cfg->emessage = 'Invalid database system. Must be: mysql ; Not: ' . $cfg->DB_SYSTEM;
+	$validTypes = ['mysql'];
+	// Check if user selected a valid DB type.
+	if (!in_array($cfg->DB_SYSTEM, $validTypes)) {
+		$cfg->emessage = 'Invalid database system. Must be one of: [' . implode(', ', $validTypes) .
+			']; Not: ' . $cfg->DB_SYSTEM;
 		$cfg->error = true;
 	} else {
 		// Connect to the SQL server.
@@ -104,7 +106,7 @@ if ($page->isPostBack()) {
 			);
 			$cfg->dbConnCheck = true;
 		} catch (\PDOException $e) {
-			$cfg->emessage = 'Unable to connect to the SQL server.\n' . $e->getMessage();
+			$cfg->emessage = "Unable to connect to the SQL server.\n" . $e->getMessage();
 			$cfg->error = true;
 			$cfg->dbConnCheck = false;
 		} catch (\RuntimeException $e) {
