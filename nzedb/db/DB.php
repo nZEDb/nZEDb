@@ -170,14 +170,11 @@ class DB extends \PDO
 			'dbsock'		=> defined('DB_SOCKET') ? DB_SOCKET : '',
 			'dbtype'		=> defined('DB_SYSTEM') ? DB_SYSTEM : '',
 			'dbuser'		=> defined('DB_USER') ? DB_USER : '',
-			'log'			=> new ColorCLI(),
+			'log'			=> '',
 			'persist'		=> false,
 		];
+		$defaults['log'] = ($this->cli && !isset($options['log'])) ? new ColorCLI() : null;
 		$options += $defaults;
-
-		if (!$this->cli) {
-			$options['log'] = null;
-		}
 
 		if (empty($options['dbtype'])) {
 			throw new \RuntimeException("No Database system supplied. Currently this must be one of: " .
