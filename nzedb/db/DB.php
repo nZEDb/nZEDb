@@ -170,14 +170,11 @@ class DB extends \PDO
 			'dbsock'		=> defined('DB_SOCKET') ? DB_SOCKET : '',
 			'dbtype'		=> defined('DB_SYSTEM') ? DB_SYSTEM : '',
 			'dbuser'		=> defined('DB_USER') ? DB_USER : '',
-			'log'			=> new ColorCLI(),
+			'log'			=> '',
 			'persist'		=> false,
 		];
+		$defaults['log'] = ($this->cli && !isset($options['log'])) ? new ColorCLI() : null;
 		$options += $defaults;
-
-		if (!$this->cli) {
-			$options['log'] = null;
-		}
 
 		if (empty($options['dbtype'])) {
 			throw new \RuntimeException("No Database system supplied. Currently this must be one of: " .
@@ -735,7 +732,18 @@ class DB extends \PDO
 			return (bool)$this->pdo->query('SELECT 1+1');
 		} catch (\PDOException $e) {
 			if ($restart == true) {
-				$this->connect();
+				$this->connect([
+					'checkVersion' => false,
+					'createDb'     => false,
+					'dbhost'       => $this->host,
+					'dbname'       => $this->name, // '' means it is a Sphinx connection
+					'dbpass'       => $this->password,
+					'dbport'       => $this->port,
+					'dbsock'       => $this->socket,
+					'dbtype'       => $this->dbSystem,
+					'dbuser'       => $this->user,
+					'persist'      => $this->persist,
+				]);
 			}
 
 			return false;
@@ -1416,7 +1424,18 @@ class DB extends \PDO
 	 */
 	protected function reconnect()
 	{
-		$this->connect();
+		$this->connect([
+			'checkVersion' => false,
+			'createDb'     => false,
+			'dbhost'       => $this->host,
+			'dbname'       => $this->name, // '' means it is a Sphinx connection
+			'dbpass'       => $this->password,
+			'dbport'       => $this->port,
+			'dbsock'       => $this->socket,
+			'dbtype'       => $this->dbSystem,
+			'dbuser'       => $this->user,
+			'persist'      => $this->persist,
+		]);
 
 		return $this->ping();
 	}
@@ -1522,7 +1541,7 @@ class DB extends \PDO
 		if (empty($name)) {
 			throw new \RuntimeException("No database name passed to " . __METHOD__, 1);
 		}
-		$name = $this->escapeString($name);
+
 		$found = self::checkDbExists($name);
 		if ($found) {
 			try {
