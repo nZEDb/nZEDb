@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-03-14 niel
+	Mrg: PR 2398, from kaibosh - Update control tool for sabnzbd v1.x API.
 2017-03-13 niel
 	Fix: Problem with redirection to install on fully installed system (closes PR 2415).
 2017-03-11 niel
