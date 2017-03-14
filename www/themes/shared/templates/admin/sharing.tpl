@@ -1,7 +1,6 @@
 <h1>{$page->title}</h1>
 <div style="width:700px">
 	<strong>
-		Note: If you are running nntpproxy you will not be able to upload comments, turn off the post option if you are using it.<br />
 		If you turn on or off the Alternate NNTP provider you will need to click the reset button to reset sharing settings.
 	</strong>
 	<br />

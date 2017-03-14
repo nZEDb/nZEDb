@@ -109,9 +109,6 @@ while ($runVar['counts']['iterations'] > 0) {
 		case 1:
 			$runVar['scripts']['backfill'] = "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/backfill.php";
 			break;
-		case 2:
-			$runVar['scripts']['backfill'] = "{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py group";
-			break;
 		case 4:
 			$runVar['scripts']['backfill'] = "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/safe.php backfill";
 	}
