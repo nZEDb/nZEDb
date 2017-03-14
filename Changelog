@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2017-03-14 DariusIII
+	Chg: Remove use cases for python backfill script
 	Chg: Remove nntpproxy support
 2017-03-13 niel
 	Fix: Problem with redirection to install on fully installed system (closes PR 2415).

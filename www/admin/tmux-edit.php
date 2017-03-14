@@ -30,8 +30,8 @@ switch ($action) {
 $page->smarty->assign('yesno_ids', [1, 0]);
 $page->smarty->assign('yesno_names', ['yes', 'no']);
 
-$page->smarty->assign('backfill_ids', [0, 4, 2, 1]);
-$page->smarty->assign('backfill_names', ['Disabled', 'Safe', 'Group', 'All']);
+$page->smarty->assign('backfill_ids', [0, 4, 1]);
+$page->smarty->assign('backfill_names', ['Disabled', 'Safe', 'All']);
 $page->smarty->assign('backfill_group_ids', [1, 2, 3, 4, 5, 6]);
 $page->smarty->assign('backfill_group',
 					  [
