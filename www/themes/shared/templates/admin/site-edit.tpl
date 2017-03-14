@@ -1035,24 +1035,6 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="nntpproxy">Use NNTP Proxy:</label></td>
-				<td>
-					{html_radios id="nntpproxy" name='nntpproxy' values=$yesno_ids output=$yesno_names selected=$site->nntpproxy separator='<br />'}
-					<div class="hint">
-						<strong>nntpproxy does not support the POST usenet command which is required for uploading usenet comments when using sharing.</strong>
-						Using the NNTP Proxy for nZEDb can improve performance of nZEDb. It uses
-						connection pooling which not only give more control over the number of connections to use but also
-						reduces time for connection setup/teardown. The proxy also takes care of compressed headers for you.
-						To use this featrure you will need to install socketpool (sudo pip install socketpool or sudo easy_install socketpool)
-						(ensure python2 is default) and edit the configuration file (nntpproxy.conf and nntpproxy_a.conf) in the
-						update_scripts/python_scripts/lib (copy sample) directory and finally edit your www/config.php file
-						to use the proxy (username and password are ignored by the proxy - make then anything you like - the
-						proxy doesn't use ssl either). Make sure you turn off the use compressed headers option here in site
-						preferences (the proxy uses compressed headers by default and passes on decompressed data).
-					</div>
-				</td>
-			</tr>
-			<tr>
 				<td style="width:180px;"><label for="alternate_nntp">Alternate NNTP Provider:</label></td>
 				<td>
 					{html_radios id="alternate_nntp" name='alternate_nntp' values=$yesno_ids output=$yesno_names selected=$site->alternate_nntp separator='<br />'}
@@ -1105,8 +1087,7 @@
 					<input class="short" id="maxpartrepair" name="maxpartrepair" type="text" value="{$site->maxpartrepair}"/>
 					<div class="hint">The maximum amount of articles to attempt to repair at a time. If you notice that you
 						are getting a lot of parts into the missed_parts table, it is possible that you USP is not keeping up
-						with the requests. Try to reduce the threads to safe scripts, stop using safe scripts or stop using
-						nntpproxy until improves. Ar least until the cause can be determined.
+						with the requests. Try to reduce the threads to safe scripts or stop using safe scripts until improves. Ar least until the cause can be determined.
 					</div>
 				</td>
 			</tr>
@@ -1182,7 +1163,7 @@
 					<input class="short" id="binarythreads" name="binarythreads" type="text" value="{$site->binarythreads}"/>
 					<div class="hint">The number of threads for update_binaries. If you notice that you are getting a lot of
 						parts into the missed_parts table, it is possible that you USP is not keeping up with the requests.
-						Try to reduce the threads to safe scripts, stop using safe scripts or stop using nntpproxy until
+						Try to reduce the threads to safe scripts or stop using safe scripts until
 						improves. Ar least until the cause can be determined.
 					</div>
 				</td>

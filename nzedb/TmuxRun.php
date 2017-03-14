@@ -66,7 +66,7 @@ class TmuxRun extends Tmux
 						$this->_runIRCScraper(3, $runVar);
 						break;
 					case 'sharing':
-						$this->_runSharing(($runVar['constants']['nntpproxy'] == 1 ? 5 : 4), $runVar);
+						$this->_runSharing(4, $runVar);
 						break;
 					case 'updatetv':
 						$this->_runUpdateTv($runVar);
@@ -106,7 +106,7 @@ class TmuxRun extends Tmux
 						$this->_runIRCScraper(3, $runVar);
 						break;
 					case 'sharing':
-						$this->_runSharing(($runVar['constants']['nntpproxy'] == 1 ? 5 : 4), $runVar);
+						$this->_runSharing(4, $runVar);
 						break;
 					case 'updatetv':
 						$this->_runUpdateTv($runVar);
@@ -131,7 +131,7 @@ class TmuxRun extends Tmux
 						$this->_runIRCScraper(2, $runVar);
 						break;
 					case 'sharing':
-						$this->_runSharing(($runVar['constants']['nntpproxy'] == 1 ? 4 : 3), $runVar);
+						$this->_runSharing(3, $runVar);
 						break;
 					case 'updatetv':
 						$this->_runUpdateTvFull($runVar);

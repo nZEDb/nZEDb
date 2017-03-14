@@ -17,19 +17,11 @@ Misc::clearScreen();
 
 $patch = Settings::value('..sqlpatch');
 $patch = ($patch != '') ? $patch : 0;
-$nntpproxy = Settings::value('..nntpproxy');
 
 echo "Starting Tmux...\n";
 // Create a placeholder session so tmux commands do not throw server not found errors.
 exec('tmux new-session -ds placeholder 2>/dev/null');
-// Search for NNTPProxy session that might be running from a user threaded.php run. Setup a clean environment to run in.
-exec("tmux list-session | grep NNTPProxy", $nntpkill);
-if (count($nntpkill) !== 0) {
-	exec("tmux kill-session -t NNTPProxy");
-	echo $pdo->log->notice("Found NNTPProxy tmux session and killing it.");
-} else {
-	exec("tmux list-session", $session);
-}
+exec("tmux list-session", $session);
 
 $t = new Tmux();
 $tmux = $t->get();
@@ -44,17 +36,6 @@ $session = shell_exec("tmux list-session | grep $tmux_session");
 exec('tmux kill-session -t placeholder');
 if ($session != 0) {
 	exit($pdo->log->error("tmux session: '" . $tmux_session . "' is already running, aborting.\n"));
-}
-
-$nntpproxy = Settings::value('..nntpproxy');
-if ($nntpproxy == '1') {
-	$modules = ["nntp", "socketpool"];
-	foreach ($modules as &$value) {
-		if (!python_module_exist($value)) {
-			exit($pdo->log->error("\nNNTP Proxy requires " . $value .
-								  " python module but it's not installed. Aborting.\n"));
-		}
-	}
 }
 
 //reset collections dateadded to now if dateadded > delay time check
@@ -234,32 +215,6 @@ function start_apps($tmux_session)
 
 	if ($console_bash == 1) {
 		exec("tmux new-window -t $tmux_session -n bash 'printf \"\033]2;Bash\033\" && bash -i'");
-	}
-}
-
-/**
- * @param $tmux_session
- * @param $window
- */
-function window_proxy($tmux_session, $window)
-{
-	$nntpproxy = Settings::value('..nntpproxy');
-	if ($nntpproxy === '1') {
-		$DIR = nZEDb_MISC;
-		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
-		if (file_exists($DIR . "update/python/lib/nntpproxy.conf")) {
-			$nntpproxyconf = $DIR . "update/python/lib/nntpproxy.conf";
-			exec("tmux new-window -t $tmux_session -n nntpproxy 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
-		}
-	}
-
-	if ($nntpproxy === '1' && (Settings::value('..alternate_nntp') == '1')) {
-		$DIR = nZEDb_MISC;
-		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
-		if (file_exists($DIR . "update/python/lib/nntpproxy_a.conf")) {
-			$nntpproxyconf = $DIR . "update/python/lib/nntpproxy_a.conf";
-			exec("tmux selectp -t $tmux_session:$window.0; tmux splitw -t $tmux_session:$window -h -p 50 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
-		}
 	}
 }
 
