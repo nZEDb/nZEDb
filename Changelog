@@ -11,6 +11,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2017-03-14 niel
 	Mrg: PR 2398, from kaibosh - Update control tool for sabnzbd v1.x API.
+	Fix: Make NZBImport check for searchname dupes (Closes issue 2411).
 2017-03-14 DariusIII
 	Chg: Remove use cases for python backfill script
 	Chg: Remove nntpproxy support
