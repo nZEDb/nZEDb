@@ -3,7 +3,7 @@ This script runs an IRC bot to get PRE information.
 For detailed guides on how to set this up and ZNC see here:
 https://github.com/nZEDb/nZEDb_Misc/tree/master/Guides/Various
 
-You must first copy settings_example.php to settings.php and change the settings in the file (settings.php). (in /var/www/nZEDb/nzedb/config)
+You must first copy ircscraper_settings_example.php to ircscraper_settings.php and change the settings in the file (ircscraper_settings.php). (in /var/www/nZEDb/configuration)
 
 It is recommended to use ZNC, to avoid network issues (if you do not want to get banned from IRC).
 Setting up ZNC is easy : http://wiki.znc.in/Installation
