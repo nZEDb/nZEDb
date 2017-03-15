@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-03-15 niel
+	Mrg: PR 2417, from Wally73 - Update IRCScraper README.txt
 2017-03-14 niel
 	Mrg: PR 2398, from kaibosh - Update control tool for sabnzbd v1.x API.
 	Fix: Make NZBImport check for searchname dupes (Closes issue 2411).
