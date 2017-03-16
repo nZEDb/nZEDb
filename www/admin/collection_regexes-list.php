@@ -33,14 +33,13 @@ $page->smarty->assign(
 		'group'				=> $group,
 		'pagecurrent'		=> (int)$pageno,
 		'pagemaximum'		=> (int)($count / ITEMS_PER_PAGE) + 1,
+		'pager'				=> $page->smarty->fetch("pagination.tpl"),
 		'pagerquerybase'	=> WWW_TOP . "/collection_regexes-list.php?" . $group . "offset=",
 		'pagerquerysuffix'	=> '',
 		'pagertotalitems'	=> $count,
 		'regex'				=> $regex,
 	]
 );
-$pager = $page->smarty->fetch("pager.tpl");
-$page->smarty->assign('pager', $pager);
 
 $page->content = $page->smarty->fetch('collection_regexes-list.tpl');
 $page->render();

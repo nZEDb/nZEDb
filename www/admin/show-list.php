@@ -14,16 +14,27 @@ $offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
 $page->smarty->assign([
 		'showname'          => $tvshowname,
 		'tvshowlist'        => $tv->getRange($offset, ITEMS_PER_PAGE, $tvshowname),
-		'pagertotalitems'   => $tv->getCount($tvshowname),
 		'pageroffset'       => $offset,
-		'pageritemsperpage' => ITEMS_PER_PAGE,
-		'pagerquerysuffix'  => '',
-		'pagerquerybase'    => (WWW_TOP . "/show-list.php?" .
-		($tvshowname != '' ? 'showname=' . $tvshowname . '&amp;' : '') . "&offset="
-		)
 	]
 );
-$page->smarty->assign('pager', $page->smarty->fetch("pager.tpl"));
+
+// TODO modelise.
+$count = $tv->getCount($tvshowname);
+
+$page->smarty->assign('pager', $page->smarty->fetch("pagination.tpl"));
+$showName = $tvshowname != '' ? 'showname=' . $tvshowname . '&amp;' : '';
+
+$pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
+$page->smarty->assign(
+	[
+		'pagecurrent'      => (int)$pageno,
+		'pagemaximum'      => (int)($count / ITEMS_PER_PAGE) + 1,
+		'pager'            => $page->smarty->fetch("pagination.tpl"),
+		'pagerquerybase'   => WWW_TOP . "/show-list.php?" . $showName . "&offset=",
+		'pagerquerysuffix' => '',
+		'pagertotalitems'  => $count,
+	]
+);
 
 $page->content = $page->smarty->fetch('show-list.tpl');
 $page->render();
