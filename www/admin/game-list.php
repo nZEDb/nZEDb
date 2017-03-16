@@ -4,23 +4,29 @@ require_once './config.php';
 use nzedb\Games;
 
 $page = new AdminPage();
-$game = new Games(['Settings' => $page->settings]);
-
 $page->title = "Game List";
 
-$gamecount = $game->getCount();
+$game = new Games(['Settings' => $page->settings]);
+
+// TODO modelise.
+$count = $game->getCount();
 
 $offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
-$page->smarty->assign('pagertotalitems', $gamecount);
-$page->smarty->assign('pageroffset', $offset);
-$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/game-list.php?offset=");
-$pager = $page->smarty->fetch("pager.tpl");
-$page->smarty->assign('pager', $pager);
-
 $gamelist = $game->getRange($offset, ITEMS_PER_PAGE);
 
 $page->smarty->assign('gamelist', $gamelist);
+
+$pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
+$page->smarty->assign(
+	[
+		'pagecurrent'      => (int)$pageno,
+		'pagemaximum'      => (int)($count / ITEMS_PER_PAGE) + 1,
+		'pager'            => $page->smarty->fetch("pagination.tpl"),
+		'pagerquerybase'   => WWW_TOP . "/game-list.php?offset=",
+		'pagerquerysuffix' => '',
+		'pagertotalitems'  => $count,
+	]
+);
 
 $page->content = $page->smarty->fetch('game-list.tpl');
 $page->render();

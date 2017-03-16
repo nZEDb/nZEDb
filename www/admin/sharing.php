@@ -53,15 +53,25 @@ if (!empty($_POST)) {
 
 $total = $page->settings->queryOneRow('SELECT COUNT(id) AS total FROM sharing_sites');
 
-$page->smarty->assign('pagertotalitems', ($total === false ? 0 : $total['total']));
+// TODO modelise.
+$count = $total === false ? 0 : $total['total'];
+
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', 25);
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/sharing.php?offset=");
-
-$pager = $page->smarty->fetch("pager.tpl");
-$page->smarty->assign('pager', $pager);
 
 $page->smarty->assign(['local' => $ourSite, 'sites' => $allSites]);
+
+$pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
+$page->smarty->assign(
+	[
+		'pagecurrent'      => (int)$pageno,
+		'pagemaximum'      => (int)($count / ITEMS_PER_PAGE) + 1,
+		'pager'            => $page->smarty->fetch("pagination.tpl"),
+		'pagerquerybase'   => WWW_TOP . "/sharing.php?offset=",
+		'pagerquerysuffix' => '',
+		'pagertotalitems'  => $count,
+	]
+);
 
 $page->content = $page->smarty->fetch('sharing.tpl');
 $page->render();

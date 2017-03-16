@@ -4,24 +4,33 @@ require_once './config.php';
 use nzedb\Movie;
 
 $page  = new AdminPage();
-$movie = new Movie(['Settings' => $page->settings]);
-
 $page->title = "Movie List";
 
-$movietitle = (isset($_REQUEST['movietitle']) && !empty($_REQUEST['movietitle']) ? $_REQUEST['movietitle'] : '');
-$movcount = $movie->getCount();
+$movie = new Movie(['Settings' => $page->settings]);
 
-$offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
+// TODO modelise.
+$count = $movie->getCount();
+
+$movietitle = (isset($_REQUEST['movietitle']) && !empty($_REQUEST['movietitle']) ?
+	$_REQUEST['movietitle'] : '');
 $page->smarty->assign('movietitle', $movietitle);
-$page->smarty->assign('pagertotalitems', $movcount);
+$offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
 $page->smarty->assign('pageroffset', $offset);
-$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/movie-list.php?offset=");
-$pager = $page->smarty->fetch("pager.tpl");
-$page->smarty->assign('pager', $pager);
 
 $movielist = $movie->getRange($offset, ITEMS_PER_PAGE, $movietitle);
 $page->smarty->assign('movielist', $movielist);
+
+$pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
+$page->smarty->assign(
+	[
+		'pagecurrent'      => (int)$pageno,
+		'pagemaximum'      => (int)($count / ITEMS_PER_PAGE) + 1,
+		'pager'            => $page->smarty->fetch("pagination.tpl"),
+		'pagerquerybase'   => WWW_TOP . "/movie-list.php?offset=",
+		'pagerquerysuffix' => '',
+		'pagertotalitems'  => $count,
+	]
+);
 
 $page->content = $page->smarty->fetch('movie-list.tpl');
 $page->render();
