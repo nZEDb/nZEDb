@@ -1,28 +1,27 @@
 <?php
 require_once './config.php';
 
-use nzedb\Groups;
+use app\models\Groups;
 
-$page   = new AdminPage();
-$groups = new Groups(['Settings' => $page->settings]);
+$page = new AdminPage();
+$page->title = 'Group List';
 
+$count = Groups::findRangeCount($groupName, -1);
 $groupName = (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname']) ? $_REQUEST['groupname'] : '');
-$offset    = (isset($_REQUEST['offset']) ? $_REQUEST['offset'] : 0);
-
+$pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
+$search = $groupName != '' ? "groupname=$groupName&amp;" : '';
 $page->smarty->assign(
 	[
-		'groupname' => $groupName,
-		'pagertotalitems' => $groups->getCount($groupName, -1),
-		'pageroffset' => $offset,
-		'pageritemsperpage' => ITEMS_PER_PAGE,
-		'pagerquerybase' =>
-			WWW_TOP . "/group-list.php?" . (($groupName != '') ? "groupname=$groupName&amp;" : '') . 'offset=',
-		'pagerquerysuffix' => '',
-		'grouplist' => $groups->getRange($offset, ITEMS_PER_PAGE, $groupName, -1)
+		'grouplist'			=> Groups::findRange($pageno, ITEMS_PER_PAGE, $groupName)->to('array'),
+		'groupname'			=> $groupName,
+		'pagecurrent'		=> (int)$pageno,
+		'pagemaximum'		=> (int)($count / ITEMS_PER_PAGE) + 1,
+		'pagertotalitems'	=> $count,
+		'pagerquerybase'	=> WWW_TOP . "/group-list.php?" . $search . 'page='
 	]
 );
-$page->smarty->assign('pager', $page->smarty->fetch('pager.tpl'));
+$pager = $page->smarty->fetch("pager.tpl");
+$page->smarty->assign('pager', $pager);
 
-$page->title = 'Group List';
 $page->content = $page->smarty->fetch('group-list.tpl');
 $page->render();

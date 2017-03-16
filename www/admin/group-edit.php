@@ -1,6 +1,7 @@
 <?php
 require_once './config.php';
 
+use app\models\Groups as GroupInfo;
 use nzedb\Groups;
 
 $page   = new AdminPage();
@@ -30,10 +31,11 @@ switch ($action) {
 		if (isset($_GET["id"])) {
 			$page->title = "Newsgroup Edit";
 			$id          = $_GET["id"];
-			$group       = $groups->getByID($id);
+			$group       = GroupInfo::findByID($id);
 		} else {
 			$page->title = "Newsgroup Add";
-			$group = [
+			$group = GroupInfo::create(
+				[
 				'id'                    => '',
 				'name'                  => '',
 				'description'           => '',
@@ -44,7 +46,7 @@ switch ($action) {
 				'first_record'          => 0,
 				'last_record'           => 0,
 				'backfill_target'       => 0
-			];
+			]);
 		}
 		$page->smarty->assign('group', $group);
 		break;

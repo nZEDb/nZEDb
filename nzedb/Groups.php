@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use app\models\Groups as GroupInfo;
 use nzedb\db\DB;
 
 class Groups
@@ -64,22 +65,6 @@ class Groups
 		}
 
 		return $temp_array;
-	}
-
-	/**
-	 * Get all properties of a single group by its ID
-	 *
-	 * @param $id
-	 *
-	 * @return array|bool
-	 */
-	public function getByID($id)
-	{
-		return $this->pdo->queryOneRow("
-			SELECT g.*
-			FROM groups g
-			WHERE g.id = {$id}"
-		);
 	}
 
 	/**
@@ -397,11 +382,7 @@ class Groups
 	{
 		$this->purge($id);
 
-		return $this->pdo->queryExec("
-			DELETE g
-			FROM groups g
-			WHERE g.id = {$id}"
-		);
+		return GroupInfo::remove(['id' => $id]);
 	}
 
 	/**
