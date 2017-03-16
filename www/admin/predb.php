@@ -4,6 +4,10 @@ require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'smarty.php');
 use app\models\Predb;
 
 $page = new AdminPage();
+$page->title = "Browse PreDb";
+$page->meta_title = "View PreDb info";
+$page->meta_keywords = "view,predb,info,description,details";
+$page->meta_description = "View PreDb info";
 
 $predb = new PreDb();
 
@@ -17,29 +21,24 @@ if (isset($_REQUEST['presearch'])) {
 	$parr = $predb->getAll($offset, ITEMS_PER_PAGE);
 }
 
-$pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
-$page->smarty->assign(
-	[
-		'pagecurrent'     => $pageno,
-		'pagemaximum'     => (int)($parr['count'] / ITEMS_PER_PAGE) + 1,
-	]
-);
-
-$page->smarty->assign('pagertotalitems', $parr['count']);
-$page->smarty->assign('pageroffset', $offset);
-$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/predb.php?page=");
-$page->smarty->assign('pagerquerysuffix', "#results");
+// TODO modelise.
+$count = $parr['count'];
 $page->smarty->assign('lastSearch', $lastSearch);
 
-$page->smarty->assign('pager', $page->smarty->fetch("pager.tpl"));
 $page->smarty->assign('results', $parr['arr']);
 
 
-$page->title = "Browse PreDb";
-$page->meta_title = "View PreDb info";
-$page->meta_keywords = "view,predb,info,description,details";
-$page->meta_description = "View PreDb info";
+$pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
+$page->smarty->assign(
+	[
+		'pagecurrent'      => (int)$pageno,
+		'pagemaximum'      => (int)($count / ITEMS_PER_PAGE) + 1,
+		'pager'            => $page->smarty->fetch("pagination.tpl"),
+		'pagerquerybase'   => WWW_TOP . "/predb.php?page=",
+		'pagerquerysuffix' => '#results',
+		'pagertotalitems'  => $count,
+	]
+);
 
 $count = Predb::findRangeCount($_REQUEST['presearch']);
 $lastsearch = isset($_REQUEST['presearch']) ? $_REQUEST['presearch'] : '';

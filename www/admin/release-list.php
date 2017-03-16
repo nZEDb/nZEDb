@@ -4,22 +4,29 @@ require_once './config.php';
 use nzedb\Releases;
 
 $page     = new AdminPage();
-$releases = new Releases(['Settings' => $page->settings]);
-
 $page->title = "Release List";
 
-$releaseCount = $releases->getCount();
+$releases = new Releases(['Settings' => $page->settings]);
+
+// TODO modelise.
+$count = $releases->getCount();
 
 $offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
-$page->smarty->assign('pagertotalitems', $releaseCount);
-$page->smarty->assign('pageroffset', $offset);
-$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/release-list.php?offset=");
-$pager = $page->smarty->fetch("pager.tpl");
-$page->smarty->assign('pager', $pager);
 
 $releaseList = $releases->getRange($offset, ITEMS_PER_PAGE);
 $page->smarty->assign('releaselist', $releaseList);
+
+$pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
+$page->smarty->assign(
+	[
+		'pagecurrent'      => (int)$pageno,
+		'pagemaximum'      => (int)($count / ITEMS_PER_PAGE) + 1,
+		'pager'            => $page->smarty->fetch("pagination.tpl"),
+		'pagerquerybase'   => WWW_TOP . "/release-list.php?offset=",
+		'pagerquerysuffix' => '',
+		'pagertotalitems'  => $count,
+	]
+);
 
 $page->content = $page->smarty->fetch('release-list.tpl');
 $page->render();

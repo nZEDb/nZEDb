@@ -44,7 +44,7 @@ $data = $file = false;
 if (is_file($logPath)) {
 	$file = file($logPath);
 }
-$total = 0;
+$count = 0;
 if ($file !== false) {
 	rsort($file);
 	$data = [];
@@ -61,7 +61,7 @@ if ($file !== false) {
 	if (count($data) === 0) {
 		$data = false;
 	} else {
-		$total = count($data);
+		$count = count($data);
 		$data  = array_slice($data, $offset, ITEMS_PER_PAGE);
 	}
 }
@@ -74,13 +74,21 @@ $page->smarty->assign(
 	]
 );
 
-$page->smarty->assign('pagertotalitems', $total);
 $page->smarty->assign('pageroffset', $offset);
-$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/view-logs.php?t=" . $type . "&amp;offset=");
 
-$pager = $page->smarty->fetch("pager.tpl");
-$page->smarty->assign('pager', $pager);
+
+$pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
+$page->smarty->assign(
+	[
+		'pagecurrent'      => (int)$pageno,
+		'pagemaximum'      => (int)($count / ITEMS_PER_PAGE) + 1,
+		'pager'            => $page->smarty->fetch("pagination.tpl"),
+		'pagerquerybase'   => WWW_TOP . "/view-logs.php?t=" . $type . "&amp;offset=",
+		'pagerquerysuffix' => '',
+		'pagertotalitems'  => $count,
+	]
+);
 
 $page->content = $page->smarty->fetch('view-logs.tpl');
 $page->render();
+// TODO modelise.

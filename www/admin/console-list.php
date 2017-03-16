@@ -4,23 +4,27 @@ require_once './config.php';
 use nzedb\Console;
 
 $page = new AdminPage();
-$con  = new Console(['Settings' => $page->settings]);
-
 $page->title = "Console List";
 
-$concount = $con->getCount();
+$con  = new Console(['Settings' => $page->settings]);
 
-$offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
-$page->smarty->assign('pagertotalitems', $concount);
-$page->smarty->assign('pageroffset', $offset);
-$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/console-list.php?offset=");
-$pager = $page->smarty->fetch("pager.tpl");
-$page->smarty->assign('pager', $pager);
+// TODO modelise.
+$count = $con->getCount();
 
 $consolelist = $con->getRange($offset, ITEMS_PER_PAGE);
-
 $page->smarty->assign('consolelist', $consolelist);
+
+$pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
+$page->smarty->assign(
+	[
+		'pagecurrent'		=> (int)$pageno,
+		'pagemaximum'		=> (int)($count / ITEMS_PER_PAGE) + 1,
+		'pager'				=> $page->smarty->fetch("pagination.tpl"),
+		'pagerquerybase'	=> WWW_TOP . "/console-list.php?offset=",
+		'pagerquerysuffix'	=> '',
+		'pagertotalitems'	=> $count,
+	]
+);
 
 $page->content = $page->smarty->fetch('console-list.tpl');
 $page->render();

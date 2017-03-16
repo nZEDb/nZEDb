@@ -4,23 +4,27 @@ require_once './config.php';
 use nzedb\DnzbFailures;
 
 $page = new AdminPage();
+$page->title = "Failed Releases List";
 
 $failed = new DnzbFailures(['Settings' => $page->settings]);
 
-$page->title = "Failed Releases List";
-
-$frelcount = $failed->getCount();
-
-$offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
-$page->smarty->assign('pagertotalitems', $frelcount);
-$page->smarty->assign('pageroffset', $offset);
-$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/failrel-list.php?offset=");
-$pager = $page->smarty->fetch("pager.tpl");
-$page->smarty->assign('pager', $pager);
+// TODO modelise.
+$count = $failed->getCount();
 
 $frellist = $failed->getFailedRange($offset, ITEMS_PER_PAGE);
 $page->smarty->assign('releaselist', $frellist);
+
+$pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
+$page->smarty->assign(
+	[
+		'pagecurrent'		=> (int)$pageno,
+		'pagemaximum'		=> (int)($count / ITEMS_PER_PAGE) + 1,
+		'pager'				=> $page->smarty->fetch("pagination.tpl"),
+		'pagerquerybase'	=> WWW_TOP . "/failrel-list.php?offset=",
+		'pagerquerysuffix'	=> '',
+		'pagertotalitems'	=> $count,
+	]
+);
 
 $page->content = $page->smarty->fetch('failrel-list.tpl');
 $page->render();

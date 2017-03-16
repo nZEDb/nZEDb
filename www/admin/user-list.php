@@ -2,7 +2,6 @@
 require_once './config.php';
 
 $page = new AdminPage();
-
 $page->title = "User List";
 
 $roles = [];
@@ -20,6 +19,7 @@ foreach ($variables as $key => $variable) {
 	checkREQUEST($key);
 }
 
+// TODO modelise.
 $page->smarty->assign([
 		'username'          => $variables['username'],
 		'email'             => $variables['email'],
@@ -27,10 +27,7 @@ $page->smarty->assign([
 		'role'              => $variables['role'],
 		'role_ids'          => array_keys($roles),
 		'role_names'        => $roles,
-		'pagertotalitems'   => $page->users->getCount(),
 		'pageroffset'       => $offset,
-		'pageritemsperpage' => ITEMS_PER_PAGE,
-		'pagerquerybase'    => WWW_TOP . "/user-list.php?ob=" . $orderBy . $uSearch . "&amp;offset=",
 		'userlist' => $page->users->getRange(
 			$offset, ITEMS_PER_PAGE, $orderBy, $variables['username'],
 			$variables['email'], $variables['host'], $variables['role'], true
@@ -41,8 +38,19 @@ $page->smarty->assign([
 foreach ($ordering as $orderType) {
 	$page->smarty->assign('orderby' . $orderType, WWW_TOP . "/user-list.php?ob=" . $orderType . "&amp;offset=0");
 }
+$count = $page->users->getCount();
 
-$page->smarty->assign('pager', $page->smarty->fetch("pager.tpl"));
+$pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
+$page->smarty->assign(
+	[
+		'pagecurrent'      => (int)$pageno,
+		'pagemaximum'      => (int)($count / ITEMS_PER_PAGE) + 1,
+		'pager'            => $page->smarty->fetch("pagination.tpl"),
+		'pagerquerybase'   => WWW_TOP . "/user-list.php?ob=" . $orderBy . $uSearch . "&amp;offset=",
+		'pagerquerysuffix' => '',
+		'pagertotalitems'  => $count,
+	]
+);
 $page->content = $page->smarty->fetch('user-list.tpl');
 $page->render();
 
