@@ -14,7 +14,7 @@ $page->smarty->assign(
 		'commentslist'		=> ReleaseComments::findRange($pageno, ITEMS_PER_PAGE)->to('array'),
 		'pagecurrent'		=> (int)$pageno,
 		'pagemaximum'		=> (int)($count / ITEMS_PER_PAGE) + 1,
-		'pager'				=> $page->smarty->fetch("pagination.tpl"),
+		'pager'				=> $page->smarty->fetch("paginate.tpl"),
 		'pagerquerybase'	=> WWW_TOP . "/comments-list.php?page=",
 		'pagerquerysuffix'	=> '',
 		'pagertotalitems'	=> $count,
