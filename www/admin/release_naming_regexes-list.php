@@ -18,7 +18,7 @@ $regex  = $regexes->getRegex($group, ITEMS_PER_PAGE, $offset);
 $page->smarty->assign([
 	'group'             => $group,
 	'pagertotalitems'   => $count,
-	'pager'				=> $page->smarty->fetch("pagination.tpl"),
+	'pager'				=> $page->smarty->fetch("paginate.tpl"),
 	'pageritemsperpage' => ITEMS_PER_PAGE,
 	'pagerquerybase'    => WWW_TOP . "/release_naming_regexes-list.php?" . $group . "offset=",
 	'pagerquerysuffix'  => '',

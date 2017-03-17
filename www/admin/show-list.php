@@ -21,7 +21,6 @@ $page->smarty->assign([
 // TODO modelise.
 $count = $tv->getCount($tvshowname);
 
-$page->smarty->assign('pager', $page->smarty->fetch("pagination.tpl"));
 $showName = $tvshowname != '' ? 'showname=' . $tvshowname . '&amp;' : '';
 
 $pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
@@ -29,7 +28,7 @@ $page->smarty->assign(
 	[
 		'pagecurrent'      => (int)$pageno,
 		'pagemaximum'      => (int)($count / ITEMS_PER_PAGE) + 1,
-		'pager'            => $page->smarty->fetch("pagination.tpl"),
+		'pager'            => $page->smarty->fetch("paginate.tpl"),
 		'pagerquerybase'   => WWW_TOP . "/show-list.php?" . $showName . "&offset=",
 		'pagerquerysuffix' => '',
 		'pagertotalitems'  => $count,
