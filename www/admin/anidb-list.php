@@ -26,7 +26,7 @@ $page->smarty->assign(
 		'animetitle'		=> $name,
 		'pagecurrent'		=> (int)$pageno,
 		'pagemaximum'		=> (int)($count / ITEMS_PER_PAGE) + 1,
-		'pager'				=> $page->smarty->fetch("pagination.tpl"),
+		'pager'				=> $page->smarty->fetch("paginate.tpl"),
 		'pagerquerybase'	=> WWW_TOP . '/anidb-list.php?' . $search . '&page=',
 		'pagerquerysuffix'	=> '',
 		'pagertotalitems'	=> $count,
