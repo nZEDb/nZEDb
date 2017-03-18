@@ -17,78 +17,68 @@ $category = new Category();
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-switch ($action) {
-	case 'submit':
-		$error = "";
+if ($action == 'submit') {
+	$error = "";
 
-		if (!empty($_POST['book_reqids'])) {
-			// book_reqids is an array it needs to be a comma separated string, make it so.
-			$_POST['book_reqids'] = is_array($_POST['book_reqids']) ?
-				implode(', ', $_POST['book_reqids']) : $_POST['book_reqids'];
-		}
-		// update site table as always
-		$ret = $page->settings->settingsUpdate($_POST);
+	if (!empty($_POST['book_reqids'])) {
+		// book_reqids is an array it needs to be a comma separated string, make it so.
+		$_POST['book_reqids'] = is_array($_POST['book_reqids']) ?
+			implode(', ', $_POST['book_reqids']) : $_POST['book_reqids'];
+	}
+	// update site table as always
+	$ret = $page->settings->settingsUpdate($_POST);
 
-		if (is_int($ret)) {
-			// TODO convert to switch
-			if ($ret == Settings::ERR_BADUNRARPATH) {
+	if (is_int($ret)) {
+		switch ($ret) {
+			case Settings::ERR_BADUNRARPATH:
 				$error = "The unrar path does not point to a valid binary";
-			} else {
-				if ($ret == Settings::ERR_BADFFMPEGPATH) {
-					$error = "The ffmpeg path does not point to a valid binary";
-				} else {
-					if ($ret == Settings::ERR_BADMEDIAINFOPATH) {
-						$error = "The mediainfo path does not point to a valid binary";
-					} else {
-						if ($ret == Settings::ERR_BADNZBPATH) {
-							$error = "The nzb path does not point to an existing directory";
-						} else {
-							if ($ret == Settings::ERR_DEEPNOUNRAR) {
-								$error = "Deep password check requires a valid path to unrar binary";
-							} else {
-								if ($ret == Settings::ERR_BADTMPUNRARPATH) {
-									$error = "The temp unrar path is not a valid directory";
-								} else {
-									if ($ret == Settings::ERR_BADNZBPATH_UNREADABLE) {
-										$error = "The nzb path cannot be read from. Check the permissions.";
-									} else {
-										if ($ret == Settings::ERR_BADNZBPATH_UNSET) {
-											$error = "The nzb path is required, please set it.";
-										} else {
-											if ($ret == Settings::ERR_BAD_COVERS_PATH) {
-												$error = 'The covers&apos; path is required and must exist. Please set it.';
-											} else {
-												if ($ret == Settings::ERR_BAD_YYDECODER_PATH) {
-													$error = 'The yydecoder&apos;s path must exist. Please set it or leave it empty.';
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+				break;
+			case Settings::ERR_BADFFMPEGPATH:
+				$error = "The ffmpeg path does not point to a valid binary";
+				break;
+			case Settings::ERR_BADMEDIAINFOPATH:
+				$error = "The mediainfo path does not point to a valid binary";
+				break;
+			case Settings::ERR_BADNZBPATH:
+				$error = "The nzb path does not point to an existing directory";
+				break;
+			case Settings::ERR_DEEPNOUNRAR:
+				$error = "Deep password check requires a valid path to unrar binary";
+				break;
+			case Settings::ERR_BADTMPUNRARPATH:
+				$error = "The temp unrar path is not a valid directory";
+				break;
+			case Settings::ERR_BADNZBPATH_UNREADABLE:
+				$error = "The nzb path cannot be read from. Check the permissions.";
+				break;
+			case Settings::ERR_BADNZBPATH_UNSET:
+				$error = "The nzb path is required, please set it.";
+				break;
+			case Settings::ERR_BAD_COVERS_PATH:
+				$error = 'The covers&apos; path is required and must exist. Please set it.';
+				break;
+			case Settings::ERR_BAD_YYDECODER_PATH:
+				$error = 'The yydecoder&apos;s path must exist. Please set it or leave it empty.';
+				break;
+			default:
+				$error = 'Unknown error!';
 		}
+	}
 
-		if ($error == "") {
-			$site     = $ret;
-			$returnid = $site['id'];
-			header("Location:" . WWW_TOP . "/site-edit.php?id=" . $returnid);
-		} else {
-			$page->smarty->assign('error', $error);
-			$page->smarty->assign('settings', $page->settings->rowsToArray($_POST));
-		}
-		break;
-
-	case 'view':
-	default:
-		$page->title = "Site Edit";
-		$site        = $page->settings;
-		$page->smarty->assign('site', $site);
-		$page->smarty->assign('settings', $site->getSettingsAsTree());
-		break;
+	if ($error == "") {
+		$site = $ret;
+		$returnid = $site['id'];
+		header("Location:" . WWW_TOP . "/site-edit.php?id=" . $returnid);
+	} else {
+		$page->smarty->assign('error', $error);
+		$page->smarty->assign('settings', $page->settings->rowsToArray($_POST));
+	}
+} else {
+	// 'view' or any other action.
+	$page->title = "Site Edit";
+	$site        = $page->settings;
+	$page->smarty->assign('site', $site);
+	$page->smarty->assign('settings', $site->getSettingsAsTree());
 }
 
 if ($error === '') {
