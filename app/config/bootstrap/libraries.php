@@ -128,6 +128,11 @@ Libraries::add('app', array('default' => true));
 // 	Libraries::add(basename($path), array('path' => $path));
 // }
 
+// Add table names to ignore inflection.
+\lithium\util\Inflector::rules('uninflected', ['Gamesinfo', 'gamesinfo']);
+
+
+
 if (file_exists(nZEDb_CONFIGS . 'install.lock')) {
 	Libraries::add('nzedb',
 	[
