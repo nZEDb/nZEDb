@@ -1,6 +1,5 @@
 <?php
-
-require_once './config.php';
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'smarty.php');
 
 if (!isset($_GET['id'])) {
 	header('Location: ' . WWW_TOP . '/musicgenre-list.php');

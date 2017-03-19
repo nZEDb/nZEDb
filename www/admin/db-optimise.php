@@ -1,5 +1,6 @@
 <?php
-require_once './config.php';
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'smarty.php');
+
 $page = new AdminPage();
 
 $tablelist = $page->settings->optimise(true);
