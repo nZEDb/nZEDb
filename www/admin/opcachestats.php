@@ -1,9 +1,9 @@
 <?php
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'smarty.php');
 
 // #nZEDb : Denotes modifications done for nZEDb integration.
 
 /* #nZEDb */
-require_once './config.php';
 $page     = new AdminPage();
 $nZEDbURL = $page->serverurl;
 /* #nZEDb */

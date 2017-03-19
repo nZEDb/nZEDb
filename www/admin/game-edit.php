@@ -1,5 +1,5 @@
 <?php
-require_once './config.php';
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'smarty.php');
 
 use nzedb\Games;
 use nzedb\Genres;

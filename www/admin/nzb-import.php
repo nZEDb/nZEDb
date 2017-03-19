@@ -7,7 +7,7 @@ if (PHP_SAPI === 'cli') {
 	exit('This is a web only script, run misc/testing/nzb-import.php instead.');
 }
 
-require_once './config.php';
+require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'smarty.php');
 $page = new AdminPage();
 
 $filesToProcess = [];
