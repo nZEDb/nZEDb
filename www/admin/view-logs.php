@@ -73,8 +73,6 @@ $page->smarty->assign(
 	]
 );
 
-$page->smarty->assign('pageroffset', $offset);
-
 
 $pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
 $page->smarty->assign(
@@ -90,4 +88,3 @@ $page->smarty->assign(
 
 $page->content = $page->smarty->fetch('view-logs.tpl');
 $page->render();
-// TODO modelise.
