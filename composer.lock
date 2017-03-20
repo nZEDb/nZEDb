@@ -4,8 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1a744bb6541a572d407957a4e5b25588",
-    "content-hash": "84b241cc626372f31f1f2511dbd981a4",
+    "content-hash": "e1917f9299f6eaa779c1b2dc712b1ae4",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -41,7 +40,7 @@
                 "forking",
                 "php"
             ],
-            "time": "2016-06-21 18:44:21"
+            "time": "2016-06-21T18:44:21+00:00"
         },
         {
             "name": "bower-asset/animate.css",
@@ -1102,7 +1101,7 @@
                 "zend",
                 "zikula"
             ],
-            "time": "2016-08-13 20:53:52"
+            "time": "2016-08-13T20:53:52+00:00"
         },
         {
             "name": "fxp/composer-asset-plugin",
@@ -1161,7 +1160,7 @@
                 "npm",
                 "package"
             ],
-            "time": "2017-03-17 11:16:25"
+            "time": "2017-03-17T11:16:25+00:00"
         },
         {
             "name": "giantbomb/giantbomb",
@@ -1253,7 +1252,7 @@
                 "recaptcha",
                 "spam"
             ],
-            "time": "2015-09-02 17:23:59"
+            "time": "2015-09-02T17:23:59+00:00"
         },
         {
             "name": "james-heinrich/getid3",
@@ -1289,7 +1288,7 @@
                 "php",
                 "tags"
             ],
-            "time": "2016-12-14 14:29:29"
+            "time": "2016-12-14T14:29:29+00:00"
         },
         {
             "name": "joshpinkney/tv-maze-php-api",
@@ -1362,7 +1361,7 @@
             "keywords": [
                 "api"
             ],
-            "time": "2016-10-25 08:14:27"
+            "time": "2016-10-25T08:14:27+00:00"
         },
         {
             "name": "nzedb/Git.php",
@@ -1447,7 +1446,7 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2017-01-09 09:33:47"
+            "time": "2017-01-09T09:33:47+00:00"
         },
         {
             "name": "smarty/smarty",
@@ -1502,7 +1501,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2016-08-07 18:46:49"
+            "time": "2016-08-07T18:46:49+00:00"
         },
         {
             "name": "unionofrad/lithium",
@@ -1514,7 +1513,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/5e894ca64a07d03ad1f09230875b621d04405a21",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/49d2d46a63d6f2a94c28e392ee67b150aed4d524",
                 "reference": "49d2d46a63d6f2a94c28e392ee67b150aed4d524",
                 "shasum": ""
             },
@@ -1591,7 +1590,7 @@
                 "source": "https://github.com/zeebinz/rarinfo/tree/v2.5.0",
                 "issues": "https://github.com/zeebinz/rarinfo/issues"
             },
-            "time": "2016-10-15 16:33:21"
+            "time": "2016-10-15T16:33:21+00:00"
         }
     ],
     "packages-dev": [
