@@ -32,10 +32,6 @@
   "extra": {
     "branch-alias": {
       "dev-dev": "0.x-dev"
-    },
-    "asset-installer-paths": {
-      "npm-asset-library": "www/themes/shared/libs",
-      "bower-asset-library": "www/themes/shared/libs"
     }
   },
   "homepage": "http://nzedb.com",
