@@ -9,6 +9,9 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-03-20 niel
+	Chg: Copied asset-installer setting to config section of composer.json in preparation for
+		updating it.
 2017-03-15 niel
 	Mrg: PR 2417, from Wally73 - Update IRCScraper README.txt
 2017-03-14 niel

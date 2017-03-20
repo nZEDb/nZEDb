@@ -16,6 +16,10 @@
     ]
   },
   "config": {
+    "asset-installer-paths": {
+      "npm-asset-library": "www/themes/shared/libs",
+      "bower-asset-library": "www/themes/shared/libs"
+    },
     "process-timeout": 3600,
     "preferred-install": {
       "*": "source"
