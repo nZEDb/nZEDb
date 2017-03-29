@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-03-29 DariusIII
+	Chg: Increase release size floor values to -10/10 in NameFixer class uidCheck function for better mediainfo matching
 2017-03-25 niel
 	Fix: Update import predb daily batch script to handle changed layout on github. Also adds the
 		date of the file to successful download message.

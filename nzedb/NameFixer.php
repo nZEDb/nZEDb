@@ -1652,7 +1652,7 @@ class NameFixer
 			if ($result instanceof \Traversable) {
 				foreach ($result AS $res) {
 					$floor = round(($res['relsize'] - $release['relsize']) / $res['relsize'] * 100, 0);
-					if ($floor >= -5 && $floor <= 5) {
+					if ($floor >= -10 && $floor <= 10) {
 						$this->updateRelease(
 							$release,
 							$res['searchname'],
