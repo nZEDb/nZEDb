@@ -8,7 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2017-03-30 b3rs3rk
+	Fix: Gamma PC Games view doesn't display grouped by gamesinfo_id
 2017-03-30 DariusIII
 	Chg: Further improve mediainfo uniqueid matching
 2017-03-29 DariusIII
