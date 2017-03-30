@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-03-30 DariusIII
+	Chg: Further improve mediainfo uniqueid matching
 2017-03-29 DariusIII
 	Chg: Increase release size floor values to -10/10 in NameFixer class uidCheck function for better mediainfo matching
 2017-03-25 niel
