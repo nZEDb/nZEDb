@@ -14,7 +14,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2017-04-03 niel
-	Fix: Remove git repository checks from Tmux scripts. This is an effort to remove the use of the
+	Chg: Remove git repository checks from Tmux scripts. This is an effort to remove the use of the
 		repository from user code. Dev code will still use it for some tasks (e.g. apply tags for
 		releases).
 2017-03-30 b3rs3rk
@@ -22,7 +22,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2017-03-30 DariusIII
 	Chg: Further improve mediainfo uniqueid matching
 2017-03-29 DariusIII
-	Chg: Increase release size floor values to -10/10 in NameFixer class uidCheck function for better mediainfo matching
+	Chg: Increase release size floor values to -10/10 in NameFixer class uidCheck function for
+		better mediainfo matching.
 2017-03-25 niel
 	Fix: Update import predb daily batch script to handle changed layout on github. Also adds the
 		date of the file to successful download message.
@@ -53,6 +54,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Mrg: dev-refactor-tpg, which removes conditional checking for TPG as it is no longer optional.
 2017-03-06 niel
 	Mrg: PR 2406, from egyptianbman - Fix `zed update nzedb`.
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.0.0
 
 
 2017-03-01 niel
