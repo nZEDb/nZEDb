@@ -8,11 +8,16 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
 2017-04-03 niel
 	Fix: Remove git repository checks from Tmux scripts. This is an effort to remove the use of the
 		repository from user code. Dev code will still use it for some tasks (e.g. apply tags for
 		releases).
+2017-03-30 b3rs3rk
+	Fix: Gamma PC Games view doesn't display grouped by gamesinfo_id
+2017-03-30 DariusIII
+	Chg: Further improve mediainfo uniqueid matching
+2017-03-29 DariusIII
+	Chg: Increase release size floor values to -10/10 in NameFixer class uidCheck function for better mediainfo matching
 2017-03-25 niel
 	Fix: Update import predb daily batch script to handle changed layout on github. Also adds the
 		date of the file to successful download message.

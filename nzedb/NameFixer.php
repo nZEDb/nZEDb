@@ -1646,13 +1646,13 @@ class NameFixer
 				STRAIGHT_JOIN releases r ON ru.releases_id = r.id
 				WHERE ru.uniqueid = UNHEX({$this->pdo->escapeString($release['uid'])})
 				AND ru.releases_id != {$release['releases_id']}
-				AND (r.predb_id > 0 OR r.anidbid > 0)"
+				AND (r.predb_id > 0 OR r.anidbid > 0 OR r.fromname = 'nonscene@Ef.net (EF)')"
 			);
 
 			if ($result instanceof \Traversable) {
 				foreach ($result AS $res) {
 					$floor = round(($res['relsize'] - $release['relsize']) / $res['relsize'] * 100, 0);
-					if ($floor >= -5 && $floor <= 5) {
+					if ($floor >= -10 && $floor <= 10) {
 						$this->updateRelease(
 							$release,
 							$res['searchname'],
