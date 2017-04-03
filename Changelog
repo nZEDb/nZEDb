@@ -9,6 +9,54 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-04-03 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.1.0
+
+
+2017-04-03 niel
+	Chg: Remove git repository checks from Tmux scripts. This is an effort to remove the use of the
+		repository from user code. Dev code will still use it for some tasks (e.g. apply tags for
+		releases).
+2017-03-30 b3rs3rk
+	Fix: Gamma PC Games view doesn't display grouped by gamesinfo_id
+2017-03-30 DariusIII
+	Chg: Further improve mediainfo uniqueid matching
+2017-03-29 DariusIII
+	Chg: Increase release size floor values to -10/10 in NameFixer class uidCheck function for
+		better mediainfo matching.
+2017-03-25 niel
+	Fix: Update import predb daily batch script to handle changed layout on github. Also adds the
+		date of the file to successful download message.
+2017-03-20 niel
+	Chg: Copied asset-installer setting to config section of composer.json in preparation for
+		updating it.
+	Chg: Update fxp/composer-asset-plugin to v1.3.0
+		***NOTE*** This requires an update of Composer itself, to v1.4.0
+2017-03-15 niel
+	Mrg: PR 2417, from Wally73 - Update IRCScraper README.txt
+2017-03-14 niel
+	Mrg: PR 2398, from kaibosh - Update control tool for sabnzbd v1.x API.
+	Fix: Make NZBImport check for searchname dupes (Closes issue 2411).
+2017-03-14 DariusIII
+	Chg: Remove use cases for python backfill script
+	Chg: Remove nntpproxy support
+2017-03-13 niel
+	Fix: Problem with redirection to install on fully installed system (closes PR 2415).
+2017-03-11 niel
+	Chg: Refactored DB class. This cleans it up and streamlines the constructor as well as adding
+		minimum version checking dependant on the vendor of MySQL variant. Relevant options are
+		stored in individual fields, instead of storing the whole options array, after a
+		successful connection.
+		 Thanks to b3s3rk for finding and fixing the issue with Sphinx and to crapz for
+		helping debug.
+	Fix Redirect from index page to Install when 'install.lock' does not exist.
+2017-03-08 niel
+	Mrg: dev-refactor-tpg, which removes conditional checking for TPG as it is no longer optional.
+2017-03-06 niel
+	Mrg: PR 2406, from egyptianbman - Fix `zed update nzedb`.
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.0.0
+
+
 2017-03-01 niel
 	Fix: Alter the logic for checking the Config files location during install step 1.
 	Fix: Update Travis configuration for location of config files.

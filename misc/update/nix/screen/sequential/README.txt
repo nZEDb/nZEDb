@@ -4,7 +4,7 @@ Edit the path to your nZEDb location.
 
 start like this:
 
-screen sh simple.sh  
+screen sh simple.sh
 
 or
 

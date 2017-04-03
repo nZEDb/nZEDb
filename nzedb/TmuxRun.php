@@ -66,7 +66,7 @@ class TmuxRun extends Tmux
 						$this->_runIRCScraper(3, $runVar);
 						break;
 					case 'sharing':
-						$this->_runSharing(($runVar['constants']['nntpproxy'] == 1 ? 5 : 4), $runVar);
+						$this->_runSharing(4, $runVar);
 						break;
 					case 'updatetv':
 						$this->_runUpdateTv($runVar);
@@ -106,7 +106,7 @@ class TmuxRun extends Tmux
 						$this->_runIRCScraper(3, $runVar);
 						break;
 					case 'sharing':
-						$this->_runSharing(($runVar['constants']['nntpproxy'] == 1 ? 5 : 4), $runVar);
+						$this->_runSharing(4, $runVar);
 						break;
 					case 'updatetv':
 						$this->_runUpdateTv($runVar);
@@ -131,7 +131,7 @@ class TmuxRun extends Tmux
 						$this->_runIRCScraper(2, $runVar);
 						break;
 					case 'sharing':
-						$this->_runSharing(($runVar['constants']['nntpproxy'] == 1 ? 4 : 3), $runVar);
+						$this->_runSharing(3, $runVar);
 						break;
 					case 'updatetv':
 						$this->_runUpdateTvFull($runVar);
@@ -604,7 +604,6 @@ class TmuxRun extends Tmux
 					$releases = 'echo "\nreleases have been disabled/terminated by Releases"';
 					break;
 				case 1:
-				case 2:
 					$releases = sprintf(
 						'%s %s;',
 						$runVar['scripts']['releases'],
@@ -621,7 +620,7 @@ class TmuxRun extends Tmux
 			//run backfill all once and resets the timer
 			if ($runVar['settings']['backfill'] != 0) {
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py all $log; \
+					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/backfill.php $log; \
 					date +\"{$this->_dateFormat}\"; {$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
 				);
 				$runVar['timers']['timer5'] = time();

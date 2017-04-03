@@ -30,8 +30,8 @@ switch ($action) {
 $page->smarty->assign('yesno_ids', [1, 0]);
 $page->smarty->assign('yesno_names', ['yes', 'no']);
 
-$page->smarty->assign('backfill_ids', [0, 4, 2, 1]);
-$page->smarty->assign('backfill_names', ['Disabled', 'Safe', 'Group', 'All']);
+$page->smarty->assign('backfill_ids', [0, 4, 1]);
+$page->smarty->assign('backfill_names', ['Disabled', 'Safe', 'All']);
 $page->smarty->assign('backfill_group_ids', [1, 2, 3, 4, 5, 6]);
 $page->smarty->assign('backfill_group',
 					  [
@@ -45,9 +45,9 @@ $page->smarty->assign('dehash_names', ['Disabled', 'Decrypt Hashes', 'Predb', 'A
 $page->smarty->assign('import_ids', [0, 1, 2]);
 $page->smarty->assign('import_names',
 					  ['Disabled', 'Import - Do Not Use Filenames', 'Import - Use Filenames']);
-$page->smarty->assign('releases_ids', [0, 1, 2]);
+$page->smarty->assign('releases_ids', [0, 1]);
 $page->smarty->assign('releases_names',
-					  ['Disabled', 'Update Releases', 'Update Releases Threaded']);
+					  ['Disabled', 'Update Releases Threaded']);
 $page->smarty->assign('post_ids', [0, 1, 2, 3]);
 $page->smarty->assign('post_names',
 					  ['Disabled', 'PostProcess Additional', 'PostProcess NFOs', 'All']);

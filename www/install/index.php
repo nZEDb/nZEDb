@@ -88,7 +88,8 @@ if (!$cfg->error) {
 			<?php
 			} else {
 				?>
-				<div class="error">Installation Locked! If reinstalling, please remove www/install/install.lock.</div>
+				<div class="error">Installation Locked! If reinstalling, please remove <?php echo
+                        nZEDb_CONFIGS . 'install.lock' ?>.</div>
 			<?php
 			}
 		}

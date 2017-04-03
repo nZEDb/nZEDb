@@ -4,8 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "061f1725684a8ad02d847f61f22e41f6",
-    "content-hash": "f0ffce44c38c55575c5d60bfc3b36190",
+    "content-hash": "631738beba6a036acf6e725515c6884f",
     "packages": [
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -41,7 +40,7 @@
                 "forking",
                 "php"
             ],
-            "time": "2016-06-21 18:44:21"
+            "time": "2016-06-21T18:44:21+00:00"
         },
         {
             "name": "bower-asset/animate.css",
@@ -71,16 +70,16 @@
         },
         {
             "name": "bower-asset/autosize-3.0.x",
-            "version": "3.0.18",
+            "version": "3.0.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jackmoore/autosize.git",
-                "reference": "fa2fa308e91ff9f8ba1a9fb17a1b9cc620671ca8"
+                "reference": "6c198a8e95c576dd9d5b8b9a1f996963ae1ea15c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jackmoore/autosize/zipball/fa2fa308e91ff9f8ba1a9fb17a1b9cc620671ca8",
-                "reference": "fa2fa308e91ff9f8ba1a9fb17a1b9cc620671ca8",
+                "url": "https://api.github.com/repos/jackmoore/autosize/zipball/6c198a8e95c576dd9d5b8b9a1f996963ae1ea15c",
+                "reference": "6c198a8e95c576dd9d5b8b9a1f996963ae1ea15c",
                 "shasum": ""
             },
             "type": "bower-asset-library",
@@ -422,16 +421,16 @@
         },
         {
             "name": "bower-asset/datatables-1.10.x",
-            "version": "1.10.12",
+            "version": "1.10.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DataTables/DataTables.git",
-                "reference": "3a432c5db3546b2ef0c192f2ae367811cb5edb9b"
+                "reference": "403128c42f7b263a0563e862decbe69734b834e8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DataTables/DataTables/zipball/3a432c5db3546b2ef0c192f2ae367811cb5edb9b",
-                "reference": "3a432c5db3546b2ef0c192f2ae367811cb5edb9b",
+                "url": "https://api.github.com/repos/DataTables/DataTables/zipball/403128c42f7b263a0563e862decbe69734b834e8",
+                "reference": "403128c42f7b263a0563e862decbe69734b834e8",
                 "shasum": ""
             },
             "require": {
@@ -736,16 +735,16 @@
         },
         {
             "name": "bower-asset/noty-2.3.x",
-            "version": "v2.3.8",
+            "version": "v2.3.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/needim/noty.git",
-                "reference": "6fe2cf81c7b8ecdbdafaa875b82b78cf65e2f100"
+                "reference": "d03d12f3e712253ef06184b85e5629b1aef43acb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/needim/noty/zipball/6fe2cf81c7b8ecdbdafaa875b82b78cf65e2f100",
-                "reference": "6fe2cf81c7b8ecdbdafaa875b82b78cf65e2f100",
+                "url": "https://api.github.com/repos/needim/noty/zipball/d03d12f3e712253ef06184b85e5629b1aef43acb",
+                "reference": "d03d12f3e712253ef06184b85e5629b1aef43acb",
                 "shasum": ""
             },
             "type": "bower-asset-library",
@@ -753,7 +752,7 @@
                 "bower-asset-main": "js/noty/packaged/jquery.noty.packaged.js",
                 "bower-asset-ignore": []
             },
-            "description": "noty is a jQuery plugin that makes it easy to create alert - success - error - warning - information - confirmation messages as an alternative the standard alert dialog. Each notification is added to a queue. (Optional)"
+            "description": "noty - a jQuery notification plugin"
         },
         {
             "name": "bower-asset/pace-1.0.x",
@@ -1102,20 +1101,20 @@
                 "zend",
                 "zikula"
             ],
-            "time": "2016-08-13 20:53:52"
+            "time": "2016-08-13T20:53:52+00:00"
         },
         {
             "name": "fxp/composer-asset-plugin",
-            "version": "v1.2.2",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fxpio/composer-asset-plugin.git",
-                "reference": "60bc94db574103dfc73acb907fa79c6dfc86c96e"
+                "reference": "4aab26a846e61edca2ba91c9b980f6503f7dc84d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fxpio/composer-asset-plugin/zipball/60bc94db574103dfc73acb907fa79c6dfc86c96e",
-                "reference": "60bc94db574103dfc73acb907fa79c6dfc86c96e",
+                "url": "https://api.github.com/repos/fxpio/composer-asset-plugin/zipball/4aab26a846e61edca2ba91c9b980f6503f7dc84d",
+                "reference": "4aab26a846e61edca2ba91c9b980f6503f7dc84d",
                 "shasum": ""
             },
             "require": {
@@ -1123,19 +1122,22 @@
                 "php": ">=5.3.3"
             },
             "require-dev": {
-                "composer/composer": "^1.0.0"
+                "composer/composer": "^1.4.0"
             },
             "type": "composer-plugin",
             "extra": {
                 "class": "Fxp\\Composer\\AssetPlugin\\FxpAssetPlugin",
                 "branch-alias": {
-                    "dev-master": "1.2-dev"
+                    "dev-master": "1.3-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
                     "Fxp\\Composer\\AssetPlugin\\": ""
-                }
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -1158,7 +1160,7 @@
                 "npm",
                 "package"
             ],
-            "time": "2016-10-12 08:03:45"
+            "time": "2017-03-17T11:16:25+00:00"
         },
         {
             "name": "giantbomb/giantbomb",
@@ -1209,23 +1211,23 @@
         },
         {
             "name": "google/recaptcha",
-            "version": "1.1.2",
+            "version": "1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/google/recaptcha.git",
-                "reference": "2b7e00566afca82a38a1d3adb8e42c118006296e"
+                "reference": "5a56d15ca10a7b75158178752b2ad8f755eb4f78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/recaptcha/zipball/2b7e00566afca82a38a1d3adb8e42c118006296e",
-                "reference": "2b7e00566afca82a38a1d3adb8e42c118006296e",
+                "url": "https://api.github.com/repos/google/recaptcha/zipball/5a56d15ca10a7b75158178752b2ad8f755eb4f78",
+                "reference": "5a56d15ca10a7b75158178752b2ad8f755eb4f78",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.2"
+                "php": ">=5.5"
             },
             "require-dev": {
-                "phpunit/phpunit": "4.5.*"
+                "phpunit/phpunit": "^4.8"
             },
             "type": "library",
             "extra": {
@@ -1250,7 +1252,7 @@
                 "recaptcha",
                 "spam"
             ],
-            "time": "2015-09-02 17:23:59"
+            "time": "2017-03-09T18:44:34+00:00"
         },
         {
             "name": "james-heinrich/getid3",
@@ -1286,7 +1288,7 @@
                 "php",
                 "tags"
             ],
-            "time": "2016-12-14 14:29:29"
+            "time": "2016-12-14T14:29:29+00:00"
         },
         {
             "name": "joshpinkney/tv-maze-php-api",
@@ -1359,7 +1361,7 @@
             "keywords": [
                 "api"
             ],
-            "time": "2016-10-25 08:14:27"
+            "time": "2016-10-25T08:14:27+00:00"
         },
         {
             "name": "nzedb/Git.php",
@@ -1388,24 +1390,40 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v5.2.22",
+            "version": "v5.2.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "b18cb98131bd83103ccb26a888fdfe3177b8a663"
+                "reference": "7115df4a6f76281109ebe352900c42403b728bb4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/b18cb98131bd83103ccb26a888fdfe3177b8a663",
-                "reference": "b18cb98131bd83103ccb26a888fdfe3177b8a663",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/7115df4a6f76281109ebe352900c42403b728bb4",
+                "reference": "7115df4a6f76281109ebe352900c42403b728bb4",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.0.0"
             },
             "require-dev": {
-                "phpdocumentor/phpdocumentor": "*",
-                "phpunit/phpunit": "4.7.*"
+                "doctrine/annotations": "1.2.*",
+                "jms/serializer": "0.16.*",
+                "phpdocumentor/phpdocumentor": "2.*",
+                "phpunit/phpunit": "4.8.*",
+                "symfony/debug": "2.8.*",
+                "symfony/filesystem": "2.8.*",
+                "symfony/translation": "2.8.*",
+                "symfony/yaml": "2.8.*",
+                "zendframework/zend-cache": "2.5.1",
+                "zendframework/zend-config": "2.5.1",
+                "zendframework/zend-eventmanager": "2.5.1",
+                "zendframework/zend-filter": "2.5.1",
+                "zendframework/zend-i18n": "2.5.1",
+                "zendframework/zend-json": "2.5.1",
+                "zendframework/zend-math": "2.5.1",
+                "zendframework/zend-serializer": "2.5.*",
+                "zendframework/zend-servicemanager": "2.5.*",
+                "zendframework/zend-stdlib": "2.5.1"
             },
             "suggest": {
                 "league/oauth2-google": "Needed for Google XOAUTH2 authentication"
@@ -1444,20 +1462,20 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2017-01-09 09:33:47"
+            "time": "2017-03-15T19:32:56+00:00"
         },
         {
             "name": "smarty/smarty",
-            "version": "v3.1.30",
+            "version": "v3.1.31",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "ed2b7f1146cfda13df1eea8a5f707a1b771b6e7e"
+                "reference": "c7d42e4a327c402897dd587871434888fde1e7a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/ed2b7f1146cfda13df1eea8a5f707a1b771b6e7e",
-                "reference": "ed2b7f1146cfda13df1eea8a5f707a1b771b6e7e",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/c7d42e4a327c402897dd587871434888fde1e7a9",
+                "reference": "c7d42e4a327c402897dd587871434888fde1e7a9",
                 "shasum": ""
             },
             "require": {
@@ -1470,10 +1488,8 @@
                 }
             },
             "autoload": {
-                "classmap": [
-                    "libs/Smarty.class.php",
-                    "libs/SmartyBC.class.php",
-                    "libs/sysplugins/"
+                "files": [
+                    "libs/bootstrap.php"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1499,28 +1515,28 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2016-08-07 18:46:49"
+            "time": "2016-12-14T21:57:25+00:00"
         },
         {
             "name": "unionofrad/lithium",
-            "version": "1.2.x-dev",
+            "version": "v1.1.0-beta",
             "source": {
                 "type": "git",
                 "url": "https://github.com/UnionOfRAD/lithium.git",
-                "reference": "49d2d46a63d6f2a94c28e392ee67b150aed4d524"
+                "reference": "34492f464a9e36683b1170c1b11a5d480784d3c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/49d2d46a63d6f2a94c28e392ee67b150aed4d524",
-                "reference": "49d2d46a63d6f2a94c28e392ee67b150aed4d524",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/34492f464a9e36683b1170c1b11a5d480784d3c2",
+                "reference": "34492f464a9e36683b1170c1b11a5d480784d3c2",
                 "shasum": ""
             },
             "require": {
                 "composer/installers": "1.*",
-                "php": ">=5.5.14"
+                "php": ">=5.5.14 <7.0.0 || >=7.0.3"
             },
             "require-dev": {
-                "unionofrad/li3_fixtures": "1.0.*"
+                "unionofrad/li3_fixtures": "1.1.*@dev"
             },
             "bin": [
                 "console/li3"
@@ -1545,7 +1561,7 @@
                 "li3",
                 "lithium"
             ],
-            "time": "2016-09-19 11:17:21"
+            "time": "2016-11-21T15:55:43+00:00"
         },
         {
             "name": "zeebinz/rarinfo",
@@ -1588,7 +1604,7 @@
                 "source": "https://github.com/zeebinz/rarinfo/tree/v2.5.0",
                 "issues": "https://github.com/zeebinz/rarinfo/issues"
             },
-            "time": "2016-10-15 16:33:21"
+            "time": "2016-10-15T16:33:21+00:00"
         }
     ],
     "packages-dev": [
@@ -1636,7 +1652,7 @@
         "giantbomb/giantbomb": 20,
         "joshpinkney/tv-maze-php-api": 20,
         "nzedb/git.php": 20,
-        "unionofrad/lithium": 20,
+        "unionofrad/lithium": 10,
         "unionofrad/manual": 20
     },
     "prefer-stable": false,

@@ -44,8 +44,9 @@ install:
 before_script:
   - curl -O https://raw.githubusercontent.com/nZEDb/travis-ci-files/master/cat_logs.sh
   # Create mysql user.
-  - mysql -u root -e "GRANT ALL ON nzedb.* TO 'nzedb'@'localhost' IDENTIFIED BY 'nzedb';"
+  - mysql -u root -e "GRANT ALL ON nzedb.* TO 'nzedb'@'localhost' IDENTIFIED BY 'nzedbpass';"
   - mysql -u root -e "GRANT FILE ON *.* TO 'nzedb'@'localhost';"
+  - mysql -u root -e "GRANT SUPER ON *.* TO 'nzedb'@'localhost';"
   # Disable apparmor.
   - if service apparmor status; then service apparmor stop; update-rc.d -f apparmor remove; service apparmor teardown; fi
   # Change MySQL settings.
@@ -74,7 +75,7 @@ before_script:
   # Download/configure nZEDb installer test script.
   - curl -O https://raw.githubusercontent.com/nZEDb/travis-ci-files/master/test_nzedb_installer.sh
   - sed -i 's/DBUSER=".*"/DBUSER="nzedb"/' test_nzedb_installer.sh
-  - sed -i 's/DBPASS=".*"/DBPASS="nzedb"/' test_nzedb_installer.sh
+  - sed -i 's/DBPASS=".*"/DBPASS="nzedbpass"/' test_nzedb_installer.sh
   - sed -i 's/DBSOCKET=".*"/DBSOCKET=""/' test_nzedb_installer.sh
   - sed -i "s?NZEDBPATH=\".*\"?NZEDBPATH=\"$(pwd)\"?" test_nzedb_installer.sh
   - sed -i 's/HOST=".*"/HOST="127.0.0.1"/' test_nzedb_installer.sh

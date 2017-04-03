@@ -408,14 +408,14 @@ class NZBImport
 		// Look for a duplicate on name, poster and size.
 		$dupeCheck = $this->pdo->queryOneRow(
 			sprintf(
-				'SELECT id FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s',
+				'SELECT id FROM releases WHERE (name = %s OR searchname = %s) AND fromname = %s AND size BETWEEN %s AND %s',
 				$escapedSubject,
+				$this->pdo->escapeString($cleanName),
 				$escapedFromName,
 				$this->pdo->escapeString($nzbDetails['totalSize'] * 0.99),
 				$this->pdo->escapeString($nzbDetails['totalSize'] * 1.01)
 			)
 		);
-
 		if ($dupeCheck === false) {
 			$escapedSearchName = $this->pdo->escapeString($cleanName);
 			// Insert the release into the DB.
