@@ -4,6 +4,7 @@ ChangeLog file which list *when* changes are made to the dev branches.
 
 0.7.1.0 2017-04-03:
 	***NOTE*** This requires an update of Composer itself, to v1.4.0 or later.
+	`composer self-update`
 Added:
 
 Changed:
