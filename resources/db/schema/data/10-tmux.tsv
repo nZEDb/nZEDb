@@ -1,3 +1,4 @@
+setting, value
 back_timer	30
 backfill	0
 backfill_days	1
@@ -58,7 +59,6 @@ run_sharing	0
 running	0
 seq_timer	30
 sequential	0
-setting, value
 sharing_timer	60
 showprocesslist	0
 showquery	0
