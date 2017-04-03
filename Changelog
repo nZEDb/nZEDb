@@ -9,6 +9,10 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-04-03 niel
+	Fix: Remove git repository checks from Tmux scripts. This is an effort to remove the use of the
+		repository from user code. Dev code will still use it for some tasks (e.g. apply tags for
+		releases).
 2017-03-25 niel
 	Fix: Update import predb daily batch script to handle changed layout on github. Also adds the
 		date of the file to successful download message.
