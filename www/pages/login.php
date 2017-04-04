@@ -8,6 +8,10 @@ $page->smarty->assign(['error' => '', 'username' => '', 'rememberme' => '']);
 $captcha = new Captcha($page);
 
 if ($page->isPostBack()) {
+	//Loop through post vars and escape them. This protects against XSS.
+	foreach($_POST as $key => $_) {
+		$_POST[$key] = htmlspecialchars($_POST[$key]);
+	}
 	if (!isset($_POST["username"]) || !isset($_POST["password"])) {
 		$page->smarty->assign('error', "Please enter your username and password.");
 	} elseif ($captcha->getError() === false) {
