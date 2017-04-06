@@ -9,6 +9,13 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-04-06 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.1.1
+
+
+2017-04-06 niel
+	Chg: Remove NNTPProxy checks from .tmux's run.php
+	Fix: Added missing field (collection_regexes_id) to multigroup_collections table definition.
 2017-04-03 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.1.0
 
