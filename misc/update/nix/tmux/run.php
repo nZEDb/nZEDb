@@ -136,19 +136,6 @@ foreach ($apps as &$value) {
 }
 
 /**
- * @param $module
- *
- * @return bool
- */
-function python_module_exist($module)
-{
-	$output = $returnCode = '';
-	exec("python -c \"import $module\"", $output, $returnCode);
-
-	return ($returnCode == 0 ? true : false);
-}
-
-/**
  * @param $tmux_session
  */
 function start_apps($tmux_session)
