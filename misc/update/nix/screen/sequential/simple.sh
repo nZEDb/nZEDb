@@ -20,9 +20,6 @@ while :
  do
 CURRTIME=`date +%s`
 
-#tmux kill-session -t NNTPProxy
-#$PHP ${NZEDB_PATH}/nntpproxy.php
-
 cd ${NZEDB_PATH}
 $PHP ${NZEDB_PATH}/update_binaries.php
 
@@ -55,8 +52,6 @@ then
 	LASTOPTIMIZE1=`date +%s`
 	echo "Optimizing DB..."
 	$PHP ${NZEDB_PATH}/optimise_db.php space
-	#$PHP ${NZEDB_PATH}/update_tvschedule.php
-	#$PHP ${NZEDB_PATH}/update_theaters.php
 	$PHP ${NZEDB_PATH}/decrypt_hashes.php full show
 	$PHP ${NZEDB_PATH}/match_prefiles.php full show
 fi
