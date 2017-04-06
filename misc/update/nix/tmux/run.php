@@ -57,15 +57,10 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-// todo simplify this IF removing redundancy (consider moving to a function)
-	if ($nntpproxy == 1) {
-		window_ircscraper($tmux_session);
-		window_proxy($tmux_session, 4);
-		window_sharing($tmux_session);
-	} else {
-		window_ircscraper($tmux_session);
-		window_sharing($tmux_session);
-	}
+
+	window_ircscraper($tmux_session);
+	window_sharing($tmux_session);
+
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);
 } else {
@@ -75,15 +70,9 @@ if ($seq == 1) {
 		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 25 'printf \"\033]2;nzb-import\033\"'");
 
 		window_stripped_utilities($tmux_session);
-// todo simplify this IF removing redundancy (consider moving to a function)
-		if ($nntpproxy == 1) {
-			window_ircscraper($tmux_session);
-			window_proxy($tmux_session, 3);
-			window_sharing($tmux_session);
-		} else {
-			window_ircscraper($tmux_session);
-			window_sharing($tmux_session);
-		}
+
+		window_ircscraper($tmux_session);
+		window_sharing($tmux_session);
 
 		start_apps($tmux_session);
 		attach($DIR, $tmux_session);
@@ -96,14 +85,8 @@ if ($seq == 1) {
 
 		window_utilities($tmux_session);
 		window_post($tmux_session);
-		if ($nntpproxy == 1) {
-			window_ircscraper($tmux_session);
-			window_proxy($tmux_session, 4);
-			window_sharing($tmux_session);
-		} else {
-			window_ircscraper($tmux_session);
-			window_sharing($tmux_session);
-		}
+		window_ircscraper($tmux_session);
+		window_sharing($tmux_session);
 		start_apps($tmux_session);
 		attach($DIR, $tmux_session);
 	}
