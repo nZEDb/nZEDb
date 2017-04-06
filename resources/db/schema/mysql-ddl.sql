@@ -519,6 +519,7 @@ CREATE TABLE         multigroup_collections (
   totalfiles     INT(11) UNSIGNED    NOT NULL DEFAULT '0' COMMENT 'Total number of files',
   groups_id      INT(11) UNSIGNED    NOT NULL DEFAULT '0' COMMENT 'FK to groups.id',
   collectionhash VARCHAR(255)        NOT NULL DEFAULT '0' COMMENT 'MD5 hash of the collection',
+  collection_regexes_id INT SIGNED NOT NULL DEFAULT '0' COMMENT 'FK to collection_regexes.id',
   dateadded      DATETIME            DEFAULT NULL COMMENT 'Date collection is added',
   added          TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
   filecheck      TINYINT(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'Status of the collection',
