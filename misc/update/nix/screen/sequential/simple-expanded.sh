@@ -33,13 +33,10 @@ while :
  do
 CURRTIME=`date +%s`
 
-#tmux kill-session -t NNTPProxy
-#$PHP ${NZEDB_PATH}/nntpproxy.php
-
 cd ${NZEDB_PATH}
 $PHP ${NZEDB_PATH}/update_binaries.php
 
-#$PHP ${TEST_PATH}/nzb-import.php /home/share/nzedbdump/XXXx264/ true true false 150
+##example import nzb
 #$PHP ${TEST_PATH}/nzb-import.php /home/share/nzedbdump/TVHD/ true true false 50
 
 $PHP ${THREADED_PATH}/releases.php	# Set thread count to 1 in site-admin for sequential processing
