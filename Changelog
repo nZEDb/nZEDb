@@ -8,7 +8,10 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2017-04-07 niel
+	Mrg: PR 2428, from Wally73 - Update simple.sh. Cleaning out discontinued code.
+	Mrg: PR 2429, from Wally73 - Update simple-expanded.sh. Cleaning out NNTP Proxy references.
+	Mrg: PR 2430, from Wally73 - Update threaded.sh. Cleaning out python references.
 2017-04-06 niel
 	Chg: Remove python module check in tmux/run.php
 2017-04-06 niel
