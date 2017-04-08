@@ -36,6 +36,9 @@ Fixed:
 
 
 0.7.0.0 2017-03-06:
+***IMPORTANT*** If you are updating from an older version, you must update to this version and
+following the steps to migrate configuration files BEFORE you continue to update to the latest
+version.
 Added:
 	* New setting (site.main.incognito) that determines if the main page is shown to vistors, or if
 	 they are redirected to the login page instead.
