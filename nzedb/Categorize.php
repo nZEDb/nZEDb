@@ -667,7 +667,10 @@ class Categorize extends Category
 	{
 		if (preg_match('/[-._ ]Anime[-._ ]|^\[[a-zA-Z\.\-]+\].*[-_].*\d{1,3}[-_. ]((\[|\()((\d{1,4}x\d{1,4})|(h264-)?\d{3,4}(p|i))(\]|\))\s?(\[AAC\])?|\[[a-fA-F0-9]{8}\]|(8|10)BIT|hi10p)(\[[a-fA-F0-9]{8}\])?/i', $this->releaseName)) {
 			$this->tmpCat = Category::TV_ANIME;
-
+			return true;
+		}
+		if (preg_match('/(ANiHLS|HaiKU)/i', $this->releaseName)) {
+			$this->tmpCat = Category::TV_ANIME;
 			return true;
 		}
 
