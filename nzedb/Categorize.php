@@ -669,7 +669,7 @@ class Categorize extends Category
 			$this->tmpCat = Category::TV_ANIME;
 			return true;
 		}
-		if (preg_match('/(ANiHLS|HaiKU)/i', $this->releaseName)) {
+		if (preg_match('/(ANiHLS|HaiKU|ANiURL)/i', $this->releaseName)) {
 			$this->tmpCat = Category::TV_ANIME;
 			return true;
 		}
