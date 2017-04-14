@@ -1102,6 +1102,7 @@ CREATE TABLE users (
   cp_api         VARCHAR(255)     NULL     DEFAULT NULL,
   style          VARCHAR(255)     NULL     DEFAULT NULL,
   PRIMARY KEY (id),
+  INDEX ix_rsstoken_role (rsstoken, role),
   INDEX ix_role (role)
 )
   ENGINE = MYISAM
