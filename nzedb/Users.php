@@ -537,8 +537,7 @@ class Users
 				SELECT users.*, user_roles.apirequests, user_roles.downloadrequests, NOW() AS now
 				FROM users
 				INNER JOIN user_roles ON user_roles.id = users.role
-				WHERE LOWER(users.rsstoken) =
-				LOWER(%s)",
+				WHERE users.rsstoken = %s",
 				$this->pdo->escapeString($rssToken)
 			)
 		);
