@@ -62,6 +62,8 @@ then
 	#$PHP ${TEST_PATH}/Release/fixReleaseNames.php 3 true preid no
 	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 5 true preid no
 	#$PHP ${TEST_PATH}/Release/fixReleaseNames.php 7 true preid no
+	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 9 true other no
+	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 9 true preid no
 	$PHP ${TEST_PATH}/Release/removeCrapReleases.php true full
 	$PHP ${NZEDB_PATH}/decrypt_hashes.php full show
 	$PHP ${NZEDB_PATH}/match_prefiles.php full show
@@ -83,6 +85,9 @@ then
 	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 6 true other no
 	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 8 true other no
 	#$PHP ${TEST_PATH}/Release/fixReleaseNames.php 6 true preid no
+	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 10 true other no
+	## fixReleaseNames.php 10 true preid no can be renaming a lot of good stuff falsely so its commented out
+        #$PHP ${TEST_PATH}/Release/fixReleaseNames.php 10 true preid no
 	$PHP ${NZEDB_PATH}/decrypt_hashes.php full show
 	$PHP ${NZEDB_PATH}/match_prefiles.php full show
 fi
