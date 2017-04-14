@@ -237,10 +237,10 @@ class Users
 			sprintf("
 				INSERT INTO users (username, password, email, role, createddate, host, rsstoken,
 					invites, invitedby, userseed, firstname, lastname)
-				VALUES (%s, %s, LOWER(%s), %d, NOW(), %s, MD5(%s), %d, %s, MD5(%s), %s, %s)",
+				VALUES (%s, %s, %s, %d, NOW(), %s, MD5(%s), %d, %s, MD5(%s), %s, %s)",
 				$this->pdo->escapeString($userName),
 				$this->pdo->escapeString((string)$password),
-				$this->pdo->escapeString($email),
+				$this->pdo->escapeString(strtolower($email)),
 				$role,
 				$this->pdo->escapeString((Settings::value('..storeuserips') == 1 ? $host : "''")),
 				$this->pdo->escapeString(uniqid()),
@@ -538,7 +538,7 @@ class Users
 				FROM users
 				INNER JOIN user_roles ON user_roles.id = users.role
 				WHERE users.rsstoken = %s",
-				$this->pdo->escapeString($rssToken)
+				$this->pdo->escapeString(strtolower($rssToken))
 			)
 		);
 	}
