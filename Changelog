@@ -8,6 +8,9 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
+2017-04-14 niel
+	Mrg: PR 2438, from Fossil - Speed up getByRssToken function.
 2017-04-13 DariusIII
 	Chg: Properly categorize ANiHLS and HAiKU releases as TV > Anime (please run 'php misc/testing/Release/recategorize.php all' to recategorize releases)
 2017-04-08 niel
