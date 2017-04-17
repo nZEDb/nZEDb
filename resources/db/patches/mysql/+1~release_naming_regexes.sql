@@ -9,7 +9,7 @@ VALUES (
 ), (
     1162,
     '^alt\\.binaries\\.(anime|multimedia.anime)\\.?(highspeed|repost)?',
-    '/^.+\\"(?P<match0>.+?)[ .](7z|avi|mkv|mp4|par|vol)t?\\d?+.+yEnc$/',
+    '/^.+\\" ?(?P<match0>.+?)[ .](7z|avi|mkv|mp4|par|vol)t?\\d?+.+yEnc$/',
     1,
     '//[SpaceFish] Galilei Donna - Batch [BD][720p][MP4][AAC] [1/7] - "[SpaceFish] Galilei Donna - 07 [BD][720p][AAC] mp4" yEnc',
     50
