@@ -650,7 +650,8 @@ CREATE TABLE predb (
   INDEX ix_predb_source    (source),
   INDEX ix_predb_requestid (requestid, groups_id),
   INDEX ix_predb_filename  (filename),
-  INDEX ix_predb_searched  (searched)
+  INDEX ix_predb_searched  (searched),
+  FULLTEXT INDEX ix_predb_filename_ft (filename)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
