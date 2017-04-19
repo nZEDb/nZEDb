@@ -10,6 +10,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2017-04-19 DariusIII
+	Chg: Add per poster categorization of releases, properly categorize and rename SDCLiP releases and add FULLTEXT index on predb.filename for better releases matching.
 	Mrg: PR 2440, from Nightah - Added extra regexes to match release names for a.b.anime
 2017-04-14 niel
 	Mrg: PR 2438, from Fossil - Speed up getByRssToken function.
