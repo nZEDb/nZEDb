@@ -9,6 +9,9 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-04-19 niel
+	Fix: Make IRCClient an abstract class, as it has an abstract method which was not previously
+		marked as such.
 2017-04-14 niel
 	Mrg: PR 2438, from Fossil - Speed up getByRssToken function.
 	Mrg: PR 2436, from Wally73 - Update simple-expanded.sh
