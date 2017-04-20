@@ -498,7 +498,7 @@ class IRCScraper extends IRCClient
 			echo
 				'[' . date('r') . ($new ? '] [ Added Pre ] [' : '] [Updated Pre] [') .
 				$this->_curPre['source'] . '] ' . $nukeString . '[' . $this->_curPre['title'] .
-				']' . (!empty($this->_curPre['category']) ? ' [' . $this->_curPre['category'] . ']' : (!empty($this->_oldPre['category']) ? ' [' . $this->_oldPre['category'] . ']' : '')
+				']' . (!empty($this->_curPre['category']) ? ' [' . $this->_curPre['category'] . ']' : (!empty($this->_oldPre->category) ? ' [' . $this->_oldPre->category . ']' : '')
 				) . (!empty($this->_curPre['size']) ? ' [' . $this->_curPre['size'] . ']' : '') .
 				PHP_EOL;
 		}
