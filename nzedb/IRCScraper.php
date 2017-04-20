@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use app\models\Predb;
 use nzedb\db\DB;
 
 /**
@@ -42,8 +43,11 @@ class IRCScraper extends IRCClient
 	protected $_nuked;
 
 	/**
-	 * Array of old pre info.
-	 * @var array|bool
+	 * Result from model's (Predb) find('first')
+	 *
+	 * Doesn't matter to us if it is a Record or Document sub class.
+	 *
+	 * @var \lithium\data\Entity
 	 * @access protected
 	 */
 	protected $_oldPre;
@@ -202,6 +206,8 @@ class IRCScraper extends IRCClient
 				return;
 			}
 
+			// TODO improve efficiency here by putting all into a single query. Also assign all
+			// of the array in one assignment: $this->_curPre = $matches;
 			$this->_curPre['predate'] = $this->_pdo->from_unixtime(strtotime($matches['time'] . ' UTC'));
 			$this->_curPre['title'] = $matches['title'];
 			$this->_curPre['source'] = $matches['source'];
@@ -254,12 +260,26 @@ class IRCScraper extends IRCClient
 	 */
 	protected function _checkForDupe()
 	{
-		$this->_oldPre = $this->_pdo->queryOneRow(sprintf('SELECT category, size FROM predb WHERE title = %s', $this->_pdo->escapeString($this->_curPre['title'])));
+		$this->_oldPre = \app\models\Predb::find('first', [
+			'conditions' => [ 'title' => $this->_curPre['title'] ],
+			'with' => 'Groups',
+		]);
+
+		if ($this->_oldPre === null) {
+			$this->_insertNewPre();
+		} else {
+			$this->_updatePre();
+		}
+
+		/*
+		$this->_oldPre = $this->_pdo->queryOneRow(sprintf('SELECT category, size FROM predb  WHERE title = %s', $this->_pdo->escapeString($this->_curPre['title'])));
 		if ($this->_oldPre === false) {
 			$this->_insertNewPre();
 		} else {
 			$this->_updatePre();
 		}
+		*/
+
 		$this->_resetPreVariables();
 	}
 
@@ -270,10 +290,54 @@ class IRCScraper extends IRCClient
 	 */
 	protected function _insertNewPre()
 	{
+		// How would this be possible? We used the title to check for existing entry to update
 		if (empty($this->_curPre['title'])) {
 			return;
 		}
 
+		$data = ['title' => $this->_curPre['title']];
+
+		if (!empty($this->_curPre['size'])) {
+			$data['size'] = $this->_curPre['size'];
+		}
+
+		if (!empty($this->_curPre['source'])) {
+			$data['source'] = $this->_curPre['source'];
+		}
+
+		if (!empty($this->_curPre['files'])) {
+			$data['files'] = $this->_curPre['files'];
+		}
+
+		if (!empty($this->_curPre[''])) {
+			$data['nukereason'] = $this->_curPre['reason'];
+		}
+
+		if (!empty($this->_curPre['reqid'])) {
+			$data['requestid'] = $this->_curPre['reqid'];
+		}
+
+		if (!empty($this->_curPre['groups_id'])) {
+			$data['groups_id'] = $this->_curPre['groups_id'];
+		}
+
+		if (!empty($this->_curPre['predate'])) {
+			$data['predate'] = $this->_curPre['predate'];
+		}
+
+		if (!empty($this->_curPre['nuked'])) {
+			$data['nuked'] = $this->_curPre['nuked'];
+		}
+
+		if (!empty($this->_curPre['filename'])) {
+			$data['filename'] = $this->_curPre['filename'];
+		}
+
+		$this->_oldPre = Predb::create($data);
+
+		$this->_oldPre->save();
+
+		/*
 		$query = 'INSERT INTO predb (';
 
 		$query .= (!empty($this->_curPre['size'])     ? 'size, '       : '');
@@ -309,6 +373,7 @@ class IRCScraper extends IRCClient
 				$this->_pdo->escapeString($this->_curPre['title'])
 			)
 		);
+		*/
 
 		$this->_doEcho(true);
 	}
@@ -320,10 +385,49 @@ class IRCScraper extends IRCClient
 	 */
 	protected function _updatePre()
 	{
+		// How would this be possible? We used the title to check for existing entry to update
 		if (empty($this->_curPre['title'])) {
 			return;
 		}
 
+		if (!empty($this->_curPre['size']) && $this->_oldPre->size != $this->_curPre['size']) {
+			$this->_oldPre->size = $this->_curPre['size'];
+		}
+
+		if (!empty($this->_curPre['source']) && $this->_oldPre->source != $this->_curPre['source']) {
+			$this->_oldPre->source = $this->_curPre['source'];
+		}
+
+		if (!empty($this->_curPre['files']) && $this->_oldPre->files != $this->_curPre['files']) {
+			$this->_oldPre->files = $this->_curPre['files'];
+		}
+
+		if (!empty($this->_curPre['']) && $this->_oldPre->nukereason != $this->_curPre['reason']) {
+			$this->_oldPre->nukereason = $this->_curPre['reason'];
+		}
+
+		if (!empty($this->_curPre['reqid']) && $this->_oldPre->requestid != $this->_curPre['reqid']) {
+			$this->_oldPre->requestid = $this->_curPre['reqid'];
+		}
+
+		if (!empty($this->_curPre['groups_id']) && $this->_oldPre->groups_id != $this->_curPre['groups_id']) {
+			$this->_oldPre->groups_id = $this->_curPre['groups_id'];
+		}
+
+		if (!empty($this->_curPre['predate']) && $this->_oldPre->predate != $this->_curPre['predate']) {
+			$this->_oldPre->predate = $this->_curPre['predate'];
+		}
+
+		if (!empty($this->_curPre['nuked']) && $this->_oldPre->nuked != $this->_curPre['nuked']) {
+			$this->_oldPre->nuked = $this->_curPre['nuked'];
+		}
+
+		if (!empty($this->_curPre['filename']) && $this->_oldPre->filename != $this->_curPre['filename']) {
+			$this->_oldPre->filename = $this->_curPre['filename'];
+		}
+
+		$this->_curPre->save();
+		/*
 		$query = 'UPDATE predb SET ';
 
 		$query .= (!empty($this->_curPre['size'])     ? 'size = '       . $this->_pdo->escapeString($this->_curPre['size'])     . ', ' : '');
@@ -351,6 +455,7 @@ class IRCScraper extends IRCClient
 		$this->_pdo->ping(true);
 
 		$this->_pdo->queryExec($query);
+		*/
 
 		$this->_doEcho(false);
 	}
