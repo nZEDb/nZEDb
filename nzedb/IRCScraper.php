@@ -1,8 +1,9 @@
 <?php
 namespace nzedb;
 
-use app\models\Predb;
+use app\models\Predb as PreTab;
 use nzedb\db\DB;
+use nzedb\PreDb;
 
 /**
  * Class IRCScraper
@@ -516,9 +517,18 @@ class IRCScraper extends IRCClient
 	protected function _getGroupID($groupName)
 	{
 		if (!isset($this->_groupList[$groupName])) {
-			$group = $this->_pdo->queryOneRow(sprintf('SELECT id FROM groups WHERE name = %s', $this->_pdo->escapeString($groupName)));
-			$this->_groupList[$groupName] = $group['id'];
+			$group = PreTab::findIdFromName($groupName, [
+				'create'	=> true,
+				'description'	=> 'Added by IRCScraper.',
+			]);
+
+			if ($group === null) {
+				$this->_groupList[$groupName] = false;
+			} else {
+				$this->_groupList[$groupName] = $group->id;
+			}
 		}
+
 		return $this->_groupList[$groupName];
 	}
 
