@@ -262,7 +262,7 @@ class IRCScraper extends IRCClient
 	{
 		$this->_oldPre = \app\models\Predb::find('first', [
 			'conditions' => [ 'title' => $this->_curPre['title'] ],
-			'with' => 'Groups',
+			//'with' => 'Groups',
 		]);
 
 		if ($this->_oldPre === null) {
