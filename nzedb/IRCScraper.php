@@ -426,7 +426,7 @@ class IRCScraper extends IRCClient
 			$this->_oldPre->filename = $this->_curPre['filename'];
 		}
 
-		$this->_curPre->save();
+		$this->_oldPre->save();
 		/*
 		$query = 'UPDATE predb SET ';
 
