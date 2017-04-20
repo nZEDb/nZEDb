@@ -8,7 +8,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2017-04-20 niel
+	Fix: Add 'predb' to uninflected list in connections.
 2017-04-19 niel
 	Fix: Make IRCClient an abstract class, as it has an abstract method which was not previously
 		marked as such.
