@@ -334,7 +334,7 @@ class IRCScraper extends IRCClient
 			$data['filename'] = $this->_curPre['filename'];
 		}
 
-		$this->_oldPre = Predb::create($data);
+		$this->_oldPre = PreTab::create($data);
 
 		$this->_oldPre->save();
 
