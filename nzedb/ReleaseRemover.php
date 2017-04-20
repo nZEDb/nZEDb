@@ -1155,7 +1155,7 @@ class ReleaseRemover
 			$args[1] = $this->cleanSpaces($args[1]);
 			$args[2] = $this->cleanSpaces($args[2]);
 			switch ($args[0]) {
-				case 'categoryid':
+				case 'categories_id':
 					switch ($args[1]) {
 						case 'equals':
 							return ' AND categories_id = ' . $args[2];
