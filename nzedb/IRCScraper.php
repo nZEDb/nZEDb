@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use app\models\Group;
-use app\models\Predb as PreTab;
+use app\models\Predb as PredbModel;
 use nzedb\db\DB;
 use nzedb\PreDb;
 
@@ -52,7 +52,7 @@ class IRCScraper extends IRCClient
 	 * @var \lithium\data\Entity
 	 * @access protected
 	 */
-	protected $_oldPre;
+	protected $dbEntry;
 
 	/**
 	 * @var \nzedb\db\DB
@@ -262,25 +262,16 @@ class IRCScraper extends IRCClient
 	 */
 	protected function _checkForDupe()
 	{
-		$this->_oldPre = \app\models\Predb::find('first', [
+		$this->dbEntry = \app\models\Predb::find('first', [
 			'conditions' => [ 'title' => $this->_curPre['title'] ],
 			//'with' => 'Groups',
 		]);
 
-		if ($this->_oldPre === null) {
-			$this->_insertNewPre();
+		if ($this->dbEntry === null) {
+			$this->insertPreEntry();
 		} else {
-			$this->_updatePre();
+			$this->updatePreEntry();
 		}
-
-		/*
-		$this->_oldPre = $this->_pdo->queryOneRow(sprintf('SELECT category, size FROM predb  WHERE title = %s', $this->_pdo->escapeString($this->_curPre['title'])));
-		if ($this->_oldPre === false) {
-			$this->_insertNewPre();
-		} else {
-			$this->_updatePre();
-		}
-		*/
 
 		$this->_resetPreVariables();
 	}
@@ -290,7 +281,7 @@ class IRCScraper extends IRCClient
 	 *
 	 * @access protected
 	 */
-	protected function _insertNewPre()
+	protected function insertPreEntry()
 	{
 		// How would this be possible? We used the title to check for existing entry to update
 		if (empty($this->_curPre['title'])) {
@@ -335,47 +326,9 @@ class IRCScraper extends IRCClient
 			$data['filename'] = $this->_curPre['filename'];
 		}
 
-		$this->_oldPre = PreTab::create($data);
+		$this->dbEntry = PredbModel::create($data);
 
-		$this->_oldPre->save();
-
-		/*
-		$query = 'INSERT INTO predb (';
-
-		$query .= (!empty($this->_curPre['size'])     ? 'size, '       : '');
-		$query .= (!empty($this->_curPre['category']) ? 'category, '   : '');
-		$query .= (!empty($this->_curPre['source'])   ? 'source, '     : '');
-		$query .= (!empty($this->_curPre['reason'])   ? 'nukereason, ' : '');
-		$query .= (!empty($this->_curPre['files'])    ? 'files, '      : '');
-		$query .= (!empty($this->_curPre['reqid'])    ? 'requestid, '  : '');
-		$query .= (!empty($this->_curPre['groups_id'])? 'groups_id, '  : '');
-		$query .= (!empty($this->_curPre['nuked'])    ? 'nuked, '      : '');
-		$query .= (!empty($this->_curPre['filename']) ? 'filename, '   : '');
-
-		$query .= 'predate, title) VALUES (';
-
-		$query .= (!empty($this->_curPre['size'])     ? $this->_pdo->escapeString($this->_curPre['size'])     . ', '   : '');
-		$query .= (!empty($this->_curPre['category']) ? $this->_pdo->escapeString($this->_curPre['category']) . ', '   : '');
-		$query .= (!empty($this->_curPre['source'])   ? $this->_pdo->escapeString($this->_curPre['source'])   . ', '   : '');
-		$query .= (!empty($this->_curPre['reason'])   ? $this->_pdo->escapeString($this->_curPre['reason'])   . ', '   : '');
-		$query .= (!empty($this->_curPre['files'])    ? $this->_pdo->escapeString($this->_curPre['files'])    . ', '   : '');
-		$query .= (!empty($this->_curPre['reqid'])    ? $this->_curPre['reqid']                             . ', '   : '');
-		$query .= (!empty($this->_curPre['groups_id']) ? $this->_curPre['groups_id'] . ', '   : '');
-		$query .= (!empty($this->_curPre['nuked'])    ? $this->_curPre['nuked']                             . ', '   : '');
-		$query .= (!empty($this->_curPre['filename']) ? $this->_pdo->escapeString($this->_curPre['filename']) . ', '   : '');
-		$query .= (!empty($this->_curPre['predate'])  ? $this->_curPre['predate']                           . ', '   : 'NOW(), ');
-
-		$query .= '%s)';
-
-		$this->_pdo->ping(true);
-
-		$this->_pdo->queryExec(
-			sprintf(
-				$query,
-				$this->_pdo->escapeString($this->_curPre['title'])
-			)
-		);
-		*/
+		$this->dbEntry->save();
 
 		$this->_doEcho(true);
 	}
@@ -385,79 +338,50 @@ class IRCScraper extends IRCClient
 	 *
 	 * @access protected
 	 */
-	protected function _updatePre()
+	protected function updatePreEntry()
 	{
 		// How would this be possible? We used the title to check for existing entry to update
 		if (empty($this->_curPre['title'])) {
 			return;
 		}
 
-		if (!empty($this->_curPre['size']) && $this->_oldPre->size != $this->_curPre['size']) {
-			$this->_oldPre->size = $this->_curPre['size'];
+		if (!empty($this->_curPre['size']) && $this->dbEntry->size != $this->_curPre['size']) {
+			$this->dbEntry->size = $this->_curPre['size'];
 		}
 
-		if (!empty($this->_curPre['source']) && $this->_oldPre->source != $this->_curPre['source']) {
-			$this->_oldPre->source = $this->_curPre['source'];
+		if (!empty($this->_curPre['source']) && $this->dbEntry->source != $this->_curPre['source']) {
+			$this->dbEntry->source = $this->_curPre['source'];
 		}
 
-		if (!empty($this->_curPre['files']) && $this->_oldPre->files != $this->_curPre['files']) {
-			$this->_oldPre->files = $this->_curPre['files'];
+		if (!empty($this->_curPre['files']) && $this->dbEntry->files != $this->_curPre['files']) {
+			$this->dbEntry->files = $this->_curPre['files'];
 		}
 
-		if (!empty($this->_curPre['']) && $this->_oldPre->nukereason != $this->_curPre['reason']) {
-			$this->_oldPre->nukereason = $this->_curPre['reason'];
+		if (!empty($this->_curPre['']) && $this->dbEntry->nukereason != $this->_curPre['reason']) {
+			$this->dbEntry->nukereason = $this->_curPre['reason'];
 		}
 
-		if (!empty($this->_curPre['reqid']) && $this->_oldPre->requestid != $this->_curPre['reqid']) {
-			$this->_oldPre->requestid = $this->_curPre['reqid'];
+		if (!empty($this->_curPre['reqid']) && $this->dbEntry->requestid != $this->_curPre['reqid']) {
+			$this->dbEntry->requestid = $this->_curPre['reqid'];
 		}
 
-		if (!empty($this->_curPre['groups_id']) && $this->_oldPre->groups_id != $this->_curPre['groups_id']) {
-			$this->_oldPre->groups_id = $this->_curPre['groups_id'];
+		if (!empty($this->_curPre['groups_id']) && $this->dbEntry->groups_id != $this->_curPre['groups_id']) {
+			$this->dbEntry->groups_id = $this->_curPre['groups_id'];
 		}
 
-		if (!empty($this->_curPre['predate']) && $this->_oldPre->predate != $this->_curPre['predate']) {
-			$this->_oldPre->predate = $this->_curPre['predate'];
+		if (!empty($this->_curPre['predate']) && $this->dbEntry->predate != $this->_curPre['predate']) {
+			$this->dbEntry->predate = $this->_curPre['predate'];
 		}
 
-		if (!empty($this->_curPre['nuked']) && $this->_oldPre->nuked != $this->_curPre['nuked']) {
-			$this->_oldPre->nuked = $this->_curPre['nuked'];
+		if (!empty($this->_curPre['nuked']) && $this->dbEntry->nuked != $this->_curPre['nuked']) {
+			$this->dbEntry->nuked = $this->_curPre['nuked'];
 		}
 
-		if (!empty($this->_curPre['filename']) && $this->_oldPre->filename != $this->_curPre['filename']) {
-			$this->_oldPre->filename = $this->_curPre['filename'];
+		if (!empty($this->_curPre['filename']) && $this->dbEntry->filename != $this->_curPre['filename']) {
+			$this->dbEntry->filename = $this->_curPre['filename'];
 		}
 
-		$this->_oldPre->save();
-		/*
-		$query = 'UPDATE predb SET ';
-
-		$query .= (!empty($this->_curPre['size'])     ? 'size = '       . $this->_pdo->escapeString($this->_curPre['size'])     . ', ' : '');
-		$query .= (!empty($this->_curPre['source'])   ? 'source = '     . $this->_pdo->escapeString($this->_curPre['source'])   . ', ' : '');
-		$query .= (!empty($this->_curPre['files'])    ? 'files = '      . $this->_pdo->escapeString($this->_curPre['files'])    . ', ' : '');
-		$query .= (!empty($this->_curPre['reason'])   ? 'nukereason = ' . $this->_pdo->escapeString($this->_curPre['reason'])   . ', ' : '');
-		$query .= (!empty($this->_curPre['reqid'])    ? 'requestid = '  . $this->_curPre['reqid']                               . ', ' : '');
-		$query .= (!empty($this->_curPre['groups_id']) ? 'groups_id = ' . $this->_curPre['groups_id']                           . ', ' : '');
-		$query .= (!empty($this->_curPre['predate'])  ? 'predate = '    . $this->_curPre['predate']                             . ', ' : '');
-		$query .= (!empty($this->_curPre['nuked'])    ? 'nuked = '      . $this->_curPre['nuked']                               . ', ' : '');
-		$query .= (!empty($this->_curPre['filename']) ? 'filename = '   . $this->_pdo->escapeString($this->_curPre['filename']) . ', ' : '');
-		$query .= (
-			(empty($this->_oldPre['category']) && !empty($this->_curPre['category']))
-				? 'category = ' . $this->_pdo->escapeString($this->_curPre['category']) . ', '
-				: ''
-		);
-
-		if ($query === 'UPDATE predb SET ') {
-			return;
-		}
-
-		$query .= 'title = ' . $this->_pdo->escapeString($this->_curPre['title']);
-		$query .= ' WHERE title = ' . $this->_pdo->escapeString($this->_curPre['title']);
-
-		$this->_pdo->ping(true);
-
-		$this->_pdo->queryExec($query);
-		*/
+		$this->dbEntry->save();
 
 		$this->_doEcho(false);
 	}
@@ -500,7 +424,7 @@ class IRCScraper extends IRCClient
 			echo
 				'[' . date('r') . ($new ? '] [ Added Pre ] [' : '] [Updated Pre] [') .
 				$this->_curPre['source'] . '] ' . $nukeString . '[' . $this->_curPre['title'] .
-				']' . (!empty($this->_curPre['category']) ? ' [' . $this->_curPre['category'] . ']' : (!empty($this->_oldPre->category) ? ' [' . $this->_oldPre->category . ']' : '')
+				']' . (!empty($this->_curPre['category']) ? ' [' . $this->_curPre['category'] . ']' : (!empty($this->dbEntry->category) ? ' [' . $this->dbEntry->category . ']' : '')
 				) . (!empty($this->_curPre['size']) ? ' [' . $this->_curPre['size'] . ']' : '') .
 				PHP_EOL;
 		}
@@ -541,7 +465,7 @@ class IRCScraper extends IRCClient
 	protected function _resetPreVariables()
 	{
 		$this->_nuked = false;
-		$this->_oldPre = [];
+		$this->dbEntry = [];
 		$this->_curPre =
 			[
 				'title'    => '',
