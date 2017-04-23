@@ -18,6 +18,7 @@
  */
 namespace app\models;
 
+use lithium\data\Entity;
 
 class Predb extends \lithium\data\Model
 {
@@ -34,6 +35,20 @@ class Predb extends \lithium\data\Model
 			]
 		]
 	];
+
+	public static function isModified(Entity $preEntry)
+	{
+		foreach ($preEntry->modified() as $field => $value) {
+			if ($value) {
+				if (nZEDb_DEBUG) {
+					echo "Changed: $field\n";
+				}
+				return true;
+			}
+		}
+
+		return false;
+	}
 }
 
 ?>
