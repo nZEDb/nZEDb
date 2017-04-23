@@ -368,11 +368,11 @@ class IRCScraper extends IRCClient
 		if (!empty($this->_curPre['groups_id']) && $this->dbEntry->groups_id != $this->_curPre['groups_id']) {
 			$this->dbEntry->groups_id = $this->_curPre['groups_id'];
 		}
-
+/*
 		if (!empty($this->_curPre['predate']) && $this->dbEntry->predate != $this->_curPre['predate']) {
 			$this->dbEntry->predate = $this->_curPre['predate'];
 		}
-
+*/
 		if (!empty($this->_curPre['nuked']) && $this->dbEntry->nuked != $this->_curPre['nuked']) {
 			$this->dbEntry->nuked = $this->_curPre['nuked'];
 		}
@@ -381,9 +381,11 @@ class IRCScraper extends IRCClient
 			$this->dbEntry->filename = $this->_curPre['filename'];
 		}
 
-		$this->dbEntry->save();
+		if ($this->dbEntry->isModified()) {
+			$this->dbEntry->save();
 
-		$this->_doEcho(false);
+			$this->_doEcho(false);
+		}
 	}
 
 	/**
