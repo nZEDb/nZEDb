@@ -8,6 +8,10 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
+2017-04-28 niel
+	Mrg: dev-ircscraper branch. Changes to IRCScraper class to make it more resilient for those
+		suffering error about "missing catalogue".
 2017-04-20 niel
 	Add: Created Predb model for use in IRCScraper. No other code is updated for it yet.
 	Fix: Add 'predb' to uninflected list in connections.
