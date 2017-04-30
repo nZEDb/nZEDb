@@ -15,6 +15,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2017-04-28 niel
 	Mrg: dev-ircscraper branch. Changes to IRCScraper class to make it more resilient for those
 		suffering error about "missing catalogue".
+2017-04-28 DariusIII
+	Fix: Properly populate anidb_episodes table
 2017-04-20 niel
 	Add: Created Predb model for use in IRCScraper. No other code is updated for it yet.
 	Fix: Add 'predb' to uninflected list in connections.
