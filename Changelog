@@ -9,6 +9,9 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-04-30 niel
+	Add: Add logging to IRCScraper's testing for duplicates, to try to determine why it sometimes
+		fails to detect them. This also prevents the script from exiting because of the exception.
 2017-04-28 niel
 	Mrg: dev-ircscraper branch. Changes to IRCScraper class to make it more resilient for those
 		suffering error about "missing catalogue".

@@ -4,6 +4,7 @@ namespace nzedb;
 use app\models\Group;
 use app\models\Predb as PredbModel;
 use nzedb\db\DB;
+use nzedb\Logger;
 use nzedb\PreDb;
 
 /**
@@ -36,6 +37,12 @@ class IRCScraper extends IRCClient
 	 * @var array
 	 */
 	protected $_ignoredChannels;
+
+	/**
+	 * Logging object for reporting errors.
+	 * @var \nzedb\Logger Object
+	 */
+	protected $log = null;
 
 	/**
 	 * Is this pre nuked or un nuked?
@@ -126,6 +133,7 @@ class IRCScraper extends IRCClient
 		$this->_debug = $debug;
 		$this->_resetPreVariables();
 		$this->_startScraping();
+		$this->log = new Logger();
 	}
 
 	public function __destruct()
@@ -268,7 +276,14 @@ class IRCScraper extends IRCClient
 		]);
 
 		if ($this->dbEntry === null) {
-			$this->insertPreEntry();
+			try {
+				$this->insertPreEntry();
+			} catch (\Exception $exception) {
+				if (nZEDb_LOGERROR) {
+					$this->log->log(__CLASS__, __METHOD__, $exception->getMessage(),
+						Logger::LOG_ERROR);
+				}
+			}
 		} else {
 			$this->updatePreEntry();
 		}
