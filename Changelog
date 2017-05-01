@@ -9,6 +9,44 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-05-01 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.2.0
+
+
+2017-04-30 niel
+	Add: Logging for IRCScraper's testing for duplicates, to try to determine why it sometimes
+		fails to detect them. This also prevents the script from exiting because of the exception.
+2017-04-28 niel
+	Mrg: dev-ircscraper branch. Changes to IRCScraper class to make it more resilient for those
+		suffering error about "missing catalogue".
+2017-04-28 DariusIII
+	Fix: Properly populate anidb_episodes table
+2017-04-20 niel
+	Add: Created Predb model for use in IRCScraper. No other code is updated for it yet.
+	Fix: Add 'predb' to uninflected list in connections.
+	Add: Created Groups model for use in IRCScraper. No other code is updated for it yet.
+2017-04-19 niel
+	Fix: Make IRCClient an abstract class, as it has an abstract method which was not previously
+		marked as such.
+2017-04-19 DariusIII
+	Add: Per poster categorization of releases, properly categorize and rename SDCLiP releases and
+		add FULLTEXT index on predb.filename for better releases matching.
+	Mrg: PR 2440, from Nightah - Added extra regexes to match release names for a.b.anime
+017-04-14 niel
+	Mrg: PR 2438, from Fossil - Speed up getByRssToken function.
+	Mrg: PR 2436, from Wally73 - Update simple-expanded.sh
+2017-04-13 DariusIII
+	Fix: Properly categorize ANiHLS and HAiKU releases as TV > Anime (please run 'php
+	misc/testing/Release/recategorize.php all' to recategorize releases)
+2017-04-08 niel
+	Chg: Use '--prefer-dist' for stable branches,  '--prefer-source' otherwise. Part of the move
+		to not using the repo in production.
+2017-04-07 niel
+	Mrg: PR 2428, from Wally73 - Update simple.sh. Cleaning out discontinued code.
+	Mrg: PR 2429, from Wally73 - Update simple-expanded.sh. Cleaning out NNTP Proxy references.
+	Mrg: PR 2430, from Wally73 - Update threaded.sh. Cleaning out python references.
+2017-04-06 niel
+	Chg: Remove python module check in tmux/run.php
 2017-04-06 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.1.1
 

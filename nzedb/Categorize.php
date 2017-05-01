@@ -7,7 +7,8 @@ use app\models\Settings;
  * Categorizing of releases by name/group.
  *
  * Class Categorize
- */
+ *
+*/
 class Categorize extends Category
 {
 	/**
@@ -47,6 +48,11 @@ class Categorize extends Category
 	public $regexes;
 
 	/**
+	 * @var string
+	 */
+	protected $poster;
+
+	/**
 	 * Construct.
 	 *
 	 * @param array $options Class instances.
@@ -65,16 +71,19 @@ class Categorize extends Category
 	 * Then work out which category is applicable for either a group or a binary.
 	 * Returns Category::OTHER_MISC if no category is appropriate.
 	 *
-	 * @param string     $releaseName The name to parse.
 	 * @param int|string $groupID     The groupID.
+	 *
+	 * @param string     $releaseName The name to parse.
+	 * @param string     $poster
 	 *
 	 * @return int The categoryID.
 	 */
-	public function determineCategory($groupID, $releaseName = '')
+	public function determineCategory($groupID, $releaseName = '', $poster = '')
 	{
 		$this->releaseName = $releaseName;
 		$this->groupID = $groupID;
 		$this->tmpCat = Category::OTHER_MISC;
+		$this->poster = $poster;
 
 		switch (true) {
 			case $this->isMisc():
@@ -667,7 +676,10 @@ class Categorize extends Category
 	{
 		if (preg_match('/[-._ ]Anime[-._ ]|^\[[a-zA-Z\.\-]+\].*[-_].*\d{1,3}[-_. ]((\[|\()((\d{1,4}x\d{1,4})|(h264-)?\d{3,4}(p|i))(\]|\))\s?(\[AAC\])?|\[[a-fA-F0-9]{8}\]|(8|10)BIT|hi10p)(\[[a-fA-F0-9]{8}\])?/i', $this->releaseName)) {
 			$this->tmpCat = Category::TV_ANIME;
-
+			return true;
+		}
+		if (preg_match('/(ANiHLS|HaiKU|ANiURL)/i', $this->releaseName)) {
+			$this->tmpCat = Category::TV_ANIME;
 			return true;
 		}
 
@@ -1049,6 +1061,12 @@ class Categorize extends Category
 	{
 		if (preg_match('/SDX264XXX|XXX\.HR\./i', $this->releaseName)) {
 			$this->tmpCat = Category::XXX_SD;
+			return true;
+		}
+		if($this->checkPoster( '/oz@lot[.]com/i', $this->poster, Category::XXX_SD)) {
+			return true;
+		}
+		if($this->checkPoster( '/anon@y[.]com/i', $this->poster, Category::XXX_SD)) {
 			return true;
 		}
 		return false;
@@ -1562,5 +1580,21 @@ class Categorize extends Category
 		}
 
 		return true;
+	}
+
+	/**
+	 * @param string $regex     Regex to use for match
+	 * @param string $fromName  Poster that needs to be matched by regex
+	 * @param string $category  Category to set if there is a match
+	 *
+	 * @return bool
+	 */
+	public function checkPoster($regex, $fromName, $category)
+	{
+		if (preg_match($regex, $fromName)) {
+			$this->tmpCat = $category;
+			return true;
+		}
+		return false;
 	}
 }

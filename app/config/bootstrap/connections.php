@@ -73,6 +73,8 @@ use lithium\data\Connections;
 // 	'strict' => false
 // ));
 
+\lithium\util\Inflector::rules('uninflected', ['predb']);
+
 $installed = nZEDb_CONFIGS . 'install.lock';
 
 // Check for install.lock first. If it exists, so should config.php
