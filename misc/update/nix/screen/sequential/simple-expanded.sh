@@ -33,13 +33,10 @@ while :
  do
 CURRTIME=`date +%s`
 
-#tmux kill-session -t NNTPProxy
-#$PHP ${NZEDB_PATH}/nntpproxy.php
-
 cd ${NZEDB_PATH}
 $PHP ${NZEDB_PATH}/update_binaries.php
 
-#$PHP ${TEST_PATH}/nzb-import.php /home/share/nzedbdump/XXXx264/ true true false 150
+##example import nzb
 #$PHP ${TEST_PATH}/nzb-import.php /home/share/nzedbdump/TVHD/ true true false 50
 
 $PHP ${THREADED_PATH}/releases.php	# Set thread count to 1 in site-admin for sequential processing
@@ -65,6 +62,8 @@ then
 	#$PHP ${TEST_PATH}/Release/fixReleaseNames.php 3 true preid no
 	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 5 true preid no
 	#$PHP ${TEST_PATH}/Release/fixReleaseNames.php 7 true preid no
+	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 9 true other no
+	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 9 true preid no
 	$PHP ${TEST_PATH}/Release/removeCrapReleases.php true full
 	$PHP ${NZEDB_PATH}/decrypt_hashes.php full show
 	$PHP ${NZEDB_PATH}/match_prefiles.php full show
@@ -86,6 +85,9 @@ then
 	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 6 true other no
 	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 8 true other no
 	#$PHP ${TEST_PATH}/Release/fixReleaseNames.php 6 true preid no
+	$PHP ${TEST_PATH}/Release/fixReleaseNames.php 10 true other no
+	## fixReleaseNames.php 10 true preid no can be renaming a lot of good stuff falsely so its commented out
+        #$PHP ${TEST_PATH}/Release/fixReleaseNames.php 10 true preid no
 	$PHP ${NZEDB_PATH}/decrypt_hashes.php full show
 	$PHP ${NZEDB_PATH}/match_prefiles.php full show
 fi

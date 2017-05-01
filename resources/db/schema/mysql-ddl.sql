@@ -650,7 +650,8 @@ CREATE TABLE predb (
   INDEX ix_predb_source    (source),
   INDEX ix_predb_requestid (requestid, groups_id),
   INDEX ix_predb_filename  (filename),
-  INDEX ix_predb_searched  (searched)
+  INDEX ix_predb_searched  (searched),
+  FULLTEXT INDEX ix_predb_filename_ft (filename)
 )
   ENGINE = MYISAM
   DEFAULT CHARSET = utf8
@@ -1102,6 +1103,7 @@ CREATE TABLE users (
   cp_api         VARCHAR(255)     NULL     DEFAULT NULL,
   style          VARCHAR(255)     NULL     DEFAULT NULL,
   PRIMARY KEY (id),
+  INDEX ix_rsstoken_role (rsstoken, role),
   INDEX ix_role (role)
 )
   ENGINE = MYISAM
