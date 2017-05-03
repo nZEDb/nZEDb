@@ -218,7 +218,7 @@ class IRCScraper extends IRCClient
 
 			// TODO improve efficiency here by putting all into a single query. Also assign all
 			// of the array in one assignment: $this->_curPre = $matches;
-			$this->_curPre['predate'] = $this->_pdo->from_unixtime(strtotime($matches['time'] . ' UTC'));
+			$this->_curPre['predate'] = $matches['time'];
 			$this->_curPre['title'] = $matches['title'];
 			$this->_curPre['source'] = $matches['source'];
 			if ($matches['category'] !== 'N/A') {
@@ -329,9 +329,14 @@ class IRCScraper extends IRCClient
 			$data['groups_id'] = $this->_curPre['groups_id'];
 		}
 
-		if (!empty($this->_curPre['predate'])) {
-			$data['predate'] = $this->_curPre['predate'];
-		}
+		$this->_curPre['predate'] = empty($this->_curPre['predate']) ? time() : $this->_curPre['predate'];
+
+		$query = 'SELECT ' .
+			$this->_pdo->from_unixtime($this->_pdo->unix_timestamp($this->_curPre['predate'])) .
+			' AS datetime';
+		$result = $this->_pdo->queryAssoc($query);
+
+		$data['predate'] = $result[0]['datetime'];
 
 		if (!empty($this->_curPre['nuked'])) {
 			$data['nuked'] = $this->_curPre['nuked'];
