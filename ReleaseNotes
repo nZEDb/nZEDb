@@ -2,7 +2,12 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
-0.7.2.0 2014-05-01
+0.7.2.1 2017-05-04
+Fixed:
+	* NULL value in predb.predate for IRCScraper. Closes issue 2449.
+
+
+0.7.2.0 2017-05-01
 Added:
 	* Per poster categorising of releases.
 	* Logging for IRCScraper's testing for duplicates, to try to determine why it sometimes fails
