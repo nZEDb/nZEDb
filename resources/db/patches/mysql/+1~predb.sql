@@ -11,3 +11,5 @@ COMMENT 'Unix time of when the entry was last updated'
 
 UPDATE predb SET created = predate;
 
+#Dropping the predate column which is now accessed as 'created'
+ALTER TABLE predb DROP COLUMN predate;
