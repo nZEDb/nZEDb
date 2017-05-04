@@ -3,6 +3,9 @@ ChangeLog file which list *when* changes are made to the dev branches.
 
 
 0.7.2.1 2017-05-04
+Changed:
+	* Updates to tmux configuration files for newer version (2.4) of tmux.
+
 Fixed:
 	* NULL value in predb.predate for IRCScraper. Closes issue 2449.
 
