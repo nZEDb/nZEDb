@@ -42,19 +42,18 @@ class Ydecode extends \lithium\core\Object
 
 	public static function decode(&$text, $ignore = false)
 	{
-		$result = preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $text, $input);
-		switch (true) {
-			case !$result:
-				throw new \Exception('Text does not look like yEnc.');
-			case self::$pathBin === false:
-				throw new \InvalidArgumentException("No valid path to yydecoder binary found!");
-			default:
-		}
+		$source = tempnam(nZEDb_TMP . 'yEnc', 'yenc-source-');
+		$target = tempnam(nZEDb_TMP . 'yEnc', 'yenc-target-');
 
-		$data = shell_exec(
-			"echo '{$input[1]}' | '" . self::$pathBin . "' -o - " . ($ignore ? "-b " : " ") . self::$silent
+		preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $text, $input);
+		file_put_contents($source, $input[1]);
+		Misc::runCmd(
+			"'" . self::$pathBin . "' '" .	$source . "' -o '" . $target . "' -f -b" . self::$silent
 		);
-		if ($data === null) {
+		$data = file_get_contents($target);
+		unlink($source);
+		unlink($target);
+		if ($data === false && $ignore === false) {
 			throw new \Exception('Error getting data from yydecode.');
 		}
 
