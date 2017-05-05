@@ -129,6 +129,16 @@ class DB extends \PDO
 	private $sqlDeleteQuick = '';
 
 	/**
+	 * @var timezone of the database connection. Usually the same as $tz_server, but can be changed.
+	 */
+	private $timezone;
+
+	/**
+	 * @var timezone the database is configured to as default.
+	 */
+	private $tz_server;
+
+	/**
 	 * @var string Username to use when connecting to the database server.
 	 */
 	private $user;
@@ -172,6 +182,7 @@ class DB extends \PDO
 			'dbuser'		=> defined('DB_USER') ? DB_USER : '',
 			'log'			=> '',
 			'persist'		=> false,
+			'timezone'		=> '',
 		];
 		$defaults['log'] = ($this->cli && !isset($options['log'])) ? new ColorCLI() : null;
 		$options += $defaults;
@@ -1314,12 +1325,6 @@ class DB extends \PDO
 		// instance can output a message that connecting failed.
 		$this->pdo = new \PDO($dsn, $options['dbuser'], $options['dbpass'], $connectionOptions);
 
-		// For backwards compatibility, no need for a patch.
-		// This forces field names to always be lower-cased and returned rows to be associative
-		// arrays not numerical
-		$this->pdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_LOWER);
-		$this->pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
-
 		// In case PDO is not set to produce exceptions (PHP's default behaviour).
 		if ($this->pdo === false) {
 			$message = "Unable to create connection to the Database!";
@@ -1332,13 +1337,41 @@ class DB extends \PDO
 			throw new \ErrorException($message, 1);
 		}
 
-		$this->host		= $options['dbhost'];
-		$this->name		= $options['dbname'];
-		$this->password	= $options['dbpass'];
-		$this->persist	= $options['persist'];
-		$this->port		= $options['dbport'];
-		$this->socket	= $options['dbsock'];
-		$this->user		= $options['dbuser'];
+		// Now we have a connection, time to get the defaults on it, then set some our selves.
+
+		// For backwards compatibility, no need for a patch.
+		// This forces field names to always be lower-cased and returned rows to be associative only
+		// arrays not numerical
+		$this->pdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_LOWER);
+		$this->pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+
+		// Find Database sever's TZ.
+		$result = $this->query('SELECT ');
+
+		$tz = $this->query('SELECT @@global.time_zone as global, @@session.time_zone as session;');
+
+		if (empty($tz)) {
+			throw new \ErrorException("Unable to fetch database's timezone settings.");
+		}
+
+		$this->timezone = $tz['session'];
+
+		if (!empty($options['timezone'])) {
+			$result = $this->queryDirect("SET time_zone = '{$options['timezone']}';");
+			if ($result === false) {
+				throw new \ErrorException("Couldn't change session timezone!");
+			}
+			$this->timezone = $options['timezone'];
+		}
+
+		$this->tz_server	= $tz['global'];
+		$this->host			= $options['dbhost'];
+		$this->name			= $options['dbname'];
+		$this->password		= $options['dbpass'];
+		$this->persist		= $options['persist'];
+		$this->port			= $options['dbport'];
+		$this->socket		= $options['dbsock'];
+		$this->user			= $options['dbuser'];
 
 		return true;
 	}
