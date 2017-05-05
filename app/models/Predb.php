@@ -38,16 +38,17 @@ class Predb extends \lithium\data\Model
 
 	public static function isModified(Entity $preEntry)
 	{
+		$modified = false;
 		foreach ($preEntry->modified() as $field => $value) {
 			if ($value) {
 				if (nZEDb_DEBUG) {
 					echo "Changed: $field\n";
 				}
-				return true;
+				$modified = true;
 			}
 		}
 
-		return false;
+		return $modified;
 	}
 }
 
