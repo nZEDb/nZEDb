@@ -51,8 +51,9 @@ class Ydecode extends \lithium\core\Object
 			default:
 		}
 
+		$ignoreFlag = $ignore ? '-b ' : '';
 		$data = shell_exec(
-			"echo '{$input[1]}' | '" . self::$pathBin . "' -o - " . ($ignore ? "-b " : " ") . self::$silent
+			"echo '{$input[1]}' | {" . self::$pathBin . "} -o - " . $ignoreFlag . self::$silent
 		);
 		if ($data === null) {
 			throw new \Exception('Error getting data from yydecode.');
