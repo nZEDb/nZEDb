@@ -128,6 +128,6 @@ abstract class Database extends \lithium\data\source\Database
 	 *								effect, otherwise a boolean indicating if setting the timezone
 	 *								succeeded or failed.
 	 */
-	abstract public function encoding($timezone = null);
+	abstract public function timezone($timezone = null);
 
 }
