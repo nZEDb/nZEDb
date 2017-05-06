@@ -10,6 +10,10 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-05-06 niel
+	Chg: Added code to force DB connection to use PHP's timezone setting. This may be different
+		to the databases configured timezone, but we're now working with a known timezone instead
+		of assuming one.
 2017-05-04 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.2.1
 
