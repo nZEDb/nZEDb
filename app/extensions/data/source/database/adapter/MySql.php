@@ -355,6 +355,21 @@ class MySql extends \app\extensions\data\source\Database {
 		return $this->connection->exec($sql) !== false;
 	}
 
+	public function timezone($value = null)
+	{
+		if ($value === null) {
+			return $this->connection->query('SELECT @@session.time_zone')->fetchColumn();
+		}
+
+		if ($value) {
+			$sql = "SET time_zone = '$value'";
+
+			return $this->connection->exec($sql) !== false;
+		}
+
+		trigger_error(__CLASS__ . '::' . __METHOD__ . ': Empty value passed for timezone setting', E_USER_WARNING);
+	}
+
 	/**
 	 * Converts a given value into the proper type based on a given schema definition.
 	 *
