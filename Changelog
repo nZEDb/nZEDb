@@ -9,6 +9,7 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
 2017-05-22 DariusIII
 	Chg: Rename APIs.Steam.last_update to APIs.steam_apps.last_update
 	Fix: Remove PHP7 return type declaration in Games.php
@@ -27,9 +28,11 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Path to bootstrap.min.js in Default theme
 2017-05-06 niel
 	Fix: Problem with external yEnc decoders (hopefully). Closes issues 2383 and 2435.
+	Chg: Added code to force DB connection to use PHP's timezone setting. This may be different
+		to the databases configured timezone, but we're now working with a known timezone instead
+		of assuming one.
 2017-05-04 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.2.1
-
 
 
 2017-05-03 niel
