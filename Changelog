@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-05-08 DariusIII
+	Fix: Path to bootstrap.min.js in Default theme
 2017-05-06 niel
 	Fix: Problem with external yEnc decoders (hopefully). Closes issues 2383 and 2435.
 2017-05-04 niel
