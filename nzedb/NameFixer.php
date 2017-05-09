@@ -1094,7 +1094,7 @@ class NameFixer
 						$this->_updateSingleColumn('proc_files', self::PROC_FILES_DONE, $release['releases_id']);
 						break;
 					case "PAR2, ":
-						$this->_updateSingleColumn('proc_par2', self::PROC_FILES_DONE, $release['releases_id']);
+						$this->_updateSingleColumn('proc_par2', self::PROC_PAR2_DONE, $release['releases_id']);
 						break;
 					case "UID, ":
 						$this->_updateSingleColumn('proc_uid', self::PROC_UID_DONE, $release['releases_id']);
