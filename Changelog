@@ -12,6 +12,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2017-05-09 niel
 	Fix: Use correct constant to mark PAR2 used in NameFixer.
+	Mrg: PR 2453, from kaibosh - tmux config adjustments for <= v1.8
 2017-05-08 DariusIII
 	Fix: Path to bootstrap.min.js in Default theme
 2017-05-06 niel
