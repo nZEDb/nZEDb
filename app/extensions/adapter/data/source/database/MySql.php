@@ -74,12 +74,11 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 		if (!parent::connect()) {
 			return false;
 		}
-		if ($this->_config['strict'] !== null && !$this->strict($this->_config['strict'])) {
-			return false;
-		}
+
 		if ($this->_config['timezone'] !== null && !$this->timezone($this->_config['timezone'])) {
 			return false;
 		}
+
 		if ($this->_config['lowercase'] === true) {
 			return $this->connection->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_LOWER);
 		}
