@@ -22,6 +22,11 @@ namespace app\extensions\adapter\data\source\database;
 class MySql extends \lithium\data\source\database\adapter\MySql
 {
 	/**
+	 * @var null Timezone of the session connection as set or retrieved by timezone().
+	 */
+	protected $session_tz = null;
+
+	/**
 	 * Constructor.
 	 *
 	 * @link http://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sql-mode-strict
@@ -96,14 +101,23 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 	public function timezone($value = null)
 	{
 		if ($value === null) {
-			return $this->connection->query('SELECT @@session.time_zone')->fetchColumn();
+			if ($this->session_tz === null) {
+				$this->session_tz = $this->connection->query(
+					'SELECT @@session.time_zone')->fetchColumn();
+			}
+
+			$result = $this->session_tz;
+		} else if (empty($value)) {
+			$result = false;
+			trigger_error(__CLASS__ . '::' . __METHOD__ . ': Empty value passed for timezone setting',E_USER_WARNING);
+		} else {
+			$result = $this->connection->exec("SET time_zone = '$value'") !== false;
+			if ($result) {
+				$this->session_tz = $value;
+			}
 		}
 
-		if ($value) {
-			return $this->connection->exec("SET time_zone = '$value'") !== false;
-		}
-
-		trigger_error(__CLASS__ . '::' . __METHOD__ . ': Empty value passed for timezone setting', E_USER_WARNING);
+		return $result;
 	}
 }
 
