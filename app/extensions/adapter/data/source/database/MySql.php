@@ -29,19 +29,25 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 	 * @see  \lithium\data\Source::__construct()
 	 * @see  \lithium\data\Connections::add()
 	 *
-	 * @param array $config The available configuration options are the following. Further
-	 *                      options are inherited from the parent classes. Typically, these parameters are
-	 *                      set in `Connections::add()`, when adding the adapter to the list of active
-	 *                      connections.
-	 *                      - `'host'` _string_: A string in the form of `'<host>'`, `'<host>:<port>'` or
-	 *                      `':<port>'` indicating the host and/or port to connect to. When one or both are
-	 *                      not provided uses general server defaults.
+	 * @param array $config The available configuration options are the following. Further options
+	 *                      are inherited from the parent classes. Typically, these parameters are
+	 *                      set in `Connections::add()`, when adding the adapter to the list of
+	 *                      active connections.
+	 *                      - `'host'` _string_: A string in the form of `'<host>'`, `'<host>:<port>'`
+	 *                      or `':<port>'` indicating the host and/or port to connect to. When one
+	 *                      or both are not provided uses general server defaults.
 	 *                      To use Unix sockets specify the path to the socket (i.e. `'/path/to/socket'`).
+	 *                      - `'lowercase'` _boolean_: If enabled this forces all table column names
+	 *                      to be lower-cased. This should only be needed by users with long
+	 *                      standing databases that were created with upper-cased names for some
+	 *                      fields.
 	 *                      - `'strict'` _boolean|null_: When `true` will enable strict mode by setting
 	 *                      sql-mode to `STRICT_ALL_TABLES`. When `false` will disable strict mode
 	 *                      explictly by settings sql-mode to an empty value ``. A value of `null`
 	 *                      leaves the setting untouched (this is the default) and the default setting
 	 *                      of the database is used.
+	 *                      - `'timezone'` _string_: A valid timezone string for the connection. By
+	 *                      default this is null and the connection's timezone is not changed.
 	 *
 	 * @return \app\extensions\adapter\data\source\database\MySql
 	 */
