@@ -3,6 +3,7 @@ namespace nzedb;
 
 use app\models\Group;
 use app\models\Predb as PredbModel;
+use lithium\data\Connections;
 use nzedb\db\DB;
 use nzedb\Logger;
 use nzedb\PreDb;
@@ -218,7 +219,18 @@ class IRCScraper extends IRCClient
 
 			// TODO improve efficiency here by putting all into a single query. Also assign all
 			// of the array in one assignment: $this->_curPre = $matches;
-			$this->_curPre['predate'] = $matches['time'];
+			//$this->_curPre['predate'] = $matches['time'];
+
+			// The date is provided as a UTC string
+			$this->_curPre['predate'] = \DateTime::createFromFormat('Y-m-d H:i:s',
+				$matches['time'],
+				new \DateTimeZone('UTC'));
+//echo "\n";
+//var_dump($matches['time'], $this->_curPre['predate']->format('Y-m-d H:i:s'));
+			// Convert the timezone to the one matching the Db connection.
+			$timezone = \lithium\data\Connections::config()['default']['object']->timezone();
+			$this->_curPre['predate']->setTimezone(new \DateTimeZone($timezone));
+
 			$this->_curPre['title'] = $matches['title'];
 			$this->_curPre['source'] = $matches['source'];
 			if ($matches['category'] !== 'N/A') {
@@ -329,14 +341,8 @@ class IRCScraper extends IRCClient
 			$data['groups_id'] = $this->_curPre['groups_id'];
 		}
 
-		$this->_curPre['predate'] = empty($this->_curPre['predate']) ? time() : $this->_curPre['predate'];
-
-		$query = 'SELECT ' .
-			$this->_pdo->from_unixtime($this->_pdo->unix_timestamp($this->_curPre['predate'])) .
-			' AS datetime';
-		$result = $this->_pdo->queryAssoc($query);
-
-		$data['predate'] = $result[0]['datetime'];
+		$data['created'] = $this->_curPre['predate']->format('Y-m-d H:i:s');
+//var_dump($data['created']);
 
 		if (!empty($this->_curPre['nuked'])) {
 			$data['nuked'] = $this->_curPre['nuked'];
@@ -388,11 +394,12 @@ class IRCScraper extends IRCClient
 		if (!empty($this->_curPre['groups_id']) && $this->dbEntry->groups_id != $this->_curPre['groups_id']) {
 			$this->dbEntry->groups_id = $this->_curPre['groups_id'];
 		}
-/*
-		if (!empty($this->_curPre['predate']) && $this->dbEntry->predate != $this->_curPre['predate']) {
-			$this->dbEntry->predate = $this->_curPre['predate'];
+
+		$datetime = $this->_curPre['predate']->format('Y-m-d H:i:s');
+		if (!empty($this->_curPre['predate']) && $this->dbEntry->created != $datetime) {
+			$this->dbEntry->updated = $datetime;
 		}
-*/
+
 		if (!empty($this->_curPre['nuked']) && $this->dbEntry->nuked != $this->_curPre['nuked']) {
 			$this->dbEntry->nuked = $this->_curPre['nuked'];
 		}
