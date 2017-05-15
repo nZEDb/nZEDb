@@ -50,6 +50,43 @@ class Predb extends \lithium\data\Model
 
 		return $modified;
 	}
+
+	public static function findRange($page = 1, $limit = ITEMS_PER_PAGE, $name = '')
+	{
+		$options = [
+			'limit' => $limit,
+			'order' => ['name' => 'ASC'],
+			'page'  => (int)$page
+		];
+
+		$options += Predb::getRangeWhere($name);
+		$result = Predb::find('all', $options);
+
+		return $result;
+	}
+
+	public static function findRangeCount($name = '')
+	{
+		$options = Predb::getRangeWhere($name);
+
+		return Predb::find('count', $options);
+	}
+
+	public static function getRangeWhere($name = '')
+	{
+		$where = [];
+
+		if ($name != '') {
+			$where += ['name' => ['LIKE' => "%$name%"]];
+		}
+
+		$options = [];
+		if (!empty($where)) {
+			$options += ['conditions' => $where];
+		}
+
+		return $options;
+	}
 }
 
 ?>
