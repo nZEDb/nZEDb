@@ -1,3 +1,4 @@
+Fix release date for v0.7.2.0. CLoses issue #2446
 * Note *
 Pull requests will be accepted *only* against the dev branch, except for feature branch fixes/enhancements,
 in which case they should be against that branch.
@@ -9,6 +10,21 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-05-09 niel
+	Fix: Use correct constant to mark PAR2 used in NameFixer.
+	Mrg: PR 2453, from kaibosh - tmux config adjustments for <= v1.8
+2017-05-08 DariusIII
+	Fix: Path to bootstrap.min.js in Default theme
+2017-05-06 niel
+	Fix: Problem with external yEnc decoders (hopefully). Closes issues 2383 and 2435.
+2017-05-04 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.2.1
+
+
+
+2017-05-03 niel
+	Mrg: PR 2448, from kaibosh - Update tmux configs for tmux 2.4.
+	Fix: NULL value 'predate' in IRCScraper. Closes issue 2449.
 2017-05-01 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.2.0
 
