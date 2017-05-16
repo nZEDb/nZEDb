@@ -55,7 +55,7 @@ class Predb extends \lithium\data\Model
 	{
 		$options = [
 			'limit' => $limit,
-			'order' => ['name' => 'ASC'],
+			'order' => ['title' => 'ASC'],
 			'page'  => (int)$page
 		];
 
