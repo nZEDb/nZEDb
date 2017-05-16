@@ -14,7 +14,7 @@
 {$pager}
 <table class="data table table-striped responsive-utilities jambo-table">
 	<tr>
-		<th> Date</th>
+		<th> Date ({$tz})</th>
 		<th> Title</th>
 		<th> Category</th>
 		<th> Source</th>
@@ -27,7 +27,7 @@
 	{foreach $results as $result}
 		<tr class="{cycle values=",alt"}">
 			<td class="predb" style="text-align:center;">
-				{$result.predate|date_format:"%Y-%m-%d %H:%M:%S"}
+				{$result.created|date_format:"%Y-%m-%d %H:%M:%S"}
 			</td>
 			<td class="predb" style="text-align:center;">
 				{if isset($result.guid)}
