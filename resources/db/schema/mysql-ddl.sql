@@ -683,7 +683,8 @@ CREATE TABLE predb_imports (
                COLLATE utf8_unicode_ci          DEFAULT NULL,
   category   VARCHAR(255)
                COLLATE utf8_unicode_ci          DEFAULT NULL,
-  predate    DATETIME                         DEFAULT NULL,
+  created    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated    DATETIME NOT NULL DEFAULT 0,
   source     VARCHAR(50)
                COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   requestid  INT(10) UNSIGNED        NOT NULL DEFAULT '0',
