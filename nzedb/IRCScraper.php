@@ -342,7 +342,6 @@ class IRCScraper extends IRCClient
 		}
 
 		$data['created'] = $this->_curPre['predate']->format('Y-m-d H:i:s');
-//var_dump($data['created']);
 
 		if (!empty($this->_curPre['nuked'])) {
 			$data['nuked'] = $this->_curPre['nuked'];
