@@ -178,6 +178,10 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		 offsets for all links.
 2017-01-19 niel
 	Chg: Replace nzedb\Groups::getByID array with app\model\Groups::findByID() object.
+	Add: findRange() convenience method in Groups model to mimic nzedb\Groups::getRange().
+		**NOTE** It does not JOIN with the releases table to fetch number of releases using each
+		group, as that is not used for the group list in Admin => Site Settings => Groups. I'll
+		create a separate method for that purpose if needed.
 2017-01-18 niel
 	Add: New setting (site.main.incognito) that determines if the main page is shown to vistors, or
 	    if they're redirected to the login page instead.
