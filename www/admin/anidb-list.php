@@ -2,12 +2,9 @@
 require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'smarty.php');
 
 use app\models\AnidbTitles;
-use nzedb\AniDB;
 
 $page  = new AdminPage();
 $page->title = 'AniDB Titles';
-
-$AniDB = new AniDB(['Settings' => $page->settings]);
 
 $name = '';
 
