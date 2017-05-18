@@ -18,13 +18,14 @@ $regex  = $regexes->getRegex($group, ITEMS_PER_PAGE, $offset);
 $page->smarty->assign([
 	'group'             => $group,
 	'pagertotalitems'   => $count,
-	'pager'				=> $page->smarty->fetch("paginate.tpl"),
 	'pageritemsperpage' => ITEMS_PER_PAGE,
 	'pagerquerybase'    => WWW_TOP . "/release_naming_regexes-list.php?" . $group . "offset=",
 	'pagerquerysuffix'  => '',
 	'regex'             => $regex,
 	]
 );
+// Pager has to be set outside of main assign, or it will no recieve the scope of those variables.
+$page->smarty->assign('pager', $page->smarty->fetch("paginate.tpl"));
 
 $page->content = $page->smarty->fetch('release_naming_regexes-list.tpl');
 $page->render();

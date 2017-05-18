@@ -24,7 +24,6 @@ $page->smarty->assign(
 	[
 		'pagecurrent'      => (int)$pageno,
 		'pagemaximum'      => (int)($count / ITEMS_PER_PAGE) + 1,
-		'pager'            => $page->smarty->fetch("paginate.tpl"),
 		'pagerquerybase'   => WWW_TOP .
 			"/musicgenre-list.php?" .
 			($activeOnly ? "activeonly=1&amp;" : '') .
@@ -33,6 +32,8 @@ $page->smarty->assign(
 		'pagertotalitems'  => $count,
 	]
 );
+// Pager has to be set outside of main assign, or it will no recieve the scope of those variables.
+$page->smarty->assign('pager', $page->smarty->fetch("paginate.tpl"));
 
 $page->content = $page->smarty->fetch('musicgenre-list.tpl');
 $page->render();

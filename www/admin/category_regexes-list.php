@@ -33,11 +33,12 @@ $page->smarty->assign(
 		'pagecurrent'		=> (int)$pageno,
 		'pagemaximum'		=> (int)($count / ITEMS_PER_PAGE) + 1,
 		'pagerquerybase'	=> (WWW_TOP . "/category_regexes-list.php?" . $group . "page="),
-		'pagerquerysuffix' => '',
+		'pagerquerysuffix'	=> '',
 		'pagertotalitems'	=> $count,
 		'regex'				=> $regex,
 	]
 );
+// Pager has to be set outside of main assign, or it will no recieve the scope of those variables.
 $page->smarty->assign('pager', $page->smarty->fetch("paginate.tpl"));
 
 $page->content = $page->smarty->fetch('category_regexes-list.tpl');

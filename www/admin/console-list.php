@@ -19,12 +19,13 @@ $page->smarty->assign(
 	[
 		'pagecurrent'		=> (int)$pageno,
 		'pagemaximum'		=> (int)($count / ITEMS_PER_PAGE) + 1,
-		'pager'				=> $page->smarty->fetch("paginate.tpl"),
 		'pagerquerybase'	=> WWW_TOP . "/console-list.php?offset=",
 		'pagerquerysuffix'	=> '',
 		'pagertotalitems'	=> $count,
 	]
 );
+// Pager has to be set outside of main assign, or it will no recieve the scope of those variables.
+$page->smarty->assign('pager', $page->smarty->fetch("paginate.tpl"));
 
 $page->content = $page->smarty->fetch('console-list.tpl');
 $page->render();
