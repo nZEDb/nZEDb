@@ -12,6 +12,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2017-05-19 b3rs3rk
 	Fix: nzedb.xml not updated to reflect new PC Games support
 	Fix: Remove function void return declarations at they are throwing UnknownType errors
+	Fix: Incorrect genres_id column in use in update queries, still genre_id -- also reduce sleep time for Steam calls
 2017-05-19 DariusIII
 	* Chg: Update PC Games support, use Steam and GiantBomb only
 2017-05-09 niel
