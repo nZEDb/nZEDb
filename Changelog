@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-05-19 DariusIII
+	* Chg: Update PC Games support, use Steam and GiantBomb only
 2017-05-09 niel
 	Fix: Use correct constant to mark PAR2 used in NameFixer.
 	Mrg: PR 2453, from kaibosh - tmux config adjustments for <= v1.8
