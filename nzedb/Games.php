@@ -74,9 +74,9 @@ class Games
 	 * @var string
 	 */
 	protected $_gameID;
-
+	
 	/**
-	 * @var array
+	 * @var array|bool
 	 */
 	protected $_gameResults;
 
