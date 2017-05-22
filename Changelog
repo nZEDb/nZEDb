@@ -9,7 +9,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2017-04-22 niel
+	Fix: Path to enable logging.
 2017-05-09 niel
 	Fix: Use correct constant to mark PAR2 used in NameFixer.
 	Mrg: PR 2453, from kaibosh - tmux config adjustments for <= v1.8
