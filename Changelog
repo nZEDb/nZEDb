@@ -10,6 +10,7 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 2017-05-22 DariusIII
+	Chg: Rename APIs.Steam.last_update to APIs.steam_apps.last_update
 	Fix: Remove PHP7 return type declaration in Games.php
 2017-04-22 niel
 	Fix: Fix path reference to sttings.php for View Logs page. Fixes issue 2456.
