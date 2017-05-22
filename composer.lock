@@ -4,20 +4,58 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "631738beba6a036acf6e725515c6884f",
+    "content-hash": "15897acce72f1cfa809874a3491798c8",
     "packages": [
         {
-            "name": "barracudanetworks/forkdaemon-php",
-            "version": "v1.0.9",
+            "name": "b3rs3rk/steamfront",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/barracudanetworks/forkdaemon-php.git",
-                "reference": "06462cffb0181514ce2559615f0e892731919187"
+                "url": "https://github.com/b3rs3rk/steamfront.git",
+                "reference": "91926f883c7cff6dcdd844e5e34310d56da49113"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/barracudanetworks/forkdaemon-php/zipball/06462cffb0181514ce2559615f0e892731919187",
-                "reference": "06462cffb0181514ce2559615f0e892731919187",
+                "url": "https://api.github.com/repos/b3rs3rk/steamfront/zipball/91926f883c7cff6dcdd844e5e34310d56da49113",
+                "reference": "91926f883c7cff6dcdd844e5e34310d56da49113",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "b3rs3rk\\": "source"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "b3rs3rk",
+                    "email": "b3rs3rk@protonmail.com"
+                }
+            ],
+            "description": "PHP Wrapper for Accessing the Steam Storefront API",
+            "time": "2017-02-07 02:15:29"
+        },
+        {
+            "name": "barracudanetworks/forkdaemon-php",
+            "version": "v1.0.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/barracudanetworks/forkdaemon-php.git",
+                "reference": "6675af59d017afc3bbb32af1c0844353f1b7666a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/barracudanetworks/forkdaemon-php/zipball/6675af59d017afc3bbb32af1c0844353f1b7666a",
+                "reference": "6675af59d017afc3bbb32af1c0844353f1b7666a",
                 "shasum": ""
             },
             "require": {
@@ -40,7 +78,7 @@
                 "forking",
                 "php"
             ],
-            "time": "2016-06-21T18:44:21+00:00"
+            "time": "2017-03-28T17:06:09+00:00"
         },
         {
             "name": "bower-asset/animate.css",
@@ -421,16 +459,16 @@
         },
         {
             "name": "bower-asset/datatables-1.10.x",
-            "version": "1.10.13",
+            "version": "1.10.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DataTables/DataTables.git",
-                "reference": "403128c42f7b263a0563e862decbe69734b834e8"
+                "reference": "7494262db18b1cbc69dcc1d64a5a8d0cd757d58c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DataTables/DataTables/zipball/403128c42f7b263a0563e862decbe69734b834e8",
-                "reference": "403128c42f7b263a0563e862decbe69734b834e8",
+                "url": "https://api.github.com/repos/DataTables/DataTables/zipball/7494262db18b1cbc69dcc1d64a5a8d0cd757d58c",
+                "reference": "7494262db18b1cbc69dcc1d64a5a8d0cd757d58c",
                 "shasum": ""
             },
             "require": {
@@ -802,16 +840,16 @@
         },
         {
             "name": "bower-asset/pnotify-3.0.x",
-            "version": "3.0.0",
+            "version": "3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sciactive/pnotify.git",
-                "reference": "2c6a12b5d8a6b55d21beae5b35c2a643fcfe4a90"
+                "reference": "313f9823cbcad5d7dd93807a7e51b5dfcc43a8c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sciactive/pnotify/zipball/2c6a12b5d8a6b55d21beae5b35c2a643fcfe4a90",
-                "reference": "2c6a12b5d8a6b55d21beae5b35c2a643fcfe4a90",
+                "url": "https://api.github.com/repos/sciactive/pnotify/zipball/313f9823cbcad5d7dd93807a7e51b5dfcc43a8c8",
+                "reference": "313f9823cbcad5d7dd93807a7e51b5dfcc43a8c8",
                 "shasum": ""
             },
             "require": {
@@ -971,16 +1009,16 @@
         },
         {
             "name": "bower-asset/tinymce-builded",
-            "version": "4.4.3",
+            "version": "4.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/artursmirnov/tinymce_builded.git",
-                "reference": "b6c9e915a1f0e415725c7cad901165f016eb58f0"
+                "reference": "211541d2d30b53b93eb798dc2c3f2873fd072d1c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/artursmirnov/tinymce_builded/zipball/b6c9e915a1f0e415725c7cad901165f016eb58f0",
-                "reference": "b6c9e915a1f0e415725c7cad901165f016eb58f0",
+                "url": "https://api.github.com/repos/artursmirnov/tinymce_builded/zipball/211541d2d30b53b93eb798dc2c3f2873fd072d1c",
+                "reference": "211541d2d30b53b93eb798dc2c3f2873fd072d1c",
                 "shasum": ""
             },
             "type": "bower-asset-library",
@@ -998,16 +1036,16 @@
         },
         {
             "name": "composer/installers",
-            "version": "v1.2.0",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "d78064c68299743e0161004f2de3a0204e33b804"
+                "reference": "79ad876c7498c0bbfe7eed065b8651c93bfd6045"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/d78064c68299743e0161004f2de3a0204e33b804",
-                "reference": "d78064c68299743e0161004f2de3a0204e33b804",
+                "url": "https://api.github.com/repos/composer/installers/zipball/79ad876c7498c0bbfe7eed065b8651c93bfd6045",
+                "reference": "79ad876c7498c0bbfe7eed065b8651c93bfd6045",
                 "shasum": ""
             },
             "require": {
@@ -1049,12 +1087,16 @@
             "keywords": [
                 "Craft",
                 "Dolibarr",
+                "Eliasis",
                 "Hurad",
                 "ImageCMS",
+                "Kanboard",
                 "MODX Evo",
                 "Mautic",
+                "Maya",
                 "OXID",
                 "Plentymarkets",
+                "Porto",
                 "RadPHP",
                 "SMF",
                 "Thelia",
@@ -1077,9 +1119,11 @@
                 "fuelphp",
                 "grav",
                 "installer",
+                "itop",
                 "joomla",
                 "kohana",
                 "laravel",
+                "lavalite",
                 "lithium",
                 "magento",
                 "mako",
@@ -1094,6 +1138,7 @@
                 "roundcube",
                 "shopware",
                 "silverstripe",
+                "sydes",
                 "symfony",
                 "typo3",
                 "wordpress",
@@ -1101,20 +1146,132 @@
                 "zend",
                 "zikula"
             ],
-            "time": "2016-08-13T20:53:52+00:00"
+            "time": "2017-04-24T06:37:16+00:00"
         },
         {
-            "name": "fxp/composer-asset-plugin",
-            "version": "v1.3.0",
+            "name": "dborsatto/php-giantbomb",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/fxpio/composer-asset-plugin.git",
-                "reference": "4aab26a846e61edca2ba91c9b980f6503f7dc84d"
+                "url": "https://github.com/dborsatto/php-giantbomb.git",
+                "reference": "e95553774caf9b6dace6d044710c7e03dee3af43"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fxpio/composer-asset-plugin/zipball/4aab26a846e61edca2ba91c9b980f6503f7dc84d",
-                "reference": "4aab26a846e61edca2ba91c9b980f6503f7dc84d",
+                "url": "https://api.github.com/repos/dborsatto/php-giantbomb/zipball/e95553774caf9b6dace6d044710c7e03dee3af43",
+                "reference": "e95553774caf9b6dace6d044710c7e03dee3af43",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/cache": "^1.6",
+                "guzzlehttp/guzzle": "^6.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "DBorsatto\\GiantBomb\\Test\\": "tests",
+                    "DBorsatto\\GiantBomb\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Davide Borsatto",
+                    "email": "davide.borsatto@gmail.com",
+                    "homepage": "https://github.com/dborsatto"
+                }
+            ],
+            "description": "A PHP library that acts as a wrapper for the GiantBomb API.",
+            "time": "2017-05-18 16:20:43"
+        },
+        {
+            "name": "doctrine/cache",
+            "version": "v1.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/cache.git",
+                "reference": "b6f544a20f4807e81f7044d31e679ccbb1866dc3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/cache/zipball/b6f544a20f4807e81f7044d31e679ccbb1866dc3",
+                "reference": "b6f544a20f4807e81f7044d31e679ccbb1866dc3",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~5.5|~7.0"
+            },
+            "conflict": {
+                "doctrine/common": ">2.2,<2.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.8|~5.0",
+                "predis/predis": "~1.0",
+                "satooshi/php-coveralls": "~0.6"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.6.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Doctrine\\Common\\Cache\\": "lib/Doctrine/Common/Cache"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Roman Borschel",
+                    "email": "roman@code-factory.org"
+                },
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de"
+                },
+                {
+                    "name": "Guilherme Blanco",
+                    "email": "guilhermeblanco@gmail.com"
+                },
+                {
+                    "name": "Jonathan Wage",
+                    "email": "jonwage@gmail.com"
+                },
+                {
+                    "name": "Johannes Schmitt",
+                    "email": "schmittjoh@gmail.com"
+                }
+            ],
+            "description": "Caching library offering an object-oriented API for many cache backends",
+            "homepage": "http://www.doctrine-project.org",
+            "keywords": [
+                "cache",
+                "caching"
+            ],
+            "time": "2016-10-29T11:16:17+00:00"
+        },
+        {
+            "name": "fxp/composer-asset-plugin",
+            "version": "v1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fxpio/composer-asset-plugin.git",
+                "reference": "0bfdd307d2cddbc42c634b14247f3f3a8525b836"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fxpio/composer-asset-plugin/zipball/0bfdd307d2cddbc42c634b14247f3f3a8525b836",
+                "reference": "0bfdd307d2cddbc42c634b14247f3f3a8525b836",
                 "shasum": ""
             },
             "require": {
@@ -1160,54 +1317,7 @@
                 "npm",
                 "package"
             ],
-            "time": "2017-03-17T11:16:25+00:00"
-        },
-        {
-            "name": "giantbomb/giantbomb",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/amalfra/GiantBomb.git",
-                "reference": "2f80210e54e8310380221759b26117c1351b8031"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/amalfra/GiantBomb/zipball/2f80210e54e8310380221759b26117c1351b8031",
-                "reference": "2f80210e54e8310380221759b26117c1351b8031",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "GiantBomb": "GiantBomb/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Amal Francis",
-                    "email": "amalfra@gmail.com"
-                },
-                {
-                    "name": "koroban",
-                    "email": "dev+koroban@novutec.com"
-                }
-            ],
-            "description": "A PHP wrapper for GiantBomb API",
-            "homepage": "http://www.giantbomb.com/api/",
-            "keywords": [
-                "api",
-                "giantbomb",
-                "php",
-                "wrapper"
-            ],
-            "time": "2016-06-15 06:37:08"
+            "time": "2017-04-09T11:49:10+00:00"
         },
         {
             "name": "google/recaptcha",
@@ -1255,17 +1365,195 @@
             "time": "2017-03-09T18:44:34+00:00"
         },
         {
-            "name": "james-heinrich/getid3",
-            "version": "v1.9.13",
+            "name": "guzzlehttp/guzzle",
+            "version": "6.2.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/JamesHeinrich/getID3.git",
-                "reference": "b9a8564e56bdcc294dc7ade32a7f67885bed3778"
+                "url": "https://github.com/guzzle/guzzle.git",
+                "reference": "8d6c6cc55186db87b7dc5009827429ba4e9dc006"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JamesHeinrich/getID3/zipball/b9a8564e56bdcc294dc7ade32a7f67885bed3778",
-                "reference": "b9a8564e56bdcc294dc7ade32a7f67885bed3778",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/8d6c6cc55186db87b7dc5009827429ba4e9dc006",
+                "reference": "8d6c6cc55186db87b7dc5009827429ba4e9dc006",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/promises": "^1.0",
+                "guzzlehttp/psr7": "^1.4",
+                "php": ">=5.5"
+            },
+            "require-dev": {
+                "ext-curl": "*",
+                "phpunit/phpunit": "^4.0",
+                "psr/log": "^1.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "6.2-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/functions_include.php"
+                ],
+                "psr-4": {
+                    "GuzzleHttp\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Guzzle is a PHP HTTP client library",
+            "homepage": "http://guzzlephp.org/",
+            "keywords": [
+                "client",
+                "curl",
+                "framework",
+                "http",
+                "http client",
+                "rest",
+                "web service"
+            ],
+            "time": "2017-02-28T22:50:30+00:00"
+        },
+        {
+            "name": "guzzlehttp/promises",
+            "version": "v1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/promises.git",
+                "reference": "a59da6cf61d80060647ff4d3eb2c03a2bc694646"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/promises/zipball/a59da6cf61d80060647ff4d3eb2c03a2bc694646",
+                "reference": "a59da6cf61d80060647ff4d3eb2c03a2bc694646",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.4-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GuzzleHttp\\Promise\\": "src/"
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Guzzle promises library",
+            "keywords": [
+                "promise"
+            ],
+            "time": "2016-12-20T10:07:11+00:00"
+        },
+        {
+            "name": "guzzlehttp/psr7",
+            "version": "1.4.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/psr7.git",
+                "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
+                "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0",
+                "psr/http-message": "~1.0"
+            },
+            "provide": {
+                "psr/http-message-implementation": "1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.4-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GuzzleHttp\\Psr7\\": "src/"
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                },
+                {
+                    "name": "Tobias Schultze",
+                    "homepage": "https://github.com/Tobion"
+                }
+            ],
+            "description": "PSR-7 message implementation that also provides common utility methods",
+            "keywords": [
+                "http",
+                "message",
+                "request",
+                "response",
+                "stream",
+                "uri",
+                "url"
+            ],
+            "time": "2017-03-20T17:10:46+00:00"
+        },
+        {
+            "name": "james-heinrich/getid3",
+            "version": "v1.9.14",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/JamesHeinrich/getID3.git",
+                "reference": "30bd11473b0eef6f1b47866ef7ab0a557917fc21"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/JamesHeinrich/getID3/zipball/30bd11473b0eef6f1b47866ef7ab0a557917fc21",
+                "reference": "30bd11473b0eef6f1b47866ef7ab0a557917fc21",
                 "shasum": ""
             },
             "require": {
@@ -1288,7 +1576,7 @@
                 "php",
                 "tags"
             ],
-            "time": "2016-12-14T14:29:29+00:00"
+            "time": "2017-03-27T21:12:55+00:00"
         },
         {
             "name": "joshpinkney/tv-maze-php-api",
@@ -1465,6 +1753,56 @@
             "time": "2017-03-15T19:32:56+00:00"
         },
         {
+            "name": "psr/http-message",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/http-message.git",
+                "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/http-message/zipball/f6561bf28d520154e4b0ec72be95418abe6d9363",
+                "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Http\\Message\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for HTTP messages",
+            "homepage": "https://github.com/php-fig/http-message",
+            "keywords": [
+                "http",
+                "http-message",
+                "psr",
+                "psr-7",
+                "request",
+                "response"
+            ],
+            "time": "2016-08-06T14:39:51+00:00"
+        },
+        {
             "name": "smarty/smarty",
             "version": "v3.1.31",
             "source": {
@@ -1519,21 +1857,21 @@
         },
         {
             "name": "unionofrad/lithium",
-            "version": "v1.1.0-beta",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/UnionOfRAD/lithium.git",
-                "reference": "34492f464a9e36683b1170c1b11a5d480784d3c2"
+                "reference": "5d337263469dc14df1f4c05c226e2f24041f112b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/34492f464a9e36683b1170c1b11a5d480784d3c2",
-                "reference": "34492f464a9e36683b1170c1b11a5d480784d3c2",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/5d337263469dc14df1f4c05c226e2f24041f112b",
+                "reference": "5d337263469dc14df1f4c05c226e2f24041f112b",
                 "shasum": ""
             },
             "require": {
                 "composer/installers": "1.*",
-                "php": ">=5.5.14 <7.0.0 || >=7.0.3"
+                "php": "^5.5.14 || ^7.0.3"
             },
             "require-dev": {
                 "unionofrad/li3_fixtures": "1.1.*@dev"
@@ -1561,7 +1899,7 @@
                 "li3",
                 "lithium"
             ],
-            "time": "2016-11-21T15:55:43+00:00"
+            "time": "2017-04-23T09:19:40+00:00"
         },
         {
             "name": "zeebinz/rarinfo",
@@ -1649,7 +1987,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "giantbomb/giantbomb": 20,
+        "b3rs3rk/steamfront": 20,
+        "dborsatto/php-giantbomb": 20,
         "joshpinkney/tv-maze-php-api": 20,
         "nzedb/git.php": 20,
         "unionofrad/lithium": 10,

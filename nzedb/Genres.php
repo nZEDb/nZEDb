@@ -5,6 +5,10 @@ use nzedb\db\DB;
 
 class Genres
 {
+	const CONSOLE_TYPE = Category::GAME_ROOT;
+	const MUSIC_TYPE = Category::MUSIC_ROOT;
+	const GAME_TYPE = Category::PC_ROOT;
+
 	const STATUS_ENABLED = 0;
 	const STATUS_DISABLED = 1;
 

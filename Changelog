@@ -10,7 +10,13 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 2017-04-22 niel
-	Fix: Path to enable logging.
+	Fix: Fix path reference to sttings.php for View Logs page. Fixes issue 2456.
+2017-05-19 b3rs3rk
+	Fix: nzedb.xml not updated to reflect new PC Games support
+	Fix: Remove function void return declarations at they are throwing UnknownType errors
+	Fix: Incorrect genres_id column in use in update queries, still genre_id -- also reduce sleep time for Steam calls
+2017-05-19 DariusIII
+	* Chg: Update PC Games support, use Steam and GiantBomb only
 2017-05-09 niel
 	Fix: Use correct constant to mark PAR2 used in NameFixer.
 	Mrg: PR 2453, from kaibosh - tmux config adjustments for <= v1.8
@@ -1141,7 +1147,7 @@ stable code:
 	Fix: Spacing issues with AniDB and small update to parsing
 	Chg: Greatly improve CodecPoster accuracy and query speed
 	Fix: Query update didn't have crapTime in it
-2015-12-10 ruhllato
+2015-12-10 b3rs3rk
 	Chg: Change COUNT(*) queries to count the primary key columns to improve query performance
 	Chg: Re-work the count querying in PreDB class
 2015-12-09 niel
@@ -2509,7 +2515,7 @@ stable code:
 	Fix: Hard-coded 15 workers in update_threaded.py
 	Chg: Various changes to process additional / nfo for python scripts.
 	Chg: Create temp dir if not exists and set up perms for threaded scripts - processadditional.
-	Chg: Change python postprocess_threaded.py to do tv and movie by groupID instead (in line with Bart/Ruhllatio's changes)
+	Chg: Change python postprocess_threaded.py to do tv and movie by groupID instead (in line with Bart/b3rs3rk's changes)
 	Chg: Call processAdditional directly, saving a DB instance in postprocess.
 	Add: Logic to attempt to detect string size overflow in NNTP, preventing some rare fatal errors.
 	* ---: Merge tasky's PR.

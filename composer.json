@@ -71,6 +71,8 @@
   ],
   "require": {
     "barracudanetworks/forkdaemon-php": "^1.0.7",
+    "b3rs3rk/steamfront": "dev-master",
+    "dborsatto/php-giantbomb": "dev-master",
     "ext-ctype": "*",
     "ext-curl": "*",
     "ext-exif": "*",
@@ -94,7 +96,6 @@
     "ext-xmlwriter": "*",
     "ext-zlib": "*",
     "fxp/composer-asset-plugin": "~1.3.0",
-    "giantbomb/giantbomb": "dev-master",
     "google/recaptcha": "^1.1.2",
     "james-heinrich/getid3": "^1.9.12",
     "joshpinkney/tv-maze-php-api": "dev-master",

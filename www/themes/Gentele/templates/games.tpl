@@ -88,30 +88,18 @@
 													<i class="fa fa-exclamation-circle" style="color: red"
 													   title="This release has failed to download for some users"></i>{/if}
 												</a>
-												{if $result.classused == "gb"}<a class="label label-primary"
+												{if $result.classused == "GiantBomb"}<a class="label label-primary"
 																				 target="_blank"
 																				 href="{$site->dereferrer_link}{$result.url}"
 																				 name="giantbomb{$result.gamesinfo_id}"
 																				 title="View GiantBomb page">
 														GiantBomb</a>{/if}
-												{if $result.classused == "steam"}<a class="label label-primary"
+												{if $result.classused == "Steam"}<a class="label label-primary"
 																					target="_blank"
 																					href="{$site->dereferrer_link}{$result.url|escape:"htmlall"}"
 																					name="steam{$result.gamesinfo_id}"
 																					title="View Steam page">
 														Steam</a>{/if}
-												{if $result.classused == "gl"}<a class="label label-primary"
-																				 target="_blank"
-																				 href="{$site->dereferrer_link}{$result.url|escape:"htmlall"}"
-																				 name="greenlight{$result.gamesinfo_id}"
-																				 title="View greenlight page">
-														GreenLight</a>{/if}
-												{if $result.classused == "desura"}<a class="label label-primary"
-																					 target="_blank"
-																					 href="{$site->dereferrer_link}{$result.url|escape:"htmlall"}"
-																					 name="desura{$result.gamesinfo_id}"
-																					 title="View Desura page">
-														Desura</a>{/if}
 												{if $result.nfoid > 0}<a
 													href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}"
 													title="View NFO" class="modal_nfo label label-primary" rel="nfo">
