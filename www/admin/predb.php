@@ -15,7 +15,7 @@ $lastsearch = isset($_REQUEST['presearch']) ? $_REQUEST['presearch'] : '';
 $pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
 $page->smarty->assign(
 	[
-		'lastsearch'       => $lastsearch,
+		'lastSearch'       => $lastsearch,
 		'pagecurrent'      => (int)$pageno,
 		'pagemaximum'      => (int)($count / ITEMS_PER_PAGE) + 1,
 		'pagerquerybase'   => WWW_TOP . "/predb.php?" . $lastsearch . 'page=',
