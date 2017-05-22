@@ -485,7 +485,7 @@ class Games
 	 * @throws \RuntimeException
 	 * @throws \InvalidArgumentException
 	 */
-	public function updateGamesInfo($gameInfo): bool
+	public function updateGamesInfo($gameInfo)
 	{
 		//wait 10 seconds before proceeding (steam api limit)
 		sleep(1);

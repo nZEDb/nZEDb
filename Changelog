@@ -9,6 +9,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2017-05-22 DariusIII
+	Fix: Remove PHP7 return type declaration in Games.php
 2017-04-22 niel
 	Fix: Fix path reference to sttings.php for View Logs page. Fixes issue 2456.
 2017-05-19 b3rs3rk
