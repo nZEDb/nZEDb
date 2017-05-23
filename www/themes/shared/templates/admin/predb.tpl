@@ -16,7 +16,7 @@
 <table class="data table table-striped responsive-utilities jambo-table">
 	<tr>
 		<th> Date ({$tz})</th>
-		<th> Updated</th>
+		<th> Updated ({$tz})</th>
 		<th> Title</th>
 		<th> Category</th>
 		<th> Source</th>
@@ -34,7 +34,7 @@
 			<td class="predb" style="text-align: center;">
 				<span style="text-align:center;">
 					{if isset($result.updated)}
-						{$result.updated}
+						{$result.updated|date_format:"%Y-%m-%d %H:%M:%S"}
 					{else}
 						&emdash;
 					{/if}
