@@ -17,13 +17,14 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		bootstrap process. By default, this timezone will be the same as the PHP code running the
 		indexer, but it may be set to any valid zone by the user.
 		 Database changes: The 'predate' datetime field is replaced by a 'created' timestamp field
-		and a new 'updated' timestamp field is added. NOTE if not already added you MUST
-		add/update the databases timezone tables as described in their documentation. For
-		Debian/Ubuntu users 'mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql'
-		should load them easily, this will require restarting the database server.
+		and a new 'updated' timestamp field is added. **NOTE** If you have not already done so, you
+		MUST populate the database's timezone tables as described in their documentation. For
+		Debian/Ubuntu users 'mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql' should
+		load them easily, this will require restarting the database server.
 		 The smarty template now displays the timezone in the Date header so that it is obvious to
-		users. Additionally the pager template is switched to the newer paginate.tpl that I have
-		been using in the dev-switch-to-models branch.
+		users. There is also an additional field for when the entry was updated.
+		 Additionally the pager template is switched to the newer paginate.tpl that I have been
+		using in the dev-move-to-models branch.
 2017-05-06 niel
 	Chg: Added code to force DB connection to use PHP's timezone setting. This may be different
 		to the databases configured timezone, but we're now working with a known timezone instead
