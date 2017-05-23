@@ -6,7 +6,7 @@
 			<input type="text" class="form-control" placeholder="Search predb" id="presearch" name="presearch" value="{$lastSearch|escape:'html'}">
 			<span class="input-group-btn">
 				<button type="submit" value="Go" class="btn btn-default btn-outline">
-					<i class="fa fa-search"></i>
+					<i class="fa fa-search">Search</i>
 				</button>
 			</span>
 		</div>
