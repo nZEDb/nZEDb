@@ -18,7 +18,9 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		indexer, but it may be set to any valid zone by the user.
 		 Database changes: The 'predate' datetime field is replaced by a 'created' timestamp field
 		and a new 'updated' timestamp field is added. NOTE if not already added you MUST
-		add/update the databases timezone tables as described in their documentation.
+		add/update the databases timezone tables as described in their documentation. For
+		Debian/Ubuntu users 'mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql'
+		should load them easily, this will require restarting the database server.
 		 The smarty template now displays the timezone in the Date header so that it is obvious to
 		users. Additionally the pager template is switched to the newer paginate.tpl that I have
 		been using in the dev-switch-to-models branch.
