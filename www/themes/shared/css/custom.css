@@ -678,6 +678,7 @@ a.btn-success, a.btn-primary, a.btn-warning, a.btn-danger {
 }
 .btn {
   border-radius: 3px;
+  height: 12pt;
 }
 .tooltip {
   display: block !important;
@@ -1150,24 +1151,6 @@ table.dataTable td.focus {
 .paginate_disabled_next, .paginate_enabled_next {
   padding-right: 23px;
   margin-left: 10px;
-}
-.paginate_disabled_previous {
-  background: url('../images/back_disabled.png') no-repeat top left;
-}
-.paginate_enabled_previous {
-  background: url('../images/back_enabled.png') no-repeat top left;
-}
-.paginate_enabled_previous:hover {
-  background: url('../images/back_enabled_hover.png') no-repeat top left;
-}
-.paginate_disabled_next {
-  background: url('../images/forward_disabled.png') no-repeat top right;
-}
-.paginate_enabled_next {
-  background: url('../images/forward_enabled.png') no-repeat top right;
-}
-.paginate_enabled_next:hover {
-  background: url('../images/forward_enabled_hover.png') no-repeat top right;
 }
 table.display {
   margin: 0 auto;
