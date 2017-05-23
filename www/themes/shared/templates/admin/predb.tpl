@@ -16,6 +16,7 @@
 <table class="data table table-striped responsive-utilities jambo-table">
 	<tr>
 		<th> Date ({$tz})</th>
+		<th> Updated</th>
 		<th> Title</th>
 		<th> Category</th>
 		<th> Source</th>
@@ -29,6 +30,15 @@
 		<tr class="{cycle values=",alt"}">
 			<td class="predb" style="text-align:center;">
 				{$result.created|date_format:"%Y-%m-%d %H:%M:%S"}
+			</td>
+			<td class="predb" style="text-align: center;">
+				<span style="text-align:center;">
+					{if isset($result.updated)}
+						{$result.updated}
+					{else}
+						&emdash;
+					{/if}
+				</span>
 			</td>
 			<td class="predb" style="text-align:center;">
 				{if isset($result.guid)}
