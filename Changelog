@@ -36,7 +36,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Remove function void return declarations at they are throwing UnknownType errors
 	Fix: Incorrect genres_id column in use in update queries, still genre_id -- also reduce sleep time for Steam calls
 2017-05-19 DariusIII
-	* Chg: Update PC Games support, use Steam and GiantBomb only
+	Chg: Update PC Games support, use Steam and GiantBomb only
 2017-05-09 niel
 	Fix: Use correct constant to mark PAR2 used in NameFixer.
 	Mrg: PR 2453, from kaibosh - tmux config adjustments for <= v1.8
