@@ -36,7 +36,7 @@
 					{if isset($result.updated)}
 						{$result.updated|date_format:"%Y-%m-%d %H:%M:%S"}
 					{else}
-						&emdash;
+						&mdash;
 					{/if}
 				</span>
 			</td>
