@@ -565,7 +565,7 @@ class Tmux
 				return "SELECT
 					(SELECT searchname FROM releases ORDER BY id DESC LIMIT 1) AS newestrelname,
 					(SELECT UNIX_TIMESTAMP(MIN(dateadded)) FROM collections) AS oldestcollection,
-					(SELECT UNIX_TIMESTAMP(MAX(predate)) FROM predb) AS newestpre,
+					(SELECT UNIX_TIMESTAMP(MAX(created)) FROM predb) AS newestpre,
 					(SELECT UNIX_TIMESTAMP(adddate) FROM releases ORDER BY id DESC LIMIT 1) AS newestrelease";
 			default:
 				return false;
