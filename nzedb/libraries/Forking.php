@@ -520,7 +520,7 @@ class Forking extends \fork_daemon
 					WHERE LENGTH(p.title) >= 15
 					AND p.title NOT REGEXP '[\"\<\> ]'
 					AND p.searched = 0
-					AND p.predate < (NOW() - INTERVAL 1 DAY)"
+					AND p.created < (NOW() - INTERVAL 1 DAY)"
 				)
 			);
 			if ($preCount['num'] > 0) {

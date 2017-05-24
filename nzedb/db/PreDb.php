@@ -243,7 +243,7 @@ SQL_ADD_GROUPS;
 	{
 		$sql = <<<SQL_INSERT
 INSERT INTO {$this->tableMain} (title, nfo, size, files, filename, nuked, nukereason, category, created, source, requestid, groups_id)
-  SELECT pi.title, pi.nfo, pi.size, pi.files, pi.filename, pi.nuked, pi.nukereason, pi.category,  pi.predate, pi.source, pi.requestid, groups_id
+  SELECT pi.title, pi.nfo, pi.size, pi.files, pi.filename, pi.nuked, pi.nukereason, pi.category,  pi.created, pi.source, pi.requestid, groups_id
     FROM predb_imports AS pi
   ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo IS NULL, pi.nfo, predb.nfo),
 	  predb.size = IF(predb.size IS NULL, pi.size, predb.size),

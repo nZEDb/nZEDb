@@ -56,6 +56,6 @@ if (!$predata) {
 		if (isset($predata['files'])) {
 			print "<tr><th>Files:</th><td>" . htmlentities((preg_match('/F|B/', $predata['files'], $match) ? $predata["files"] : ($predata["files"] . 'MB')), ENT_QUOTES) . "</td></tr>\n";
 		}
-		print "<tr><th>Pred:</th><td>" . htmlentities($predata["predate"], ENT_QUOTES) . "</td></tr>\n";
+		print "<tr><th>Pred:</th><td>" . htmlentities($predata["created"], ENT_QUOTES) . "</td></tr>\n";
 	print "</table>";
 }

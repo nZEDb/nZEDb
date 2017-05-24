@@ -163,11 +163,11 @@ if (isset($_GET['type'])) {
 
 	$newer = $older = $nuked = $category = '';
 	if (isset($_GET['newer']) && is_numeric($_GET['newer'])) {
-		$newer = ' AND p.predate > FROM_UNIXTIME(' . $_GET['newer'] . ') ';
+		$newer = ' AND p.created > FROM_UNIXTIME(' . $_GET['newer'] . ') ';
 	}
 
 	if (isset($_GET['lower']) && is_numeric($_GET['lower'])) {
-		$older = ' AND p.predate < FROM_UNIXTIME(' . $_GET['older'] . ') ';
+		$older = ' AND p.created < FROM_UNIXTIME(' . $_GET['older'] . ') ';
 	}
 
 	if (isset($_GET['nuked'])) {
@@ -279,7 +279,7 @@ if (isset($_GET['type'])) {
 		case 'all':
 			$pdo = new DB;
 			$preData = $pdo->query(
-				sprintf('SELECT * FROM predb p WHERE 1=1 %s %s %s ORDER BY p.predate DESC LIMIT %d OFFSET %d',
+				sprintf('SELECT * FROM predb p WHERE 1=1 %s %s %s ORDER BY p.created DESC LIMIT %d OFFSET %d',
 					$newer,
 					$older,
 					$nuked,
@@ -338,7 +338,7 @@ if ($json === false) {
 				' nukereason="' . (!empty($data['nukereason']) ? $data['nukereason'] : '') . '"',
 				' files="'      . (!empty($data['files'])      ? $data['files']      : '') . '"',
 				' name="'       . (!empty($data['title'])      ? sanitize($data['title']) : '') . '"',
-				' date="'       . (!empty($data['predate'])    ? strtotime($data['predate']) : '') . '"',
+				' date="'       . (!empty($data['created'])    ? strtotime($data['created']) : '') . '"',
 				' size="'       . (!empty($data['size']) && $data['size'] != 'NULL' ? $data['size'] : '') . '"',
 				' group="'      . (isset($data['groupname']) && !empty($data['groupname']) ? $data['groupname'] : '' ) . '"',
 				' ident="'      . (isset($data['ident']) && !empty($data['ident']) ? $data['ident'] : '') . '"',
