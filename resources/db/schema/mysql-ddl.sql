@@ -650,7 +650,7 @@ CREATE TABLE predb (
   PRIMARY KEY (id),
   UNIQUE INDEX ix_predb_title     (title),
   INDEX ix_predb_nfo       (nfo),
-  INDEX ix_predb_predate   (predate),
+  INDEX ix_predb_created   (created),
   INDEX ix_predb_source    (source),
   INDEX ix_predb_requestid (requestid, groups_id),
   INDEX ix_predb_filename  (filename),

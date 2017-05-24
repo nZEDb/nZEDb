@@ -14,6 +14,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Fix: Tmux monitor query still looking for predate column
 	Fix: Disable timezone checks if connection is to SphinxQL as it doesn't support any TZ variables
 	Fix: Many predate string constants not changed to reflect new created column
+	Fix: Change predb table DDL to reflect predate -> created name change in secondary key
 2017-05-24 niel
 	Mrg: dev-ircscraper branch. The IRCScraper code has been changed to make it properly timezone
 		aware. As before, predates are received as UTC/GMT time. However they are not converted
