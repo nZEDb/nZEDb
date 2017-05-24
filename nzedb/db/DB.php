@@ -118,6 +118,12 @@ class DB extends \PDO
 	 */
 	private $socket;
 
+
+	/**
+	 * @var bool Is the connection to a SphinxQL server?
+	 */
+	private $sphinx;
+
 	/**
 	 * @var string MySQL LOW_PRIORITY DELETE option.
 	 */
@@ -189,6 +195,7 @@ class DB extends \PDO
 			'log'			=> '',
 			'persist'		=> false,
 			'timezone'		=> ini_get('date.timezone'),
+			'sphinx'		=> false,
 		];
 		$defaults['log'] = ($this->cli && !isset($options['log'])) ? new ColorCLI() : null;
 		$options += $defaults;
@@ -199,6 +206,8 @@ class DB extends \PDO
 		} else {
 			$this->dbSystem = $options['dbtype'];
 		}
+
+		$this->sphinx = $options['sphinx'];
 
 		$this->connect($options);
 
@@ -1354,21 +1363,26 @@ class DB extends \PDO
 		// Find Database sever's TZ.
 		$tz = $this->queryOneRow('SELECT @@global.time_zone as global, @@session.time_zone as session;');
 
-		if (empty($tz)) {
-			throw new \ErrorException("Unable to fetch database's tz_session settings.");
-		}
-
-		// If the current session tz is different to ours, change it.
-		if ($options['timezone'] != $tz['session']) {
-			$result = $this->queryDirect("SET time_zone = '{$options['timezone']}';");
-			if ($result === false) {
-				throw new \ErrorException("Couldn't change session tz_session!");
+		if($this->sphinx === false) {
+			if (empty($tz)) {
+				throw new \ErrorException("Unable to fetch database's tz_session settings.");
 			}
+
+			// If the current session tz is different to ours, change it.
+			if ($options['timezone'] != $tz['session']) {
+				$result = $this->queryDirect("SET time_zone = '{$options['timezone']}';");
+				if ($result === false) {
+					throw new \ErrorException("Couldn't change session tz_session!");
+				}
+			}
+
+			$this->tz_session	= $options['timezone'];
+			$this->tz_original	= $tz['session'];
+			$this->tz_server	= $tz['global'];
+		} else {
+			$this->tz_session = $this->tz_original = $this->tz_server = $options['timezone'];
 		}
 
-		$this->tz_session	= $options['timezone'];
-		$this->tz_original	= $tz['session'];
-		$this->tz_server	= $tz['global'];
 		$this->host			= $options['dbhost'];
 		$this->name			= $options['dbname'];
 		$this->password		= $options['dbpass'];
