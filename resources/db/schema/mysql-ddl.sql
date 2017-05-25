@@ -676,32 +676,21 @@ CREATE TABLE predb_hashes (
 
 DROP TABLE IF EXISTS predb_imports;
 CREATE TABLE predb_imports (
-  title      VARCHAR(255)
-               COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  nfo        VARCHAR(255)
-               COLLATE utf8_unicode_ci          DEFAULT NULL,
-  size       VARCHAR(50)
-               COLLATE utf8_unicode_ci          DEFAULT NULL,
-  category   VARCHAR(255)
-               COLLATE utf8_unicode_ci          DEFAULT NULL,
+  title      VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  nfo        VARCHAR(255) COLLATE utf8_unicode_ci          DEFAULT NULL,
+  size       VARCHAR(50) COLLATE utf8_unicode_ci          DEFAULT NULL,
+  category   VARCHAR(255) COLLATE utf8_unicode_ci          DEFAULT NULL,
   created    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated    DATETIME NOT NULL DEFAULT 0,
-  source     VARCHAR(50)
-               COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  source     VARCHAR(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   requestid  INT(10) UNSIGNED        NOT NULL DEFAULT '0',
   groups_id   INT(10) UNSIGNED        NOT NULL DEFAULT '0' COMMENT 'FK to groups',
   nuked      TINYINT(1)              NOT NULL DEFAULT '0'  COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
-  nukereason VARCHAR(255)
-               COLLATE utf8_unicode_ci          DEFAULT NULL
-  COMMENT 'If this pre is nuked, what is the reason?',
-  files      VARCHAR(50)
-               COLLATE utf8_unicode_ci          DEFAULT NULL
-  COMMENT 'How many files does this pre have ?',
-  filename   VARCHAR(255)
-               COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  nukereason VARCHAR(255) COLLATE utf8_unicode_ci          DEFAULT NULL COMMENT 'If this pre is nuked, what is the reason?',
+  files      VARCHAR(50) COLLATE utf8_unicode_ci          DEFAULT NULL COMMENT 'How many files does this pre have ?',
+  filename   VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   searched   TINYINT(1)              NOT NULL DEFAULT '0',
-  groupname  VARCHAR(255)
-               COLLATE utf8_unicode_ci          DEFAULT NULL
+  groupname  VARCHAR(255) COLLATE utf8_unicode_ci          DEFAULT NULL
 )
   ENGINE =MYISAM
   DEFAULT CHARSET =utf8
