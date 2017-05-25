@@ -248,7 +248,7 @@ class PreDb
 			SELECT p.*, r.guid
 			FROM predb p
 			LEFT OUTER JOIN releases r ON p.id = r.predb_id %s
-			ORDER BY p.predate DESC
+			ORDER BY p.created DESC
 			LIMIT %d
 			OFFSET %d',
 			$search,

@@ -218,8 +218,8 @@ if (!isset($argv[1])) {
 					FROM predb p
 					WHERE LENGTH(title) >= 15 AND title NOT REGEXP "[\"\<\> ]"
 					AND searched = 0
-					AND predate < (NOW() - INTERVAL 1 DAY)
-					ORDER BY predate ASC
+					AND created < (NOW() - INTERVAL 1 DAY)
+					ORDER BY created ASC
 					LIMIT %s
 					OFFSET %s',
 					$maxperrun,
