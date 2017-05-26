@@ -9,6 +9,10 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
+2017-05-26 niel
+	Add: Adding post-install-cmd to composer.json. It runs addHooks.sh script if installed in dev
+		mode.
 2017-05-25 b3rs3rk
 	Fix: Two more predate instances that should be created
 2017-05-24 b3rs3rk

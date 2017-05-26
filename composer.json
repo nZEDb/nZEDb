@@ -137,6 +137,9 @@
     "unionofrad/manual": "1.1.x-dev"
   },
   "scripts": {
+    "post-install-cmd": [
+      "nzedb\\build\\Composer::postInstallCmd"
+    ]
   },
   "suggest": {
     "ext-simple_php_yenc_decode": "Greatly improves yEnc decoding speed in PHP 5.x",
