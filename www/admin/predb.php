@@ -21,7 +21,7 @@ $page->smarty->assign(
 		'pagerquerybase'   => WWW_TOP . "/predb.php?" . $lastsearch . 'page=',
 		'pagerquerysuffix' => '',
 		'pagertotalitems'  => $count,
-		'results'          => Predb::findRange($pageno, ITEMS_PER_PAGE, $_REQUEST['presearch'])->to('array'),
+		'results'          => Predb::findRange($pageno, ITEMS_PER_PAGE, $lastsearch)->to('array'),
 		'tz'               => \lithium\data\Connections::config()['default']['object']->timezone(),
 	]
 );
