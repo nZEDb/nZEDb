@@ -9,8 +9,8 @@ $page->meta_title = "View PreDb info";
 $page->meta_keywords = "view,predb,info,description,details";
 $page->meta_description = "View PreDb info";
 
-$count = Predb::findRangeCount($_REQUEST['presearch']);
 $lastsearch = isset($_REQUEST['presearch']) ? $_REQUEST['presearch'] : '';
+$count = Predb::findRangeCount($lastsearch);
 
 $pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
 $page->smarty->assign(
