@@ -9,8 +9,8 @@ $page->meta_title = "View PreDb info";
 $page->meta_keywords = "view,predb,info,description,details";
 $page->meta_description = "View PreDb info";
 
-$count = Predb::findRangeCount($_REQUEST['presearch']);
 $lastsearch = isset($_REQUEST['presearch']) ? $_REQUEST['presearch'] : '';
+$count = Predb::findRangeCount($lastsearch);
 
 $pageno = (isset($_REQUEST['page']) ? $_REQUEST['page'] : 1);
 $page->smarty->assign(
@@ -21,7 +21,7 @@ $page->smarty->assign(
 		'pagerquerybase'   => WWW_TOP . "/predb.php?" . $lastsearch . 'page=',
 		'pagerquerysuffix' => '',
 		'pagertotalitems'  => $count,
-		'results'          => Predb::findRange($pageno, ITEMS_PER_PAGE, $_REQUEST['presearch'])->to('array'),
+		'results'          => Predb::findRange($pageno, ITEMS_PER_PAGE, $lastsearch)->to('array'),
 		'tz'               => \lithium\data\Connections::config()['default']['object']->timezone(),
 	]
 );
