@@ -51,7 +51,7 @@ class Predb extends \lithium\data\Model
 		return $modified;
 	}
 
-	public static function findRange($page = 1, $limit = ITEMS_PER_PAGE, $name = '')
+	public static function findRange($page = 1, $limit = ITEMS_PER_PAGE, $title = '')
 	{
 		$options = [
 			'limit' => $limit,
@@ -59,25 +59,25 @@ class Predb extends \lithium\data\Model
 			'page'  => (int)$page
 		];
 
-		$options += Predb::getRangeWhere($name);
+		$options += Predb::getRangeWhere($title);
 		$result = Predb::find('all', $options);
 
 		return $result;
 	}
 
-	public static function findRangeCount($name = '')
+	public static function findRangeCount($title = '')
 	{
-		$options = Predb::getRangeWhere($name);
+		$options = Predb::getRangeWhere($title);
 
 		return Predb::find('count', $options);
 	}
 
-	public static function getRangeWhere($name = '')
+	public static function getRangeWhere($title = '')
 	{
 		$where = [];
 
-		if ($name != '') {
-			$where += ['name' => ['LIKE' => "%$name%"]];
+		if ($title != '') {
+			$where += ['title' => ['LIKE' => "%$title%"]];
 		}
 
 		$options = [];
