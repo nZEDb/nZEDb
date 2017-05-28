@@ -51,7 +51,7 @@
 							></a>
 							<div class="relextra" style="margin-top:5px;">
 								{if $result.url != ""}
-									{if $result.classused == "gb"}
+									{if $result.classused == "GiantBomb"}
 									<a
 										class="label"
 										target="_blank"
@@ -60,7 +60,7 @@
 										title="View giantbomb page"
 									><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/giantbomb.png"></a>
 									{/if}
-									{if $result.classused == "steam"}
+									{if $result.classused == "Steam"}
 										<a
 											class="label"
 											target="_blank"
@@ -68,24 +68,6 @@
 											name="Steam{$result.gamesinfo_id}"
 											title="View Steam page"
 											><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/steam.png"></a>
-									{/if}
-									{if $result.classused == "gl"}
-										<a
-											class="label"
-											target="_blank"
-											href="{$site->dereferrer_link}{$result.url}"
-											name="Greenlight{$result.gamesinfo_id}"
-											title="View Greenlight page"
-											><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/greenlight.png"></a>
-									{/if}
-									{if $result.classused == "desura"}
-										<a
-											class="label"
-											target="_blank"
-											href="{$site->dereferrer_link}{$result.url}"
-											name="Desura{$result.gamesinfo_id}"
-											title="View Desura page"
-											><img src="{$smarty.const.WWW_TOP}/themes/shared/img/icons/desura.png"></a>
 									{/if}
 								{/if}
 								<a

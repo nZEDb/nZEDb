@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#version=1
+#
+# The hook should  exit with non-zero status after issuing an appropriate message if  it wants to
+# stop the commit.
+#
+
+# Save any changes hanging around
+git stash
+
+# Look for SQL patches and apply any waiting.
+php build/NewPatches.php
+
+EXIT_STATUS="$?"
+if [ ${EXIT_STATUS} -gt 0 ]
+then
+	echo "\nProblem while converting SQL patch files!\n";
+	exit ${EXIT_STATUS}
+fi
+
+git add -u ./build/nzedb.xml
+
+## Commit changes.
+#git commit
+
+# Restore the saved changes
+git stash pop

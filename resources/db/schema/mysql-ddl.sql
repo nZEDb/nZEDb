@@ -363,7 +363,8 @@ CREATE TABLE gamesinfo (
   updateddate DATETIME            NOT NULL,
   PRIMARY KEY (id),
   UNIQUE INDEX  ix_gamesinfo_asin (asin),
-  INDEX         ix_title (title)
+  INDEX         ix_title (title),
+  FULLTEXT INDEX ix_title_ft (title)
 )
   ENGINE = MyISAM
   DEFAULT CHARSET = utf8
@@ -634,7 +635,10 @@ CREATE TABLE predb (
   nfo        VARCHAR(255)     NULL,
   size       VARCHAR(50)      NULL,
   category   VARCHAR(255)     NULL,
-  predate    DATETIME                  DEFAULT NULL,
+  created    TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Unix time of when the
+  pre was created, or first noted by the system',
+  updated    TIMESTAMP        NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Unix time of when the
+  entry was last updated',
   source     VARCHAR(50)      NOT NULL DEFAULT '',
   requestid  INT(10) UNSIGNED NOT NULL DEFAULT '0',
   groups_id  INT(10) UNSIGNED NOT NULL DEFAULT '0'  COMMENT 'FK to groups',
@@ -646,7 +650,7 @@ CREATE TABLE predb (
   PRIMARY KEY (id),
   UNIQUE INDEX ix_predb_title     (title),
   INDEX ix_predb_nfo       (nfo),
-  INDEX ix_predb_predate   (predate),
+  INDEX ix_predb_created   (created),
   INDEX ix_predb_source    (source),
   INDEX ix_predb_requestid (requestid, groups_id),
   INDEX ix_predb_filename  (filename),
@@ -680,7 +684,8 @@ CREATE TABLE predb_imports (
                COLLATE utf8_unicode_ci          DEFAULT NULL,
   category   VARCHAR(255)
                COLLATE utf8_unicode_ci          DEFAULT NULL,
-  predate    DATETIME                         DEFAULT NULL,
+  created    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated    DATETIME NOT NULL DEFAULT 0,
   source     VARCHAR(50)
                COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   requestid  INT(10) UNSIGNED        NOT NULL DEFAULT '0',
@@ -945,6 +950,17 @@ CREATE TABLE settings (
   UNIQUE KEY ui_settings_setting (setting)
 )
   ENGINE = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+DROP TABLE IF EXISTS steam_apps;
+CREATE TABLE steam_apps (
+  name         VARCHAR(255)        NOT NULL DEFAULT '' COMMENT 'Steam application name',
+  appid        INT(11) UNSIGNED    NULL COMMENT 'Steam application id',
+  PRIMARY KEY (appid, name),
+  FULLTEXT INDEX ix_name_ft (name)
+)
+  ENGINE          = MYISAM
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci;
 
