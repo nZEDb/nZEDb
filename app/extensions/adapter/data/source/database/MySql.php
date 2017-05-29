@@ -98,6 +98,23 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 		return true;
 	}
 
+	public function isConnectionLocal()
+	{
+		$config =  $this->_config;
+
+		$local = (!empty($config['socket']) || $config['host'] == 'localhost');
+		if ($local === false) {
+			preg_match_all('/inet' . '6?' . ' addr: ?([^ ]+)/', `ifconfig`, $ips);
+
+			// Check for dotted quad - if exists compare against local IP number(s)
+			if (preg_match('#^\d+\.\d+\.\d+\.\d+$#', $config['host'])) {
+				$local = in_array($config['host'], $ips[1]);
+			}
+		}
+
+		return $local;
+	}
+
 	/**
 	 * Get/Set the timezone for the connection.
 	 *
