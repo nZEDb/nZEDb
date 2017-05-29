@@ -64,6 +64,13 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 			'strict'    => null,
 			'timezone'  => null,
 		];
+
+		// Add patterns for LOAD DATA INFILE and SELECT DATA OUTFILE to the array.
+		$this->_strings += [
+				'export' => "",
+				'import' => "LOAD DATA {:local} INFILE {:filepath} IGNORE INTO TABLE {:table} FIELDS TERMINATED BY {:field_term} LINES TERMINATED BY {:line_term} {:ignorelines} {:fields}"
+			];
+
 		parent::__construct($config + $defaults);
 	}
 
