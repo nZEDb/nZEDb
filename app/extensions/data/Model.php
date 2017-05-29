@@ -19,14 +19,12 @@
 namespace app\extensions\data;
 
 
-use app\models\Predb;
-
 class Model extends \lithium\data\Model
 {
-	public static function loadInfile(array $options = [])
+	public static function tableImport(array $options = [])
 	{
 		$source = static::connection(); // Gives the connected data source object - the adapter
-										// ( e.g. `MySql`) class for type = 'database' connections.
+		// ( e.g. `MySql`) class for type = 'database' connections.
 
 		// Check for object of MySql type. This includes the base (lithium) and custom variants.
 		if (!($source instanceof \lithium\data\source\database\adapter\MySql)) {
@@ -34,22 +32,32 @@ class Model extends \lithium\data\Model
 		}
 
 		$defaults = [
-			'fields'	=> [],	// Fields to load data into. Defaults to all fields, in table order.
-			'file'		=> '',	// Full path spec to the file to load.
-			'skip'		=> 0,	// Number of lines to ignore from the file.
-			'table'		=> '',	// Table to load data into. Defaults to the table associated with
+			'fields' => [],		// Fields to load data into. Defaults to all fields, in table order.
+			'file'   => '',		// Full path spec to the file to load.
+			'skip'   => 0,		// Number of lines to ignore from the file.
+			'table'  => '',		// Table to load data into. Defaults to the table associated with
 								// the model.
 		];
 		$options += $defaults;
 
 		if (is_array($options['fields'])) {
-			if (empty($options['fields'])) {
-				$options['fields'] = implode(',', $source->fields());
-			} else {
-				$options['fields'] = implode(',', $options['fields']);
-			}
+			$fields = empty($options['fields']) ?
+				array_keys(static::schema()->fields()) : $options['fields'];
+			$options['fields'] = implode(',', $fields);
 		}
 
-		var_dump(static::_schema);
+		$options['table'] = empty($options['table']) ? static::meta('source') : $options['table'];
+
+		return Model::loadInfile($options);
+	}
+
+	protected static function loadInfile(array $options = [])
+	{
+		if (isset($options['vardump'])) {
+			var_dump($options['vardump']);
+		} else {
+			var_dump($options);
+		}
+
 	}
 }
