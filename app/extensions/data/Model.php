@@ -28,17 +28,25 @@ class Model extends \lithium\data\Model
 
 		// Check for object of MySql type. This includes the base (lithium) and custom variants.
 		if (!($source instanceof \lithium\data\source\database\adapter\MySql)) {
-			return false;
+			throw new \RuntimeException('Table Imports can only be applied to MySql adapters!');
 		}
 
 		$defaults = [
-			'fields' => [],		// Fields to load data into. Defaults to all fields, in table order.
-			'file'   => '',		// Full path spec to the file to load.
-			'skip'   => 0,		// Number of lines to ignore from the file.
-			'table'  => '',		// Table to load data into. Defaults to the table associated with
-								// the model.
+			'fields'			=> [],		// Fields to load data into. Defaults to all fields, in table order.
+			'filepath'			=> '',		// Full path spec to the file to load.
+			'skip'				=> 0,		// Number of lines to ignore from the file.
+			'table'				=> '',		// Table to load data into. Defaults to the table associated with
+										// the model.
+			'terminatefieldby'	=> '"\t"',
+			'terminatelineby'	=> '"\r\n"',
 		];
 		$options += $defaults;
+		if (empty($options['filepath']) || !is_readable($options['filepath'])) {
+			throw new \RuntimeException('Table Imports require a readable file!');
+		}
+
+//		$options['table'] = empty($options['table']) ? static::meta('source') : $options['table'];
+		$options['table'] = static::meta('source');	// Force use of model's table.
 
 		if (is_array($options['fields'])) {
 			$fields = empty($options['fields']) ?
@@ -46,7 +54,12 @@ class Model extends \lithium\data\Model
 			$options['fields'] = implode(',', $fields);
 		}
 
-		$options['table'] = empty($options['table']) ? static::meta('source') : $options['table'];
+		if ($options['skip'] > 0) {
+			$options['ignorelines'] = "IGNORE {$options['skip']} LINES";
+		}
+		unset($options['skip']);
+
+		//$options['vardump'] = $source->isConnectionLocal();
 
 		return Model::loadInfile($options);
 	}
