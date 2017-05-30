@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-05-30 niel
+	Mrg: PR 2445, from nightah - Reworked all Anime release naming regexes.
 2017-05-28 niel
 	Chg: Predb model: Change occurences of 'name' to 'title', even variable names as it is obviously
 		confusing me!
