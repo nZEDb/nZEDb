@@ -315,10 +315,20 @@ class IRCScraper extends IRCClient
 			return;
 		}
 
-		$data = ['title' => $this->_curPre['title']];
+		$data = [
+			'title' => $this->_curPre['title'],
+			'created' => $this->_curPre['predate']->format('Y-m-d H:i:s'),
+		];
+
+
+		// Do not assign empty value to fields without data, the model will use default values.
 
 		if (!empty($this->_curPre['size'])) {
 			$data['size'] = $this->_curPre['size'];
+		}
+
+		if (!empty($this->_curPre['category'])) {
+			$data['category'] = $this->_curPre['category'];
 		}
 
 		if (!empty($this->_curPre['source'])) {
@@ -333,18 +343,16 @@ class IRCScraper extends IRCClient
 			$data['nukereason'] = $this->_curPre['reason'];
 		}
 
+		if (!empty($this->_curPre['nuked'])) {
+			$data['nuked'] = $this->_curPre['nuked'];
+		}
+
 		if (!empty($this->_curPre['reqid'])) {
 			$data['requestid'] = $this->_curPre['reqid'];
 		}
 
 		if (!empty($this->_curPre['groups_id'])) {
 			$data['groups_id'] = $this->_curPre['groups_id'];
-		}
-
-		$data['created'] = $this->_curPre['predate']->format('Y-m-d H:i:s');
-
-		if (!empty($this->_curPre['nuked'])) {
-			$data['nuked'] = $this->_curPre['nuked'];
 		}
 
 		if (!empty($this->_curPre['filename'])) {
@@ -368,6 +376,10 @@ class IRCScraper extends IRCClient
 		// How would this be possible? We used the title to check for existing entry to update
 		if (empty($this->_curPre['title'])) {
 			return;
+		}
+
+		if (!empty($this->_curPre['category']) && $this->dbEntry->category != $this->_curPre['category']) {
+			$this->dbEntry->category = $this->_curPre['category'];
 		}
 
 		if (!empty($this->_curPre['size']) && $this->dbEntry->size != $this->_curPre['size']) {
