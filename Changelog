@@ -11,7 +11,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2017-05-31 niel
-	Fix: Make DbUpdate::loadTables() default to not having a "OPTIONALLY ENCLOSED BY" clause, as it
+	Fix: Make DbUpdate::loadTables() default to not having an "OPTIONALLY ENCLOSED BY" clause, as it
 		causes issues with fields starting with a double-quote.
 2017-05-30 niel
 	Mrg: PR 2445, from nightah - Reworked all Anime release naming regexes.
