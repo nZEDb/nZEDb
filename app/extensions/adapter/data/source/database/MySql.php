@@ -68,7 +68,7 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 		// Add patterns for LOAD DATA INFILE and SELECT DATA OUTFILE to the array.
 		$this->_strings += [
 				'export' => "",
-				'import' => "LOAD DATA {:local} INFILE {:filepath} IGNORE INTO TABLE {:table} FIELDS TERMINATED BY {:terminatefieldby} LINES TERMINATED BY {:terminatelineby} {:ignorelines} {:fields}"
+				'import' => "LOAD DATA {:local} INFILE '{:filepath}' IGNORE INTO TABLE {:table} FIELDS TERMINATED BY {:terminatefieldby} LINES TERMINATED BY {:terminatelineby} {:ignorelines} ({:fields})"
 			];
 
 		parent::__construct($config + $defaults);
@@ -98,6 +98,14 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 		return true;
 	}
 
+	public function import(array $data)
+	{
+		$sql = $this->renderCommand('import', $data);
+
+		var_dump($data, $sql);
+//		return $this->exec($sql);
+	}
+
 	public function isConnectionLocal()
 	{
 		$config =  $this->_config;
@@ -113,6 +121,11 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 		}
 
 		return $local;
+	}
+
+	public function export()
+	{
+		throw new \RuntimeException("Feature not implemented yet.");
 	}
 
 	/**
@@ -142,6 +155,27 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 				$this->session_tz = $value;
 			}
 		}
+
+		return $result;
+	}
+
+	/**
+	 * Alternative method to run queries.
+	 * This method uses the PDO::exec() method instead of PDO::query() which is the default for
+	 * models using MySQL adapter.
+	 *
+	 * @param $sql
+	 *
+	 * @return bool|int False on failure, the number of rows affected otherwise.
+	 */
+	protected function exec($sql)
+	{
+		try {
+			$result = $this->connection->exec($sql);
+		} catch (PDOException $e) {
+			$result = false;
+			$this->_error($sql);
+		};
 
 		return $result;
 	}
