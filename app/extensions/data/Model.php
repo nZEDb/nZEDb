@@ -19,58 +19,52 @@
 namespace app\extensions\data;
 
 
+use lithium\data\Source;
+
 class Model extends \lithium\data\Model
 {
-	public static function tableImport(array $options = [])
+	public static function import(array $data, array $options = [])
 	{
-		$source = static::connection(); // Gives the connected data source object - the adapter
-		// ( e.g. `MySql`) class for type = 'database' connections.
+		$source = static::connection();
 
-		// Check for object of MySql type. This includes the base (lithium) and custom variants.
-		if (!($source instanceof \lithium\data\source\database\adapter\MySql)) {
-			throw new \RuntimeException('Table Imports can only be applied to MySql adapters!');
-		}
+		$local = $source->isConnectionLocal() ? '' : 'LOCAL';
 
 		$defaults = [
-			'fields'			=> [],		// Fields to load data into. Defaults to all fields, in table order.
-			'filepath'			=> '',		// Full path spec to the file to load.
-			'skip'				=> 0,		// Number of lines to ignore from the file.
-			'table'				=> '',		// Table to load data into. Defaults to the table associated with
-										// the model.
-			'terminatefieldby'	=> '"\t"',
-			'terminatelineby'	=> '"\r\n"',
+			'fields'           => self::getInfileFields(),
+			'filepath'         => '',
+			'ignorelines'      => 1,
+			'local'            => $local,
+			'table'            => static::meta('source'),
+			'terminatefieldby' => '"\t"',
+			'terminatelineby'  => '"\r\n"',
 		];
-		$options += $defaults;
+		$data += $defaults;
+
 		if (empty($options['filepath']) || !is_readable($options['filepath'])) {
 			throw new \RuntimeException('Table Imports require a readable file!');
 		}
 
-//		$options['table'] = empty($options['table']) ? static::meta('source') : $options['table'];
-		$options['table'] = static::meta('source');	// Force use of model's table.
-
-		if (is_array($options['fields'])) {
-			$fields = empty($options['fields']) ?
-				array_keys(static::schema()->fields()) : $options['fields'];
-			$options['fields'] = implode(',', $fields);
+		try {
+			return $source->import($data, $options);
+		} catch (\Exception $e) {
+			throw new \RuntimeException('Table Imports can only be applied to MySql adapters!');
 		}
-
-		if ($options['skip'] > 0) {
-			$options['ignorelines'] = "IGNORE {$options['skip']} LINES";
-		}
-		unset($options['skip']);
-
-		//$options['vardump'] = $source->isConnectionLocal();
-
-		return Model::loadInfile($options);
 	}
 
-	protected static function loadInfile(array $options = [])
+	protected static function getInfileFields($filename)
 	{
-		if (isset($options['vardump'])) {
-			var_dump($options['vardump']);
-		} else {
-			var_dump($options);
-		}
+		$handle = @fopen($filename, "r");
+		if (is_resource($handle)) {
+			$line = fgets($handle);
+			fclose($handle);
+			if ($line === false) {
+				echo "FAILED reading first line of '$filename'\n";
+				return false;
+			}
+			return trim($line);
 
+		} else {
+			throw new \RuntimeException("Failed to open file: '$filename'");
+		}
 	}
 }
