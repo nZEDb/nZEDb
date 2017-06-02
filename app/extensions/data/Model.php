@@ -23,33 +23,18 @@ use lithium\data\Source;
 
 class Model extends \lithium\data\Model
 {
-
-
-	public static function import(array $data, array $options = [])
+	public static function import(array $options = [])
 	{
 		$source = static::connection();
-
-		$local = $source->isConnectionLocal() ? '' : 'LOCAL';
-
-		$defaults = [
-			'fields'           => $source->getInfileFields(),
-			'filepath'         => '',
-			'ignorelines'      => 1,
-			'local'            => $local,
-			'table'            => static::meta('source'),
-			'terminatefieldby' => '"\t"',
-			'terminatelineby'  => '"\r\n"',
-		];
-		$data += $defaults;
-
-		if (empty($options['filepath']) || !is_readable($options['filepath'])) {
-			throw new \RuntimeException('Table Imports require a readable file!');
-		}
+		$options['table'] = static::meta('source');
 
 		try {
-			return $source->import($data, $options);
-		} catch (\Exception $e) {
-			throw new \RuntimeException('Table Imports can only be applied to MySql adapters!');
+			return $source->import($options);
+		} catch (\BadMethodCallException $e) {
+			throw new \BadMethodCallException(
+				'Table Imports can only be applied to MySql adapters!',
+				$e
+			);
 		}
 	}
 }

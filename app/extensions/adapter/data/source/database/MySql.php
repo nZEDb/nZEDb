@@ -8,6 +8,8 @@
 
 namespace app\extensions\adapter\data\source\database;
 
+use app\extensions\data\Model;
+
 
 /**
  * MySQL database driver. Extends the `Database` class to implement the necessary
@@ -105,6 +107,9 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 
 	public function getInfileFields($filename)
 	{
+		if (nZEDb_DEBUG) {
+			echo "Looking in file for fields\n";
+		}
 		$handle = @fopen($filename, "r");
 		if (is_resource($handle)) {
 			$line = fgets($handle);
@@ -119,11 +124,11 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 		}
 	}
 
-	public function import(array $data)
+	public function import(array $options)
 	{
+		$data = $this->buildImportData($options);
 		$sql = $this->renderCommand('import', $data);
 
-		var_dump($data, $sql);
 //		return $this->exec($sql);
 	}
 
@@ -194,6 +199,61 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 		};
 
 		return $result;
+	}
+
+	protected function buildImportData(array $options)
+	{
+		$local = $this->isConnectionLocal() ? '' : 'LOCAL';
+		$defaults = [
+			'fields'			=> [],		// Fields to load data into. Defaults to all fields, in table order.
+			'filepath'			=> '',		// Full path spec to the file to load.
+			'local'				=> $local,
+			'model'				=> '',
+			'skip'				=> 0,		// Number of lines to ignore from the file.
+			'table'				=> '',		// Table to load data into. Defaults to the table associated with
+											// the model.
+			'terminatefieldby'	=> '"\t"',
+			'terminatelineby' 	=> '"\r\n"',
+			'truncate'			=> false,	// Should the table be truncated before import.
+		];
+		$options += $defaults;
+
+		if (empty($options['filepath']) || !is_readable($options['filepath'])) {
+			throw new \RuntimeException('Table Imports require a readable file!');
+		}
+
+		$model = $options['model'];
+		//$table =
+		if (is_array($options['fields'])) {
+			$fields = empty($options['fields']) ? array_keys($model->schema()->fields()) :
+				$options['fields'];
+			$options['fields'] = implode(',', $fields);
+		} else {
+			if ($options['fields'] == 'from file' || $options['fields'] == '') {
+				$fields = $this->getInfileFields($options['filepath']);
+				if ($fields === false) {
+					throw new \RuntimeException(
+						"Unable to get field list from import file '{$options['filepath']}'"
+					);
+				}
+				$options['fields'] = $fields;
+			}
+		}
+
+		$options['ignorelines'] = ($options['skip'] > 0) ? "IGNORE {$options['skip']} LINES" : '';
+
+		return array_intersect_key(
+			$options,
+			[
+				'fields'           => '',
+				'filepath'         => '',
+				'ignorelines'      => '',
+				'local'            => '',
+				'table'            => '',
+				'terminatefieldby' => '',
+				'terminatelineby'  => '',
+			]
+		);
 	}
 }
 
