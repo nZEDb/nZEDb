@@ -23,6 +23,8 @@ use lithium\data\Source;
 
 class Model extends \lithium\data\Model
 {
+
+
 	public static function import(array $data, array $options = [])
 	{
 		$source = static::connection();
@@ -30,7 +32,7 @@ class Model extends \lithium\data\Model
 		$local = $source->isConnectionLocal() ? '' : 'LOCAL';
 
 		$defaults = [
-			'fields'           => self::getInfileFields(),
+			'fields'           => $source->getInfileFields(),
 			'filepath'         => '',
 			'ignorelines'      => 1,
 			'local'            => $local,
@@ -48,23 +50,6 @@ class Model extends \lithium\data\Model
 			return $source->import($data, $options);
 		} catch (\Exception $e) {
 			throw new \RuntimeException('Table Imports can only be applied to MySql adapters!');
-		}
-	}
-
-	protected static function getInfileFields($filename)
-	{
-		$handle = @fopen($filename, "r");
-		if (is_resource($handle)) {
-			$line = fgets($handle);
-			fclose($handle);
-			if ($line === false) {
-				echo "FAILED reading first line of '$filename'\n";
-				return false;
-			}
-			return trim($line);
-
-		} else {
-			throw new \RuntimeException("Failed to open file: '$filename'");
 		}
 	}
 }

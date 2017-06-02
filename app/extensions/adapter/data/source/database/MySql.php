@@ -98,6 +98,27 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 		return true;
 	}
 
+	public function export()
+	{
+		throw new \RuntimeException("Feature not implemented yet.");
+	}
+
+	public function getInfileFields($filename)
+	{
+		$handle = @fopen($filename, "r");
+		if (is_resource($handle)) {
+			$line = fgets($handle);
+			fclose($handle);
+			if ($line === false) {
+				throw new \RuntimeException("FAILED reading first line of '$filename'");
+			}
+
+			return trim($line);
+		} else {
+			throw new \RuntimeException("Failed to open file: '$filename'");
+		}
+	}
+
 	public function import(array $data)
 	{
 		$sql = $this->renderCommand('import', $data);
@@ -121,11 +142,6 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 		}
 
 		return $local;
-	}
-
-	public function export()
-	{
-		throw new \RuntimeException("Feature not implemented yet.");
 	}
 
 	/**
