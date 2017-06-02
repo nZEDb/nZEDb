@@ -111,7 +111,7 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 			$result = $this->session_tz;
 		} else if (empty($value)) {
 			$result = false;
-			trigger_error(__CLASS__ . '::' . __METHOD__ . ': Empty value passed for timezone setting',E_USER_WARNING);
+			trigger_error(__CLASS__ . '::' . __METHOD__ . ': Empty value passed for timezone setting! Check date.timezone setting is set in PHP\'s configuration file.',E_USER_WARNING);
 		} else {
 			$result = $this->connection->exec("SET time_zone = '$value'") !== false;
 			if ($result) {
