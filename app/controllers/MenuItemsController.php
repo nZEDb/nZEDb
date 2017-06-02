@@ -68,11 +68,6 @@ class MenuItemsController extends \app\extensions\action\Controller
 		MenuItems::find($this->request->id)->delete();
 		return $this->redirect('MenuItems::index');
 	}
-
-	public function import(array $options)
-	{
-		return parent::import($options, MenuItems::connection());
-	}
 }
 
 ?>
