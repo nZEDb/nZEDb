@@ -22,7 +22,7 @@ namespace app\controllers;
 use app\models\MenuItems;
 use lithium\action\DispatchException;
 
-class MenuItemsController extends \lithium\action\Controller
+class MenuItemsController extends \app\extensions\action\Controller
 {
 	public function index()
 	{
@@ -71,51 +71,7 @@ class MenuItemsController extends \lithium\action\Controller
 
 	public function import(array $options)
 	{
-		$defaults = [
-			'fields'           => [],		// Fields to load data into. Defaults to all fields, in table order.
-			'filepath'         => '',		// Full path spec to the file to load.
-			'local'            => null,
-			'skip'             => 0,		// Number of lines to ignore from the file.
-			'table'            => '',		// Table to load data into. Defaults to the table associated with
-											// the model.
-			'terminatefieldby' => '"\t"',
-			'terminatelineby'  => '"\r\n"',
-			'truncate'			=> false,	// Should the table be truncated before import.
-		];
-		$options += $defaults;
-
-		if (is_array($options['fields'])) {
-			$fields = empty($options['fields']) ? array_keys(static::schema()->fields()) : $options['fields'];
-			$options['fields'] = implode(',', $fields);
-		} else if ($options['fields'] == 'from file' || $options['fields'] == '') {
-			if (nZEDb_DEBUG) {
-				echo "Looking in file for fields\n";
-			}
-
-			$fields = MenuItems::getInfileFields($options['filepath']);
-			if ($fields === false) {
-				throw new \RuntimeException("Unable to get field list from import file '{$options['filepath']}'");
-			}
-			$options['fields'] = $fields;
-		}
-
-		$options['ignorelines'] = ($options['skip'] > 0) ? "IGNORE {$options['skip']} LINES" : '';
-
-		//$options['vardump'] = $source->isConnectionLocal();
-		$data = array_intersect_key(
-			$options,
-			[
-				'fields'           => '',
-				'filepath'         => '',
-				'ignorelines'      => '',
-				'local'            => '',
-				'table'            => '',
-				'terminatefieldby' => '',
-				'terminatelineby'  => '',
-			]
-		);
-
-		MenuItems::import($data, $options);
+		return parent::import($options, MenuItems::connection());
 	}
 }
 
