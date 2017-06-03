@@ -9,6 +9,10 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-06-03 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.0
+
+
 2017-05-31 niel
 	Fix: Make DbUpdate::loadTables() default to not having an "OPTIONALLY ENCLOSED BY" clause, as it
 		causes issues with fields starting with a double-quote.
