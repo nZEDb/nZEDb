@@ -120,6 +120,9 @@ if (file_exists($installed)) {
 				'encoding'   => 'UTF-8',
 				'persistent' => false,
 				'timezone'   => ini_get('date.timezone'),
+				'options' => [
+					\PDO::MYSQL_ATTR_LOCAL_INFILE => true,
+				]
 			]
 		);
 
