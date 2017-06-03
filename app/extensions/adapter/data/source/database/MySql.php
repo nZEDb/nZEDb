@@ -127,9 +127,12 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 	public function import(array $options)
 	{
 		$data = $this->buildImportData($options);
+		if ($options['truncate'] === true) {
+			$this->exec('TRUNCATE ' . $data['table']);
+		}
 		$sql = $this->renderCommand('import', $data);
 
-//		return $this->exec($sql);
+		return $this->exec($sql);
 	}
 
 	public function isConnectionLocal()
