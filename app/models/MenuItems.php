@@ -19,6 +19,11 @@
 namespace app\models;
 
 
+/**
+ * MenuItems - class for menu_items table.
+ *
+ * @package app\models
+ */
 class MenuItems extends \app\extensions\data\Model
 {
 	public $validates = [];
