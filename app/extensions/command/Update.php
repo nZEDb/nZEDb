@@ -120,6 +120,7 @@ class Update extends \app\extensions\console\Command
 			$output = $this->git();
 			if ($output === 'Already up-to-date.') {
 				$this->out($output, 'info');
+				$this->db();
 			} else {
 				$status = $this->composer();
 				if ($status) {
