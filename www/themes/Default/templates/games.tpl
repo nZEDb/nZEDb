@@ -104,24 +104,14 @@
 								{if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.grp_release_guid}"
 														 title="View Nfo" class="rndbtn modal_nfo" rel="nfo">
 										Nfo</a>{/if}
-								{if $result.classused == "gb"}
+								{if $result.classused == "GiantBomb"}
 								<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$result.url}"
 								   name="giantbomb{$result.gamesinfo_id}" title="View giantbomb page">Giantbomb</a>
 								{/if}
-								{if $result.classused == "steam"}
+								{if $result.classused == "Steam"}
 								<a class="rndbtn" target="_blank"
 								   href="{$site->dereferrer_link}{$result.url|escape:"htmlall"}"
 								   name="steam{$result.gamesinfo_id}" title="View Steam page">Steam</a>
-								{/if}
-								{if $result.classused == "gl"}
-								<a class="rndbtn" target="_blank"
-								   href="{$site->dereferrer_link}{$result.url|escape:"htmlall"}"
-								   name="greenlight{$result.gamesinfo_id}" title="View greenlight page">Greenlight</a>
-								{/if}
-								{if $result.classused == "desura"}
-								<a class="rndbtn" target="_blank"
-								   href="{$site->dereferrer_link}{$result.url|escape:"htmlall"}"
-								   name="desura{$result.gamesinfo_id}" title="View Desura page">Desura</a>
 								{/if}
 								<a class="rndbtn" target="_blank"
 									href="{$site->dereferrer_link}http://ign.com/search?q={$result.title|escape:"htmlall"}&page=0&count=10&type=object&objectType=game&filter=games&"

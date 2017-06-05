@@ -38,16 +38,54 @@ class Predb extends \lithium\data\Model
 
 	public static function isModified(Entity $preEntry)
 	{
+		$modified = false;
 		foreach ($preEntry->modified() as $field => $value) {
 			if ($value) {
 				if (nZEDb_DEBUG) {
 					echo "Changed: $field\n";
 				}
-				return true;
+				$modified = true;
 			}
 		}
 
-		return false;
+		return $modified;
+	}
+
+	public static function findRange($page = 1, $limit = ITEMS_PER_PAGE, $title = '')
+	{
+		$options = [
+			'limit' => $limit,
+			'order' => ['title' => 'ASC'],
+			'page'  => (int)$page
+		];
+
+		$options += Predb::getRangeWhere($title);
+		$result = Predb::find('all', $options);
+
+		return $result;
+	}
+
+	public static function findRangeCount($title = '')
+	{
+		$options = Predb::getRangeWhere($title);
+
+		return Predb::find('count', $options);
+	}
+
+	public static function getRangeWhere($title = '')
+	{
+		$where = [];
+
+		if ($title != '') {
+			$where += ['title' => ['LIKE' => "%$title%"]];
+		}
+
+		$options = [];
+		if (!empty($where)) {
+			$options += ['conditions' => $where];
+		}
+
+		return $options;
 	}
 }
 

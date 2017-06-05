@@ -945,7 +945,7 @@ movie, console and music modals with backdrop images.
     color: #FFF;
     min-height: 435px;
     background-color: #7F7F7F;
-    background-image: url('../../covers/music/backdrop.jpg');
+    background-image: url('/covers/music/backdrop.jpg');
     background-repeat: repeat-x;
 }
 
