@@ -2,6 +2,37 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
+0.7.3.0 2017-06-05
+Changed:
+	* tmux configuration adjustments for <= v1.8.
+	* Update PC Games support, use Steam and GiantBomb only.
+	* The IRCScraper code has been changed to make it properly timezone aware. As before,
+	 predates are received as UTC/GMT time. However they are not converted using a call to the
+	 Database server (whose timezone is essentially unknown). Instead, the timezone of the
+	 connection to the server is used, which we are able to set as part of the ootstrap process.
+	 By default, this timezone will be the same as the PHP code running the indexer, but it may
+	 be set to any valid zone by the user.
+      Database changes: The 'predate' datetime field is replaced by a 'created' timestamp field
+     and a new 'updated' timestamp field is added.
+      ***NOTE*** If you have not already done so, you MUST populate the database's timezone tables
+     as described in their documentation. For Debian/Ubuntu users 'mysql_tzinfo_to_sql
+     /usr/share/zoneinfo | mysql -u root mysql' should load them easily, this will require
+     restarting the database server.
+      The smarty template now displays the timezone in the Date header so that it is obvious to
+     users. There is also an additional field for when the entry was updated.
+      Additionally the pager template is switched to the newer paginate.tpl that I have been
+     using in the dev-move-to-models branch.
+    * Reworked all Anime release naming regexes.
+
+
+Fixed:
+	* Problem with external yEnc decoders (hopefully). Closes issues 2383 and 2435.
+	* Path to bootstrap.min.js in Default theme.
+	* Path reference to settings.php for View Logs page. Fixes issue 2456.
+	* Fixed some fields in *.tsv files being processed incorrectly because it started with a
+	 double-quote, but didn't end with one.
+
+
 0.7.2.1 2017-05-04
 Changed:
 	* Updates to tmux configuration files for newer version (2.4) of tmux.

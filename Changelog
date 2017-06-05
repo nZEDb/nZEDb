@@ -56,7 +56,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Rename APIs.Steam.last_update to APIs.steam_apps.last_update
 	Fix: Remove PHP7 return type declaration in Games.php
 2017-04-22 niel
-	Fix: Fix path reference to sttings.php for View Logs page. Fixes issue 2456.
+	Fix: Fix path reference to settings.php for View Logs page. Fixes issue 2456.
 2017-05-19 b3rs3rk
 	Fix: nzedb.xml not updated to reflect new PC Games support
 	Fix: Remove function void return declarations at they are throwing UnknownType errors

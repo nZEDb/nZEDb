@@ -2,7 +2,7 @@
 <nzedb>
 	<versions>
 		<git>
-			<tag>0.0.0-dev</tag>
+			<tag>0.7.3.0</tag>
 			<!-- commit count removed Dec 2014 -->
 			<hooks>
 				<precommit>9</precommit>
