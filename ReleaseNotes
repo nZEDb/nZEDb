@@ -24,7 +24,6 @@ Changed:
      using in the dev-move-to-models branch.
     * Reworked all Anime release naming regexes.
 
-
 Fixed:
 	* Problem with external yEnc decoders (hopefully). Closes issues 2383 and 2435.
 	* Path to bootstrap.min.js in Default theme.
