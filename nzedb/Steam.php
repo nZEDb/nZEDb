@@ -194,7 +194,7 @@ class Steam
 	{
 		Settings::update(
 			['value' => time()],
-			['section' => 'APIs', 'subsection' => 'steam_apps', 'name' => 'laststeamappsupdate']
+			['section' => 'APIs', 'subsection' => 'steam_apps', 'name' => 'last_update']
 		);
 	}
 }
