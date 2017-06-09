@@ -111,10 +111,7 @@ class Update extends \app\extensions\console\Command
 			return;
 		}
 
-		$output = trim($this->git->pull());
-		$this->out($output);
-
-		return $output;
+		return trim($this->git->pull());
 	}
 
 	public function nzedb()
@@ -123,6 +120,7 @@ class Update extends \app\extensions\console\Command
 			$output = $this->git();
 			if ($output === 'Already up-to-date.') {
 				$this->out($output, 'info');
+				$this->db();
 			} else {
 				$status = $this->composer();
 				if ($status) {
@@ -145,10 +143,10 @@ class Update extends \app\extensions\console\Command
 			$smarty->setCompileDir(nZEDb_SMARTY_TEMPLATES);
 			$cleared = $smarty->clearCompiledTemplate();
 			if ($cleared) {
-				$this->out('The Smarty compiled template cache has been cleaned for you', 'primary');
-			} else {
+				$this->out('The Smarty compiled template cache has been cleared for you', 'primary');
+			} else if (!empty(glob(nZEDb_SMARTY_TEMPLATES . '*.php', GLOB_NOSORT))) {
 				$this->out('You should clear your Smarty compiled template cache at: ' .
-					nZEDb_RES . "smarty" . DS . 'templates_c',
+					nZEDb_SMARTY_TEMPLATES,
 					'primary');
 			}
 		} catch (\Exception $e) {
