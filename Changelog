@@ -9,6 +9,13 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-06-09 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.1
+
+
+2017-06-07 DariusIII
+	Fix: Missed changing Steam class setLastUpdated function for settings table change (fixes
+		Issue 2468)
 2017-06-03 niel
 	Add: Model class now supports LOAD DATA INFILE for all models. It may need some tweaks to the
 		details.
