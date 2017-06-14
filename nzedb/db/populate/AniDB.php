@@ -2,6 +2,7 @@
 
 namespace nzedb\db\populate;
 
+use app\models\AnidbTitles;
 use app\models\Settings;
 use nzedb\ColorCLI;
 use nzedb\ReleaseImage;
@@ -107,6 +108,19 @@ class AniDB
 	 */
 	private function checkDuplicateDbEntry($id, $type, $lang, $title)
 	{
+		$result = AnidbTitles::find('first',
+			[
+				'conditions'	=> [
+					'anidbid'	=> $id,
+					'type'		=> $type,
+					'lang'		=> $lang,
+					'title'		=> $title
+				]
+			]
+		);
+
+		return $result === null ? false : $result->to('array');
+/*
 		return $this->pdo->queryOneRow(
 			sprintf('
 				SELECT anidbid
@@ -121,6 +135,7 @@ class AniDB
 				$this->pdo->escapeString($title)
 			)
 		);
+*/
 	}
 
 	/**

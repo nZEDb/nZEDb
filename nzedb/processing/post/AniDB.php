@@ -2,6 +2,7 @@
 
 namespace nzedb\processing\post;
 
+use app\models\AnidbTitles;
 use app\models\Settings;
 use nzedb\Category;
 use nzedb\NZB;
@@ -190,6 +191,14 @@ class AniDB
 	 */
 	private function getAnidbByName($searchName = '')
 	{
+		$result = AnidbTitles::find('all', [
+			'conditions' => ['title' => ['LIKE' => "%$searchName%"]]
+			]
+		);
+
+		return $result === null ? false : $result->to('array');
+
+		/*
 		return $this->pdo->queryOneRow(
 			sprintf("
 				SELECT at.anidbid, at.title
@@ -198,6 +207,7 @@ class AniDB
 				$this->pdo->likeString($searchName, true, true)
 			)
 		);
+		*/
 	}
 
 	/**
