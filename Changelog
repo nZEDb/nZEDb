@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-06-14 niel
+	Fix: Replace overlooked occurences of 'predate' with 'created' in queries. Closes Issue 2474.
 2017-06-09 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.1
 
