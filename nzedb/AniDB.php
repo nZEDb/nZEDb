@@ -18,6 +18,7 @@
  */
 namespace nzedb;
 
+use app\models\AnidbTitles;
 use nzedb\db\DB;
 
 class AniDB
@@ -56,15 +57,54 @@ class AniDB
 	 * @param string $categories
 	 * @param string $characters
 	 */
-	public function updateTitle($anidbID, $type, $startdate, $enddate, $related, $similar, $creators, $description, $rating, $categories, $characters)
+	public function updateTitle($anidbID,
+								$type,
+								$startdate,
+								$enddate,
+								$related,
+								$similar,
+								$creators,
+								$description,
+								$rating,
+								$categories,
+								$characters,
+								$title = null,
+								$epnos = null,
+								$airdates = null,
+								$episodetitles = null,
+								$lang = null)
 	{
+		/*
+		$options = [
+				'conditions'	=>
+					[
+						'anidbid'	=> $anidbID,
+						'type'		=> $type,
+					],
+			];
+		if ($lang !== null) {
+			$options['conditions']['lang'] = $lang;
+		}
+		if ($title !== null) {
+			$options['conditions']['title'] = $title;
+		}
+
+		$result = AnidbTitles::find('first', $options);
+		if ($result === null) {
+			// TODO check for existing anidbid entry. If it exists, create the anidbid, type
+			// entry and continue, else return false.
+			return false;
+		}
+
+		*/
+
 		// FIXME fix the missing variables for this query
 		$this->pdo->queryExec(
 			sprintf('
-				UPDATE anidb_titles AS at INNER JOIN anidb_info ai USING (anidbid) SET title = %s, type = %s, startdate = %s, enddate = %s,
-					related = %s, similar = %s, creators = %s, description = %s, rating = %s,
-					categories = %s, characters = %s, epnos = %s, airdates = %s,
-					episodetitles = %s, unixtime = %d WHERE anidbid = %d',
+				UPDATE anidb_titles AS at INNER JOIN anidb_info ai USING (anidbid)
+				SET title = %s, ai.type = %s, startdate = %s, enddate = %s, related = %s, similar = %s,
+					creators = %s, description = %s, rating = %s, categories = %s, characters = %s,
+					epnos = %s, airdates = %s, episodetitles = %s, unixtime = %d WHERE anidbid = %d',
 				$this->pdo->escapeString($title),
 				$this->pdo->escapeString($type),
 				$this->pdo->escapeString($startdate),
@@ -105,27 +145,51 @@ class AniDB
 	}
 
 	/**
-	 * Retrieves a list of Anime titles, optionally filtered by starting character and title
+	 * Retrieves a list of Anime titles, optionally filtered by starting character or title.
 	 *
-	 * @param string $letter
-	 * @param string $animetitle
+	 * If $title is supplied, then $initial is ignored (as it might contradict the first
+	 * character of the title.
+	 *
+	 * @param string $initial
+	 * @param string $title
+	 *
 	 * @return array|bool
 	 */
-	public function getAnimeList($letter = '', $animetitle = '')
+	public function getAnimeList($initial = '', $title = '')
 	{
+		$options = [];
+
+		if (!empty($title)) {
+			$where = ['LIKE' => "%$title%"];
+		} else if (! empty($initial)) {
+			$initial = ($initial == '0-9') ? '[0-9]' : $initial;
+			$where = ['REGEXP' => "^$initial"];
+		}
+
+		$options['conditions'] = isset($where) ? ['title' => $where] : null;
+		$options['fields'] = 'anidbid, title, type, categories, rating, startdate, enddate';
+		$options['group'] = 'anidbid';
+		$options['joins'] = [
+			'LEFT JOIN' => 'anidb_info',
+			'STRAIGHT_JOIN' => 'releases'
+		];
+		$options['order'] = 'title ASC';
+
+		return AnidbTitles::find('all', $options);
+////////////////////////////////////////////////////////////////////////////////////////////////////
+	/*
 		$rsql = $tsql = '';
 
-		if ($letter != '') {
-			if ($letter == '0-9') {
-				$letter = '[0-9]';
+		if ($initial != '') {
+			if ($initial == '0-9') {
+				$initial = '[0-9]';
 			}
-			$rsql .= sprintf('AND at.title REGEXP %s', $this->pdo->escapeString('^' . $letter));
+			$rsql .= sprintf('AND at.title REGEXP %s', $this->pdo->escapeString('^' . $initial));
 		}
 
-		if ($animetitle != '') {
-			$tsql .= sprintf('AND at.title %s', $this->pdo->likeString($animetitle, true, true));
+		if ($title != '') {
+			$tsql .= sprintf('AND at.title %s', $this->pdo->likeString($title, true, true));
 		}
-
 		return $this->pdo->queryDirect(
 			sprintf('
 				SELECT at.anidbid, at.title,
@@ -142,6 +206,7 @@ class AniDB
 				Category::TV_ANIME
 			)
 		);
+	*/
 	}
 
 	/**
@@ -184,14 +249,20 @@ class AniDB
 	/**
 	 * Retrives the count of Anime titles for pager functions optionally filtered by title
 	 *
-	 * @param string $animetitle
+	 * @param string $title
+	 *
 	 * @return int
 	 */
-	public function getAnimeCount($animetitle = '')
+	public function getAnimeCount($title = '')
 	{
+		$options = empty($title) ? [] : ['conditions' => ['title' => ['LIKE' => "%$title%"]]];
+
+		return AnidbTitles::find('count', $options);
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
 		$rsql = '';
-		if ($animetitle != '') {
-			$rsql .= sprintf('AND at.title %s', $this->pdo->likeString($animetitle, true, true));
+		if ($title != '') {
+			$rsql .= sprintf('AND at.title %s', $this->pdo->likeString($title, true, true));
 		}
 
 		$res = $this->pdo->queryOneRow(
@@ -206,6 +277,7 @@ class AniDB
 		);
 
 		return $res['num'];
+*/
 	}
 
 	/**
