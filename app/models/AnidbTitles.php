@@ -18,8 +18,25 @@
  */
 namespace app\models;
 
-class AnidbTitles extends \lithium\data\Model
+class AnidbTitles extends \app\extensions\data\Model
 {
+	public $hasMany = [
+		'AnidbEpisodes' => [
+			'to'  => 'AnidbEpisodes',
+			'key' => 'anidbid',
+		],
+		'AnidbInfo' => [
+			'to'  => 'AnidbInfo',
+			'key' => 'anidbid',
+		]
+	];
+
+	public $_meta = [
+		'connection' => 'default',
+		'key'        => 'anidbid',
+		'source'     => 'anidb_titles',
+	];
+
 	public $validates = [];
 
 	public static function findRange($page = 1, $limit = ITEMS_PER_PAGE, $name = '')

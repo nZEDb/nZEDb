@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-class ReleaseComments extends \lithium\data\Model
+class ReleaseComments extends \app\extensions\data\Model
 {
 	public $belongsTo = [
 		'Releases' 	=> [

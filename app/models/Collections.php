@@ -24,7 +24,7 @@ namespace app\models;
  *
  * @package app\models
  */
-class Collections extends \lithium\data\Model
+class Collections extends \app\extensions\data\Model
 {
 
 }

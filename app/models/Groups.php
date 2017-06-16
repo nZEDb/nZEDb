@@ -24,7 +24,7 @@ namespace app\models;
  *
  * @package app\models
  */
-class Groups extends \lithium\data\Model
+class Groups extends \app\extensions\data\Model
 {
 	public $hasMany = [
 		'Releases' => [

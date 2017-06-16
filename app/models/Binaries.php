@@ -24,7 +24,7 @@ namespace app\models;
  *
 *@package app\models
  */
-class Binaries extends \lithium\data\Model
+class Binaries extends \app\extensions\data\Model
 {
 
 }

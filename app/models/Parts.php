@@ -24,7 +24,7 @@ namespace app\models;
  *
 *@package app\models
  */
-class Parts extends \lithium\data\Model
+class Parts extends \app\extensions\data\Model
 {
 	protected $_meta = [
 		'key' => ['binaryid']

@@ -18,7 +18,7 @@
  */
 namespace app\models;
 
-class Regexes extends \lithium\data\Model
+class Regexes extends \app\extensions\data\Model
 {
 	public $validates = [];
 }

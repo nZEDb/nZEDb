@@ -24,7 +24,7 @@ namespace app\models;
  *
  * @package app\models
  */
-class Genres extends \lithium\data\Model
+class Genres extends \app\extensions\data\Model
 {
 	public $belongsTo;
 

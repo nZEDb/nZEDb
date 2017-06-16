@@ -24,7 +24,7 @@ namespace app\models;
  *
  * @package app\models
  */
-class Gamesinfo extends \lithium\data\Model
+class Gamesinfo extends \app\extensions\data\Model
 {
 //	public $belongsTo = ['Genres'];
 
