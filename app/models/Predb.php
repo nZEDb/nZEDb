@@ -20,7 +20,7 @@ namespace app\models;
 
 use lithium\data\Entity;
 
-class Predb extends \lithium\data\Model
+class Predb extends \app\extensions\data\Model
 {
 	public $hasMany = ['Groups'];
 
