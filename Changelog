@@ -13,6 +13,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Add: Created custom Model class to extend Lithium's. It adds a new method `isModified` to
 		check if an existing table entity has been changed. This allows Updates to skip saves if
 		nothing has changed.
+	Fix: Remove type declaration from Model::isModified() signature as it doesn't work for parent
+		classes. The type is tested inside the method instead.
 2017-06-14 niel
 	Fix: Replace overlooked occurences of 'predate' with 'created' in queries. Closes Issue 2474.
 2017-06-09 niel

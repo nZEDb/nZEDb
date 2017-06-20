@@ -19,13 +19,17 @@
 
 namespace app\extensions\data;
 
-
-use lithium\data\Source;
+use lithium\data\Entity;
 
 class Model extends \lithium\data\Model
 {
-	public static function isModified(Entity $preEntry)
+	public static function isModified($preEntry)
 	{
+		if (!($preEntry instanceof Entity)) {
+			$test = get_class($preEntry);
+			$test = $test ?: 'non-object';
+			throw new \InvalidArgumentException('$preEntry must be an object derived from the Lithium Entity class, a "' . $test . '" was passed instead.');
+		}
 		$modified = false;
 		foreach ($preEntry->modified() as $field => $value) {
 			if ($value) {
