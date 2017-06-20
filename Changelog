@@ -9,6 +9,10 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-06-20 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.2
+
+
 2017-0619 niel
 	Add: Created custom Model class to extend Lithium's. It adds a new method `isModified` to
 		check if an existing table entity has been changed. This allows Updates to skip saves if
