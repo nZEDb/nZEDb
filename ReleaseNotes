@@ -2,6 +2,10 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
+0.7.3.3 2017-06-21
+Fixed:
+	* SQL patch 0482 to update release_renaming_regexes entries.
+
 0.7.3.2 2017-06-20
 Fixed:
 	* Predb entries not being updated because of error in method signature. This prevented
