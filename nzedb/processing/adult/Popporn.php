@@ -1,37 +1,36 @@
 <?php
-namespace nzedb;
+namespace nzedb\processing\adult;
 
-use nzedb\utility\Misc;
 
-class Popporn
+class Popporn extends AdultMovies
 {
 
 	/**
 	 * Define a cookie file location for curl
 	 * @var string string
 	 */
-	public $cookie = "";
+	public $cookie = '';
 
 	/**
 	 * Set this for what you are searching for.
 	 * @var string
 	 */
-	public $searchTerm = "";
+	public $searchTerm = '';
 
 	/**
 	 * Override if 18 years+ or older
 	 * Define Popporn url
 	 * Needed Search Queries Constant
 	 */
-	const IF18 = "http://www.popporn.com/popporn/4";
-	const POPURL = "http://www.popporn.com";
-	const TRAILINGSEARCH = "/results/index.cfm?v=4&g=0&searchtext=";
+	const IF18 = 'http://www.popporn.com/popporn/4';
+	const POPURL = 'http://www.popporn.com';
+	const TRAILINGSEARCH = '/results/index.cfm?v=4&g=0&searchtext=';
 
 	/**
 	 * Sets the directurl for the return results array
 	 * @var string
 	 */
-	protected $_directUrl = "";
+	protected $_directUrl = '';
 
 	/**
 	 * Simple Html Dom Object
@@ -39,11 +38,6 @@ class Popporn
 	 * @var \simple_html_dom
 	 */
 	protected $_html;
-
-	/**
-	 * POST Paramaters for Trailers Method
-	 */
-	protected $_postParams;
 
 	/**
 	 * Curl Raw Html
@@ -62,30 +56,18 @@ class Popporn
 	 *
 	 * @var string
 	 */
-	protected $_title = "";
+	protected $_title = '';
 
 	/**
 	 * Add this to popurl to get results
 	 * @var string
 	 */
-	protected $_trailUrl = "";
+	protected $_trailUrl = '';
 
-	public function __construct()
+	public function __construct(array $options = [])
 	{
+		parent::__construct($options);
 		$this->_html = new \simple_html_dom();
-		if (isset($this->cookie)) {
-			$this->getUrl();
-		}
-	}
-
-	/**
-	 * Remove from memory.
-	 */
-	public function __destruct()
-	{
-	$this->_html->clear();
-	unset($this->_response);
-	unset($this->_res);
 	}
 
 	/**
@@ -96,10 +78,10 @@ class Popporn
 	{
 		if ($ret = $this->_html->find('div[id=box-art], a[rel=box-art]', 1)) {
 			$this->_res['boxcover'] = trim($ret->href);
-			if (stristr(trim($ret->href), "_aa")) {
-				$this->_res['backcover'] = str_ireplace("_aa", "_bb", trim($ret->href));
+			if (false !== stripos(trim($ret->href), '_aa')) {
+				$this->_res['backcover'] = str_ireplace('_aa', '_bb', trim($ret->href));
 			} else {
-				$this->_res['backcover'] = str_ireplace(".jpg", "_b.jpg", trim($ret->href));
+				$this->_res['backcover'] = str_ireplace('.jpg', '_b.jpg', trim($ret->href));
 			}
 		} else {
 			if ($ret = $this->_html->find('img.front', 0)) {
@@ -107,27 +89,27 @@ class Popporn
 			}
 			if ($ret = $this->_html->find('img.back', 0)) {
 				$this->_res['backcover'] = $ret->src;
-		}
+			}
 		}
 
 		return $this->_res;
 	}
 
 	/**
-	 * Gets the sypnosis
+	 * Gets the synopsis
 	 * @return array|bool
 	 */
-	public function sypnosis()
+	public function synopsis()
 	{
 		if ($ret = $this->_html->find('div[id=product-info] ,h3[class=highlight]', 1)) {
 			if ($ret->next_sibling()->plaintext) {
 				if (!stristr(trim($ret->next_sibling()->plaintext), "POPPORN EXCLUSIVE")) {
-					$this->_res['sypnosis'] = trim($ret->next_sibling()->plaintext);
+					$this->_res['synopsis'] = trim($ret->next_sibling()->plaintext);
 				} else {
 					if ($ret->next_sibling()->next_sibling()) {
-						$this->_res['sypnosis'] = trim($ret->next_sibling()->next_sibling()->next_sibling()->plaintext);
+						$this->_res['synopsis'] = trim($ret->next_sibling()->next_sibling()->next_sibling()->plaintext);
 					} else {
-						$this->_res['sypnosis'] = "N/A";
+						$this->_res['synopsis'] = 'N/A';
 					}
 				}
 			}
@@ -144,19 +126,19 @@ class Popporn
 	{
 		if ($ret = $this->_html->find('input#thickbox-trailer-link', 0)) {
 			$ret->value = trim($ret->value);
-			$ret->value = str_replace("..", "", $ret->value);
+			$ret->value = str_replace('..', '', $ret->value);
 			$tmprsp = $this->_response;
 			$this->_trailUrl = $ret->value;
-			$this->getUrl();
+			$this->getRawHtml();
 			if (preg_match_all('/productID="\+(?<id>[0-9]+),/', $this->_response, $matches)) {
 				$productid = $matches['id'][0];
 				$random = ((float)rand() / (float)getrandmax()) * 5400000000000000;
-				$this->_trailUrl = "/com/tlavideo/vod/FlvAjaxSupportService.cfc?random=" . $random;
-				$this->_postParams = "method=pipeStreamLoc&productID=" . $productid;
-				$this->getUrl(true);
+				$this->_trailUrl = '/com/tlavideo/vod/FlvAjaxSupportService.cfc?random=' . $random;
+				$this->_postParams = 'method=pipeStreamLoc&productID=' . $productid;
+				$this->getRawHtml(true);
 				$ret = json_decode(json_decode($this->_response, true), true);
-				$this->_res['trailers']['baseurl'] = self::POPURL . "/flashmediaserver/trailerPlayer.swf";
-				$this->_res['trailers']['flashvars'] = "subscribe=false&image=&file=" . self::POPURL . "/" . $ret['LOC'] . "&autostart=false";
+				$this->_res['trailers']['baseurl'] = self::POPURL . '/flashmediaserver/trailerPlayer.swf';
+				$this->_res['trailers']['flashvars'] = 'subscribe=false&image=&file=' . self::POPURL . '/' . $ret['LOC'] . '&autostart=false';
 				unset($this->_response);
 				$this->_response = $tmprsp;
 			}
@@ -178,14 +160,14 @@ class Popporn
 		if ($ret = $this->_html->find('div#lside', 0)) {
 			foreach ($ret->find("text") as $e) {
 				$e = trim($e->innertext);
-				$e = str_replace(",", "", $e);
-				$e = str_replace("...", "", $e);
-				$e = str_replace("&nbsp;", "", $e);
-				if (stristr($e, "Country:")) {
+				$e = str_replace(',', '', $e);
+				$e = str_replace('...', '', $e);
+				$e = str_replace('&nbsp;', '', $e);
+				if (stristr($e, 'Country:')) {
 					$country = true;
 				}
 				if ($country === true) {
-					if (!stristr($e, "addthis_config")) {
+					if (!stristr($e, 'addthis_config')) {
 						if (!empty($e)) {
 							$this->_res['productinfo'][] = $e;
 						}
@@ -204,11 +186,11 @@ class Popporn
 				foreach ($this->_html->find('ul.stock-information') as $ul) {
 					foreach ($ul->find('li') as $e) {
 						$e = trim($e->plaintext);
-						if ($e == "Features:") {
+						if ($e == 'Features:') {
 							$features = true;
 							$e = null;
 						}
-						if ($features == true) {
+						if ($features === true) {
 							if (!empty($e)) {
 								$this->_res['extras'][] = $e;
 							}
@@ -231,16 +213,16 @@ class Popporn
 		$director = false;
 		$er = [];
 		if ($ret = $this->_html->find('div#lside', 0)) {
-			foreach ($ret->find("text") as $e) {
+			foreach ($ret->find('text') as $e) {
 				$e = trim($e->innertext);
-				$e = str_replace(",", "", $e);
-				$e = str_replace("&nbsp;", "", $e);
-				if (stristr($e, "Cast")) {
+				$e = str_replace(',', '', $e);
+				$e = str_replace('&nbsp;', '', $e);
+				if (stristr($e, 'Cast')) {
 					$cast = true;
 				}
-				$e = str_replace("Cast:", "", $e);
+				$e = str_replace('Cast:', '', $e);
 				if ($cast === true) {
-					if (stristr($e, "Director:")) {
+					if (stristr($e, 'Director:')) {
 						$director = true;
 						$e = null;
 					}
@@ -252,7 +234,7 @@ class Popporn
 							$e = null;
 						}
 					}
-					if (!stristr($e, "Country:")) {
+					if (!stristr($e, 'Country:')) {
 						if (!empty($e)) {
 							$er[] = $e;
 						}
@@ -286,51 +268,79 @@ class Popporn
 
 	/**
 	 * Searches for match against searchterm
-	 * @return bool, true if search >= 90%
+	 *
+	 * @param string $movie
+	 *
+	 * @return bool , true if search >= 90%
 	 */
-	public function search()
+	public function processSite($movie)
 	{
-		$result = false;
-		if (isset($this->searchTerm)) {
-			$this->_trailUrl = self::TRAILINGSEARCH . urlencode($this->searchTerm);
-			if ($this->getUrl() !== false) {
+		if (!empty($movie)) {
+			$this->_trailUrl = self::TRAILINGSEARCH . $movie;
+			$this->_response = getRawHtml(self::POPURL . $this->_trailUrl, $this->cookie);
+			if ($this->_response !== false) {
+				$this->_html->load($this->_response);
 				if ($ret = $this->_html->find('div.product-info, div.title', 1)) {
 					$this->_title = trim($ret->plaintext);
-					$title = preg_replace('/XXX/', '', $ret->plaintext);
+					$title = str_replace('XXX', '', $ret->plaintext);
 					$title = preg_replace('/\(.*?\)|[-._]/i', ' ', $title);
 					$title = trim($title);
-					if ($ret = $ret->find('a', 0)) {
-						$this->_trailUrl = trim($ret->href);
-						if ($this->getUrl() !== false) {
-							if ($ret = $this->_html->find('#link-to-this', 0)) {
-								$this->_directUrl = trim($ret->href);
-							}
-							similar_text(strtolower($this->searchTerm), strtolower($title), $p);
-							if ($p >= 90) {
-								$result = true;
+					similar_text(strtolower($movie), strtolower($title), $p);
+					if ($p >= 90) {
+						if ($ret = $ret->find('a', 0)) {
+							$this->_trailUrl = trim($ret->href);
+							$this->_html->clear();
+							unset($this->_response);
+							$this->_response = getRawHtml(self::POPURL . $this->_trailUrl, $this->cookie);
+							if ($this->_response !== false) {
+								$this->_html->load($this->_response);
+								if ($ret = $this->_html->find('#link-to-this', 0)) {
+									$this->_directUrl = trim($ret->href);
+									$this->_html->clear();
+									unset($this->_response);
+									$this->_response = getRawHtml($this->_directUrl, $this->cookie);
+									$this->_html->load($this->_response);
+
+									return true;
+								}
+
+								return false;
 							}
 						}
+
+						return true;
 					}
 				}
+			} else {
+				$this->_response = getRawHtml(self::IF18, $this->cookie);
+				if ($this->_response !== false) {
+					$this->_html->load($this->_response);
+
+					return true;
+				}
+
+				return false;
 			}
+
+			return false;
 		}
 
-		return $result;
+		return false;
 	}
 
 	/**
 	 * Gets all information
-	 * @return array
+	 * @return array|bool
 	 */
-	public function getAll()
+	protected function getAll()
 	{
 		$results = [];
 		if (isset($this->_directUrl)) {
 			$results['title']     = $this->_title;
 			$results['directurl'] = $this->_directUrl;
 		}
-		if (is_array($this->sypnosis())) {
-			$results = array_merge($results, $this->sypnosis());
+		if (is_array($this->synopsis())) {
+			$results = array_merge($results, $this->synopsis());
 		}
 		if (is_array($this->productInfo(true))) {
 			$results = array_merge($results, $this->productInfo(true));
@@ -347,51 +357,9 @@ class Popporn
 		if (is_array($this->trailers())) {
 			$results = array_merge($results, $this->trailers());
 		}
-		if (empty($results) === true) {
-			return false;
-		} else {
-			return $results;
-		}
-	}
-
-	/**
-	 * Get Raw html of webpage
-	 *
-	 * @param bool $usepost
-	 *
-	 * @return bool
-	 */
-	private function getUrl($usepost = false)
-	{
-		if (isset($this->_trailUrl)) {
-			$ch = curl_init(self::POPURL . $this->_trailUrl);
-		} else {
-			$ch = curl_init(self::IF18);
-		}
-
-		if ($usepost === true) {
-			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_postParams);
-		}
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_VERBOSE, 0);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
-		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
-		if (isset($this->cookie)) {
-			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
-			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
-		}
-		curl_setopt_array($ch, Misc::curlSslContextOptions());
-		$this->_response = curl_exec($ch);
-		if (!$this->_response) {
-			curl_close($ch);
+		if (empty($results)) {
 			return false;
 		}
-		curl_close($ch);
-		$this->_html->load($this->_response);
-		return true;
+		return $results;
 	}
 }
