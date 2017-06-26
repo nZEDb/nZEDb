@@ -1,5 +1,5 @@
 <?php
-namespace nzedb;
+namespace nzedb\processing\adult;
 
 use nzedb\utility\Misc;
 
