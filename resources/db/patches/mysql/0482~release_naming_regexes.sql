@@ -4,11 +4,11 @@ DELETE FROM release_naming_regexes WHERE id IN (30, 31, 35, 749, 750, 751, 1160,
 #Adjust previous regex
 UPDATE release_naming_regexes SET id = id - 2 WHERE id IN (32, 33, 34) ORDER BY 'id' ASC;
 UPDATE release_naming_regexes SET id = id - 3 WHERE id BETWEEN 752 AND 1159 ORDER BY 'id' ASC;
-UPDATE release_naming_regexes SET ordinal = 20 WHERE id = 28 ORDER BY 'id' ASC;
-UPDATE release_naming_regexes SET ordinal = 25 WHERE id = 29 ORDER BY 'id' ASC;
-UPDATE release_naming_regexes SET ordinal = 30 WHERE id = 30 ORDER BY 'id' ASC;
-UPDATE release_naming_regexes SET ordinal = 35 WHERE id = 31 ORDER BY 'id' ASC;
-UPDATE release_naming_regexes SET ordinal = 40 WHERE id = 32 ORDER BY 'id' ASC;
+UPDATE release_naming_regexes SET ordinal = 20 WHERE id = 28;
+UPDATE release_naming_regexes SET ordinal = 25 WHERE id = 29;
+UPDATE release_naming_regexes SET ordinal = 30 WHERE id = 30;
+UPDATE release_naming_regexes SET ordinal = 35 WHERE id = 31;
+UPDATE release_naming_regexes SET ordinal = 40 WHERE id = 32;
 
 #Add updated regex
 INSERT INTO release_naming_regexes (id, group_regex, regex, status, description, ordinal)
