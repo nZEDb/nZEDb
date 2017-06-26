@@ -486,7 +486,7 @@ class XXX
 
 		$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM xxxinfo WHERE title = %s', $this->pdo->escapeString($mov['title'])));
 
-		if ($check['id'] > 0) {
+		if ($check !== false && $check['id'] > 0) {
 
 			$xxxID = $check['id'];
 

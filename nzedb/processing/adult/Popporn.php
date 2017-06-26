@@ -73,7 +73,7 @@ class Popporn extends AdultMovies
 	 *
 	 * @return array - boxcover,backcover
 	 */
-	public function covers()
+	protected function covers()
 	{
 		if ($ret = $this->_html->find('div[id=box-art], a[rel=box-art]', 1)) {
 			$this->_res['boxcover'] = trim($ret->href);
@@ -99,7 +99,7 @@ class Popporn extends AdultMovies
 	 *
 	 * @return array|bool
 	 */
-	public function synopsis()
+	protected function synopsis()
 	{
 		if ($ret = $this->_html->find('div[id=product-info] ,h3[class=highlight]', 1)) {
 			if ($ret->next_sibling()->plaintext) {
@@ -123,7 +123,7 @@ class Popporn extends AdultMovies
 	 *
 	 * @return array|bool
 	 */
-	public function trailers()
+	protected function trailers()
 	{
 		if ($ret = $this->_html->find('input#thickbox-trailer-link', 0)) {
 			$ret->value = trim($ret->value);
@@ -153,7 +153,7 @@ class Popporn extends AdultMovies
 	 *
 	 * @return array|bool
 	 */
-	public function productInfo($extras = true)
+	protected function productInfo($extras = true)
 	{
 		$country = false;
 		if ($ret = $this->_html->find('div#lside', 0)) {
@@ -205,7 +205,7 @@ class Popporn extends AdultMovies
 	 *
 	 * @return array|bool
 	 */
-	public function cast()
+	protected function cast()
 	{
 		$cast = false;
 		$director = false;
@@ -252,7 +252,7 @@ class Popporn extends AdultMovies
 	 *
 	 * @return array
 	 */
-	public function genres()
+	protected function genres()
 	{
 		$genres = [];
 		if ($ret = $this->_html->find('div[id=thekeywords], p[class=keywords]', 1)) {
@@ -332,7 +332,7 @@ class Popporn extends AdultMovies
 	 *
 	 * @return array|bool
 	 */
-	protected function getAll()
+	public function getAll()
 	{
 		$results = [];
 		if (isset($this->_directUrl)) {

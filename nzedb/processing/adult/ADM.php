@@ -69,15 +69,6 @@ class ADM extends AdultMovies
 	}
 
 	/**
-	 * Remove from memory.
-	 */
-	public function __destruct()
-	{
-		$this->_html->clear();
-		unset($this->_response, $this->_res);
-	}
-
-	/**
 	 * Get Box Cover Images
 	 * @return array - boxcover,backcover
 	 */
@@ -231,7 +222,7 @@ class ADM extends AdultMovies
 	 * Gets all information
 	 * @return array
 	 */
-	protected function getAll()
+	public function getAll()
 	{
 		$results = [];
 		if (!empty($this->_directUrl)) {

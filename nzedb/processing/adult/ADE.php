@@ -75,7 +75,7 @@ class ADE extends AdultMovies
 	 * Gets Trailer Movies
 	 * @return array - url, streamid, basestreamingurl
 	 */
-	public function trailers()
+	protected function trailers()
 	{
 		$this->_response = Misc::getRawHtml(self::ADE . $this->_trailers . $this->_directUrl);
 		$this->_html->load($this->_response);
@@ -102,7 +102,7 @@ class ADE extends AdultMovies
 	 * Gets cover images for the xxx release
 	 * @return array - Boxcover and backcover
 	 */
-	public function covers()
+	protected function covers()
 	{
 		if ($ret = $this->_html->find('div#Boxcover, img[itemprop=image]', 1)) {
 			$this->_res['boxcover'] = preg_replace('/m\.jpg/', 'h.jpg', $ret->src);
@@ -117,7 +117,7 @@ class ADE extends AdultMovies
 	 *
 	 * @return array - plot
 	 */
-	public function synopsis()
+	protected function synopsis()
 	{
 		$ret = $this->_html->find('meta[name=og:description]', 0)->content;
 		if ($ret !== false) {
@@ -133,7 +133,7 @@ class ADE extends AdultMovies
 	 *
 	 * @return array - cast, awards
 	 */
-	public function cast()
+	protected function cast()
 	{
 		$cast = [];
 		foreach ($this->_html->find('[Label="Performers - detail"]') as $a) {
@@ -149,7 +149,7 @@ class ADE extends AdultMovies
 	 * Gets Genres, if exists return array else return false
 	 * @return mixed array - Genres
 	 */
-	public function genres()
+	protected function genres()
 	{
 		$genres = [];
 		foreach ($this->_html->find('[Label="Category"]') as $a) {
@@ -168,7 +168,7 @@ class ADE extends AdultMovies
 	 *
 	 * @return array - ProductInfo/Extras = features
 	 */
-	public function productInfo($features = false)
+	protected function productInfo($features = false)
 	{
 		$dofeature = null;
 		$this->_tmpResponse = str_ireplace('Section ProductInfo', 'spdinfo', $this->_response);
@@ -244,7 +244,7 @@ class ADE extends AdultMovies
 	 *
 	 * @return array
 	 */
-	protected function getAll()
+	public function getAll()
 	{
 		$results = [];
 		if (!empty($this->_directUrl)) {
