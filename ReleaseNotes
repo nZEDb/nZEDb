@@ -6,11 +6,13 @@ ChangeLog file which list *when* changes are made to the dev branches.
 Fixed:
 	* SQL patch 0482 to update release_renaming_regexes entries.
 
+
 0.7.3.2 2017-06-20
 Fixed:
 	* Predb entries not being updated because of error in method signature. This prevented
 	 IRCScraper from working correctly.
 	* Replace overlooked occurences of 'predate' with 'created' in queries. Closes Issue 2474.
+
 
 0.7.3.1 2017-06-09
 Fixed:
