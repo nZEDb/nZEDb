@@ -73,7 +73,7 @@ class Popporn extends AdultMovies
 	 *
 	 * @return array - boxcover,backcover
 	 */
-	public function covers(): array
+	public function covers()
 	{
 		if ($ret = $this->_html->find('div[id=box-art], a[rel=box-art]', 1)) {
 			$this->_res['boxcover'] = trim($ret->href);
@@ -272,7 +272,7 @@ class Popporn extends AdultMovies
 	 *
 	 * @return bool , true if search >= 90%
 	 */
-	public function processSite($movie): bool
+	public function processSite($movie)
 	{
 		if (!empty($movie)) {
 			$this->_trailUrl = self::TRAILINGSEARCH . $movie;

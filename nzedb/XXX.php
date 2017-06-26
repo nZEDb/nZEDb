@@ -552,7 +552,7 @@ class XXX
 	 *
 	 * @throws \Exception
 	 */
-	public function processXXXReleases(): void
+	public function processXXXReleases()
 	{
 		$res = $this->pdo->query(sprintf('
 				SELECT r.searchname, r.id
