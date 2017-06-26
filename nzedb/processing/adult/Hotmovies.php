@@ -1,6 +1,8 @@
 <?php
 
-namespace nntmux\processing\adult;
+namespace nzedb\processing\adult;
+
+use nzedb\utility\Misc;
 
 class Hotmovies extends AdultMovies
 {
@@ -46,13 +48,6 @@ class Hotmovies extends AdultMovies
 	protected $_getLink = '';
 
 	/**
-	 * Simple Html Dom Object
-	 *
-	 * @var \simple_html_dom
-	 */
-	protected $_html;
-
-	/**
 	 * POST parameters used with curl
 	 *
 	 * @var array
@@ -89,7 +84,6 @@ class Hotmovies extends AdultMovies
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$this->_html = new \simple_html_dom();
 	}
 
 	protected function trailers()
@@ -272,7 +266,7 @@ class Hotmovies extends AdultMovies
 		}
 		$this->_response = false;
 		$this->_getLink = self::HMURL . self::TRAILINGSEARCH . urlencode($movie) . self::EXTRASEARCH;
-		$this->_response = getRawHtml($this->_getLink, $this->cookie);
+		$this->_response = Misc::getRawHtml($this->_getLink, $this->cookie);
 		if ($this->_response !== false) {
 			$this->_html->load($this->_response);
 			if ($ret = $this->_html->find('h3[class=title]', 0)) {
@@ -290,10 +284,10 @@ class Hotmovies extends AdultMovies
 							$this->_html->clear();
 							unset($this->_response);
 							if ($this->_getLink !== false) {
-								$this->_response = getRawHtml($this->_getLink, $this->cookie);
+								$this->_response = Misc::getRawHtml($this->_getLink, $this->cookie);
 								$this->_html->load($this->_response);
 							} else {
-								$this->_response = getRawHtml($this->_directUrl, $this->cookie);
+								$this->_response = Misc::getRawHtml($this->_directUrl, $this->cookie);
 								$this->_html->load($this->_response);
 							}
 

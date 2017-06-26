@@ -6,6 +6,12 @@ use nzedb\XXX;
 
 abstract class AdultMovies extends XXX
 {
+
+	/**
+	 * @var \simple_html_dom
+	 */
+	protected $_html;
+
 	/**
 	 * AdultMovies constructor.
 	 *
@@ -15,6 +21,7 @@ abstract class AdultMovies extends XXX
 	 */
 	public function __construct(array $options = [])
 	{
+		$this->_html = new \simple_html_dom();
 		parent::__construct($options);
 	}
 
