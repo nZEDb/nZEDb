@@ -5,6 +5,9 @@
     }
   ],
   "autoload": {
+    "files": [
+      "app/extensions/helper/helpers.php"
+    ],
     "psr-4": {
       "nzedb\\": "nzedb/"
     },
