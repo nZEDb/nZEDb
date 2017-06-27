@@ -97,7 +97,7 @@ class Hotmovies extends AdultMovies
 	 *
 	 * @return array
 	 */
-	protected function synopsis(): array
+	protected function synopsis()
 	{
 		$this->_res['synopsis'] = 'N/A';
 		if ($this->_html->find('.desc_link', 0)) {
@@ -116,7 +116,7 @@ class Hotmovies extends AdultMovies
 	 *
 	 * @return array
 	 */
-	protected function productInfo($extras = false): array
+	protected function productInfo($extras = false)
 	{
 		$studio = false;
 		$director = false;
@@ -225,7 +225,7 @@ class Hotmovies extends AdultMovies
 	 *
 	 * @return bool , true if search >= 90%
 	 */
-	public function processSite($movie): bool
+	public function processSite($movie)
 	{
 		if (empty($movie)) {
 			return false;
