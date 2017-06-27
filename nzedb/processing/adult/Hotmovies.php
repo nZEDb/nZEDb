@@ -1,5 +1,4 @@
 <?php
-
 namespace nzedb\processing\adult;
 
 use nzedb\utility\Misc;
@@ -32,7 +31,7 @@ class Hotmovies extends AdultMovies
 	 *
 	 * @var string
 	 */
-	public $directLink = '';
+	protected $directLink = '';
 	/**
 	 * Sets the direct url in the getAll method
 	 *
@@ -94,46 +93,11 @@ class Hotmovies extends AdultMovies
 	}
 
 	/**
-	 * Gets all information
-	 * @return bool|array
-	 */
-	public function getAll()
-	{
-		$results = [];
-		if (!empty($this->_directUrl)) {
-			$results['title'] = $this->_title;
-			$results['directurl'] = $this->_directUrl;
-		}
-		if (is_array($this->synopsis())) {
-			$results = array_merge($results, $this->synopsis());
-		}
-		if (is_array($this->productInfo())) {
-			$results = array_merge($results, $this->productInfo());
-		}
-		if (is_array($this->cast())) {
-			$results = array_merge($results, $this->cast());
-		}
-		if (is_array($this->genres())) {
-			$results = array_merge($results, $this->genres());
-		}
-		if (is_array($this->covers())) {
-			$results = array_merge($results, $this->covers());
-		}
-
-		if (empty($results)) {
-			return false;
-		}
-
-		return $results;
-
-	}
-
-	/**
 	 * Gets the synopsis
 	 *
 	 * @return array
 	 */
-	protected function synopsis()
+	protected function synopsis(): array
 	{
 		$this->_res['synopsis'] = 'N/A';
 		if ($this->_html->find('.desc_link', 0)) {
@@ -148,9 +112,11 @@ class Hotmovies extends AdultMovies
 
 	/**Process ProductInfo
 	 *
+	 * @param bool $extras
+	 *
 	 * @return array
 	 */
-	protected function productInfo()
+	protected function productInfo($extras = false): array
 	{
 		$studio = false;
 		$director = false;
@@ -259,7 +225,7 @@ class Hotmovies extends AdultMovies
 	 *
 	 * @return bool , true if search >= 90%
 	 */
-	public function processSite($movie)
+	public function processSite($movie): bool
 	{
 		if (empty($movie)) {
 			return false;

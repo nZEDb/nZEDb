@@ -1,5 +1,4 @@
 <?php
-
 namespace nzedb\processing\adult;
 
 use nzedb\utility\Misc;
@@ -19,7 +18,7 @@ class Popporn extends AdultMovies
 	 *
 	 * @var string
 	 */
-	public $searchTerm = '';
+	protected $searchTerm = '';
 
 	/**
 	 * Override if 18 years+ or older
@@ -73,7 +72,7 @@ class Popporn extends AdultMovies
 	 *
 	 * @return array - boxcover,backcover
 	 */
-	protected function covers()
+	protected function covers(): array
 	{
 		if ($ret = $this->_html->find('div[id=box-art], a[rel=box-art]', 1)) {
 			$this->_res['boxcover'] = trim($ret->href);
@@ -153,7 +152,7 @@ class Popporn extends AdultMovies
 	 *
 	 * @return array|bool
 	 */
-	protected function productInfo($extras = true)
+	protected function productInfo($extras = false)
 	{
 		$country = false;
 		if ($ret = $this->_html->find('div#lside', 0)) {
@@ -272,7 +271,7 @@ class Popporn extends AdultMovies
 	 *
 	 * @return bool , true if search >= 90%
 	 */
-	public function processSite($movie)
+	public function processSite($movie): bool
 	{
 		if (!empty($movie)) {
 			$this->_trailUrl = self::TRAILINGSEARCH . $movie;
@@ -325,42 +324,5 @@ class Popporn extends AdultMovies
 		}
 
 		return false;
-	}
-
-	/**
-	 * Gets all information
-	 *
-	 * @return array|bool
-	 */
-	public function getAll()
-	{
-		$results = [];
-		if (isset($this->_directUrl)) {
-			$results['title'] = $this->_title;
-			$results['directurl'] = $this->_directUrl;
-		}
-		if (is_array($this->synopsis())) {
-			$results = array_merge($results, $this->synopsis());
-		}
-		if (is_array($this->productInfo(true))) {
-			$results = array_merge($results, $this->productInfo(true));
-		}
-		if (is_array($this->cast())) {
-			$results = array_merge($results, $this->cast());
-		}
-		if (is_array($this->genres())) {
-			$results = array_merge($results, $this->genres());
-		}
-		if (is_array($this->covers())) {
-			$results = array_merge($results, $this->covers());
-		}
-		if (is_array($this->trailers())) {
-			$results = array_merge($results, $this->trailers());
-		}
-		if (empty($results)) {
-			return false;
-		}
-
-		return $results;
 	}
 }

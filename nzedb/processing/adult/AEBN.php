@@ -1,5 +1,4 @@
 <?php
-
 namespace nzedb\processing\adult;
 
 use nzedb\utility\Misc;
@@ -157,9 +156,11 @@ class AEBN extends AdultMovies
 	/**
 	 * Gets the product information
 	 *
+	 * @param bool $extras
+	 *
 	 * @return array
 	 */
-	protected function productInfo()
+	protected function productInfo($extras = false)
 	{
 		if ($ret = $this->_html->find('div#md-detailsLeft', 0)) {
 			foreach ($ret->find('div') as $div) {
@@ -210,7 +211,7 @@ class AEBN extends AdultMovies
 	 *
 	 * @return bool
 	 */
-	public function processSite($movie)
+	public function processSite($movie): bool
 	{
 		if (empty($movie)) {
 			return false;
@@ -245,43 +246,5 @@ class AEBN extends AdultMovies
 		}
 
 		return false;
-	}
-
-	/**
-	 * Gets all the information
-	 *
-	 * @return array|bool
-	 */
-	public function getAll()
-	{
-		$results = [];
-		if (!empty($this->_directUrl)) {
-			$results['title'] = $this->_title;
-			$results['directurl'] = $this->_directUrl;
-		}
-		if (is_array($this->synopsis())) {
-			$results = array_merge($results, $this->synopsis());
-		}
-		if (is_array($this->productInfo())) {
-			$results = array_merge($results, $this->productInfo());
-		}
-		if (is_array($this->cast())) {
-			$results = array_merge($results, $this->cast());
-		}
-		if (is_array($this->genres())) {
-			$results = array_merge($results, $this->genres());
-		}
-		$covers = $this->covers();
-		if (is_array($covers)) {
-			$results = array_merge($results, $covers);
-		}
-		if (is_array($this->trailers())) {
-			$results = array_merge($results, $this->trailers());
-		}
-		if (empty($results)) {
-			return false;
-		}
-
-		return $results;
 	}
 }
