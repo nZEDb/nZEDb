@@ -11,6 +11,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2017-07-14 niel
 	Chg: Make version checks in .../nzedb/NZB.php and .../nzedb/Tmux.php use the XML file instead
 		of the repository.
+	Chg: Update composer.lock file for updated steamfront version.
 2017-06-26 niel
 	Fix: Removed check for tpg in collection_regexes-test.php's template.
 2017-06-21 niel

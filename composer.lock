@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/b3rs3rk/steamfront.git",
-                "reference": "91926f883c7cff6dcdd844e5e34310d56da49113"
+                "reference": "dc06fe132db557170c68cbd8c19c1773330906b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/b3rs3rk/steamfront/zipball/91926f883c7cff6dcdd844e5e34310d56da49113",
-                "reference": "91926f883c7cff6dcdd844e5e34310d56da49113",
+                "url": "https://api.github.com/repos/b3rs3rk/steamfront/zipball/dc06fe132db557170c68cbd8c19c1773330906b7",
+                "reference": "dc06fe132db557170c68cbd8c19c1773330906b7",
                 "shasum": ""
             },
             "require": {
@@ -42,7 +42,7 @@
                 }
             ],
             "description": "PHP Wrapper for Accessing the Steam Storefront API",
-            "time": "2017-02-07 02:15:29"
+            "time": "2017-06-30 12:49:25"
         },
         {
             "name": "barracudanetworks/forkdaemon-php",
