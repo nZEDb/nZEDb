@@ -8,7 +8,9 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2017-07-14 niel
+	Chg: Make version checks in .../nzedb/NZB.php and .../nzedb/Tmux.php use the XML file instead
+		of the repository.
 2017-06-26 niel
 	Fix: Removed check for tpg in collection_regexes-test.php's template.
 2017-06-21 niel
