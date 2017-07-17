@@ -18,7 +18,7 @@
  */
 namespace app\extensions\data;
 
-
+use lithium\data\Entity;
 use lithium\data\Source;
 
 class Model extends \lithium\data\Model
@@ -36,5 +36,25 @@ class Model extends \lithium\data\Model
 				$e
 			);
 		}
+	}
+
+	public static function isModified($preEntry)
+	{
+		if (!($preEntry instanceof Entity)) {
+			$test = get_class($preEntry);
+			$test = $test ?: 'non-object';
+			throw new \InvalidArgumentException('$preEntry must be an object derived from the Lithium Entity class, a "' . $test . '" was passed instead.');
+		}
+		$modified = false;
+		foreach ($preEntry->modified() as $field => $value) {
+			if ($value) {
+				if (nZEDb_DEBUG) {
+					echo "Changed: $field\n";
+				}
+				$modified = true;
+			}
+		}
+
+		return $modified;
 	}
 }

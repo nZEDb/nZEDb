@@ -2,8 +2,7 @@
 DELETE FROM release_naming_regexes WHERE id IN (30, 31, 35, 749, 750, 751, 1160, 1161, 1162);
 
 #Adjust previous regex
-UPDATE release_naming_regexes SET id = id - 2 WHERE id IN (32, 33, 34);
-UPDATE release_naming_regexes SET id = id - 3 WHERE id BETWEEN 752 AND 1159;
+UPDATE release_naming_regexes SET id = id - 2 WHERE id IN (32, 33, 34) ORDER BY 'id' ASC;
 UPDATE release_naming_regexes SET ordinal = 20 WHERE id = 28;
 UPDATE release_naming_regexes SET ordinal = 25 WHERE id = 29;
 UPDATE release_naming_regexes SET ordinal = 30 WHERE id = 30;
@@ -34,3 +33,5 @@ VALUES (
   '//My Hero Academia Textless Opening Song \'THE DAY\' (BD AVC 1080p FLAC) [6D660059] - "My Hero Academia Textless Opening Song \'THE DAY\' (BD AVC 1080p FLAC) [6D660059] nfo" yEnc (01/35)',
   15
 );
+
+UPDATE release_naming_regexes SET id = id - 3 WHERE id BETWEEN 752 AND 1159 ORDER BY 'id' ASC;

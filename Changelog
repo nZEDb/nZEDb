@@ -9,6 +9,33 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-07-14 niel
+	Chg: Make version checks in .../nzedb/NZB.php and .../nzedb/Tmux.php use the XML file instead
+		of the repository.
+	Chg: Update composer.lock file for updated steamfront version.
+2017-06-26 niel
+	Fix: Removed check for tpg in collection_regexes-test.php's template.
+2017-06-21 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.3
+
+
+2017-06-21 niel
+	Fix: Add 'ORDER BY 'id' ASC' clause to SQL patch 0482, to make sure they don't get done out
+		of order, causing duplicate index errors.
+2017-06-21 DariusIII
+	Fix: Use PNotify instead of noty in Charisma theme - Potential fix for issue #2478
+2017-06-20 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.2
+
+
+2017-06-19 niel
+	Add: Created custom Model class to extend Lithium's. It adds a new method `isModified` to
+		check if an existing table entity has been changed. This allows Updates to skip saves if
+		nothing has changed.
+	Fix: Remove type declaration from Model::isModified() signature as it doesn't work for parent
+		classes. The type is tested inside the method instead.
+2017-06-14 niel
+	Fix: Replace overlooked occurences of 'predate' with 'created' in queries. Closes Issue 2474.
 2017-06-09 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.1
 

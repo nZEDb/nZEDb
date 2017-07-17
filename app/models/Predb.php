@@ -36,21 +36,6 @@ class Predb extends \app\extensions\data\Model
 		]
 	];
 
-	public static function isModified(Entity $preEntry)
-	{
-		$modified = false;
-		foreach ($preEntry->modified() as $field => $value) {
-			if ($value) {
-				if (nZEDb_DEBUG) {
-					echo "Changed: $field\n";
-				}
-				$modified = true;
-			}
-		}
-
-		return $modified;
-	}
-
 	public static function findRange($page = 1, $limit = ITEMS_PER_PAGE, $title = '')
 	{
 		$options = [
