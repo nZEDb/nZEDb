@@ -8,6 +8,10 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
+2017-07-19 niel
+	Chg: Set 'updated' date to zero value when inserting new IRCScraper entries. Should prevent
+		certain errors cause by bad SQL modes.
 2017-07-14 niel
 	Chg: Make version checks in .../nzedb/NZB.php and .../nzedb/Tmux.php use the XML file instead
 		of the repository.
