@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-07-27 DariusIII
+	Chg: Add auto sorting and autoloader optimization to composer.json
 2017-07-19 niel
 	Chg: Set 'updated' date to zero value when inserting new IRCScraper entries. Should prevent
 		certain errors cause by bad SQL modes.
