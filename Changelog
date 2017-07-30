@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-07-30 niel
+	Chg: Move location for predb-progress.txt to the standard configuration directory.
 2017-07-19 niel
 	Chg: Set 'updated' date to zero value when inserting new IRCScraper entries. Should prevent
 		certain errors cause by bad SQL modes.
@@ -2466,7 +2468,7 @@ stable code:
 	Add: Add Game/XXX Info to nzb details: First Stage.
 	Add: Hot Movies Icon and Fix layout
 2014-07-26 bart39
-	Fix: Remove 'See full summary »' from the end of imdb movie plot #1420
+	Fix: Remove 'See full summary ?' from the end of imdb movie plot #1420
 2014-07-26 kevin
 	Fix: #1421
 	Add: Settings to settings.php for temporarily blocking site access to those sending too many requests.
