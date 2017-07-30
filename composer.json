@@ -16,6 +16,8 @@
     ]
   },
   "config": {
+    "sort-packages": true,
+    "optimize-autoloader": true,
     "fxp-asset": {
       "installer-paths": {
         "npm-asset-library": "www/themes/shared/libs",
