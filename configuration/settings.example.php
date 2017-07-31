@@ -1,29 +1,28 @@
 <?php
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////// Copy this file to settings.php and edit the options. //////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// Scroll down to the bottom for a change log. //////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////// Copy this file to settings.php and edit the options. ///////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////// Scroll down to the bottom for a change log. ///////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use nzedb\utility\Misc;
 
-/**********************************************************************************************************************/
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////// MISC //////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////// MISC ////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
- * When we update settings.example.php, we will raise this version, you will get a message saying your settings.php
- * is out of date, you will need to update it and change the version number.
+ * When we update settings.example.php, we will raise this version, you will get a message saying
+ * your settings.php is out of date, you will need to update it and change the version number.
  *
- * @note    Developers: When updating settings.example.php, up this version
- *                   and $current_settings_file_version in nzedb\config\Configure.php
+ * @note    Developers: When updating settings.example.php, up this version and
+ *                    $current_settings_file_version in nzedb\config\Configure.php
  * @version 4
  */
 define('nZEDb_SETTINGS_FILE_VERSION', 4);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////// Web Settings //////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////// Web Settings ////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * How many releases to show per page in list view.
  *
@@ -45,7 +44,6 @@ define('ITEMS_PER_COVER_PAGE', '20');
  *
  * @note    This setting can speed up browsing releases tremendously if you have millions of releases and you keep it
  * a relatively low value.
- *
  * @default '125000'
  */
 define('nZEDb_MAX_PAGER_RESULTS', '125000');
@@ -81,9 +79,9 @@ define('nZEDb_FLOOD_WAIT_TIME', 5);
 define('nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND', 5);
 
 /**
- * The higher this number, the more secure the password algorithm for the website will be, at the cost
- * of server resources.
- * To find a good number for your server, run the misc/testing/Various/find_password_hash_cost.php script.
+ * The higher this number, the more secure the password algorithm for the website will be, at the
+ * cost of server resources. To find a good number for your server, run the
+ * .../misc/testing/Various/find_password_hash_cost.php script.
  *
  * @note    It is not recommended to set this under 11.
  * @default 11
@@ -92,7 +90,6 @@ define('nZEDb_PASSWORD_HASH_COST', 11);
 
 /**
  * The type of search system to use on the site.
- *
  * 0 = The default system, which uses fulltext indexing (very fast but search results can be unexpected).
  * 1 = The old search system from newznab classic (much slower but produces better search results).
  * 2 = Search using sphinx real time index, see misc/sphinxsearch/README.md for installation details.
@@ -101,9 +98,9 @@ define('nZEDb_PASSWORD_HASH_COST', 11);
  */
 define('nZEDb_RELEASE_SEARCH_TYPE', 0);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////// Sphinx Settings ////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////// Sphinx Settings ////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * This is the hostname to use when connecting to the SphinxQL server (mysql41 protocol),
@@ -122,15 +119,16 @@ define('nZEDb_SPHINXQL_HOST_NAME', '0');
 define('nZEDb_SPHINXQL_PORT', 9306);
 
 /**
- * This is the (optional) location to the SphinxQL server socket file, if you set the "listen" setting to a sock file.
+ * This is the (optional) location to the SphinxQL server socket file, if you set the "listen"
+ * setting to a sock file.
  *
  * @default ''
  */
 define('nZEDb_SPHINXQL_SOCK_FILE', '');
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////// CLI Settings //////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////// CLI Settings /////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Display text to console(terminal) output.
  *
@@ -146,15 +144,16 @@ define('nZEDb_ECHOCLI', true);
 define('nZEDb_RENAME_PAR2', true);
 
 /**
- * Rename music releases using media info from the MP3/FLAC/etc tags (names are created using info found in the tags)?
+ * Rename music releases using media info from the MP3/FLAC/etc tags (names are created using info
+ * found in the tags)?
  *
  * @default true
  */
 define('nZEDb_RENAME_MUSIC_MEDIAINFO', true);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////// Cache Settings /////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////// Cache Settings ////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Type of cache server(s) to use:
  * 0 - disabled   ; No cache server(s) will be used.
@@ -181,15 +180,16 @@ define('nZEDb_CACHE_TYPE', 0);
  *                   If you have more than 1 memcached server, see the memcached documentation for more info:
  *                   http://php.net/manual/en/memcached.addserver.php
  */
-define('nZEDb_CACHE_HOSTS', serialize(
-	[
-		'Server1' => [
-			'host'   => '127.0.0.1',
-			'port'   => 11211,
-			'weight' => 0
-		],
-	]
-));
+define('nZEDb_CACHE_HOSTS',
+	serialize(
+		[
+			'Server1' => [
+				'host'   => '127.0.0.1',
+				'port'   => 11211,
+				'weight' => 0
+			],
+		]
+	));
 
 /**
  * Optional path to unix socket file, leave '' if to not use.
@@ -219,8 +219,8 @@ define('nZEDb_CACHE_TIMEOUT', 10);
 define('nZEDb_CACHE_COMPRESSION', false);
 
 /**
- * Serialization is a way of converting data in PHP into strings of text which can be stored on the cache server.
- *
+ * Serialization is a way of converting data in PHP into strings of text which can be stored on the
+ * cache server.
  * 0 - Use the PHP serializer. Recommended for most people.
  * 1 - [Requires igbinary] Use igbinary serializer which is faster and uses less memory, works
  *                         on Memcached / Redis / APC, read the notes below.
@@ -246,9 +246,9 @@ define('nZEDb_CACHE_EXPIRY_SHORT', 300);
 define('nZEDb_CACHE_EXPIRY_MEDIUM', 600);
 define('nZEDb_CACHE_EXPIRY_LONG', 900);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////// Log Settings //////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////// Log Settings ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Display debug messages on console or web page.
  *
@@ -279,7 +279,8 @@ define('nZEDb_LOGAUTOLOADER', false);
 define('nZEDb_LOGGING_MAX_LOGS', 20);
 
 /**
- * How large can the log files be in MegaBytes before we create a new one? The old files are compressed.
+ * How large can the log files be in MegaBytes before we create a new one? The old files are
+ * compressed.
  *
  * @default 30
  */
@@ -376,14 +377,15 @@ define('nZEDb_LOGFATAL', false);
  */
 define('nZEDb_LOGQUERIES', false);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////// SQL Settings //////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////// SQL Settings //////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
- * Strip white space (space, carriage return, new line, tab, etc) from queries before sending to MySQL.
- * This is useful if you use the MySQL slow query log.
+ * Strip white space (space, carriage return, new line, tab, etc) from queries before sending to
+ * MySQL. This is useful if you use the MySQL slow query log.
  *
- * @note    This slows down query processing, leave it false unless you turn on the MySQL slow query log.
+ * @note    This slows down query processing, leave it false unless you turn on the MySQL slow query
+ *            log.
  * @default false
  */
 define('nZEDb_QUERY_STRIP_WHITESPACE', false);
@@ -423,9 +425,9 @@ define('nZEDb_SQL_DELETE_LOW_PRIORITY', false);
  */
 define('nZEDb_SQL_DELETE_QUICK', false);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////// PHPMailer Settings //////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////// PHPMailer Settings ////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Simple constant to let us know this file is included and we should use PHPMailer library.
  * Uncomment the line below after setting the other constants.
@@ -534,13 +536,14 @@ define('PHPMAILER_SMTP_USER', '');
  */
 define('PHPMAILER_SMTP_PASSWORD', '');
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////// PHP CLI Settings ///////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////// PHP CLI Settings ////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 if (Misc::isCLI()) {
 
 	/**
 	 * Your server's local timezone.
+	 *
 	 * @note    Uncomment to enable.
 	 * @see     https://secure.php.net/manual/en/timezones.php
 	 * @version 4
@@ -549,6 +552,7 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Maximum amount of memory a PHP script can consume before being terminated.
+	 *
 	 * @note    Uncomment to enable.
 	 * @default '1024M'
 	 * @version 4
@@ -557,6 +561,7 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Show PHP errors on CLI output.
+	 *
 	 * @note    Set to '1' for development.
 	 * @default '0'
 	 * @version 4
@@ -565,6 +570,7 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Show startup errors on CLI output.
+	 *
 	 * @note    Set to '1' for development/debugging.
 	 * @default '0'
 	 * @version 4
@@ -573,7 +579,6 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Type of errors to display.
-	 *
 	 * nZEDb code should run clean with no errors, so there is no point to restricting the reported
 	 * output. Any notices or warnings should be dealt with.
 	 * It makes no difference to performance if reporting specific types (i.e. strict, warnings, etc.)
@@ -587,6 +592,7 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Turn off HTML tags in error messages.
+	 *
 	 * @default '0'
 	 * @version 4
 	 */
@@ -594,6 +600,7 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Set the location to log PHP errors.
+	 *
 	 * @default nZEDb_LOGS . 'php_errors.log'
 	 * @note    To log to syslog, put in 'syslog'
 	 * @version 4
@@ -602,6 +609,7 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Log errors to error_log?
+	 *
 	 * @default '1'
 	 * @version 4
 	 */
@@ -609,6 +617,7 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Max line length for a error.
+	 *
 	 * @default 1024
 	 * @version 4
 	 */
@@ -616,19 +625,21 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Store the last PHP error in $php_errormsg
+	 *
 	 * @default '0'
 	 * @note    This is a development/debugging option.
 	 * @version 4
 	 */
 	ini_set('track_errors', '0');
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////// PHP Web Settings ///////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////// PHP Web Settings /////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 } else {
 
 	/**
 	 * Your server's local timezone.
+	 *
 	 * @note    Uncomment to enable.
 	 * @see     https://secure.php.net/manual/en/timezones.php
 	 * @version 4
@@ -637,6 +648,7 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Maximum amount of seconds a script can run before being terminated.
+	 *
 	 * @default '120'
 	 * @version 4
 	 */
@@ -644,6 +656,7 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Maximum amount of memory a PHP script can consume before being terminated.
+	 *
 	 * @note    Uncomment to enable.
 	 * @default '1024M'
 	 * @version 4
@@ -652,6 +665,7 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Show PHP errors on web browser.
+	 *
 	 * @note    Set to '1' for development.
 	 * @default '0'
 	 * @version 4
@@ -660,6 +674,7 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Show startup errors on web browser.
+	 *
 	 * @note    Set to '1' for development/debugging.
 	 * @default '0'
 	 * @version 4
@@ -668,7 +683,6 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Type of errors to display.
-	 *
 	 * nZEDb code should run clean with no errors, so there is no point to restricting the reported
 	 * output. Any notices or warnings should be dealt with.
 	 * It makes no difference to performance if reporting specific types (i.e. strict, warnings, etc.)
@@ -682,6 +696,7 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Turn off HTML tags in error messages.
+	 *
 	 * @default '1'
 	 * @version 4
 	 */
@@ -689,6 +704,7 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Set the location to log PHP errors.
+	 *
 	 * @default nZEDb_LOGS . 'php_errors.log'
 	 * @note    To log to syslog, put in 'syslog'
 	 * @version 4
@@ -697,6 +713,7 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Log errors to error_log?
+	 *
 	 * @default '1'
 	 * @version 4
 	 */
@@ -704,6 +721,7 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Max line length for a error.
+	 *
 	 * @default 1024
 	 * @version 4
 	 */
@@ -711,6 +729,7 @@ if (Misc::isCLI()) {
 
 	/**
 	 * Store the last PHP error in $php_errormsg
+	 *
 	 * @default '0'
 	 * @note    This is a development/debugging option.
 	 * @version 4
@@ -718,14 +737,15 @@ if (Misc::isCLI()) {
 	ini_set('track_errors', '0');
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////// PHP Xdebug Settings //////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////// PHP Xdebug Settings ////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 if (extension_loaded('xdebug')) {
 
 	/**
 	 * Display colors on xdebug CLI output?
 	 * 0 - off, 1 - on only if on a TTY with ansi support, 2 - on regardless of TTY or ansi support.
+	 *
 	 * @default 0
 	 * @version 4
 	 */
@@ -733,6 +753,7 @@ if (extension_loaded('xdebug')) {
 
 	/**
 	 * Replace PHP's var_dump with xdebug's own?
+	 *
 	 * @default '1'
 	 * @version 4
 	 */
@@ -740,6 +761,7 @@ if (extension_loaded('xdebug')) {
 
 	/**
 	 * How many items in a array or object to display on var_dump.
+	 *
 	 * @note    Set to '-1' for no limit.
 	 * @default '128'
 	 * @version 4
@@ -748,6 +770,7 @@ if (extension_loaded('xdebug')) {
 
 	/**
 	 * Maximum string length on var_dump. (anything over is truncated)
+	 *
 	 * @note    Set to '-1' for no limit.
 	 * @default '512'
 	 * @version 4
@@ -756,6 +779,7 @@ if (extension_loaded('xdebug')) {
 
 	/**
 	 * How many nested arrays / objects deep to display on var_dump.
+	 *
 	 * @note    Set to '-1' for no limit.
 	 * @note    Maximum value is '1023'
 	 * @default '3'
@@ -764,23 +788,20 @@ if (extension_loaded('xdebug')) {
 	ini_set('xdebug.var_display_max_depth', '3');
 }
 
-/***********************************************************************************************************************
- * ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- * //////////////////////////////////////////////// Change log ////////////////////////////////////////////////////////////
- * ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- *
- * 2015-10-14       v4  Change defaults html_errors default to 0
- *
- * 2015-08-26       v4  Add settings for PHP web/CLI SAPI's.
- *                        Add settings for Xdebug.
- *                        All new settings start from the "PHP CLI Settings" up to the "Change log", lines ~544 to ~768
- *
- * 2015-06-11       v3  Add support for APC or APCu extensions for caching data. Search for @version 3 for the changes.
- *
- * 2015-05-10       v2  Update path to find_password_hash_cost.php in comments. Search for @version 2 for the changes.
- *
- * 2015-05-03       v1  Track settings.php.example changes.
- *                        Add support for quick and low_priority on MySQL DELETE queries.
- *                        Search for @version 1 in this file to quickly find these additions.
- *
- * //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/***************************************************************************************************
+ * /////////////////////////////////////////////////////////////////////////////////////////////////
+ * ///////////////////////////////////// Change log ////////////////////////////////////////////////
+ * /////////////////////////////////////////////////////////////////////////////////////////////////
+ * 2015-10-14    v4  Change defaults html_errors default to 0
+ * 2015-08-26   v4  Add settings for PHP web/CLI SAPI's.
+ *                Add settings for Xdebug.
+ *                  All new settings start from the "PHP CLI Settings" up to the "Change log",
+ *                    lines ~544 to ~768
+ * 2015-06-11   v3  Add support for APC or APCu extensions for caching data. Search for @version 3
+ *                    for the changes.
+ * 2015-05-10   v2  Update path to find_password_hash_cost.php in comments. Search for @version 2
+ *                    for the changes.
+ * 2015-05-03   v1  Track settings.php.example changes.
+ *                  Add support for quick and low_priority on MySQL DELETE queries.
+ *                  Search for @version 1 in this file to quickly find these additions.
+ * ///////////////////////////////////////////////////////////////////////////////////////////////*/
