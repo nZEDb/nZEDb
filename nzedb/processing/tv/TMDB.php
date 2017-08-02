@@ -297,7 +297,7 @@ class TMDB extends TV
 				foreach ($showAlternativeTitles AS $aka) {
 					$highest['alternative_titles'][] = $aka['title'];
 				}
-				$highest['network'] = $show['networks'][0]['name'] ?? '';
+				$highest['network'] = isset($show['networks'][0]['name']) ? $show['networks'][0]['name'] : '';
 				$highest['external_ids'] = $showExternalIds;
 			}
 			$return = $this->formatShowInfo($highest);
@@ -313,7 +313,7 @@ class TMDB extends TV
 	 *
 	 * @return int
 	 */
-	public function getPoster($videoId, $showId = 0): int
+	public function getPoster($videoId, $showId = 0)
 	{
 		$ri = new ReleaseImage($this->pdo);
 
@@ -380,7 +380,7 @@ class TMDB extends TV
 			'summary'   => (string)$show['overview'],
 			'started'   => (string)$show['first_air_date'],
 			'publisher' => isset($show['network']) ? (string)$show['network'] : '',
-			'country'   => $show['origin_country'][0] ?? '',
+			'country'   => isset($show['origin_country'][0]) ? $show['origin_country'][0] : '',
 			'source'    => parent::SOURCE_TMDB,
 			'imdb'      => isset($imdb['imdbid']) ? (int)$imdb['imdbid'] : 0,
 			'tvdb'      => isset($show['external_ids']['tvdb_id']) ? (int)$show['external_ids']['tvdb_id'] : 0,
