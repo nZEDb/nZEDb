@@ -848,18 +848,18 @@ class Movie
 		$lookupId = ($text === false ? 'tt' . $imdbId : $imdbId);
 
 		try {
-			$tmdbLookup = $this->tmdbClient->getMoviesApi()->getMovie($lookupId);
+			$result = $this->tmdbClient->getMoviesApi()->getMovie($lookupId);
 		} catch (TmdbApiException $e) {
 			return false;
 		}
 
-		/*$status = $tmdbLookup['status_code'];
+		/*$status = $result['status_code'];
 		if (!$status || (isset($status) && $status !== 1)) {
 			return false;
 		}*/
 
 		$ret = [];
-		$ret['title'] = $tmdbLookup['original_title'];
+		$ret['title'] = $result['original_title'];
 
 		if ($this->currentTitle !== '') {
 			// Check the similarity.
@@ -882,26 +882,26 @@ class Movie
 			}
 		}
 
-		$ret['tmdb_id'] = $tmdbLookup['id'];
-		$ImdbID = str_replace('tt', '', $tmdbLookup['imdb_id']);
+		$ret['tmdb_id'] = $result['id'];
+		$ImdbID = str_replace('tt', '', $result['imdb_id']);
 		$ret['imdb_id'] = $ImdbID;
-		$vote = $tmdbLookup['vote_average'];
+		$vote = $result['vote_average'];
 		if (isset($vote)) {
 			$ret['rating'] = ($vote === 0) ? '' : $vote;
 		}
-		$overview = $tmdbLookup['overview'];
+		$overview = $result['overview'];
 		if (!empty($overview)) {
 			$ret['plot'] = $overview;
 		}
-		$tagline = $tmdbLookup['tagline'];
+		$tagline = $result['tagline'];
 		if (!empty($tagline)) {
 			$ret['tagline'] = $tagline;
 		}
-		$released = $tmdbLookup['release_date'];
+		$released = $result['release_date'];
 		if (!empty($released)) {
 			$ret['year'] = date('Y', strtotime($released));
 		}
-		$genresa = $tmdbLookup['genres'];
+		$genresa = $result['genres'];
 		if (!empty($genresa) && count($genresa) > 0) {
 			$genres = [];
 			foreach ($genresa as $genre) {
@@ -909,11 +909,11 @@ class Movie
 			}
 			$ret['genre'] = $genres;
 		}
-		$posterp = $tmdbLookup['poster_path'];
+		$posterp = $result['poster_path'];
 		if (!empty($posterp)) {
 			$ret['cover'] = 'http://image.tmdb.org/t/p/w185' . $posterp;
 		}
-		$backdrop = $tmdbLookup['backdrop_path'];
+		$backdrop = $result['backdrop_path'];
 		if (!empty($backdrop)) {
 			$ret['backdrop'] = 'http://image.tmdb.org/t/p/original' . $backdrop;
 		}
