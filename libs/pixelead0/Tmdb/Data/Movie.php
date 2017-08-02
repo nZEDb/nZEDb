@@ -18,176 +18,211 @@ use libs\Tmdb\TMDB;
  *
  * @package libs\Tmdb\Data
  */
-class Movie{
+class Movie
+{
 
-	//------------------------------------------------------------------------------
-	// Class Variables
-	//------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
+    // Class Variables
+    //------------------------------------------------------------------------------
 
-	public $_data;
-	private $_tmdb;
+    public $_data;
+    private $_tmdb;
 
-	/**
-	 * Construct Class
-	 *
-	 * @param array $data An array with the data of the Movie
-	 */
-	public function __construct($data) {
-		$this->_data = $data;
-	}
+    /**
+     * Construct Class
+     *
+     * @param array $data An array with the data of the Movie
+     */
+    public function __construct($data)
+    {
+        $this->_data = $data;
+    }
 
-	//------------------------------------------------------------------------------
-	// Get Variables
-	//------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------
+    // Get Variables
+    //------------------------------------------------------------------------------
 
-	/**
-	 * Get the Movie's id
-	 *
-	 * @return int
-	 */
-	public function getID() {
-		return $this->_data['id'];
-	}
+    /**
+     * Get the Movie's id
+     *
+     * @return int
+     */
+    public function getID()
+    {
+        return $this->_data['id'];
+    }
 
-	/**
-	 * Get the Movie's title
-	 *
-	 * @return string
-	 */
-	public function getTitle() {
-		return $this->_data['title'];
-	}
+    /**
+     * Get the Movie's title
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->_data['title'];
+    }
 
-	/**
-	 * Get the Movie's tagline
-	 *
-	 * @return string
-	 */
-	public function getTagline() {
-		return $this->_data['tagline'];
-	}
+    /**
+     * Get the Movie's tagline
+     *
+     * @return string
+     */
+    public function getTagline()
+    {
+        return $this->_data['tagline'];
+    }
 
-	/**
-	 * Get the Movie's Poster
-	 *
-	 * @return string
-	 */
-	public function getPoster() {
-		return $this->_data['poster_path'];
-	}
+    /**
+     * Get the Movie's Poster
+     *
+     * @return string
+     */
+    public function getPoster()
+    {
+        return $this->_data['poster_path'];
+    }
 
-	/**
-	 * Get the Movie's vote average
-	 *
-	 * @return int
-	 */
-	public function getVoteAverage() {
-		return $this->_data['vote_average'];
-	}
+    /**
+     * Get the Movie's vote average
+     *
+     * @return int
+     */
+    public function getVoteAverage()
+    {
+        return $this->_data['vote_average'];
+    }
 
-	/**
-	 * Get the Movie's vote count
-	 *
-	 * @return int
-	 */
-	public function getVoteCount() {
-		return $this->_data['vote_count'];
-	}
+    /**
+     * Get the Movie's vote count
+     *
+     * @return int
+     */
+    public function getVoteCount()
+    {
+        return $this->_data['vote_count'];
+    }
 
-	/**
-	 * Get the Movie's trailers
-	 *
-	 * @return array
-	 */
-	public function getTrailers() {
+    /**
+     * Get the Movie's trailers
+     *
+     * @return array
+     */
+    public function getTrailers()
+    {
 
-		if (empty($this->_data['trailers']) && isset($this->_tmdb)){
-			$this->loadTrailer();
-		}
+        if (empty($this->_data['trailers']) && isset($this->_tmdb)) {
+            $this->loadTrailer();
+        }
 
-		return $this->_data['trailers'];
-	}
+        return $this->_data['trailers'];
+    }
 
-	/**
-	 * Get the Movie's trailer
-	 *
-	 * @return string
-	 */
-	public function getTrailer() {
-		return $this->getTrailers()['youtube'][0]['source'];
-	}
+    /**
+     * Get the Movie's trailer
+     *
+     * @return string
+     */
+    public function getTrailer()
+    {
+        return $this->getTrailers()['youtube'][0]['source'];
+    }
 
-	/**
-	 *  Get Generic.<br>
-	 *  Get a item of the array, you should not get used to use this, better use specific get's.
-	 *
-	 * @param string $item The item of the $data array you want
-	 * @return array
-	 */
-	public function get($item = ''){
-		return (empty($item)) ? $this->_data : $this->_data[$item];
-	}
+    public function loadDetails()
+    {
+        if (is_array($this->_data)) {
+            $details = $this->_tmdb->getMovieInfo($this->getID(), '', 'append_to_response=casts');
+            if (is_array($details) && count($details) > 0) {
+                $this->_data = array_merge($this->_data, $details);
+            } else {
+                return "bad detail data";
+            }
+        } else {
+            return "bad starting data";
+        }
+        return true;
+    }
 
-	//------------------------------------------------------------------------------
-	// Load Variables
-	//------------------------------------------------------------------------------
+    /**
+     *  Get Generic.<br>
+     *  Get a item of the array, you should not get used to use this, better use specific get's.
+     *
+     * @param string $item The item of the $data array you want
+     * @return array
+     */
+    public function get($item = '')
+    {
+        return (empty($item)) ? $this->_data : $this->_data[$item];
+    }
 
-	/**
-	 * Load the images of the Movie
-	 *	Used in a Lazy load technique
-	 */
-	public function loadImages(){
-		$this->_data['images'] = $this->_tmdb->getMovieInfo($this->getID(), 'images', false);
-	}
+    //------------------------------------------------------------------------------
+    // Load Variables
+    //------------------------------------------------------------------------------
 
-	/**
-	 * Load the trailer of the Movie
-	 *	Used in a Lazy load technique
-	 */
-	public function loadTrailer() {
-		$this->_data['trailers'] = $this->_tmdb->getMovieInfo($this->getID(), 'trailers', false);
-	}
+    /**
+     * Load the images of the Movie
+     *    Used in a Lazy load technique
+     */
+    public function loadImages()
+    {
+        $this->_data['images'] = $this->_tmdb->getMovieInfo($this->getID(), 'images', false);
+    }
 
-	/**
-	 * Load the casting of the Movie
-	 *	Used in a Lazy load technique
-	 */
-	public function loadCasting(){
-		$this->_data['casts'] = $this->_tmdb->getMovieInfo($this->getID(), 'casts', false);
-	}
+    /**
+     * Load the trailer of the Movie
+     *    Used in a Lazy load technique
+     */
+    public function loadTrailer()
+    {
+        $this->_data['trailers'] = $this->_tmdb->getMovieInfo($this->getID(), 'trailers', false);
+    }
 
-	/**
-	 * Load the translations of the Movie
-	 *	Used in a Lazy load technique
-	 */
-	public function loadTranslations(){
-		$this->_data['translations'] = $this->_tmdb->getMovieInfo($this->getID(), 'translations', false);
-	}
+    /**
+     * Load the casting of the Movie
+     *    Used in a Lazy load technique
+     */
+    public function loadCasting()
+    {
+        $this->_data['casts'] = $this->_tmdb->getMovieInfo($this->getID(), 'casts', false);
+    }
 
-	//------------------------------------------------------------------------------
-	// Import an API instance
-	//------------------------------------------------------------------------------
+    /**
+     * Load the translations of the Movie
+     *    Used in a Lazy load technique
+     */
+    public function loadTranslations()
+    {
+        $this->_data['translations'] = $this->_tmdb->getMovieInfo($this->getID(), 'translations', false);
+    }
 
-	/**
-	 *	Set an instance of the API
-	 *
-	 *	@param TMDB $tmdb An instance of the api, necessary for the lazy load
-	 */
-	public function setAPI($tmdb){
-		$this->_tmdb = $tmdb;
-	}
+    //------------------------------------------------------------------------------
+    // Import an API instance
+    //------------------------------------------------------------------------------
 
-	//------------------------------------------------------------------------------
-	// Export
-	//------------------------------------------------------------------------------
+    /**
+     *    Set an instance of the API
+     *
+     * @param TMDB $tmdb An instance of the api, necessary for the lazy load
+     */
+    public function setAPI($tmdb)
+    {
+        $this->_tmdb = $tmdb;
+    }
 
-	/**
-	 * Get the JSON representation of the Movie
-	 *
-	 * @return string
-	 */
-	public function getJSON() {
-		return json_encode($this->_data, JSON_PRETTY_PRINT);
-	}
+    //------------------------------------------------------------------------------
+    // Export
+    //------------------------------------------------------------------------------
+
+    /**
+     * Get the JSON representation of the Movie
+     *
+     * @return string
+     */
+    public function getJSON($pretty = true)
+    {
+        if ($pretty) {
+            return json_encode($this->_data, JSON_PRETTY_PRINT);
+        } else {
+            return json_encode($this->_data);
+        }
+    }
 }
-?>
