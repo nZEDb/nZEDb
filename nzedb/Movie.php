@@ -103,9 +103,14 @@ class Movie
 	protected $releaseImage;
 
 	/**
-	 * @var \Tmdb\Client
+	 * @var TmdbClient
 	 */
-	protected $tmdbclient;
+	protected $tmdbClient;
+
+	/**
+	 * @var ApiToken
+	 */
+	protected $tmdbToken;
 
 	/**
 	 * Language to fetch from IMDB.
@@ -162,8 +167,8 @@ class Movie
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
-		$this->tmdbtoken = new ApiToken(Settings::value('APIs..tmdbkey'));
-		$this->tmdbclient = new TmdbClient($this->tmdbtoken, [
+		$this->tmdbToken = new ApiToken(Settings::value('APIs..tmdbkey'));
+		$this->tmdbClient = new TmdbClient($this->tmdbToken, [
 				'cache' => [
 					'path' => nZEDb_TMP
 				]
@@ -172,9 +177,6 @@ class Movie
 
 		$result = Settings::value('indexer.categorise.imdblanguage');
 		$this->imdbLanguage = empty($result) ? (string)$result : 'en';
-
-		$this->tmdb = ($options['TMDb'] instanceof \TMDb ? $options['TMDb'] :
-			new \TMDb(Settings::value('APIs..tmdbkey'), $this->imdbLanguage));
 
 		$this->fanartapikey = Settings::value('APIs..fanarttvkey');
 		$this->imdburl = (Settings::value('indexer.categorise.imdburl') == 0 ? false : true);
@@ -846,7 +848,7 @@ class Movie
 		$lookupId = ($text === false ? 'tt' . $imdbId : $imdbId);
 
 		try {
-			$tmdbLookup = $this->tmdbclient->getMoviesApi()->getMovie($lookupId);
+			$tmdbLookup = $this->tmdbClient->getMoviesApi()->getMovie($lookupId);
 		} catch (TmdbApiException $e) {
 			return false;
 		}
