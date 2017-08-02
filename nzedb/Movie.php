@@ -882,7 +882,7 @@ class Movie
 			}
 		}
 
-		$ret['tmdbid'] = $tmdbLookup['id'];
+		$ret['tmdb_id'] = $tmdbLookup['id'];
 		$ImdbID = str_replace('tt', '', $tmdbLookup['imdb_id']);
 		$ret['imdb_id'] = $ImdbID;
 		$vote = $tmdbLookup['vote_average'];
