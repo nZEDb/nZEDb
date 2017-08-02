@@ -5,6 +5,9 @@ use app\models\Settings;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
 use nzedb\processing\tv\TraktTv;
+use Tmdb\ApiToken;
+use Tmdb\Client as TmdbClient;
+use Tmdb\Exception\TmdbApiException;
 
 /**
  * Class Movie
@@ -100,9 +103,9 @@ class Movie
 	protected $releaseImage;
 
 	/**
-	 * @var \TMDb
+	 * @var \Tmdb\Client
 	 */
-	protected $tmdb;
+	protected $tmdbclient;
 
 	/**
 	 * Language to fetch from IMDB.
@@ -142,6 +145,8 @@ class Movie
 
 	/**
 	 * @param array $options Class instances / Echo to CLI.
+	 *
+	 * @throws \Exception
 	 */
 	public function __construct(array $options = [])
 	{
@@ -156,6 +161,14 @@ class Movie
 
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
+
+		$this->tmdbtoken = new ApiToken(Settings::value('APIs..tmdbkey'));
+		$this->tmdbclient = new TmdbClient($this->tmdbtoken, [
+				'cache' => [
+					'path' => nZEDb_TMP
+				]
+			]
+		);
 
 		$result = Settings::value('indexer.categorise.imdblanguage');
 		$this->imdbLanguage = empty($result) ? (string)$result : 'en';
@@ -823,8 +836,8 @@ class Movie
 	/**
 	 * Fetch info for IMDB id from TMDB.
 	 *
-	 * @param string  $imdbId
-	 * @param boolean $text
+	 * @param      $imdbId
+	 * @param bool $text
 	 *
 	 * @return array|bool
 	 */
@@ -833,17 +846,18 @@ class Movie
 		$lookupId = ($text === false ? 'tt' . $imdbId : $imdbId);
 
 		try {
-			$tmdbLookup = $this->tmdb->getMovie($lookupId);
-		} catch (\Exception $e) {
+			$tmdbLookup = $this->tmdbclient->getMoviesApi()->getMovie($lookupId);
+		} catch (TmdbApiException $e) {
 			return false;
 		}
 
-		if (!$tmdbLookup || (isset($tmdbLookup['status_code']) && $tmdbLookup['status_code'] !== 1)) {
+		/*$status = $tmdbLookup['status_code'];
+		if (!$status || (isset($status) && $status !== 1)) {
 			return false;
-		}
+		}*/
 
 		$ret = [];
-		$ret['title'] = $tmdbLookup['title'];
+		$ret['title'] = $tmdbLookup['original_title'];
 
 		if ($this->currentTitle !== '') {
 			// Check the similarity.
@@ -851,7 +865,7 @@ class Movie
 			if ($percent < 40) {
 				if ($this->debug) {
 					$this->debugging->log(
-						get_class(),
+						__CLASS__,
 						__FUNCTION__,
 						'Found (' .
 						$ret['title'] .
@@ -866,36 +880,43 @@ class Movie
 			}
 		}
 
-		$ret['tmdb_id'] = $tmdbLookup['id'];
+		$ret['tmdbid'] = $tmdbLookup['id'];
 		$ImdbID = str_replace('tt', '', $tmdbLookup['imdb_id']);
 		$ret['imdb_id'] = $ImdbID;
-		if (isset($tmdbLookup['vote_average'])) {
-			$ret['rating'] = ($tmdbLookup['vote_average'] == 0) ? '' : $tmdbLookup['vote_average'];
+		$vote = $tmdbLookup['vote_average'];
+		if (isset($vote)) {
+			$ret['rating'] = ($vote === 0) ? '' : $vote;
 		}
-		if (isset($tmdbLookup['overview'])) {
-			$ret['plot'] = $tmdbLookup['overview'];
+		$overview = $tmdbLookup['overview'];
+		if (!empty($overview)) {
+			$ret['plot'] = $overview;
 		}
-		if (isset($tmdbLookup['tagline'])) {
-			$ret['tagline'] = $tmdbLookup['tagline'];
+		$tagline = $tmdbLookup['tagline'];
+		if (!empty($tagline)) {
+			$ret['tagline'] = $tagline;
 		}
-		if (isset($tmdbLookup['release_date'])) {
-			$ret['year'] = date("Y", strtotime($tmdbLookup['release_date']));
+		$released = $tmdbLookup['release_date'];
+		if (!empty($released)) {
+			$ret['year'] = date('Y', strtotime($released));
 		}
-		if (isset($tmdbLookup['genres']) && sizeof($tmdbLookup['genres']) > 0) {
+		$genresa = $tmdbLookup['genres'];
+		if (!empty($genresa) && count($genresa) > 0) {
 			$genres = [];
-			foreach ($tmdbLookup['genres'] as $genre) {
+			foreach ($genresa as $genre) {
 				$genres[] = $genre['name'];
 			}
 			$ret['genre'] = $genres;
 		}
-		if (isset($tmdbLookup['poster_path']) && sizeof($tmdbLookup['poster_path']) > 0) {
-			$ret['cover'] = "http://image.tmdb.org/t/p/w185" . $tmdbLookup['poster_path'];
+		$posterp = $tmdbLookup['poster_path'];
+		if (!empty($posterp)) {
+			$ret['cover'] = 'http://image.tmdb.org/t/p/w185' . $posterp;
 		}
-		if (isset($tmdbLookup['backdrop_path']) && sizeof($tmdbLookup['backdrop_path']) > 0) {
-			$ret['backdrop'] = "http://image.tmdb.org/t/p/original" . $tmdbLookup['backdrop_path'];
+		$backdrop = $tmdbLookup['backdrop_path'];
+		if (!empty($backdrop)) {
+			$ret['backdrop'] = 'http://image.tmdb.org/t/p/original' . $backdrop;
 		}
 		if ($this->echooutput) {
-			$this->pdo->log->doEcho($this->pdo->log->primaryOver("TMDb Found ") . $this->pdo->log->headerOver($ret['title']), true);
+			ColorCLI::doEcho(ColorCLI::primaryOver('TMDb Found ') . ColorCLI::headerOver($ret['title']), true);
 		}
 		return $ret;
 	}
