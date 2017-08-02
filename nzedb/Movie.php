@@ -885,37 +885,36 @@ class Movie
 		$ret['tmdb_id'] = $result['id'];
 		$ImdbID = str_replace('tt', '', $result['imdb_id']);
 		$ret['imdb_id'] = $ImdbID;
-		$vote = $result['vote_average'];
-		if (isset($vote)) {
-			$ret['rating'] = ($vote === 0) ? '' : $vote;
+		if (isset($result['vote_average'])) {
+			$ret['rating'] = ($result['vote_average'] === 0) ? '' : $result['vote_average'];
 		}
-		$overview = $result['overview'];
-		if (!empty($overview)) {
-			$ret['plot'] = $overview;
+
+		if (!empty($result['overview'])) {
+			$ret['plot'] = $result['overview'];
 		}
-		$tagline = $result['tagline'];
-		if (!empty($tagline)) {
-			$ret['tagline'] = $tagline;
+
+		if (!empty($result['tagline'])) {
+			$ret['tagline'] = $result['tagline'];
 		}
-		$released = $result['release_date'];
-		if (!empty($released)) {
-			$ret['year'] = date('Y', strtotime($released));
+
+		if (!empty($result['release_date'])) {
+			$ret['year'] = date('Y', strtotime($result['release_date']));
 		}
-		$genresa = $result['genres'];
-		if (!empty($genresa) && count($genresa) > 0) {
+
+		if (!empty($result['genres']) && count($result['genres']) > 0) {
 			$genres = [];
-			foreach ($genresa as $genre) {
+			foreach ($result['genres'] as $genre) {
 				$genres[] = $genre['name'];
 			}
 			$ret['genre'] = $genres;
 		}
-		$posterp = $result['poster_path'];
-		if (!empty($posterp)) {
-			$ret['cover'] = 'http://image.tmdb.org/t/p/w185' . $posterp;
+
+		if (!empty($result['poster_path'])) {
+			$ret['cover'] = 'http://image.tmdb.org/t/p/w185' . $result['poster_path'];
 		}
-		$backdrop = $result['backdrop_path'];
-		if (!empty($backdrop)) {
-			$ret['backdrop'] = 'http://image.tmdb.org/t/p/original' . $backdrop;
+
+		if (!empty($result['backdrop_path'])) {
+			$ret['backdrop'] = 'http://image.tmdb.org/t/p/original' . $result['backdrop_path'];
 		}
 		if ($this->echooutput) {
 			ColorCLI::doEcho(ColorCLI::primaryOver('TMDb Found ') . ColorCLI::headerOver($ret['title']), true);
