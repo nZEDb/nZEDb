@@ -56,39 +56,39 @@ class Movie
 	protected $debugging;
 
 	/**
-	 * @var bool
+	 * @var boolean
 	 */
 	protected $debug;
 
 	/**
 	 * Use search engines to find IMDB id's.
-	 * @var bool
+	 * @var boolean
 	 */
 	protected $searchEngines;
 
 	/**
 	 * How many times have we hit google this session.
-	 * @var int
+	 * @var integer
 	 */
 	protected $googleLimit = 0;
 
 	/**
 	 * If we are temp banned from google, set time we were banned here, try again after 10 minutes.
-	 * @var int
+	 * @var integer
 	 */
 	protected $googleBan = 0;
 
 	/**
 	 * How many times have we hit bing this session.
 	 *
-	 * @var int
+	 * @var integer
 	 */
 	protected $bingLimit = 0;
 
 	/**
 	 * How many times have we hit yahoo this session.
 	 *
-	 * @var int
+	 * @var integer
 	 */
 	protected $yahooLimit = 0;
 
@@ -119,22 +119,22 @@ class Movie
 	protected $imdbLanguage;
 
 	/**
-	 * @var array|bool|string
+	 * @var array|boolean|string
 	 */
 	public $fanartapikey;
 
 	/**
-	 * @var bool
+	 * @var boolean
 	 */
 	public $imdburl;
 
 	/**
-	 * @var array|bool|int|string
+	 * @var array|boolean|integer|string
 	 */
 	public $movieqty;
 
 	/**
-	 * @var bool
+	 * @var boolean
 	 */
 	public $echooutput;
 
@@ -205,9 +205,9 @@ class Movie
 	/**
 	 * Get info for a IMDB id.
 	 *
-	 * @param int $imdbId
+	 * @param integer $imdbId
 	 *
-	 * @return array|bool
+	 * @return array|boolean
 	 */
 	public function getMovieInfo($imdbId)
 	{
@@ -279,7 +279,7 @@ class Movie
 	/**
 	 * Get count of movies for movie-list admin page.
 	 *
-	 * @return int
+	 * @return integer
 	 */
 	public function getCount()
 	{
@@ -297,7 +297,7 @@ class Movie
 	 * @param       $maxAge
 	 * @param array $excludedCats
 	 *
-	 * @return bool|\PDOStatement
+	 * @return boolean|\PDOStatement
 	 */
 	public function getMovieRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = [])
 	{
@@ -455,9 +455,9 @@ class Movie
 	/**
 	 * Get trailer using IMDB Id.
 	 *
-	 * @param int $imdbID
+	 * @param integer $imdbID
 	 *
-	 * @return bool|string
+	 * @return boolean|string
 	 */
 	public function getTrailer($imdbID)
 	{
@@ -600,7 +600,7 @@ class Movie
 	 * Update movie on movie-edit page.
 	 *
 	 * @param array $values Array of keys/values to update. See $validKeys
-	 * @return int|bool
+	 * @return integer|boolean
 	 */
 	public function update(array $values)
 	{
@@ -679,7 +679,7 @@ class Movie
 	 *
 	 * @param string $imdbId
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function updateMovieInfo($imdbId)
 	{
@@ -797,7 +797,7 @@ class Movie
 	 *
 	 * @param string $imdbId
 	 *
-	 * @return bool|array
+	 * @return boolean|array
 	 */
 	protected function fetchFanartTVProperties($imdbId)
 	{
@@ -838,10 +838,10 @@ class Movie
 	/**
 	 * Fetch info for IMDB id from TMDB.
 	 *
-	 * @param      $imdbId
-	 * @param bool $text
+	 * @param integer     $imdbId
+	 * @param boolean $text
 	 *
-	 * @return array|bool
+	 * @return array|boolean
 	 */
 	public function fetchTMDBProperties($imdbId, $text = false)
 	{
@@ -925,7 +925,7 @@ class Movie
 	/**
 	 * @param string $imdbId
 	 *
-	 * @return array|bool
+	 * @return array|boolean
 	 */
 	protected function fetchIMDBProperties($imdbId)
 	{
@@ -1027,7 +1027,7 @@ class Movie
 	 *
 	 * @param string $imdbId
 	 *
-	 * @return bool|array
+	 * @return boolean|array
 	 */
 	protected function fetchTraktTVProperties($imdbId)
 	{
@@ -1055,8 +1055,8 @@ class Movie
 	 *
 	 * @param string $buffer       Data to parse a IMDB id from.
 	 * @param string $service      Method that called this method.
-	 * @param int    $id           ID of the release.
-	 * @param int    $processImdb  To get IMDB info on this IMDB id or not.
+	 * @param integer    $id           ID of the release.
+	 * @param integer    $processImdb  To get IMDB info on this IMDB id or not.
 	 *
 	 * @return string
 	 */
@@ -1093,7 +1093,7 @@ class Movie
 	 *
 	 * @param string $groupID    (Optional) ID of a group to work on.
 	 * @param string $guidChar   (Optional) First letter of a release GUID to use to get work.
-	 * @param int    $lookupIMDB (Optional) 0 Don't lookup IMDB, 1 lookup IMDB, 2 lookup IMDB on releases that were renamed.
+	 * @param integer    $lookupIMDB (Optional) 0 Don't lookup IMDB, 1 lookup IMDB, 2 lookup IMDB on releases that were renamed.
 	 */
 	public function processMovieReleases($groupID = '', $guidChar = '', $lookupIMDB = 1)
 	{
@@ -1207,7 +1207,7 @@ class Movie
 	/**
 	 * Try to fetch an IMDB id locally.
 	 *
-	 * @return int|bool   Int, the imdbid when true, Bool when false.
+	 * @return integer|boolean   Int, the imdbid when true, Bool when false.
 	 */
 	protected function localIMDBsearch()
 	{
@@ -1282,7 +1282,7 @@ class Movie
 	/**
 	 * Try to get an IMDB id from search engines.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	protected function imdbIDFromEngines()
 	{
@@ -1311,7 +1311,7 @@ class Movie
 	/**
 	 * Try to find a IMDB id on google.com
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	protected function googleSearch()
 	{
@@ -1347,7 +1347,7 @@ class Movie
 	/**
 	 * Try to find a IMDB id on bing.com
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	protected function bingSearch()
 	{
@@ -1379,7 +1379,7 @@ class Movie
 	/**
 	 * Try to find a IMDB id on yahoo.com
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	protected function yahooSearch()
 	{
@@ -1426,7 +1426,7 @@ class Movie
 	 *
 	 * @param string $releaseName
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	protected function parseMovieSearchName($releaseName)
 	{
@@ -1477,7 +1477,7 @@ class Movie
 	 * @param        $type
 	 * @param string $source
 	 *
-	 * @return array|bool
+	 * @return array|boolean
 	 */
 	public function getUpcoming($type, $source = 'rottentomato')
 	{
@@ -1593,7 +1593,7 @@ class Movie
 	 * @param $type
 	 * @param string|false $info
 	 *
-	 * @return boolean|int
+	 * @return boolean|integer
 	 */
 	protected function updateInsUpcoming($source, $type, $info)
 	{
