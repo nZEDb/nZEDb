@@ -272,7 +272,7 @@ class TmdbAPI {
 
 		$movies = array();
 
-		$result = $this->_call('movie/now-playing', 'page='. $page);
+		$result = $this->_call('movie/now_playing', 'page='. $page);
 
 		if (is_array($result) && !empty($result)) {
 			foreach ($result['results'] as $data) {
@@ -292,7 +292,7 @@ class TmdbAPI {
 	 */
 	public function topRatedMovies($page = 1) {
 		$movies = array();
-		$result = $this->_call('movie/top-rated', 'page='. $page);
+		$result = $this->_call('movie/top_rated', 'page='. $page);
 
 		if (is_array($result) && !empty($result)) {
 			foreach ($result['results'] as $data) {

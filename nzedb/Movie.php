@@ -5,6 +5,8 @@ use app\models\Settings;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
 use nzedb\processing\tv\TraktTv;
+use libs\Tmdb\TmdbAPI;
+
 
 /**
  * Class Movie
@@ -1449,120 +1451,90 @@ class Movie
 		return false;
 	}
 
-	/**
-	 * Get upcoming movies.
-	 *
-	 * @param        $type
-	 * @param string $source
-	 *
-	 * @return array|bool
-	 */
-	public function getUpcoming($type, $source = 'rottentomato')
-	{
-		$list = $this->pdo->queryOneRow(
-			sprintf('SELECT * FROM upcoming_releases WHERE source = %s AND typeid = %d', $this->pdo->escapeString($source), $type)
-		);
-		if ($list === false) {
-			$this->updateUpcoming();
-			$list = $this->pdo->queryOneRow(
-				sprintf('SELECT * FROM upcoming_releases WHERE source = %s AND typeid = %d', $this->pdo->escapeString($source), $type)
-			);
-		}
-		return $list;
-	}
+    /**
+     * Get upcoming movies.
+     *
+     * @param        $type
+     * @param string $source
+     *
+     * @return array|bool
+     */
+    public function getUpcoming($type, $source = 'tmdb', $sort = 'pop')
+    {
+        if ($type == MOVIE::SRC_INTHEATRE) {
+            $where = 'release_date <= now()';
+            $sort = ($sort == 'pop') ? 'popularity DESC' : 'release_date DESC';
+        } else {
+            $where = 'release_date > now()';
+            $sort = ($sort == 'pop') ? 'popularity DESC' : 'release_date ASC';
+        }
 
-	/**
-	 * Update upcoming movies.
-	 */
-	public function updateUpcoming()
-	{
-		if ($this->echooutput) {
-			$this->pdo->log->doEcho($this->pdo->log->header('Updating movie schedule using rotten tomatoes.'));
-		}
+        $query = sprintf('SELECT relid, info FROM upcoming_releases WHERE %s ORDER BY %s', $where, $sort);
+        $list = $this->pdo->query($query);
+        $movies = [];
 
-		$rt = new RottenTomato(Settings::value('APIs..rottentomatokey'));
+        foreach ($list as $movie) {
+            $movies[$movie['relid']] = json_decode($movie['info']);
+        }
 
-		if ($rt instanceof RottenTomato) {
+        return $movies;
+    }
 
-			$this->_getRTData('boxoffice', $rt);
-			$this->_getRTData('theaters', $rt);
-			$this->_getRTData('opening', $rt);
-			$this->_getRTData('upcoming', $rt);
-			$this->_getRTData('dvd', $rt);
+    private function _updateFromTmdb($movies, $client, $src, $type)
+    {
+        if (count($movies) > 0) {
+            foreach ($movies as $bo) {
+                $bo->setAPI($client);
+                $detail = $bo->loadDetails();
+                if ($detail !== true) {
+                    $this->pdo->log->doEcho($this->pdo->log->header("Unable to load details for release " . $bo->getID() . ". $detail" . PHP_EOL));
+                }
+                $this->updateInsUpcoming('tmdb', $type, $bo);
+                sleep(1);
+            }
+            $this->pdo->log->doEcho($this->pdo->log->header("$src update complete. Added " . count($movies) . "." . PHP_EOL));
+        } else {
+            $this->pdo->log->doEcho($this->pdo->log->header("$src releases empty." . PHP_EOL));
+        }
+    }
 
-			if ($this->echooutput) {
-				$this->pdo->log->doEcho($this->pdo->log->header("Updated successfully."));
-			}
+    /**
+     * Update upcoming movies.
+     */
+    public function updateUpcoming()
+    {
+        if ($this->echooutput) {
+            $this->pdo->log->doEcho($this->pdo->log->header('Updating movie schedule using TMDB.'));
+        }
 
-		} else if ($this->echooutput) {
-			$this->pdo->log->doEcho($this->pdo->log->header("Error retrieving your RottenTomato API Key. Exiting..." . PHP_EOL));
-		}
-	}
+        $client = new TmdbAPI(Settings::value('APIs..tmdbkey'));
 
-	/**
-	 * @param string $operation
-	 * @param \nzedb\RottenTomato $rt
-	 */
-	protected function _getRTData($operation = '', $rt)
-	{
-		$count = 0;
-		$check = false;
+        if ($client instanceof TmdbAPI) {
 
-		do {
-			$count++;
+            $boxoffice = [];
+            $upcoming = [];
+            for ($i = 1; $i <= 2; $i++) {
+                $b = $client->nowPlayingMovies($i);
+                $u = $client->upcomingMovies($i);
 
-			switch ($operation) {
-				case 'boxoffice':
-					$data = $rt->getBoxOffice();
-					$update = Movie::SRC_BOXOFFICE;
-					break;
-				case 'theaters':
-					$data = $rt->getInTheaters();
-					$update = Movie::SRC_INTHEATRE;
-					break;
-				case 'opening':
-					$data = $rt->getOpening();
-					$update = Movie::SRC_OPENING;
-					break;
-				case 'upcoming':
-					$data = $rt->getUpcoming();
-					$update = Movie::SRC_UPCOMING;
-					break;
-				case 'dvd':
-					$data = $rt->getDVDReleases();
-					$update = Movie::SRC_DVD;
-					break;
-				default:
-					$data = false;
-					$update = 0;
-			}
+                $boxoffice = array_merge($boxoffice, $b);
+                $upcoming = array_merge($upcoming, $u);
 
-			if ($data !== false && $data !== '') {
-				$test = @json_decode($data);
-				if (isset($test)) {
-					$count = 2;
-					$check = true;
-				}
-			}
+                sleep(1);
+            }
+            $this->pdo->queryExec('TRUNCATE TABLE upcoming_releases');
 
-		} while ($count < 2);
+            $this->_updateFromTmdb($boxoffice, $client, 'boxoffice', MOVIE::SRC_INTHEATRE);
+            $this->_updateFromTmdb($upcoming, $client, 'upcoming', MOVIE::SRC_UPCOMING);
 
-		if ($check === true) {
+            if ($this->echooutput) {
+                $this->pdo->log->doEcho($this->pdo->log->header("Updated successfully."));
+            }
 
-			$success = $this->updateInsUpcoming('rottentomato', $update, $data);
-
-			if ($this->echooutput) {
-				if ($success !== false) {
-					$this->pdo->log->doEcho($this->pdo->log->header(sprintf("Added/updated movies to the %s list.", $operation)));
-				} else {
-					$this->pdo->log->doEcho($this->pdo->log->primary(sprintf("No new updates for %s list.", $operation)));
-				}
-			}
-
-		} else {
-			exit(PHP_EOL . $this->pdo->log->error("Unable to fetch from Rotten Tomatoes, verify your API Key." . PHP_EOL));
-		}
-	}
+        } else if ($this->echooutput) {
+            $this->pdo->log->doEcho($this->pdo->log->header("Error retrieving your TMDB API Key. Exiting..." . PHP_EOL));
+        }
+    }
 
 	/**
 	 * Update upcoming table.
