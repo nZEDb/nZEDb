@@ -123,8 +123,10 @@ class Games
 		}
 		$this->catWhere = 'AND categories_id = ' . Category::PC_GAMES;
 		//$this->cleangames = (Settings::value('..lookupgames') == 2) ? 'AND isrenamed = 1' : '';
-		$this->config = new Config($this->publicKey);
-		$this->giantbomb = new Client($this->config);
+		if($this->publicKey !== '') {
+			$this->config = new Config($this->publicKey);
+			$this->giantbomb = new Client($this->config);
+		}
 	}
 
 	/**
@@ -551,71 +553,74 @@ class Games
 			}
 		}
 
-		if ($steamGameID === false || $this->_gameResults === false) {
-			$bestMatch = false;
-			$this->_classUsed = 'GiantBomb';
-			$result = $this->giantbomb->search($gameInfo['title'], 'Game');
+		if($this->publicKey !== '') {
+			if ($steamGameID === false || $this->_gameResults === false) {
+				$bestMatch = false;
+				$this->_classUsed = 'GiantBomb';
+				$result = $this->giantbomb->search($gameInfo['title'], 'Game');
 
-			if (!is_object($result)) {
-				foreach ($result as $res) {
-					similar_text(strtolower($gameInfo['title']), strtolower($res->name), $percent1);
-					similar_text(strtolower($gameInfo['title']), strtolower($res->aliases), $percent2);
-					if ($percent1 >= self::GAME_MATCH_PERCENTAGE || $percent2 >= self::GAME_MATCH_PERCENTAGE ) {
-						$bestMatch = $res->id;
-					}
-				}
-
-				if ($bestMatch !== false) {
-					$this->_gameResults = $this->giantbomb->findOne('Game', '3030-' . $bestMatch);
-
-					if (!empty($this->_gameResults->image['medium_url'])) {
-						$game['coverurl'] = (string)$this->_gameResults->image['medium_url'];
-					}
-
-					if (!empty($this->_gameResults->image['screen_url'])) {
-						$game['backdropurl'] = (string)$this->_gameResults->image['screen_url'];
-					}
-
-					$game['title'] = (string)$this->_gameResults->get('name');
-					$game['asin'] = $this->_gameResults->get('id');
-					if (!empty($this->_gameResults->get('site_detail_url'))) {
-						$game['url'] = (string)$this->_gameResults->get('site_detail_url');
-					} else {
-						$game['url'] = '';
-					}
-
-					if ($this->_gameResults->get('publishers') !== '') {
-						$game['publisher'] = (string)$this->_gameResults->publishers[0]['name'];
-					} else {
-						$game['publisher'] = 'Unknown';
-					}
-
-
-					if (!empty($this->_gameResults->original_game_rating[0]['name'])) {
-						$game['esrb'] = (string)$this->_gameResults->original_game_rating[0]['name'];
-					} else {
-						$game['esrb'] = 'Not Rated';
-					}
-
-					if ($this->_gameResults->original_release_date !== '') {
-						$dateReleased = $this->_gameResults->original_release_date;
-						$date = \DateTime::createFromFormat('Y-m-d H:i:s', $dateReleased);
-						if ($date instanceof \DateTime) {
-							$game['releasedate'] = (string)$date->format('Y-m-d');
+				if (!is_object($result)) {
+					foreach ($result as $res) {
+						similar_text(strtolower($gameInfo['title']), strtolower($res->name), $percent1);
+						similar_text(strtolower($gameInfo['title']), strtolower($res->aliases), $percent2);
+						if ($percent1 >= self::GAME_MATCH_PERCENTAGE || $percent2 >= self::GAME_MATCH_PERCENTAGE) {
+							$bestMatch = $res->id;
 						}
 					}
 
-					if ($this->_gameResults->deck !== '') {
-						$game['review'] = (string)$this->_gameResults->deck;
+					if ($bestMatch !== false) {
+						$this->_gameResults = $this->giantbomb->findOne('Game', '3030-' . $bestMatch);
+
+						if (!empty($this->_gameResults->image['medium_url'])) {
+							$game['coverurl'] = (string)$this->_gameResults->image['medium_url'];
+						}
+
+						if (!empty($this->_gameResults->image['screen_url'])) {
+							$game['backdropurl'] = (string)$this->_gameResults->image['screen_url'];
+						}
+
+						$game['title'] = (string)$this->_gameResults->get('name');
+						$game['asin'] = $this->_gameResults->get('id');
+						if (!empty($this->_gameResults->get('site_detail_url'))) {
+							$game['url'] = (string)$this->_gameResults->get('site_detail_url');
+						} else {
+							$game['url'] = '';
+						}
+
+						if ($this->_gameResults->get('publishers') !== '') {
+							$game['publisher'] = (string)$this->_gameResults->publishers[0]['name'];
+						} else {
+							$game['publisher'] = 'Unknown';
+						}
+
+
+						if (!empty($this->_gameResults->original_game_rating[0]['name'])) {
+							$game['esrb'] = (string)$this->_gameResults->original_game_rating[0]['name'];
+						} else {
+							$game['esrb'] = 'Not Rated';
+						}
+
+						if ($this->_gameResults->original_release_date !== '') {
+							$dateReleased = $this->_gameResults->original_release_date;
+							$date = \DateTime::createFromFormat('Y-m-d H:i:s', $dateReleased);
+							if ($date instanceof \DateTime) {
+								$game['releasedate'] = (string)$date->format('Y-m-d');
+							}
+						}
+
+						if ($this->_gameResults->deck !== '') {
+							$game['review'] = (string)$this->_gameResults->deck;
+						}
+					} else {
+						ColorCLI::doEcho(ColorCLI::notice('GiantBomb returned no valid results'));
+
+						return false;
 					}
 				} else {
-					ColorCLI::doEcho(ColorCLI::notice('GiantBomb returned no valid results'));
+					ColorCLI::doEcho(ColorCLI::notice('GiantBomb found no valid results'));
 
 					return false;
 				}
-			} else {
-				ColorCLI::doEcho(ColorCLI::notice('GiantBomb found no valid results'));
-				return false;
 			}
 		}
 
