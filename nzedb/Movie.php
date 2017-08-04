@@ -838,7 +838,7 @@ class Movie
 	/**
 	 * Fetch info for IMDB id from TMDB.
 	 *
-	 * @param string     $imdbId
+	 * @param string $imdbId
 	 * @param boolean $text
 	 *
 	 * @return array|boolean
