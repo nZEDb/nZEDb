@@ -643,6 +643,7 @@ class TmuxRun extends Tmux
 
 	protected function _runMainFull(&$runVar)
 	{
+		//TODO check the user_threaded exists and give notices if it doesn't
 		$log = $this->writelog($runVar['panes']['zero'][2]);
 		shell_exec("tmux respawn-pane -t{$runVar['constants']['tmux_session']}:0.2 ' \
 				{$runVar['paths']['misc']}update/nix/screen/sequential/user_threaded.sh true $log; date +\"{$this->_dateFormat}\"' 2>&1 1> /dev/null"
