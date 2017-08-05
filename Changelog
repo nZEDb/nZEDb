@@ -13,6 +13,10 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Bring in Darius' new TMDb library code. Switching to use php-tmdb/api library from github.
 	Fix: Check that '*filestoformreleases' index exists before checking its value for new group
 		creation.
+2017-08-03 DariusIII
+	Fix: Check for existing apikey before sending request to GiantBomb
+2017-08-03 niel
+	Fix: Replace spaces with tab, causing steam_app last_update setting to fail on insertion.
 2017-07-30 niel
 	Chg: Move location for predb-progress.txt to the standard configuration directory.
 2017-07-27 DariusIII
