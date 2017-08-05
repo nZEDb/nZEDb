@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "15897acce72f1cfa809874a3491798c8",
+    "content-hash": "1e614a341d371956290ea341d2d7c55a",
     "packages": [
         {
             "name": "b3rs3rk/steamfront",
@@ -108,16 +108,16 @@
         },
         {
             "name": "bower-asset/autosize-3.0.x",
-            "version": "3.0.20",
+            "version": "3.0.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jackmoore/autosize.git",
-                "reference": "6c198a8e95c576dd9d5b8b9a1f996963ae1ea15c"
+                "reference": "5284a460d160bd11fda219941b20eb2a82155294"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jackmoore/autosize/zipball/6c198a8e95c576dd9d5b8b9a1f996963ae1ea15c",
-                "reference": "6c198a8e95c576dd9d5b8b9a1f996963ae1ea15c",
+                "url": "https://api.github.com/repos/jackmoore/autosize/zipball/5284a460d160bd11fda219941b20eb2a82155294",
+                "reference": "5284a460d160bd11fda219941b20eb2a82155294",
                 "shasum": ""
             },
             "type": "bower-asset-library",
@@ -1009,16 +1009,16 @@
         },
         {
             "name": "bower-asset/tinymce-builded",
-            "version": "4.6.1",
+            "version": "4.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/artursmirnov/tinymce_builded.git",
-                "reference": "211541d2d30b53b93eb798dc2c3f2873fd072d1c"
+                "reference": "a0f9d08d87eef41f80986025d6200b72cd072359"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/artursmirnov/tinymce_builded/zipball/211541d2d30b53b93eb798dc2c3f2873fd072d1c",
-                "reference": "211541d2d30b53b93eb798dc2c3f2873fd072d1c",
+                "url": "https://api.github.com/repos/artursmirnov/tinymce_builded/zipball/a0f9d08d87eef41f80986025d6200b72cd072359",
+                "reference": "a0f9d08d87eef41f80986025d6200b72cd072359",
                 "shasum": ""
             },
             "type": "bower-asset-library",
@@ -1154,12 +1154,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dborsatto/php-giantbomb.git",
-                "reference": "e95553774caf9b6dace6d044710c7e03dee3af43"
+                "reference": "909b2b75200270daf62b1cd3dab91ffdca49ab23"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dborsatto/php-giantbomb/zipball/e95553774caf9b6dace6d044710c7e03dee3af43",
-                "reference": "e95553774caf9b6dace6d044710c7e03dee3af43",
+                "url": "https://api.github.com/repos/dborsatto/php-giantbomb/zipball/909b2b75200270daf62b1cd3dab91ffdca49ab23",
+                "reference": "909b2b75200270daf62b1cd3dab91ffdca49ab23",
                 "shasum": ""
             },
             "require": {
@@ -1188,20 +1188,20 @@
                 }
             ],
             "description": "A PHP library that acts as a wrapper for the GiantBomb API.",
-            "time": "2017-05-18 16:20:43"
+            "time": "2017-05-29 12:05:57"
         },
         {
             "name": "doctrine/cache",
-            "version": "v1.6.1",
+            "version": "v1.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/cache.git",
-                "reference": "b6f544a20f4807e81f7044d31e679ccbb1866dc3"
+                "reference": "eb152c5100571c7a45470ff2a35095ab3f3b900b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/cache/zipball/b6f544a20f4807e81f7044d31e679ccbb1866dc3",
-                "reference": "b6f544a20f4807e81f7044d31e679ccbb1866dc3",
+                "url": "https://api.github.com/repos/doctrine/cache/zipball/eb152c5100571c7a45470ff2a35095ab3f3b900b",
+                "reference": "eb152c5100571c7a45470ff2a35095ab3f3b900b",
                 "shasum": ""
             },
             "require": {
@@ -1258,7 +1258,7 @@
                 "cache",
                 "caching"
             ],
-            "time": "2016-10-29T11:16:17+00:00"
+            "time": "2017-07-22T12:49:21+00:00"
         },
         {
             "name": "fxp/composer-asset-plugin",
@@ -1366,16 +1366,16 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "6.2.3",
+            "version": "6.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "8d6c6cc55186db87b7dc5009827429ba4e9dc006"
+                "reference": "f4db5a78a5ea468d4831de7f0bf9d9415e348699"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/8d6c6cc55186db87b7dc5009827429ba4e9dc006",
-                "reference": "8d6c6cc55186db87b7dc5009827429ba4e9dc006",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/f4db5a78a5ea468d4831de7f0bf9d9415e348699",
+                "reference": "f4db5a78a5ea468d4831de7f0bf9d9415e348699",
                 "shasum": ""
             },
             "require": {
@@ -1385,8 +1385,11 @@
             },
             "require-dev": {
                 "ext-curl": "*",
-                "phpunit/phpunit": "^4.0",
+                "phpunit/phpunit": "^4.0 || ^5.0",
                 "psr/log": "^1.0"
+            },
+            "suggest": {
+                "psr/log": "Required for using the Log middleware"
             },
             "type": "library",
             "extra": {
@@ -1424,7 +1427,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2017-02-28T22:50:30+00:00"
+            "time": "2017-06-22T18:50:49+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -1612,6 +1615,84 @@
             "time": "2016-05-04 01:31:56"
         },
         {
+            "name": "kevinrob/guzzle-cache-middleware",
+            "version": "v1.5.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Kevinrob/guzzle-cache-middleware.git",
+                "reference": "2893fff87ef9f7f2c669957f5e446beea48d7a1d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Kevinrob/guzzle-cache-middleware/zipball/2893fff87ef9f7f2c669957f5e446beea48d7a1d",
+                "reference": "2893fff87ef9f7f2c669957f5e446beea48d7a1d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "cache/array-adapter": "^0.4",
+                "doctrine/cache": "^1.0",
+                "guzzlehttp/guzzle": "^6.0",
+                "illuminate/cache": "^5.0",
+                "league/flysystem": "^1.0",
+                "phpunit/phpunit": "^4.0 || ^5.0",
+                "psr/cache": "^1.0"
+            },
+            "suggest": {
+                "doctrine/cache": "This library have a lot of ready-to-use cache storage (to be use with Kevinrob\\GuzzleCache\\Storage\\DoctrineCacheStorage)",
+                "guzzlehttp/guzzle": "For using this library. It was created for Guzzle6. (but you can use it with any PSR-7 HTTP Client)",
+                "laravel/framework": "To be use with Kevinrob\\GuzzleCache\\Storage\\LaravelCacheStorage",
+                "league/flysystem": "To be use with Kevinrob\\GuzzleCache\\Storage\\FlysystemStorage",
+                "psr/cache": "To be use with Kevinrob\\GuzzleCache\\Storage\\Psr6CacheStorage"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Kevinrob\\GuzzleCache\\": [
+                        "src/",
+                        "tests/"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kevin Robatel",
+                    "email": "kevinrob2@gmail.com",
+                    "homepage": "https://github.com/Kevinrob"
+                }
+            ],
+            "description": "A HTTP/1.1 Cache for Guzzle 6. It's a simple Middleware to be added in the HandlerStack. (RFC 7234)",
+            "homepage": "https://github.com/Kevinrob/guzzle-cache-middleware",
+            "keywords": [
+                "Etag",
+                "Flysystem",
+                "Guzzle",
+                "cache",
+                "cache-control",
+                "doctrine",
+                "expiration",
+                "guzzle6",
+                "handler",
+                "http",
+                "http 1.1",
+                "middleware",
+                "performance",
+                "php",
+                "promise",
+                "psr6",
+                "psr7",
+                "rfc7234",
+                "validation"
+            ],
+            "time": "2017-01-16T07:02:13+00:00"
+        },
+        {
             "name": "moinax/tvdb",
             "version": "v1.0.6",
             "source": {
@@ -1677,20 +1758,89 @@
             "time": "2016-10-30 19:06:19"
         },
         {
-            "name": "phpmailer/phpmailer",
-            "version": "v5.2.23",
+            "name": "php-tmdb/api",
+            "version": "v2.1.9",
             "source": {
                 "type": "git",
-                "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "7115df4a6f76281109ebe352900c42403b728bb4"
+                "url": "https://github.com/php-tmdb/api.git",
+                "reference": "1c2e87653f6df62ea9075b7118c2a80dcb355f66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/7115df4a6f76281109ebe352900c42403b728bb4",
-                "reference": "7115df4a6f76281109ebe352900c42403b728bb4",
+                "url": "https://api.github.com/repos/php-tmdb/api/zipball/1c2e87653f6df62ea9075b7118c2a80dcb355f66",
+                "reference": "1c2e87653f6df62ea9075b7118c2a80dcb355f66",
                 "shasum": ""
             },
             "require": {
+                "doctrine/cache": "^1.6",
+                "ext-curl": "*",
+                "guzzlehttp/guzzle": "~6.0",
+                "kevinrob/guzzle-cache-middleware": "^1.2",
+                "php": ">=5.6.0",
+                "psr/log": "~1.0",
+                "rtheunissen/guzzle-log-middleware": "^0.4.0",
+                "symfony/event-dispatcher": ">=2.4,<4",
+                "symfony/options-resolver": ">=2.6,<4"
+            },
+            "require-dev": {
+                "monolog/monolog": ">=1.11.0",
+                "phpunit/phpunit": ">=5.7,<6"
+            },
+            "suggest": {
+                "monolog/monolog": "Required if you want to make use of logging features."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Tmdb\\": "lib/Tmdb"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Roterman",
+                    "email": "michael@wtfz.net",
+                    "homepage": "http://wtfz.net"
+                }
+            ],
+            "description": "PHP wrapper for TMDB (TheMovieDatabase) API v3. Supports two types of approaches, one modelled with repositories, models and factories. And the other by simple array access to RAW data from The Movie Database.",
+            "homepage": "https://github.com/wtfzdotnet/php-tmdb-api",
+            "keywords": [
+                "api",
+                "movie",
+                "php",
+                "tmdb",
+                "tv",
+                "tv show",
+                "tvdb",
+                "wrapper"
+            ],
+            "time": "2017-06-02T03:27:09+00:00"
+        },
+        {
+            "name": "phpmailer/phpmailer",
+            "version": "v5.2.24",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPMailer/PHPMailer.git",
+                "reference": "22d04c6a58145a244696f3f254c1875aa653b26a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/22d04c6a58145a244696f3f254c1875aa653b26a",
+                "reference": "22d04c6a58145a244696f3f254c1875aa653b26a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ctype": "*",
                 "php": ">=5.0.0"
             },
             "require-dev": {
@@ -1750,7 +1900,7 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2017-03-15T19:32:56+00:00"
+            "time": "2017-07-26T21:00:20+00:00"
         },
         {
             "name": "psr/http-message",
@@ -1801,6 +1951,106 @@
                 "response"
             ],
             "time": "2016-08-06T14:39:51+00:00"
+        },
+        {
+            "name": "psr/log",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Log\\": "Psr/Log/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for logging libraries",
+            "homepage": "https://github.com/php-fig/log",
+            "keywords": [
+                "log",
+                "psr",
+                "psr-3"
+            ],
+            "time": "2016-10-10T12:19:37+00:00"
+        },
+        {
+            "name": "rtheunissen/guzzle-log-middleware",
+            "version": "v0.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rtheunissen/guzzle-log-middleware.git",
+                "reference": "7b6f2884b623091e58276500f38499f238d7d4e2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rtheunissen/guzzle-log-middleware/zipball/7b6f2884b623091e58276500f38499f238d7d4e2",
+                "reference": "7b6f2884b623091e58276500f38499f238d7d4e2",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "~6.0",
+                "php": ">=5.5",
+                "psr/log": "~1.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^0.9.4",
+                "phpunit/phpunit": "~4.6"
+            },
+            "suggest": {
+                "monolog/monolog": "Recommended PSR-3 logger"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Concat\\Http\\Middleware\\": "src/",
+                    "Concat\\Http\\Middleware\\Test\\": "tests/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rudi Theunissen",
+                    "email": "rudolf.theunissen@gmail.com"
+                }
+            ],
+            "description": "Guzzle middleware to log requests and responses",
+            "keywords": [
+                "Guzzle",
+                "http",
+                "log",
+                "middleware",
+                "psr7"
+            ],
+            "time": "2015-06-16T06:35:18+00:00"
         },
         {
             "name": "smarty/smarty",
@@ -1854,6 +2104,123 @@
                 "templating"
             ],
             "time": "2016-12-14T21:57:25+00:00"
+        },
+        {
+            "name": "symfony/event-dispatcher",
+            "version": "v3.3.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/event-dispatcher.git",
+                "reference": "67535f1e3fd662bdc68d7ba317c93eecd973617e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/67535f1e3fd662bdc68d7ba317c93eecd973617e",
+                "reference": "67535f1e3fd662bdc68d7ba317c93eecd973617e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9"
+            },
+            "conflict": {
+                "symfony/dependency-injection": "<3.3"
+            },
+            "require-dev": {
+                "psr/log": "~1.0",
+                "symfony/config": "~2.8|~3.0",
+                "symfony/dependency-injection": "~3.3",
+                "symfony/expression-language": "~2.8|~3.0",
+                "symfony/stopwatch": "~2.8|~3.0"
+            },
+            "suggest": {
+                "symfony/dependency-injection": "",
+                "symfony/http-kernel": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\EventDispatcher\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony EventDispatcher Component",
+            "homepage": "https://symfony.com",
+            "time": "2017-06-09T14:53:08+00:00"
+        },
+        {
+            "name": "symfony/options-resolver",
+            "version": "v3.3.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/options-resolver.git",
+                "reference": "ff48982d295bcac1fd861f934f041ebc73ae40f0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/ff48982d295bcac1fd861f934f041ebc73ae40f0",
+                "reference": "ff48982d295bcac1fd861f934f041ebc73ae40f0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\OptionsResolver\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony OptionsResolver Component",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "config",
+                "configuration",
+                "options"
+            ],
+            "time": "2017-04-12T14:14:56+00:00"
         },
         {
             "name": "unionofrad/lithium",
