@@ -91,4 +91,21 @@ class Page extends BasePage
 
 		parent::render();
 	}
+
+    private function outputMaintenanceMessage() {
+        readfile(MAINTENANCE_MODE_HTML_PATH);
+        exit();
+    }
+
+    public function maintenanceCheck($outputMessage = true) {
+        if (MAINTENANCE_MODE_ENABLED &&
+            !in_array($_SERVER['REMOTE_ADDR'], MAINTENANCE_MODE_IP_EXCEPTIONS) &&
+            file_exists(MAINTENANCE_MODE_HTML_PATH)) {
+            if ($outputMessage) {
+                $this->outputMaintenanceMessage();
+            }
+            return true;
+        }
+        return false;
+    }
 }

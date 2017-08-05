@@ -7,6 +7,10 @@ use nzedb\db\DB;
 use nzedb\utility\Misc;
 use nzedb\utility\Text;
 
+if ($page->maintenanceCheck(false)) {
+    Misc::showApiError(503);
+}
+
 // API functions.
 $function = 's';
 if (isset($_GET['t'])) {
