@@ -9,7 +9,7 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
-2017-08-07 niel
+2017-08-05 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.4
 
 
