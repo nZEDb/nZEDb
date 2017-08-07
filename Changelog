@@ -15,7 +15,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2017-08-04 niel
 	Chg: Bring in Darius' new TMDb library code. Switching to use php-tmdb/api library from github.
-	Fix: Remove auto sorting from composer.json as it list bower-assets/* before the package which
+	Fix: Remove auto sorting from composer.json as it lists bower-assets/* before the package which
 		handles them.
 2017-08-03 DariusIII
 	Fix: Check for existing apikey before sending request to GiantBomb.

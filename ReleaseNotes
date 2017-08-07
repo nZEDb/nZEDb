@@ -7,6 +7,7 @@ ChangeLog file which list *when* changes are made to the dev branches.
 	deprecated. We will be removing support for it before the end of the year, probably within 2-3
 	months, so update as soon as you can.
 Added:
+	* New TMDb library code. Switching to use php-tmdb/api library from github.
 
 Changed:
 	* Updated steamfront version.
