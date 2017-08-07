@@ -5,6 +5,9 @@ use app\models\Settings;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
 use nzedb\processing\tv\TraktTv;
+use Tmdb\ApiToken;
+use Tmdb\Client as TmdbClient;
+use Tmdb\Exception\TmdbApiException;
 
 /**
  * Class Movie
@@ -53,39 +56,39 @@ class Movie
 	protected $debugging;
 
 	/**
-	 * @var bool
+	 * @var boolean
 	 */
 	protected $debug;
 
 	/**
 	 * Use search engines to find IMDB id's.
-	 * @var bool
+	 * @var boolean
 	 */
 	protected $searchEngines;
 
 	/**
 	 * How many times have we hit google this session.
-	 * @var int
+	 * @var integer
 	 */
 	protected $googleLimit = 0;
 
 	/**
 	 * If we are temp banned from google, set time we were banned here, try again after 10 minutes.
-	 * @var int
+	 * @var integer
 	 */
 	protected $googleBan = 0;
 
 	/**
 	 * How many times have we hit bing this session.
 	 *
-	 * @var int
+	 * @var integer
 	 */
 	protected $bingLimit = 0;
 
 	/**
 	 * How many times have we hit yahoo this session.
 	 *
-	 * @var int
+	 * @var integer
 	 */
 	protected $yahooLimit = 0;
 
@@ -100,9 +103,14 @@ class Movie
 	protected $releaseImage;
 
 	/**
-	 * @var \TMDb
+	 * @var TmdbClient
 	 */
-	protected $tmdb;
+	protected $tmdbClient;
+
+	/**
+	 * @var ApiToken
+	 */
+	protected $tmdbToken;
 
 	/**
 	 * Language to fetch from IMDB.
@@ -111,22 +119,22 @@ class Movie
 	protected $imdbLanguage;
 
 	/**
-	 * @var array|bool|string
+	 * @var array|boolean|string
 	 */
 	public $fanartapikey;
 
 	/**
-	 * @var bool
+	 * @var boolean
 	 */
 	public $imdburl;
 
 	/**
-	 * @var array|bool|int|string
+	 * @var array|boolean|integer|string
 	 */
 	public $movieqty;
 
 	/**
-	 * @var bool
+	 * @var boolean
 	 */
 	public $echooutput;
 
@@ -142,6 +150,8 @@ class Movie
 
 	/**
 	 * @param array $options Class instances / Echo to CLI.
+	 *
+	 * @throws \Exception
 	 */
 	public function __construct(array $options = [])
 	{
@@ -157,11 +167,16 @@ class Movie
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
+		$this->tmdbToken = new ApiToken(Settings::value('APIs..tmdbkey'));
+		$this->tmdbClient = new TmdbClient($this->tmdbToken, [
+				'cache' => [
+					'path' => nZEDb_TMP
+				]
+			]
+		);
+
 		$result = Settings::value('indexer.categorise.imdblanguage');
 		$this->imdbLanguage = empty($result) ? (string)$result : 'en';
-
-		$this->tmdb = ($options['TMDb'] instanceof \TMDb ? $options['TMDb'] :
-			new \TMDb(Settings::value('APIs..tmdbkey'), $this->imdbLanguage));
 
 		$this->fanartapikey = Settings::value('APIs..fanarttvkey');
 		$this->imdburl = (Settings::value('indexer.categorise.imdburl') == 0 ? false : true);
@@ -190,9 +205,9 @@ class Movie
 	/**
 	 * Get info for a IMDB id.
 	 *
-	 * @param int $imdbId
+	 * @param integer $imdbId
 	 *
-	 * @return array|bool
+	 * @return array|boolean
 	 */
 	public function getMovieInfo($imdbId)
 	{
@@ -264,7 +279,7 @@ class Movie
 	/**
 	 * Get count of movies for movie-list admin page.
 	 *
-	 * @return int
+	 * @return integer
 	 */
 	public function getCount()
 	{
@@ -282,7 +297,7 @@ class Movie
 	 * @param       $maxAge
 	 * @param array $excludedCats
 	 *
-	 * @return bool|\PDOStatement
+	 * @return boolean|\PDOStatement
 	 */
 	public function getMovieRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = [])
 	{
@@ -440,9 +455,9 @@ class Movie
 	/**
 	 * Get trailer using IMDB Id.
 	 *
-	 * @param int $imdbID
+	 * @param integer $imdbID
 	 *
-	 * @return bool|string
+	 * @return boolean|string
 	 */
 	public function getTrailer($imdbID)
 	{
@@ -585,7 +600,7 @@ class Movie
 	 * Update movie on movie-edit page.
 	 *
 	 * @param array $values Array of keys/values to update. See $validKeys
-	 * @return int|bool
+	 * @return integer|boolean
 	 */
 	public function update(array $values)
 	{
@@ -664,7 +679,7 @@ class Movie
 	 *
 	 * @param string $imdbId
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function updateMovieInfo($imdbId)
 	{
@@ -782,7 +797,7 @@ class Movie
 	 *
 	 * @param string $imdbId
 	 *
-	 * @return bool|array
+	 * @return boolean|array
 	 */
 	protected function fetchFanartTVProperties($imdbId)
 	{
@@ -823,27 +838,28 @@ class Movie
 	/**
 	 * Fetch info for IMDB id from TMDB.
 	 *
-	 * @param string  $imdbId
+	 * @param string $imdbId
 	 * @param boolean $text
 	 *
-	 * @return array|bool
+	 * @return array|boolean
 	 */
 	public function fetchTMDBProperties($imdbId, $text = false)
 	{
 		$lookupId = ($text === false ? 'tt' . $imdbId : $imdbId);
 
 		try {
-			$tmdbLookup = $this->tmdb->getMovie($lookupId);
-		} catch (\Exception $e) {
+			$result = $this->tmdbClient->getMoviesApi()->getMovie($lookupId);
+		} catch (TmdbApiException $e) {
 			return false;
 		}
 
-		if (!$tmdbLookup || (isset($tmdbLookup['status_code']) && $tmdbLookup['status_code'] !== 1)) {
+		/*$status = $result['status_code'];
+		if (!$status || (isset($status) && $status !== 1)) {
 			return false;
-		}
+		}*/
 
 		$ret = [];
-		$ret['title'] = $tmdbLookup['title'];
+		$ret['title'] = $result['original_title'];
 
 		if ($this->currentTitle !== '') {
 			// Check the similarity.
@@ -851,7 +867,7 @@ class Movie
 			if ($percent < 40) {
 				if ($this->debug) {
 					$this->debugging->log(
-						get_class(),
+						__CLASS__,
 						__FUNCTION__,
 						'Found (' .
 						$ret['title'] .
@@ -866,36 +882,42 @@ class Movie
 			}
 		}
 
-		$ret['tmdb_id'] = $tmdbLookup['id'];
-		$ImdbID = str_replace('tt', '', $tmdbLookup['imdb_id']);
+		$ret['tmdb_id'] = $result['id'];
+		$ImdbID = str_replace('tt', '', $result['imdb_id']);
 		$ret['imdb_id'] = $ImdbID;
-		if (isset($tmdbLookup['vote_average'])) {
-			$ret['rating'] = ($tmdbLookup['vote_average'] == 0) ? '' : $tmdbLookup['vote_average'];
+		if (isset($result['vote_average'])) {
+			$ret['rating'] = ($result['vote_average'] === 0) ? '' : $result['vote_average'];
 		}
-		if (isset($tmdbLookup['overview'])) {
-			$ret['plot'] = $tmdbLookup['overview'];
+
+		if (!empty($result['overview'])) {
+			$ret['plot'] = $result['overview'];
 		}
-		if (isset($tmdbLookup['tagline'])) {
-			$ret['tagline'] = $tmdbLookup['tagline'];
+
+		if (!empty($result['tagline'])) {
+			$ret['tagline'] = $result['tagline'];
 		}
-		if (isset($tmdbLookup['release_date'])) {
-			$ret['year'] = date("Y", strtotime($tmdbLookup['release_date']));
+
+		if (!empty($result['release_date'])) {
+			$ret['year'] = date('Y', strtotime($result['release_date']));
 		}
-		if (isset($tmdbLookup['genres']) && sizeof($tmdbLookup['genres']) > 0) {
+
+		if (!empty($result['genres']) && count($result['genres']) > 0) {
 			$genres = [];
-			foreach ($tmdbLookup['genres'] as $genre) {
+			foreach ($result['genres'] as $genre) {
 				$genres[] = $genre['name'];
 			}
 			$ret['genre'] = $genres;
 		}
-		if (isset($tmdbLookup['poster_path']) && sizeof($tmdbLookup['poster_path']) > 0) {
-			$ret['cover'] = "http://image.tmdb.org/t/p/w185" . $tmdbLookup['poster_path'];
+
+		if (!empty($result['poster_path'])) {
+			$ret['cover'] = 'http://image.tmdb.org/t/p/w185' . $result['poster_path'];
 		}
-		if (isset($tmdbLookup['backdrop_path']) && sizeof($tmdbLookup['backdrop_path']) > 0) {
-			$ret['backdrop'] = "http://image.tmdb.org/t/p/original" . $tmdbLookup['backdrop_path'];
+
+		if (!empty($result['backdrop_path'])) {
+			$ret['backdrop'] = 'http://image.tmdb.org/t/p/original' . $result['backdrop_path'];
 		}
 		if ($this->echooutput) {
-			$this->pdo->log->doEcho($this->pdo->log->primaryOver("TMDb Found ") . $this->pdo->log->headerOver($ret['title']), true);
+			ColorCLI::doEcho(ColorCLI::primaryOver('TMDb Found ') . ColorCLI::headerOver($ret['title']), true);
 		}
 		return $ret;
 	}
@@ -903,7 +925,7 @@ class Movie
 	/**
 	 * @param string $imdbId
 	 *
-	 * @return array|bool
+	 * @return array|boolean
 	 */
 	protected function fetchIMDBProperties($imdbId)
 	{
@@ -1005,7 +1027,7 @@ class Movie
 	 *
 	 * @param string $imdbId
 	 *
-	 * @return bool|array
+	 * @return boolean|array
 	 */
 	protected function fetchTraktTVProperties($imdbId)
 	{
@@ -1033,8 +1055,8 @@ class Movie
 	 *
 	 * @param string $buffer       Data to parse a IMDB id from.
 	 * @param string $service      Method that called this method.
-	 * @param int    $id           ID of the release.
-	 * @param int    $processImdb  To get IMDB info on this IMDB id or not.
+	 * @param integer    $id           ID of the release.
+	 * @param integer    $processImdb  To get IMDB info on this IMDB id or not.
 	 *
 	 * @return string
 	 */
@@ -1071,7 +1093,7 @@ class Movie
 	 *
 	 * @param string $groupID    (Optional) ID of a group to work on.
 	 * @param string $guidChar   (Optional) First letter of a release GUID to use to get work.
-	 * @param int    $lookupIMDB (Optional) 0 Don't lookup IMDB, 1 lookup IMDB, 2 lookup IMDB on releases that were renamed.
+	 * @param integer    $lookupIMDB (Optional) 0 Don't lookup IMDB, 1 lookup IMDB, 2 lookup IMDB on releases that were renamed.
 	 */
 	public function processMovieReleases($groupID = '', $guidChar = '', $lookupIMDB = 1)
 	{
@@ -1185,7 +1207,7 @@ class Movie
 	/**
 	 * Try to fetch an IMDB id locally.
 	 *
-	 * @return int|bool   Int, the imdbid when true, Bool when false.
+	 * @return integer|boolean   Int, the imdbid when true, Bool when false.
 	 */
 	protected function localIMDBsearch()
 	{
@@ -1260,7 +1282,7 @@ class Movie
 	/**
 	 * Try to get an IMDB id from search engines.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	protected function imdbIDFromEngines()
 	{
@@ -1289,7 +1311,7 @@ class Movie
 	/**
 	 * Try to find a IMDB id on google.com
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	protected function googleSearch()
 	{
@@ -1325,7 +1347,7 @@ class Movie
 	/**
 	 * Try to find a IMDB id on bing.com
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	protected function bingSearch()
 	{
@@ -1357,7 +1379,7 @@ class Movie
 	/**
 	 * Try to find a IMDB id on yahoo.com
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	protected function yahooSearch()
 	{
@@ -1404,7 +1426,7 @@ class Movie
 	 *
 	 * @param string $releaseName
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	protected function parseMovieSearchName($releaseName)
 	{
@@ -1455,7 +1477,7 @@ class Movie
 	 * @param        $type
 	 * @param string $source
 	 *
-	 * @return array|bool
+	 * @return array|boolean
 	 */
 	public function getUpcoming($type, $source = 'rottentomato')
 	{
@@ -1571,7 +1593,7 @@ class Movie
 	 * @param $type
 	 * @param string|false $info
 	 *
-	 * @return boolean|int
+	 * @return boolean|integer
 	 */
 	protected function updateInsUpcoming($source, $type, $info)
 	{
