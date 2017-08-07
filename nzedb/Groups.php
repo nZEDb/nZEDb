@@ -336,18 +336,14 @@ class Groups
 	public function add($group)
 	{
 		$minFileString =
-			(
-			$group["minfilestoformrelease"] == ''
+			(empty($group["minfilestoformrelease"]) || $group["minfilestoformrelease"] == '')
 				? "NULL"
-				: sprintf("%d", $this->formatNumberString($group["minfilestoformrelease"], false))
-			);
+				: sprintf("%d", $this->formatNumberString($group["minfilestoformrelease"], false));
 
 		$minSizeString =
-			(
-			$group["minsizetoformrelease"] == ''
+			(empty($group["minsizetoformrelease"]) || $group["minsizetoformrelease"] == '')
 				? "NULL"
-				: sprintf("%d", $this->formatNumberString($group["minsizetoformrelease"], false))
-			);
+				: sprintf("%d", $this->formatNumberString($group["minsizetoformrelease"], false));
 
 		return $this->pdo->queryInsert(
 			sprintf("

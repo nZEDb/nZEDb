@@ -141,7 +141,7 @@ foreach ($data as $dir => $files) {
 					continue;
 				} else {
 					if (nZEDb_DEBUG) {
-						echo "Dump {$match[2]} downloaded\n";
+						echo sprintf("Dump %s downloaded\n", date('Y-m-d', $match[2]));
 					}
 				}
 
