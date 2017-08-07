@@ -9,6 +9,31 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-08-05 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.4
+
+
+2017-08-04 niel
+	Chg: Bring in Darius' new TMDb library code. Switching to use php-tmdb/api library from github.
+	Fix: Remove auto sorting from composer.json as it lists bower-assets/* before the package which
+		handles them.
+2017-08-03 DariusIII
+	Fix: Check for existing apikey before sending request to GiantBomb.
+2017-08-03 niel
+	Fix: Replace spaces with tab, causing steam_app last_update setting to fail on insertion.
+2017-07-30 niel
+	Chg: Move location for predb-progress.txt to the standard configuration directory.
+2017-07-27 DariusIII
+	Chg: Add auto sorting and autoloader optimization to composer.json
+2017-07-19 niel
+	Chg: Set 'updated' date to zero value when inserting new IRCScraper entries. Should prevent
+		certain errors cause by bad SQL modes.
+2017-07-14 niel
+	Chg: Make version checks in .../nzedb/NZB.php and .../nzedb/Tmux.php use the XML file instead
+		of the repository.
+	Chg: Update composer.lock file for updated steamfront version.
+2017-06-26 niel
+	Fix: Removed check for tpg in collection_regexes-test.php's template.
 2017-06-21 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.3
 
@@ -2457,7 +2482,7 @@ stable code:
 	Add: Add Game/XXX Info to nzb details: First Stage.
 	Add: Hot Movies Icon and Fix layout
 2014-07-26 bart39
-	Fix: Remove 'See full summary »' from the end of imdb movie plot #1420
+	Fix: Remove 'See full summary ?' from the end of imdb movie plot #1420
 2014-07-26 kevin
 	Fix: #1421
 	Add: Settings to settings.php for temporarily blocking site access to those sending too many requests.

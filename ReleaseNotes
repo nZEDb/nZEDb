@@ -2,15 +2,44 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
+0.7.4.0 2017-08-07
+***NOTE*** As the latest version of Debian (Debian 9) now supports PHP 7.0, PHP 5.6 Is now
+	deprecated. We will be removing support for it before the end of the year, probably within 2-3
+	months, so update as soon as you can.
+Added:
+	* New TMDb library code. Switching to use php-tmdb/api library from github.
+
+Changed:
+	* Updated steamfront version.
+	* Set 'updated' date to zero value when inserting new IRCScraper entries. Should help prevent
+      certain errors cause by bad SQL modes. ***NOTE*** Make sure your SQL_MODE does not include
+      NO_NON_ZERO DATES or similar options.
+    * Move location for predb-progress.txt to the standard configuration directory. If you use the
+     'progress' setting for importing predb files, you will have to move this manually.
+
+Fixed:
+	* Removed check for tpg in collection_regexes-test.php's template, which caused problems with
+	 displaying.
+	* Version checks in .../nzedb/NZB.php and .../nzedb/Tmux.php use the XML file instead of the
+	 repository, so that non-dev installs work without the repository.
+	* Replace spaces with tab, causing steam_app last_update setting to fail on insertion.
+	* Check for existing apikey before sending request to GiantBomb. Prevent authentication errors
+	 showing up in PPA.
+	* Check that '*filestoformreleases' index exists before checking its value for new group
+      creation. This was preventing nzb importing from handling new groups.
+
+
 0.7.3.3 2017-06-21
 Fixed:
 	* SQL patch 0482 to update release_renaming_regexes entries.
+
 
 0.7.3.2 2017-06-20
 Fixed:
 	* Predb entries not being updated because of error in method signature. This prevented
 	 IRCScraper from working correctly.
 	* Replace overlooked occurences of 'predate' with 'created' in queries. Closes Issue 2474.
+
 
 0.7.3.1 2017-06-09
 Fixed:

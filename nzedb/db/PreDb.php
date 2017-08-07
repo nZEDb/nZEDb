@@ -180,7 +180,7 @@ SQL_EXPORT;
 	public function progress($settings = null, array $options = [])
 	{
 		$defaults = [
-			'path'	=> nZEDb_ROOT . 'cli' . DS . 'data' . DS . 'predb_progress.txt',
+			'path'	=> nZEDb_CONFIGS . 'predb_progress.txt',
 			'read'	=> true,
 		];
 		$options += $defaults;
