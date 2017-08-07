@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "331aa05390e5087b59d5bbb2e743fabf",
+    "content-hash": "5993104fafe3a3fcf64dcacbfe3303ee",
     "packages": [
         {
             "name": "b3rs3rk/steamfront",
@@ -2316,7 +2316,6 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.6.9",
         "ext-ctype": "*",
         "ext-curl": "*",
         "ext-exif": "*",
@@ -2338,7 +2337,8 @@
         "ext-sockets": "*",
         "ext-spl": "*",
         "ext-xmlwriter": "*",
-        "ext-zlib": "*"
+        "ext-zlib": "*",
+        "php": ">=5.6.9"
     },
     "platform-dev": []
 }
