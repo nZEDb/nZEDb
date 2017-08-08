@@ -11,6 +11,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2017-08-08 niel
 	Chg: Update command now tries updating with composer even if the nZEDb code is unchanged.
+	Mrg: Darius' refactored-adult post-processing branch.
 2017-08-05 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.4
 
