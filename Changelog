@@ -9,12 +9,18 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-08-08 niel
+	Chg: Update command now tries updating with composer even if the nZEDb code is unchanged.
+2017-08-05 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.4
+
+
 2017-08-04 niel
 	Chg: Bring in Darius' new TMDb library code. Switching to use php-tmdb/api library from github.
-	Fix: Check that '*filestoformreleases' index exists before checking its value for new group
-		creation.
+	Fix: Remove auto sorting from composer.json as it lists bower-assets/* before the package which
+		handles them.
 2017-08-03 DariusIII
-	Fix: Check for existing apikey before sending request to GiantBomb
+	Fix: Check for existing apikey before sending request to GiantBomb.
 2017-08-03 niel
 	Fix: Replace spaces with tab, causing steam_app last_update setting to fail on insertion.
 2017-07-30 niel
