@@ -117,25 +117,19 @@ class Update extends \app\extensions\console\Command
 	public function nzedb()
 	{
 		try {
-			$output = $this->git();
-			if ($output === 'Already up-to-date.') {
-				$this->out($output, 'info');
-				$this->db();
+			$status = $this->composer();
+			if ($status) {
+				$this->out('Composer failed to update!!', 'error');
+
+				return false;
 			} else {
-				$status = $this->composer();
-				if ($status) {
-					$this->out('Composer failed to update!!', 'error');
+				$fail = $this->db();
+				if ($fail) {
+					$this->out('Db updating failed!!', 'error');
 
-					return false;
-				} else {
-					$fail = $this->db();
-					if ($fail) {
-						$this->out('Db updating failed!!', 'error');
-
-						return 1;
-					}
-				};
-			}
+					return 1;
+				}
+			};
 
 			$this->scripts();
 
@@ -252,6 +246,7 @@ class Update extends \app\extensions\console\Command
 	 */
 	protected function scripts()
 	{
+		// TODO make this do something useful ;-)
 		if (![$this->updates]) {
 			$this->updates = ['script' => '0000-00-00 00:00:00'];
 		}
