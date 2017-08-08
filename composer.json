@@ -10,7 +10,6 @@
     },
     "classmap": [
       "www/pages/",
-      "libs/pixelead0/Tmdb/",
       "libs/PEAR/Net_NNTP/NNTP/",
       "libs/"
     ]
