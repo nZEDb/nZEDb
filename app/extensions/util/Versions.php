@@ -296,7 +296,9 @@ class Versions extends \lithium\core\Object
 			libxml_use_internal_errors($temp);
 
 			if ($this->xml === false) {
-				$this->error("Your versions XML file ($this->_config['path']) is broken, try updating from git.");
+				$this->error(
+					"Your versions XML file ({$this->_config['path']}) is broken, try updating from git."
+				);
 				throw new \Exception("Failed to open versions XML file '{$this->_config['path']}'");
 			}
 

@@ -13,6 +13,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Update command now tries updating with composer even if the nZEDb code is unchanged.
 	Mrg: Darius' refactored-adult post-processing branch.
 	Chg: Removing pixelead0 library that we replaced with php-tmdb/api.
+	Fix: Put braces around array reference in error string to prevent converting from array to
+		string error.
 2017-08-05 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.4
 
