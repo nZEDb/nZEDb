@@ -901,6 +901,9 @@ class Misc
 				case 501:
 					$errorText = 'Download limit reached';
 					break;
+				case 503:
+					$errorText = 'Maintenance Mode';
+					break;
 				default:
 					$errorText = 'Unknown error';
 					break;
