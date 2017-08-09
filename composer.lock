@@ -4,46 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "abc6579907450f8e6d5bfc6cb6e30040",
+    "content-hash": "d1595c6fc4ae0a1376f27c036dfe1d3d",
     "packages": [
-        {
-            "name": "b3rs3rk/steamfront",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/b3rs3rk/steamfront.git",
-                "reference": "dc06fe132db557170c68cbd8c19c1773330906b7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/b3rs3rk/steamfront/zipball/dc06fe132db557170c68cbd8c19c1773330906b7",
-                "reference": "dc06fe132db557170c68cbd8c19c1773330906b7",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "ext-json": "*",
-                "php": ">=5.4.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "b3rs3rk\\": "source"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0"
-            ],
-            "authors": [
-                {
-                    "name": "b3rs3rk",
-                    "email": "b3rs3rk@protonmail.com"
-                }
-            ],
-            "description": "PHP Wrapper for Accessing the Steam Storefront API",
-            "time": "2017-06-30 12:49:25"
-        },
         {
             "name": "barracudanetworks/forkdaemon-php",
             "version": "v1.0.10",
@@ -988,16 +950,16 @@
         },
         {
             "name": "composer/installers",
-            "version": "v1.3.0",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "79ad876c7498c0bbfe7eed065b8651c93bfd6045"
+                "reference": "9ce17fb70e9a38dd8acff0636a29f5cf4d575c1b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/79ad876c7498c0bbfe7eed065b8651c93bfd6045",
-                "reference": "79ad876c7498c0bbfe7eed065b8651c93bfd6045",
+                "url": "https://api.github.com/repos/composer/installers/zipball/9ce17fb70e9a38dd8acff0636a29f5cf4d575c1b",
+                "reference": "9ce17fb70e9a38dd8acff0636a29f5cf4d575c1b",
                 "shasum": ""
             },
             "require": {
@@ -1043,6 +1005,7 @@
                 "Hurad",
                 "ImageCMS",
                 "Kanboard",
+                "Lan Management System",
                 "MODX Evo",
                 "Mautic",
                 "Maya",
@@ -1066,6 +1029,7 @@
                 "croogo",
                 "dokuwiki",
                 "drupal",
+                "eZ Platform",
                 "elgg",
                 "expressionengine",
                 "fuelphp",
@@ -1082,6 +1046,7 @@
                 "mediawiki",
                 "modulework",
                 "moodle",
+                "osclass",
                 "phpbb",
                 "piwik",
                 "ppi",
@@ -1098,7 +1063,7 @@
                 "zend",
                 "zikula"
             ],
-            "time": "2017-04-24T06:37:16+00:00"
+            "time": "2017-08-09T07:53:48+00:00"
         },
         {
             "name": "dborsatto/php-giantbomb",
@@ -1683,6 +1648,46 @@
                 "api"
             ],
             "time": "2016-10-25T08:14:27+00:00"
+        },
+        {
+            "name": "niel/steamfront",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/niel/steamfront.git",
+                "reference": "81f0ec0daada1be1e0fe81a6723eb257a39adde8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/niel/steamfront/zipball/81f0ec0daada1be1e0fe81a6723eb257a39adde8",
+                "reference": "81f0ec0daada1be1e0fe81a6723eb257a39adde8",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=5.6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "b3rs3rk\\": "source"
+                }
+            },
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "b3rs3rk",
+                    "email": "b3rs3rk@protonmail.com"
+                }
+            ],
+            "description": "PHP Wrapper for Accessing the Steam Storefront API",
+            "support": {
+                "source": "https://github.com/niel/steamfront/tree/master"
+            },
+            "time": "2017-08-09 17:53:07"
         },
         {
             "name": "nzedb/Git.php",
@@ -2306,7 +2311,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "b3rs3rk/steamfront": 20,
+        "niel/steamfront": 20,
         "dborsatto/php-giantbomb": 20,
         "joshpinkney/tv-maze-php-api": 20,
         "nzedb/git.php": 20,
