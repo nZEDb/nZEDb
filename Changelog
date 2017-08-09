@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-08-09 niel
+	Mrg: PR 2507, from Wally73 - Fix http to https in readme.
 2017-08-08 niel
 	Chg: Update command now tries updating with composer even if the nZEDb code is unchanged.
 	Mrg: Darius' refactored-adult post-processing branch.
