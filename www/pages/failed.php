@@ -3,6 +3,11 @@
 use app\models\Settings;
 use nzedb\DnzbFailures;
 use nzedb\db\DB;
+use nzedb\utility\Misc;
+
+if ($page->maintenanceCheck(false)) {
+    Misc::showApiError(503);
+}
 
 // Page is accessible only by the rss token, or logged in users.
 if ($page->users->isLoggedIn()) {

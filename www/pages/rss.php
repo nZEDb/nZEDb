@@ -6,6 +6,10 @@ use nzedb\http\RSS;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
 
+if ($page->maintenanceCheck(false)) {
+    Misc::showApiError(503);
+}
+
 $category = new Category(['Settings' => $page->settings]);
 $rss = new RSS(['Settings' => $page->settings]);
 $offset = 0;

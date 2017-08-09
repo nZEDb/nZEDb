@@ -6,6 +6,10 @@ use nzedb\NZB;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
 
+if ($page->maintenanceCheck(false)) {
+    Misc::showApiError(503);
+}
+
 $uid = 0;
 
 // Page is accessible only by the rss token, or logged in users.
