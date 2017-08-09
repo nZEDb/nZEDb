@@ -78,7 +78,8 @@ use lithium\data\Connections;
 $installed = nZEDb_CONFIGS . 'install.lock';
 
 // Check for install.lock first. If it exists, so should config.php
-if (file_exists($installed)) {
+if (file_exists($installed)  &&
+	(! defined('MAINTENANCE_MODE_ENABLED') || MAINTENANCE_MODE_ENABLED == false)) {
 	// This allows us to set up a db config separate to that created by /install
 	$config1 = LITHIUM_APP_PATH . DS . 'config' . DS . 'db-config.php';
 	$config2 = nZEDb_CONFIGS . 'config.php';
@@ -131,7 +132,8 @@ if (file_exists($installed)) {
 			"No valid database adapter provided in configuration file '$config'"
 		);
 	}
-} else if (file_exists(nZEDb_CONFIGS . 'dev-config.json')) {
+} else if (file_exists(nZEDb_CONFIGS . 'dev-config.json') &&
+	(!defined('MAINTENANCE_MODE_ENABLED') || MAINTENANCE_MODE_ENABLED == false)) {
 	$config = json_decode(file_get_contents(nZEDb_CONFIGS . 'dev-config.json'), true);
 	$db =& $config['db'];
 

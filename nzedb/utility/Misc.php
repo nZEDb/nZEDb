@@ -631,6 +631,36 @@ class Misc
 		return '';
 	}
 
+	/**
+	 * Check if MAINTENANCE_MODE_ENABLED constant is set. Return appropriate HTML or XML response
+	 * with status code 503 if it is.
+	 */
+	public static function maintainanceCheck($outputMessage = true)
+	{
+		if (defined('MAINTENANCE_MODE_ENABLED') && MAINTENANCE_MODE_ENABLED === true) {
+			$page = (isset($_GET['page']) ? $_GET['page'] : 'content');
+
+			switch ($page) {
+				case 'api':
+				case 'failed':
+				case 'getnzb':
+				//case 'preinfo':
+				case 'rss':
+					Misc::showApiError(503);
+					break;
+				default:
+					if (MAINTENANCE_MODE_ENABLED &&
+						!in_array($_SERVER['REMOTE_ADDR'], MAINTENANCE_MODE_IP_EXCEPTIONS) &&
+						file_exists(MAINTENANCE_MODE_HTML_PATH)) {
+						if ($outputMessage) {
+							readfile(MAINTENANCE_MODE_HTML_PATH);
+						}
+						return true;
+					}
+			}
+		}
+	}
+
 	// Convert obj to array.
 	public static function objectsIntoArray($arrObjData, $arrSkipIndices = [])
 	{
@@ -900,6 +930,9 @@ class Misc
 					break;
 				case 501:
 					$errorText = 'Download limit reached';
+					break;
+				case 503:
+					$errorText = 'Maintenance Mode';
 					break;
 				default:
 					$errorText = 'Unknown error';
