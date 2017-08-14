@@ -77,9 +77,17 @@ use lithium\data\Connections;
 
 $installed = nZEDb_CONFIGS . 'install.lock';
 
+if (! defined('DB_MOCK')) {
+	// Add new condition to use DB_MOCK mode here.
+	if (!defined('MAINTENANCE_MODE_ENABLED') || MAINTENANCE_MODE_ENABLED == true) {
+		define('DB_MOCK', true);
+	} else {
+		define('DB_MOCK', false);
+	}
+}
+
 // Check for install.lock first. If it exists, so should config.php
-if (file_exists($installed)  &&
-	(! defined('MAINTENANCE_MODE_ENABLED') || MAINTENANCE_MODE_ENABLED == false)) {
+if (file_exists($installed) && DB_MOCK == false) {
 	// This allows us to set up a db config separate to that created by /install
 	$config1 = LITHIUM_APP_PATH . DS . 'config' . DS . 'db-config.php';
 	$config2 = nZEDb_CONFIGS . 'config.php';
@@ -132,8 +140,7 @@ if (file_exists($installed)  &&
 			"No valid database adapter provided in configuration file '$config'"
 		);
 	}
-} else if (file_exists(nZEDb_CONFIGS . 'dev-config.json') &&
-	(!defined('MAINTENANCE_MODE_ENABLED') || MAINTENANCE_MODE_ENABLED == false)) {
+} else if (file_exists(nZEDb_CONFIGS . 'dev-config.json') && DB_MOCK == false) {
 	$config = json_decode(file_get_contents(nZEDb_CONFIGS . 'dev-config.json'), true);
 	$db =& $config['db'];
 
@@ -176,7 +183,7 @@ if (file_exists($installed)  &&
 	\nzedb\utility\Misc::setCoversConstant(
 		\app\models\Settings::value('site.main.coverspath')
 	);
-} else {
+} else if (DB_MOCK != false) {
 	Connections::add('mock',
 		[
 			'type'     => 'database',
