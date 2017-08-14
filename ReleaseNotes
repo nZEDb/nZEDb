@@ -3,7 +3,7 @@ ChangeLog file which list *when* changes are made to the dev branches.
 
 
 0.7.4.0 2017-08-07
-***NOTE*** As the latest version of Debian (Debian 9) now supports PHP 7.0, PHP 5.6 Is now
+***NOTE*** As the latest version of Debian (Debian 9) now supports PHP 7.0, PHP 5.6 is now
 	deprecated. We will be removing support for it before the end of the year, probably within 2-3
 	months, so update as soon as you can.
 Added:
