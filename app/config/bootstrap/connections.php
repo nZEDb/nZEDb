@@ -86,8 +86,22 @@ if (! defined('DB_MOCK')) {
 	}
 }
 
+if (DB_MOCK == true) {
+	Connections::add('mock',
+		[
+			'type'     => 'database',
+			'adapter'  => 'Mock',
+			'host'     => 'localhost',
+			'port'     => '3306',
+			'login'    => 'root',
+			'password' => 'root_pass',
+			'database' => 'nZEDb',
+			'encoding' => 'UTF-8',
+			'timezone' => ini_get('date.timezone'),
+		]
+	);
 // Check for install.lock first. If it exists, so should config.php
-if (file_exists($installed) && DB_MOCK == false) {
+} else if (file_exists($installed)) {
 	// This allows us to set up a db config separate to that created by /install
 	$config1 = LITHIUM_APP_PATH . DS . 'config' . DS . 'db-config.php';
 	$config2 = nZEDb_CONFIGS . 'config.php';
@@ -140,7 +154,7 @@ if (file_exists($installed) && DB_MOCK == false) {
 			"No valid database adapter provided in configuration file '$config'"
 		);
 	}
-} else if (file_exists(nZEDb_CONFIGS . 'dev-config.json') && DB_MOCK == false) {
+} else if (file_exists(nZEDb_CONFIGS . 'dev-config.json')) {
 	$config = json_decode(file_get_contents(nZEDb_CONFIGS . 'dev-config.json'), true);
 	$db =& $config['db'];
 
@@ -182,20 +196,6 @@ if (file_exists($installed) && DB_MOCK == false) {
 
 	\nzedb\utility\Misc::setCoversConstant(
 		\app\models\Settings::value('site.main.coverspath')
-	);
-} else if (DB_MOCK != false) {
-	Connections::add('mock',
-		[
-			'type'     => 'database',
-			'adapter'  => 'Mock',
-			'host'     => 'localhost',
-			'port'     => '3306',
-			'login'    => 'root',
-			'password' => 'root_pass',
-			'database' => 'nZEDb',
-			'encoding' => 'UTF-8',
-			'timezone' => ini_get('date.timezone'),
-		]
 	);
 }
 
