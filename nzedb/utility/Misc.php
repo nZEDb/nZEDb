@@ -638,25 +638,26 @@ class Misc
 	public static function maintainanceCheck($outputMessage = true)
 	{
 		if (defined('MAINTENANCE_MODE_ENABLED') && MAINTENANCE_MODE_ENABLED === true) {
-			$page = (isset($_GET['page']) ? $_GET['page'] : 'content');
+			if (!in_array($_SERVER['REMOTE_ADDR'], MAINTENANCE_MODE_IP_EXCEPTIONS) ) {
+				$page = (isset($_GET['page']) ? $_GET['page'] : 'content');
+				switch ($page) {
+					case 'api':
+					case 'failed':
+					case 'getnzb':
+						//case 'preinfo':
+					case 'rss':
+						Misc::showApiError(503);
+						break;
+					default:
+						if (MAINTENANCE_MODE_ENABLED &&
+							file_exists(MAINTENANCE_MODE_HTML_PATH)) {
+							if ($outputMessage) {
+								readfile(MAINTENANCE_MODE_HTML_PATH);
+							}
 
-			switch ($page) {
-				case 'api':
-				case 'failed':
-				case 'getnzb':
-				//case 'preinfo':
-				case 'rss':
-					Misc::showApiError(503);
-					break;
-				default:
-					if (MAINTENANCE_MODE_ENABLED &&
-						!in_array($_SERVER['REMOTE_ADDR'], MAINTENANCE_MODE_IP_EXCEPTIONS) &&
-						file_exists(MAINTENANCE_MODE_HTML_PATH)) {
-						if ($outputMessage) {
-							readfile(MAINTENANCE_MODE_HTML_PATH);
+							return true;
 						}
-						return true;
-					}
+				}
 			}
 		}
 	}
