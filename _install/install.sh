@@ -29,6 +29,7 @@ chmod 755 ./
 chmod -R g+s ./
 chmod -R 755 app/libraries
 chmod -R 775 app/resources
+chmod -R 775 configuration
 chmod -R 775 libraries
 chmod -R 775 resources
 chmod -R 775 www

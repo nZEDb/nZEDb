@@ -31,8 +31,8 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 	} else {
 		$table = 'predb';
 	}
-	echo  $pdo->log->header("SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name FROM " . $table . " p LEFT OUTER JOIN groups g ON p.groups_id = g.id INTO OUTFILE '" . $path . "' FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n';\n");
-	$pdo->queryExec("SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name FROM " . $table . " p LEFT OUTER JOIN groups g ON p.groups_id = g.id INTO OUTFILE '" . $path . "' FIELDS TERMINATED BY '\t\t' LINES TERMINATED BY '\r\n'");
+	echo  $pdo->log->header("SELECT title, nfo, size, files, filename, nuked, nukereason, category, created, source, requestid, g.name FROM " . $table . " p LEFT OUTER JOIN groups g ON p.groups_id = g.id INTO OUTFILE '" . $path . "' FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n';\n");
+	$pdo->queryExec("SELECT title, nfo, size, files, filename, nuked, nukereason, category, created, source, requestid, g.name FROM " . $table . " p LEFT OUTER JOIN groups g ON p.groups_id = g.id INTO OUTFILE '" . $path . "' FIELDS TERMINATED BY '\t\t' LINES TERMINATED BY '\r\n'");
 } else if (isset($argv[1]) && ($argv[1] == 'local' || $argv[1] == 'remote') && isset($argv[2]) && is_file($argv[2])) {
 	if (!preg_match('/^\//', $path)) {
 		$path = require_once getcwd() . '/' . $argv[2];
@@ -48,11 +48,11 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 
 	// Import file into predb_imports
 	if ($argv[1] == 'remote') {
-		echo  $pdo->log->header("LOAD DATA LOCAL INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);");
-		$pdo->queryExec("LOAD DATA LOCAL INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\t\t' OPTIONALLY ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname)");
+		echo  $pdo->log->header("LOAD DATA LOCAL INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, created, source, requestid, groupname);");
+		$pdo->queryExec("LOAD DATA LOCAL INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\t\t' OPTIONALLY ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, filename, nuked, nukereason, category, created, source, requestid, groupname)");
 	} else {
-		echo  $pdo->log->header("LOAD DATA INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);");
-		$pdo->queryExec("LOAD DATA INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\t\t' OPTIONALLY ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname)");
+		echo  $pdo->log->header("LOAD DATA INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, created, source, requestid, groupname);");
+		$pdo->queryExec("LOAD DATA INFILE '" . $path . "' IGNORE into table predb_imports FIELDS TERMINATED BY '\t\t' OPTIONALLY ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, filename, nuked, nukereason, category, created, source, requestid, groupname)");
 	}
 
 	// Remove any titles where length <=8
@@ -77,8 +77,8 @@ SQL_ADD_GROUPS;
 
 	// Insert and update table
 	$sqlInsert = <<<SQL_INSERT
-INSERT INTO $table (title, nfo, size, files, filename, nuked, nukereason, category, predate, SOURCE, requestid, groups_id)
-  SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category, t.predate, t.source, t.requestid, IF(g.id IS NOT NULL, g.id, 0)
+INSERT INTO $table (title, nfo, size, files, filename, nuked, nukereason, category, created, SOURCE, requestid, groups_id)
+  SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category, t.created, t.source, t.requestid, IF(g.id IS NOT NULL, g.id, 0)
     FROM predb_imports AS t
 	LEFT OUTER JOIN groups g ON t.groupname = g.name ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo IS NULL, t.nfo, predb.nfo),
 	  predb.size = IF(predb.size IS NULL, t.size, predb.size),

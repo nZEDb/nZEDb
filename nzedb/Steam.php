@@ -1,424 +1,200 @@
 <?php
 namespace nzedb;
 
-use nzedb\utility\Misc;
+use app\models\SteamApps;
+use app\models\Settings;
+use b3rs3rk\steamfront\Main;
+use nzedb\db\DB;
 
 class Steam
 {
-	/**
-	 * @var
-	 */
-	public $cookie;
+	const STEAM_MATCH_PERCENTAGE = 90;
 
 	/**
-	 * @var
+	 * @var string The parsed game name from searchname
 	 */
 	public $searchTerm;
 
-	const AGECHECKURL = "http://store.steampowered.com/agecheck/app/";
-	const CDNURL = "http://cdn.akamai.steamstatic.com/steam/apps/";
-	const GAMEURL = "http://store.steampowered.com/app/";
-	const STEAMURL = "http://store.steampowered.com";
-	const STEAMVARS = "/search/?category1=998&os=win&sort_order=ASC&page=1&term=";
+	/**
+	 * @var int The ID of the Steam Game matched
+	 */
+	protected $steamGameID;
 
 	/**
-	 * @var bool
+	 * @var DB
 	 */
-	protected $_ageCheckSet = false;
-
-	/**
-	 * @var bool
-	 */
-	protected $_birthTime = false;
+	protected $pdo;
 
 	/**
 	 * @var
 	 */
-	protected $_ch;
+	protected $lastUpdate;
 
 	/**
-	 * @var string
-	 */
-	protected $_directURL = '';
-
-	/**
-	 * @var
-	 */
-	protected $_editHtml;
-
-	/**
-	 * @var \simple_html_dom
-	 */
-	protected $_html;
-
-	/**
-	 * @var string
-	 */
-	protected $_indirectURL = '';
-
-	/**
-	 * @var bool
-	 */
-	protected $_lastAgeCheck = false;
-
-	/**
-	 * @var array
-	 */
-	protected $_postParams = [];
-
-	/**
-	 * @var array
-	 */
-	protected $_res = [];
-
-	/**
-	 * @var
-	 */
-	protected $_response;
-
-	/**
-	 * @var
-	 */
-	protected $_ret;
-
-	/**
-	 * @var
-	 */
-	protected $_steamGameID;
-
-	/**
-	 * @var string
-	 */
-	protected $_title = '';
-
-	/**
-	 * @var int
-	 */
-	protected $_totalResults = 0;
-
-	public function __construct()
-	{
-		$this->_html = new \simple_html_dom();
-		$this->_editHtml = new \simple_html_dom();
-		if (isset($this->cookie)) {
-			$this->getUrl(self::STEAMURL);
-		}
-	}
-
-	/**
+	 * Steam constructor.
 	 *
-	 * Remove from memory
-	 *
+	 * @param array $options
 	 */
-	public function __destruct()
+	public function __construct(array $options = [])
 	{
-		$this->_html->clear();
-		$this->_editHtml->clear();
-		unset($this->_response);
-	}
+		$defaults = ['DB' => null];
+		$options += $defaults;
 
-	/**
-	 * Get Details of the game (Studio,Release Date, Developer)
-	 *
-	 * @return array
-	 */
-	public function details()
-	{
-		if ($this->_ret = $this->_html->find("div.details_block", 0)) {
-			$textarr = [];
-			foreach ($this->_ret->find('text') as $text) {
-				$text = trim($text->plaintext);
-				if (!empty($text)) {
-					$textarr[] = rtrim($text, ":");
-				}
-			}
-			$totaldetails = count($textarr) - 1;
-			for ($i = 0; $i <= $totaldetails;) {
-				if ($textarr[$i] == "Release Date") {
-					$pregmatchdate = $textarr[$i + 1];
-					if (preg_match_all('#(?P<day>[0-3]?\d)[^\d]|(?P<month>Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)|(?P<year>(19|20)\d{2})#i',
-									   $pregmatchdate,
-									   $matches)) {
+		$this->pdo = ($options['DB'] instanceof DB ? $options['DB'] : new DB());
 
-						$matches    = array_map('array_filter', $matches);
-						$matches    = array_map('array_values', $matches);
-						$matchday   = isset($matches['day'][0]) ? $matches['day'][0] : '1';
-						$matchmonth = isset($matches['month'][0]) ? $matches['month'][0] : '';
-						$matchyear  = isset($matches['year'][0]) ? $matches['year'][0] : '';
-						if (!empty($matchday) && !empty($matchmonth) && !empty($matchyear)) {
-							$textarr[$i + 1] = $matchmonth . '/' . $matchday . '/' . $matchyear;
-						}
-					}
-				}
-				$this->_res['gamedetails'][$textarr[$i]] = $textarr[$i + 1];
-				$i                                       = $i + 2;
-		}
-		}
-
-		return $this->_res;
-	}
-
-	/**
-	 * Game Description Snippet
-	 *
-	 * @return array
-	 */
-	public function gameDescription()
-	{
-			if ($this->_ret = $this->_html->find("div.game_description_snippet", 0)) {
-				$this->_res['description'] = trim($this->_ret->plaintext);
-			}
-
-		return $this->_res;
+		$this->steamFront = new Main(
+			[
+				'country_code' => 'us',
+				'local_lang'   => 'english'
+			]
+		);
 	}
 
 	/**
 	 * Gets all Information for the game.
 	 *
-	 * @return array
-	 */
-	public function getAll()
-	{
-		$results = [];
-		if (isset($this->_directURL)) {
-			$results['steamgameid'] = $this->_steamGameID;
-			$results['directurl'] = $this->_directURL;
-			$results['title'] = $this->_title;
-		}
-		if (is_array($this->gameDescription())) {
-			$results = array_merge($results, $this->gameDescription());
-		}
-		if (is_array($this->details())) {
-			$results = array_merge($results, $this->details());
-		}
-		if (is_array($this->rating())) {
-			$results = array_merge($results, $this->rating());
-		}
-		if (is_array($this->images())) {
-			$results = array_merge($results, $this->images());
-		}
-		if (is_array($this->trailer())) {
-			$results = array_merge($results, $this->trailer());
-		}
-
-		return $results;
-	}
-
-	/**
-	 * Gets the (cover and backdrop image)
+	 * @param integer $appID
 	 *
-	 * @return array
+	 * @return array|bool
 	 */
-	public function images()
+	public function getAll($appID)
 	{
-			if ($this->_ret = $this->_html->find("img.game_header_image_full", 0)) {
-				$this->_res['cover'] = $this->_ret->src;
-			}
-			if ($this->_ret = $this->_html->find("div.screenshot_holder", 0)) {
-				if ($this->_ret = $this->_ret->find("a", 0)) {
-					if (preg_match('/\?url\=(?<imgurl>.*)/', $this->_ret->href, $matches)) {
-						$this->_res['backdrop'] = trim($matches['imgurl']);
-					} else {
-						$this->_res['backdrop'] = trim($this->_ret->href);
-					}
-				}
-			}
+		$res = $this->steamFront->getAppDetails($appID);
 
-		return $this->_res;
-	}
+		if ($res !== false) {
+			$result = [
+				'title'       => $res->name,
+				'description' => $res->description['short'],
+				'cover'       => $res->images['header'],
+				'backdrop'    => $res->images['background'],
+				'steamid'     => $res->appid,
+				'directurl'   => Main::STEAM_STORE_ROOT . 'app/' . $res->appid,
+				'publisher'   => $res->publishers,
+				'rating'      => $res->metacritic['score'],
+				'releasedate' => $res->releasedate['date'],
+				'genres'      => implode(',', array_column($res->genres, 'description'))
+			];
 
-	/**
-	 * Gets the metacritic Rating
-	 *
-	 * @return array
-	 */
-	public function rating()
-	{
-			if ($this->_ret = $this->_html->find("div#game_area_metascore", 0)) {
-				$this->_res['rating'] = (int)$this->_ret->plaintext;
-			}
-		return $this->_res;
-	}
-
-	/**
-	 * Searches for a game for a 90% match
-	 *
-	 * @return bool
-	 */
-	public function search()
-	{
-		if (!isset($this->searchTerm)) {
-			return false;
+			return $result;
 		}
 
-		if ($this->getUrl(self::STEAMURL . self::STEAMVARS . rawurlencode($this->searchTerm)) !== false) {
-			$title = null;
-			if ($this->_ret = $this->_html->find("div.search_pagination_left", 0)) {
-				if (preg_match('/\d+ of (?<total>\d+)/', trim($this->_ret->plaintext), $matches)) {
-					$this->_totalResults = (int)$matches['total'];
-				}
-				if ($this->_totalResults > 0) {
-					foreach ($this->_html->find("a.search_result_row") as $result) {
-						foreach ($result->find("span.title") as $searchtitle) {
-							$title = (string)trim($searchtitle->innertext);
-						}
-						if (isset($title)) {
-							similar_text(strtolower($title), strtolower($this->searchTerm), $p);
-							if ($p > 90) {
-								$this->_title = $title;
-								if (isset($result->href)) {
-									preg_match('/\/app\/(?<id>\d+)\//', $result->href, $matches);
-									$this->_steamGameID = $matches['id'];
-									$this->_directURL = self::GAMEURL . $this->_steamGameID . '/';
-									$this->getUrl($result->href);
-									$this->ageCheck();
-									return true;
-								} else {
-									return false;
-								}
-							}
-						}
-					}
-					if (empty($this->_title)) {
-						return false;
-					}
-				} else {
-					return false;
-				}
-			} else {
-				return false;
-			}
-			return true;
+		if ($res === false) {
+			ColorCLI::doEcho(ColorCLI::notice('Steam did not return game data'));
 		}
 
 		return false;
 	}
 
 	/**
-	 * Gets the Video for the game
+	 * Searches Steam Apps table for best title match -- prefers 100% match but returns highest over 90%
 	 *
-	 * @return array
+	 * @param string $searchTerm The parsed game name from the release searchname
+	 *
+	 * @return false|int $bestMatch The Best match from the given search term
+	 * @throws \Exception
 	 */
-	public function trailer()
+	public function search($searchTerm)
 	{
-		if (preg_match('/store.steampowered.com\/video\//', $this->_response)) {
-			$this->_res['trailer'] = self::STEAMURL . '/video/' . $this->_steamGameID;
-			$this->getUrl($this->_res['trailer']);
-			if (preg_match('@FILENAME\:\s+(?<videourl>\"\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))")@', $this->_response, $matches)
-			) {
-				if (isset($matches['videourl'])) {
-					$this->_res['trailer'] = trim($matches['videourl'], '"');
+		$bestMatch = false;
+
+		if (empty($searchTerm)) {
+			ColorCLI::doEcho(ColorCLI::notice('Search term cannot be empty'));
+
+			return $bestMatch;
+		}
+
+		$this->populateSteamAppsTable();
+
+		$results = $this->pdo->queryDirect("
+			SELECT name, appid
+			FROM steam_apps
+			WHERE MATCH(name) AGAINST({$this->pdo->escapeString($searchTerm)})
+			LIMIT 20"
+		);
+
+		if ($results instanceof \Traversable) {
+			$bestMatchPct = 0;
+			foreach ($results as $result) {
+				// If we have an exact string match set best match and break out
+				if ($result['name'] === $searchTerm) {
+					$bestMatch = $result['appid'];
+					break;
 				}
-			}
-		} else {
-			if (preg_match('/movie480.webm\?t\=(?<videoidentifier>\d+)/', $this->_response, $matches)
-			) {
-				$this->_res['trailer'] = self::CDNURL . $this->_steamGameID . '/movie480.webm?t=' . trim($matches['videoidentifier'], '"');
-			}
-		}
 
-		return $this->_res;
-	}
-
-	/**
-	 * Sets agecheck, retreive agecheck cookie information
-	 *
-	 */
-	private function ageCheck()
-	{
-		if (isset($this->cookie)) {
-			$this->extractCookies(file_get_contents($this->cookie));
-			if ($this->_ageCheckSet === false) {
-				$this->_postParams = [
-					"snr"      => "1_agecheck_agecheck__age-gate",
-					"ageDay"   => "1",
-					"ageMonth" => "May",
-					"ageYear"  => "1966"
-				];
-
-				$this->getUrl(self::AGECHECKURL . $this->_steamGameID . '/', true);
-			}
-		}
-		$this->getUrl(self::GAMEURL . $this->_steamGameID . '/');
-	}
-
-	/**
-	 * Gets Raw Html
-	 *
-	 * @param string $fetchURL
-	 * @param bool $usePost
-	 *
-	 * @return bool
-	 */
-	private function getUrl($fetchURL, $usePost = false)
-	{
-		if (isset($fetchURL)) {
-			$this->_ch = curl_init($fetchURL);
-		}
-		if ($usePost === true) {
-			curl_setopt($this->_ch, CURLOPT_POST, 1);
-			curl_setopt($this->_ch, CURLOPT_POSTFIELDS, $this->_postParams);
-		}
-			curl_setopt($this->_ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($this->_ch, CURLOPT_HEADER, 0);
-			curl_setopt($this->_ch, CURLOPT_VERBOSE, 0);
-			curl_setopt($this->_ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
-			curl_setopt($this->_ch, CURLOPT_FAILONERROR, 1);
-		if (isset($this->cookie)) {
-			curl_setopt($this->_ch, CURLOPT_COOKIEJAR, $this->cookie);
-			curl_setopt($this->_ch, CURLOPT_COOKIEFILE, $this->cookie);
-		}
-		curl_setopt_array($this->_ch, Misc::curlSslContextOptions());
-		$this->_response = curl_exec($this->_ch);
-		if (!$this->_response) {
-			curl_close($this->_ch);
-
-			return false;
-		}
-		curl_close($this->_ch);
-		$this->_html->load($this->_response);
-
-		return true;
-	}
-
-	/**
-	 * Extract values from a cookie and sets the values needed with the information.
-	 *
-	 * @param string $string The contents of the cookie file.
-	 *
-	 * @return boolean|null True/False if lastagecheckage and birthtime exists.
-	 */
-	private function extractCookies($string)
-	{
-		$lines = explode("\n", $string);
-
-		// iterate over lines
-		foreach ($lines as $line) {
-
-			// we only care for valid cookie def lines
-			if (isset($line[0]) && substr_count($line, "\t") == 6) {
-
-				// get tokens in an array
-				$tokens = explode("\t", $line);
-
-				// trim the tokens
-				$tokens = array_map('trim', $tokens);
-
-				// Extract the data
-				if ($tokens[0] == "store.steampowered.com") {
-					if ($tokens[5] == 'birthtime') {
-						$this->_birthTime = true;
-					}
-					if ($tokens[5] == 'lastagecheckage') {
-						$this->_lastAgeCheck = true;
-					}
+				similar_text(strtolower($result['name']), strtolower($searchTerm), $percent);
+				// If similar_text reports an exact match set best match and break out
+				if ($percent === 100) {
+					$bestMatch = $result['appid'];
+					break;
+				}
+				if ($percent >= self::STEAM_MATCH_PERCENTAGE && $percent > $bestMatchPct) {
+					$bestMatch = $result['appid'];
+					$bestMatchPct = $percent;
 				}
 			}
 		}
-		if ($this->_birthTime === true && $this->_lastAgeCheck === true) {
-			$this->_ageCheckSet = true;
-		} else {
-			$this->_ageCheckSet = false;
+		if ($bestMatch === false) {
+			ColorCLI::doEcho(ColorCLI::notice('Steam search returned no valid results'));
 		}
+
+		return $bestMatch;
+	}
+
+	/**
+	 * Downloads full Steam Store dump and imports data into local table
+	 * @throws \Exception
+	 */
+	public function populateSteamAppsTable()
+	{
+		$lastUpdate = Settings::value('APIs.steam_apps.last_update');
+		$this->lastUpdate = $lastUpdate > 0 ? $lastUpdate : 0;
+		if ((time() - (int)$this->lastUpdate) > 86400) {
+			// Set time we updated steam_apps table
+			$this->setLastUpdated();
+			$fullAppArray = $this->steamFront->getFullAppList();
+			$inserted = $dupe = 0;
+			echo ColorCLI::info('Populating steam apps table') . PHP_EOL;
+			foreach ($fullAppArray as $appsArray) {
+				foreach ($appsArray as $appArray) {
+					foreach ($appArray as $app) {
+						$dupeCheck = SteamApps::find('first',
+							[
+								'conditions' =>
+									[
+										'name'  => $app['name'],
+										'appid' => $app['appid'],
+									],
+								'fields'     => ['appid'],
+								'limit'      => 1,
+							]
+						);
+
+						if ($dupeCheck === null) {
+							$this->pdo->queryExec(sprintf('INSERT IGNORE INTO steam_apps (name, appid) VALUES (%s, %d)', $this->pdo->escapeString($app['name']), $app['appid']));
+							$inserted++;
+							if ($inserted % 500 === 0) {
+								echo PHP_EOL . number_format($inserted) . ' apps inserted.' . PHP_EOL;
+							} else {
+								echo '.';
+							}
+						} else {
+							$dupe++;
+						}
+					}
+				}
+			}
+			echo PHP_EOL . 'Added ' . $inserted . ' new steam apps, ' . $dupe . ' duplicates skipped' . PHP_EOL;
+		}
+	}
+
+	/**
+	 * Sets the database time for last full AniDB update
+	 */
+	private function setLastUpdated()
+	{
+		Settings::update(
+			['value' => time()],
+			['section' => 'APIs', 'subsection' => 'steam_apps', 'name' => 'last_update']
+		);
 	}
 }

@@ -9,6 +9,212 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-08-09 niel
+	Mrg: PR 2507, from Wally73 - Fix http to https in readme.
+	Chg: Temporarily change to using niel/steam_front library until b3rs3rk gets his updated.
+2017-08-08 niel
+	Chg: Update command now tries updating with composer even if the nZEDb code is unchanged.
+	Mrg: Darius' refactored-adult post-processing branch.
+	Chg: Removing pixelead0 library that we replaced with php-tmdb/api.
+	Fix: Put braces around array reference in error string to prevent converting from array to
+		string error.
+2017-08-05 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.4
+
+
+2017-08-04 niel
+	Chg: Bring in Darius' new TMDb library code. Switching to use php-tmdb/api library from github.
+	Fix: Remove auto sorting from composer.json as it lists bower-assets/* before the package which
+		handles them.
+2017-08-03 DariusIII
+	Fix: Check for existing apikey before sending request to GiantBomb.
+2017-08-03 niel
+	Fix: Replace spaces with tab, causing steam_app last_update setting to fail on insertion.
+2017-07-30 niel
+	Chg: Move location for predb-progress.txt to the standard configuration directory.
+2017-07-27 DariusIII
+	Chg: Add auto sorting and autoloader optimization to composer.json
+2017-07-19 niel
+	Chg: Set 'updated' date to zero value when inserting new IRCScraper entries. Should prevent
+		certain errors cause by bad SQL modes.
+2017-07-14 niel
+	Chg: Make version checks in .../nzedb/NZB.php and .../nzedb/Tmux.php use the XML file instead
+		of the repository.
+	Chg: Update composer.lock file for updated steamfront version.
+2017-06-26 niel
+	Fix: Removed check for tpg in collection_regexes-test.php's template.
+2017-06-21 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.3
+
+
+2017-06-21 niel
+	Fix: Add 'ORDER BY 'id' ASC' clause to SQL patch 0482, to make sure they don't get done out
+		of order, causing duplicate index errors.
+2017-06-21 DariusIII
+	Fix: Use PNotify instead of noty in Charisma theme - Potential fix for issue #2478
+2017-06-20 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.2
+
+
+2017-06-19 niel
+	Add: Created custom Model class to extend Lithium's. It adds a new method `isModified` to
+		check if an existing table entity has been changed. This allows Updates to skip saves if
+		nothing has changed.
+	Fix: Remove type declaration from Model::isModified() signature as it doesn't work for parent
+		classes. The type is tested inside the method instead.
+2017-06-14 niel
+	Fix: Replace overlooked occurences of 'predate' with 'created' in queries. Closes Issue 2474.
+2017-06-09 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.1
+
+
+2017-06-07 DariusIII
+	Fix: Missed changing Steam class setLastUpdated function for settings table change (fixes
+		Issue 2468)
+2017-06-02 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.0
+
+
+2017-05-31 niel
+	Fix: Make DbUpdate::loadTables() default to not having an "OPTIONALLY ENCLOSED BY" clause, as it
+		causes issues with fields starting with a double-quote.
+2017-05-30 niel
+	Mrg: PR 2445, from nightah - Reworked all Anime release naming regexes.
+	Fix: Missing category from new Predb entries that was accidentally overlooked during recent
+		refactoring.
+2017-05-28 niel
+	Chg: Predb model: Change occurences of 'name' to 'title', even variable names as it is obviously
+		confusing me!
+2017-05-26 niel
+	Add: Adding post-install-cmd to composer.json. It runs addHooks.sh script if installed in dev
+		mode.
+2017-05-25 b3rs3rk
+	Fix: Two more predate instances that should be created
+2017-05-24 b3rs3rk
+	Fix: Tmux monitor query still looking for predate column
+	Fix: Disable timezone checks if connection is to SphinxQL as it doesn't support any TZ variables
+	Fix: Many predate string constants not changed to reflect new created column
+	Fix: Change predb table DDL to reflect predate -> created name change in secondary key
+2017-05-24 niel
+	Mrg: dev-ircscraper branch. The IRCScraper code has been changed to make it properly timezone
+		aware. As before, predates are received as UTC/GMT time. However they are not converted
+		using a call to the Database server (whose timezone is essentially unknown). Instead, the
+		timezone of the connection to the server is used, which we are able to set as part of the
+		bootstrap process. By default, this timezone will be the same as the PHP code running the
+		indexer, but it may be set to any valid zone by the user.
+		 Database changes: The 'predate' datetime field is replaced by a 'created' timestamp field
+		and a new 'updated' timestamp field is added. **NOTE** If you have not already done so, you
+		MUST populate the database's timezone tables as described in their documentation. For
+		Debian/Ubuntu users 'mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql' should
+		load them easily, this will require restarting the database server.
+		 The smarty template now displays the timezone in the Date header so that it is obvious to
+		users. There is also an additional field for when the entry was updated.
+		 Additionally the pager template is switched to the newer paginate.tpl that I have been
+		using in the dev-move-to-models branch.
+2017-05-22 DariusIII
+	Chg: Rename APIs.Steam.last_update to APIs.steam_apps.last_update
+	Fix: Remove PHP7 return type declaration in Games.php
+2017-04-22 niel
+	Fix: Fix path reference to settings.php for View Logs page. Fixes issue 2456.
+2017-05-19 b3rs3rk
+	Fix: nzedb.xml not updated to reflect new PC Games support
+	Fix: Remove function void return declarations at they are throwing UnknownType errors
+	Fix: Incorrect genres_id column in use in update queries, still genre_id -- also reduce sleep time for Steam calls
+2017-05-19 DariusIII
+	Chg: Update PC Games support, use Steam and GiantBomb only
+2017-05-09 niel
+	Fix: Use correct constant to mark PAR2 used in NameFixer.
+	Mrg: PR 2453, from kaibosh - tmux config adjustments for <= v1.8
+2017-05-08 DariusIII
+	Fix: Path to bootstrap.min.js in Default theme
+2017-05-06 niel
+	Fix: Problem with external yEnc decoders (hopefully). Closes issues 2383 and 2435.
+	Chg: Added code to force DB connection to use PHP's timezone setting. This may be different
+		to the databases configured timezone, but we're now working with a known timezone instead
+		of assuming one.
+2017-05-04 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.2.1
+
+
+2017-05-03 niel
+	Mrg: PR 2448, from kaibosh - Update tmux configs for tmux 2.4.
+	Fix: NULL value 'predate' in IRCScraper. Closes issue 2449.
+2017-05-01 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.2.0
+
+
+2017-04-30 niel
+	Add: Logging for IRCScraper's testing for duplicates, to try to determine why it sometimes
+		fails to detect them. This also prevents the script from exiting because of the exception.
+2017-04-28 niel
+	Mrg: dev-ircscraper branch. Changes to IRCScraper class to make it more resilient for those
+		suffering error about "missing catalogue".
+2017-04-28 DariusIII
+	Fix: Properly populate anidb_episodes table
+2017-04-20 niel
+	Add: Created Predb model for use in IRCScraper. No other code is updated for it yet.
+	Fix: Add 'predb' to uninflected list in connections.
+	Add: Created Groups model for use in IRCScraper. No other code is updated for it yet.
+2017-04-19 niel
+	Fix: Make IRCClient an abstract class, as it has an abstract method which was not previously
+		marked as such.
+2017-04-19 DariusIII
+	Add: Per poster categorization of releases, properly categorize and rename SDCLiP releases and
+		add FULLTEXT index on predb.filename for better releases matching.
+	Mrg: PR 2440, from Nightah - Added extra regexes to match release names for a.b.anime
+017-04-14 niel
+	Mrg: PR 2438, from Fossil - Speed up getByRssToken function.
+	Mrg: PR 2436, from Wally73 - Update simple-expanded.sh
+2017-04-13 DariusIII
+	Fix: Properly categorize ANiHLS and HAiKU releases as TV > Anime (please run 'php
+	misc/testing/Release/recategorize.php all' to recategorize releases)
+2017-04-08 niel
+	Chg: Use '--prefer-dist' for stable branches,  '--prefer-source' otherwise. Part of the move
+		to not using the repo in production.
+2017-04-07 niel
+	Mrg: PR 2428, from Wally73 - Update simple.sh. Cleaning out discontinued code.
+	Mrg: PR 2429, from Wally73 - Update simple-expanded.sh. Cleaning out NNTP Proxy references.
+	Mrg: PR 2430, from Wally73 - Update threaded.sh. Cleaning out python references.
+2017-04-06 niel
+	Chg: Remove python module check in tmux/run.php
+2017-04-06 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.1.1
+
+
+2017-04-06 niel
+	Chg: Remove NNTPProxy checks from .tmux's run.php
+	Fix: Added missing field (collection_regexes_id) to multigroup_collections table definition.
+2017-04-03 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.1.0
+
+
+2017-04-03 niel
+	Chg: Remove git repository checks from Tmux scripts. This is an effort to remove the use of the
+		repository from user code. Dev code will still use it for some tasks (e.g. apply tags for
+		releases).
+2017-03-30 b3rs3rk
+	Fix: Gamma PC Games view doesn't display grouped by gamesinfo_id
+2017-03-30 DariusIII
+	Chg: Further improve mediainfo uniqueid matching
+2017-03-29 DariusIII
+	Chg: Increase release size floor values to -10/10 in NameFixer class uidCheck function for
+		better mediainfo matching.
+2017-03-25 niel
+	Fix: Update import predb daily batch script to handle changed layout on github. Also adds the
+		date of the file to successful download message.
+2017-03-20 niel
+	Chg: Copied asset-installer setting to config section of composer.json in preparation for
+		updating it.
+	Chg: Update fxp/composer-asset-plugin to v1.3.0
+		***NOTE*** This requires an update of Composer itself, to v1.4.0
+2017-03-15 niel
+	Mrg: PR 2417, from Wally73 - Update IRCScraper README.txt
+2017-03-14 niel
+	Mrg: PR 2398, from kaibosh - Update control tool for sabnzbd v1.x API.
+	Fix: Make NZBImport check for searchname dupes (Closes issue 2411).
+2017-03-14 DariusIII
+	Chg: Remove use cases for python backfill script
+	Chg: Remove nntpproxy support
 2017-03-13 niel
 	Fix: Problem with redirection to install on fully installed system (closes PR 2415).
 2017-03-11 niel
@@ -23,6 +229,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Mrg: dev-refactor-tpg, which removes conditional checking for TPG as it is no longer optional.
 2017-03-06 niel
 	Mrg: PR 2406, from egyptianbman - Fix `zed update nzedb`.
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.0.0
 
 
 2017-03-01 niel
@@ -1047,7 +1254,7 @@ stable code:
 	Fix: Spacing issues with AniDB and small update to parsing
 	Chg: Greatly improve CodecPoster accuracy and query speed
 	Fix: Query update didn't have crapTime in it
-2015-12-10 ruhllato
+2015-12-10 b3rs3rk
 	Chg: Change COUNT(*) queries to count the primary key columns to improve query performance
 	Chg: Re-work the count querying in PreDB class
 2015-12-09 niel
@@ -2284,7 +2491,7 @@ stable code:
 	Add: Add Game/XXX Info to nzb details: First Stage.
 	Add: Hot Movies Icon and Fix layout
 2014-07-26 bart39
-	Fix: Remove 'See full summary »' from the end of imdb movie plot #1420
+	Fix: Remove 'See full summary ?' from the end of imdb movie plot #1420
 2014-07-26 kevin
 	Fix: #1421
 	Add: Settings to settings.php for temporarily blocking site access to those sending too many requests.
@@ -2415,7 +2622,7 @@ stable code:
 	Fix: Hard-coded 15 workers in update_threaded.py
 	Chg: Various changes to process additional / nfo for python scripts.
 	Chg: Create temp dir if not exists and set up perms for threaded scripts - processadditional.
-	Chg: Change python postprocess_threaded.py to do tv and movie by groupID instead (in line with Bart/Ruhllatio's changes)
+	Chg: Change python postprocess_threaded.py to do tv and movie by groupID instead (in line with Bart/b3rs3rk's changes)
 	Chg: Call processAdditional directly, saving a DB instance in postprocess.
 	Add: Logic to attempt to detect string size overflow in NNTP, preventing some rare fatal errors.
 	* ---: Merge tasky's PR.

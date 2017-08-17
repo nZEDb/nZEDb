@@ -10,12 +10,19 @@
     },
     "classmap": [
       "www/pages/",
-      "libs/pixelead0/Tmdb/",
       "libs/PEAR/Net_NNTP/NNTP/",
       "libs/"
     ]
   },
   "config": {
+    "sort-packages": false,
+    "optimize-autoloader": true,
+    "fxp-asset": {
+      "installer-paths": {
+        "npm-asset-library": "www/themes/shared/libs",
+        "bower-asset-library": "www/themes/shared/libs"
+      }
+    },
     "process-timeout": 3600,
     "preferred-install": {
       "*": "source"
@@ -26,10 +33,6 @@
   "extra": {
     "branch-alias": {
       "dev-dev": "0.x-dev"
-    },
-    "asset-installer-paths": {
-      "npm-asset-library": "www/themes/shared/libs",
-      "bower-asset-library": "www/themes/shared/libs"
     }
   },
   "homepage": "http://nzedb.com",
@@ -48,15 +51,19 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/nZEDb/Git.php"
-    },
-    {
-      "type": "vcs",
       "url": "https://github.com/niel/li3_docs"
     },
     {
       "type": "vcs",
       "url": "https://github.com/niel/li3_quality"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/niel/steamfront"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/nZEDb/Git.php"
     },
     {
       "type": "vcs",
@@ -68,7 +75,6 @@
     }
   ],
   "require": {
-    "barracudanetworks/forkdaemon-php": "^1.0.7",
     "ext-ctype": "*",
     "ext-curl": "*",
     "ext-exif": "*",
@@ -91,27 +97,31 @@
     "ext-spl": "*",
     "ext-xmlwriter": "*",
     "ext-zlib": "*",
-    "fxp/composer-asset-plugin": "~1.2.0",
-    "giantbomb/giantbomb": "dev-master",
+    "barracudanetworks/forkdaemon-php": "^1.0.7",
+    "niel/steamfront": "dev-master",
+    "dborsatto/php-giantbomb": "dev-master",
+    "fxp/composer-asset-plugin": "~1.3.0",
     "google/recaptcha": "^1.1.2",
+    "guzzlehttp/guzzle": "^6.3",
     "james-heinrich/getid3": "^1.9.12",
     "joshpinkney/tv-maze-php-api": "dev-master",
     "moinax/tvdb": "^1.0.4",
     "nzedb/Git.php": "dev-master",
     "php": ">=5.6.9",
+    "php-tmdb/api": "^2.1",
     "phpmailer/phpmailer": "^5.2.21",
     "smarty/smarty": "~3.1.29",
-    "unionofrad/lithium": "^1.2-dev",
+    "unionofrad/lithium": "^1.1.0-beta",
+    "zeebinz/rarinfo": "~2.5.0",
     "bower-asset/animate.css": "~3.5.1",
     "bower-asset/autosize-3.0.x": "~3.0.15",
-    "bower-asset/bootstrap-3.3.x": "~3.3.6",
     "bower-asset/bootstrap-2.3.x": "~2.3.2",
+    "bower-asset/bootstrap-3.3.x": "~3.3.6",
     "bower-asset/bootstrap-hover-dropdown-2.2.x": "~2.2.1",
     "bower-asset/bootstrap-progressbar-0.9.x": "~0.9.0",
     "bower-asset/bootswatch": "^3.3",
     "bower-asset/chosen-1.5.x": "~1.5.1",
     "bower-asset/colorbox-1.6.x": "~1.6.3",
-    "bower-asset/DataTables-1.10.x": "~1.10.11",
     "bower-asset/fastclick-1.0.x": "~1.0.6",
     "bower-asset/font-awesome-4.5.x": "~4.5.0",
     "bower-asset/html5shiv-3.7.x": "~3.7.3",
@@ -127,13 +137,15 @@
     "bower-asset/responsive-tables-js-1.0.x": "~1.0.6",
     "bower-asset/select2-4.0.x": "~4.0.2",
     "bower-asset/slimScroll-1.3.x": "~1.3.7",
-    "bower-asset/tinymce-builded": "^4.4",
-    "zeebinz/rarinfo": "~2.5.0"
+    "bower-asset/tinymce-builded": "^4.4"
   },
   "require-dev": {
     "unionofrad/manual": "1.1.x-dev"
   },
   "scripts": {
+    "post-install-cmd": [
+      "nzedb\\build\\Composer::postInstallCmd"
+    ]
   },
   "suggest": {
     "ext-simple_php_yenc_decode": "Greatly improves yEnc decoding speed in PHP 5.x",

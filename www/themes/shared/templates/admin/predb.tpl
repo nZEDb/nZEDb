@@ -1,20 +1,22 @@
 <h1>{$page->title}</h1>
-<form name="presearch" method="get" action="{$smarty.const.WWW_TOP}/predb.php" id="custom-search-form"
-	  class="form-inline form-horizontal col-4 col-lg-4 pull-right">
-	<div id="search" class="input-group col-12 col-lg-12">
-		<input type="text" class="form-control" placeholder="Search predb" id="presearch" name="presearch"
-			   value="{$lastSearch|escape:'html'}">
-		<span class="input-group-btn">
-			<button type="submit" value="Go" class="btn btn-default">
-				<i class="fa fa-search"></i>
-			</button>
-		</span>
-	</div>
-</form>
+<div style="margin: 0 0 10px 0;">
+	<form name="presearch" method="get" action="{$smarty.const.WWW_TOP}/predb.php" id="custom-search-form"
+		  class="form-inline form-horizontal col-4 col-lg-4">
+		<div id="search" class="input-group col-12 col-lg-12">
+			<input type="text" class="form-control" placeholder="Search predb" id="presearch" name="presearch" value="{$lastSearch|escape:'html'}">
+			<span class="input-group-btn">
+				<button type="submit" value="Go" class="btn btn-default btn-outline">
+					<i class="fa fa-search">Search</i>
+				</button>
+			</span>
+		</div>
+	</form>
+</div>
 {$pager}
 <table class="data table table-striped responsive-utilities jambo-table">
 	<tr>
-		<th> Date</th>
+		<th> Date ({$tz})</th>
+		<th> Updated ({$tz})</th>
 		<th> Title</th>
 		<th> Category</th>
 		<th> Source</th>
@@ -27,7 +29,16 @@
 	{foreach $results as $result}
 		<tr class="{cycle values=",alt"}">
 			<td class="predb" style="text-align:center;">
-				{$result.predate|date_format:"%Y-%m-%d %H:%M:%S"}
+				{$result.created|date_format:"%Y-%m-%d %H:%M:%S"}
+			</td>
+			<td class="predb" style="text-align: center;">
+				<span style="text-align:center;">
+					{if isset($result.updated)}
+						{$result.updated|date_format:"%Y-%m-%d %H:%M:%S"}
+					{else}
+						&mdash;
+					{/if}
+				</span>
 			</td>
 			<td class="predb" style="text-align:center;">
 				{if isset($result.guid)}

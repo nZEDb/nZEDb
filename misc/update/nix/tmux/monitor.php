@@ -27,13 +27,13 @@ $tmux_niceness = (isset($tmux->niceness) ? $tmux->niceness : 2);
 $runVar['constants'] = $pdo->queryOneRow($tRun->getConstantSettings());
 
 $PHP = ($tRun->command_exist("php5") ? 'php5' : 'php');
-$PYTHON = ($tRun->command_exist("python3") ? 'python3 -OOu' : 'python -OOu');
+//$PYTHON = ($tRun->command_exist("python3") ? 'python3 -OOu' : 'python -OOu');
 
 //assign shell commands
 $show_time = (nZEDb_DEBUG ? "/usr/bin/time" : "");
 $runVar['commands']['_php'] = $show_time . " nice -n{$tmux_niceness} $PHP";
 $runVar['commands']['_phpn'] = "nice -n{$tmux_niceness} $PHP";
-$runVar['commands']['_python'] = $show_time . " nice -n{$tmux_niceness} $PYTHON";
+//$runVar['commands']['_python'] = $show_time . " nice -n{$tmux_niceness} $PYTHON";
 $runVar['commands']['_sleep'] = "{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/nix/tmux/bin/showsleep.php";
 
 //spawn IRCScraper as soon as possible
@@ -56,7 +56,7 @@ $runVar['timers']['query']['tpg1_time'] = 0;
 
 // Analyze release table if not using innoDB (innoDB uses online analysis)
 $engine = $pdo->queryOneRow(sprintf("SELECT ENGINE FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME = 'releases'", $pdo->escapeString($db_name)));
-if (!in_array($engine['engine'], ['InnoDB', 'TokuDB'])) {
+if (!in_array(strtolower($engine['engine']), ['innodb', 'tokudb', 'xtradb'])) {
 	printf($pdo->log->info("\nAnalyzing your tables to refresh your indexes."));
 	$pdo->optimise(false, 'analyze', false, ['releases']);
 	Misc::clearScreen();
@@ -108,9 +108,6 @@ while ($runVar['counts']['iterations'] > 0) {
 	switch ((int)$runVar['settings']['backfill']) {
 		case 1:
 			$runVar['scripts']['backfill'] = "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/backfill.php";
-			break;
-		case 2:
-			$runVar['scripts']['backfill'] = "{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py group";
 			break;
 		case 4:
 			$runVar['scripts']['backfill'] = "{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/safe.php backfill";

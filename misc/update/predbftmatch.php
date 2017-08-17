@@ -10,7 +10,7 @@ $pdo = new DB();
 if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1]))) {
 	exit($pdo->log->error(" This script tries to match a release name or searchname to a PreDB title by using Full Text Search Matching.\n"
 			. "It will first parse PreDB titles to match, order by oldest to newest pre.\n\n"
-			. "php predbftmatch.php 1000 show 1000	...: to limit to 1000 presently unsearched PreDB titles ordered by oldest to newest predate and show renaming offset title return by 1000.\n"
+			. "php predbftmatch.php 1000 show 1000	...: to limit to 1000 presently unsearched PreDB titles ordered by oldest to newest created and show renaming offset title return by 1000.\n"
 			. "php predbftmatch.php full show		...: to run on all unmatched PreDB titles and show renaming.\n"
 			. "php predbftmatch.php all show		...: to run on all PreDB titles (Around 2-3 seconds per pre runtime).\n\n"
 			. "Doing a limited search (first example) is recommended for testing.  As you match more PreDB IDs to your releases and search existing pres, the loops will get smaller and smaller.\n\n"
@@ -32,17 +32,17 @@ $titles = false;
 if (isset($argv[1]) && $argv[1] === "all") {
 	$titles = $pdo->queryDirect("SELECT id AS predb_id, title, source, searched FROM predb
 					WHERE LENGTH(title) >= 15 AND title NOT REGEXP '[\"\<\> ]'
-					ORDER BY predate ASC");
+					ORDER BY created ASC");
 //Selects all PreDB Titles that don't have a current match in releases (slower intial query but less loop time)
 } else if (isset($argv[1]) && $argv[1] === "full") {
 	$titles = $pdo->queryDirect("SELECT id AS predb_id, title, source, searched FROM predb
 					WHERE LENGTH(title) >= 15 AND searched = 0
-					AND title NOT REGEXP '[\"\<\> ]' ORDER BY predate ASC");
-//Selects PreDB Titles where predate is greater than the past user selected number of hours
+					AND title NOT REGEXP '[\"\<\> ]' ORDER BY created ASC");
+//Selects PreDB Titles where created is greater than the past user selected number of hours
 } else if (isset($argv[1]) && is_numeric($argv[1])) {
 	$titles = $pdo->queryDirect(sprintf("SELECT id AS predb_id, title, source, searched FROM predb
 						 WHERE LENGTH(title) >= 15 AND searched = 0
-						 AND title NOT REGEXP '[\"\<\> ]' ORDER BY predate ASC LIMIT %d %s",
+						 AND title NOT REGEXP '[\"\<\> ]' ORDER BY created ASC LIMIT %d %s",
 						 $argv[1], $offset));
 }
 

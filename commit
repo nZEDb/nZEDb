@@ -20,5 +20,7 @@ then
 	exit ${EXIT_STATUS}
 fi
 
+git add -u ./build/nzedb.xml
+
 # Commit changes.
 git commit

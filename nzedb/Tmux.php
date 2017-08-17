@@ -37,7 +37,7 @@ class Tmux
 	 */
 	public function version()
 	{
-		return (new Versions())->getGitTagInRepo();
+		return (new Versions())->getGitTagInFile();
 	}
 
 	/**
@@ -89,47 +89,13 @@ class Tmux
 	public function getConnectionsInfo($constants)
 	{
 		$runVar['connections']['port_a'] = $runVar['connections']['host_a'] = $runVar['connections']['ip_a'] = false;
-
-		if ($constants['nntpproxy'] == 0) {
-			$runVar['connections']['port'] = NNTP_PORT;
-			$runVar['connections']['host'] = NNTP_SERVER;
-			$runVar['connections']['ip'] = gethostbyname($runVar['connections']['host']);
-			if ($constants['alternate_nntp'] === '1') {
-				$runVar['connections']['port_a'] = NNTP_PORT_A;
-				$runVar['connections']['host_a'] = NNTP_SERVER_A;
-				$runVar['connections']['ip_a'] = gethostbyname($runVar['connections']['host_a']);
-			}
-		} else {
-			$filename = nZEDb_MISC . "update/python/lib/nntpproxy.conf";
-			$fp = fopen($filename, "r") or die("Couldn't open $filename");
-			while (!feof($fp)) {
-				$line = fgets($fp);
-				if (preg_match('/"host": "(.+)",$/', $line, $match)) {
-					$runVar['connections']['host'] = $match[1];
-				}
-				if (preg_match('/"port": (.+),$/', $line, $match)) {
-					$runVar['connections']['port'] = $match[1];
-					break;
-				}
-			}
-			if ($constants['alternate_nntp']) {
-				$filename = nZEDb_MISC . "update/python/lib/nntpproxy_a.conf";
-				$fp = fopen($filename, "r") or die("Couldn't open $filename");
-				while (!feof($fp)) {
-					$line = fgets($fp);
-					if (preg_match('/"host": "(.+)",$/', $line, $match)) {
-						$runVar['connections']['host_a'] = $match[1];
-					}
-					if (preg_match('/"port": (.+),$/', $line, $match)) {
-						$runVar['connections']['port_a'] = $match[1];
-						break;
-					}
-				}
-			}
-			$runVar['connections']['ip'] = gethostbyname($runVar['connections']['host']);
-			if ($constants['alternate_nntp'] === '1') {
-				$runVar['connections']['ip_a'] = gethostbyname($runVar['connections']['host_a']);
-			}
+		$runVar['connections']['port'] = NNTP_PORT;
+		$runVar['connections']['host'] = NNTP_SERVER;
+		$runVar['connections']['ip'] = gethostbyname($runVar['connections']['host']);
+		if ($constants['alternate_nntp'] === '1') {
+			$runVar['connections']['port_a'] = NNTP_PORT_A;
+			$runVar['connections']['host_a'] = NNTP_SERVER_A;
+			$runVar['connections']['ip_a'] = gethostbyname($runVar['connections']['host_a']);
 		}
 		return $runVar['connections'];
 	}
@@ -225,8 +191,7 @@ class Tmux
 					(%1\$s 'run_ircscraper') AS run_ircscraper,
 					(%2\$s 'sqlpatch') AS sqlpatch,
 					(%2\$s 'alternate_nntp') AS alternate_nntp,
-					(%2\$s 'delaytime') AS delaytime,
-					(%2\$s 'nntpproxy') AS nntpproxy",
+					(%2\$s 'delaytime') AS delaytime",
 					$tmuxstr,
 					$settstr
 		);
@@ -321,7 +286,6 @@ class Tmux
 			$obj->{$row['setting']} = $row['value'];
 		}
 
-		$obj->{'version'} = $this->version();
 		return $obj;
 	}
 
@@ -601,7 +565,7 @@ class Tmux
 				return "SELECT
 					(SELECT searchname FROM releases ORDER BY id DESC LIMIT 1) AS newestrelname,
 					(SELECT UNIX_TIMESTAMP(MIN(dateadded)) FROM collections) AS oldestcollection,
-					(SELECT UNIX_TIMESTAMP(MAX(predate)) FROM predb) AS newestpre,
+					(SELECT UNIX_TIMESTAMP(MAX(created)) FROM predb) AS newestpre,
 					(SELECT UNIX_TIMESTAMP(adddate) FROM releases ORDER BY id DESC LIMIT 1) AS newestrelease";
 			default:
 				return false;

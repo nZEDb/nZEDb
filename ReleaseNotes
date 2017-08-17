@@ -2,7 +2,154 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
-0.7.0.0 2017-03-06:
+0.7.4.0 2017-08-07
+***NOTE*** As the latest version of Debian (Debian 9) now supports PHP 7.0, PHP 5.6 is now
+	deprecated. We will be removing support for it before the end of the year, probably within 2-3
+	months, so update as soon as you can.
+Added:
+	* New TMDb library code. Switching to use php-tmdb/api library from github.
+
+Changed:
+	* Updated steamfront version.
+	* Set 'updated' date to zero value when inserting new IRCScraper entries. Should help prevent
+      certain errors cause by bad SQL modes. ***NOTE*** Make sure your SQL_MODE does not include
+      NO_NON_ZERO DATES or similar options.
+    * Move location for predb-progress.txt to the standard configuration directory. If you use the
+     'progress' setting for importing predb files, you will have to move this manually.
+
+Fixed:
+	* Removed check for tpg in collection_regexes-test.php's template, which caused problems with
+	 displaying.
+	* Version checks in .../nzedb/NZB.php and .../nzedb/Tmux.php use the XML file instead of the
+	 repository, so that non-dev installs work without the repository.
+	* Replace spaces with tab, causing steam_app last_update setting to fail on insertion.
+	* Check for existing apikey before sending request to GiantBomb. Prevent authentication errors
+	 showing up in PPA.
+	* Check that '*filestoformreleases' index exists before checking its value for new group
+      creation. This was preventing nzb importing from handling new groups.
+
+
+0.7.3.3 2017-06-21
+Fixed:
+	* SQL patch 0482 to update release_renaming_regexes entries.
+
+
+0.7.3.2 2017-06-20
+Fixed:
+	* Predb entries not being updated because of error in method signature. This prevented
+	 IRCScraper from working correctly.
+	* Replace overlooked occurences of 'predate' with 'created' in queries. Closes Issue 2474.
+
+
+0.7.3.1 2017-06-09
+Fixed:
+	* Steam lookup repeating all the lookups because last pdate date/time wasn't saved properly.
+
+
+0.7.3.0 2017-06-05
+Changed:
+	* tmux configuration adjustments for <= v1.8.
+	* Update PC Games support, use Steam and GiantBomb only.
+	* The IRCScraper code has been changed to make it properly timezone aware. As before,
+	 predates are received as UTC/GMT time. However they are not converted using a call to the
+	 Database server (whose timezone is essentially unknown). Instead, the timezone of the
+	 connection to the server is used, which we are able to set as part of the ootstrap process.
+	 By default, this timezone will be the same as the PHP code running the indexer, but it may
+	 be set to any valid zone by the user.
+      Database changes: The 'predate' datetime field is replaced by a 'created' timestamp field
+     and a new 'updated' timestamp field is added.
+      ***NOTE*** If you have not already done so, you MUST populate the database's timezone tables
+     as described in their documentation. For Debian/Ubuntu users 'mysql_tzinfo_to_sql
+     /usr/share/zoneinfo | mysql -u root mysql' should load them easily, this will require
+     restarting the database server.
+      The smarty template now displays the timezone in the Date header so that it is obvious to
+     users. There is also an additional field for when the entry was updated.
+      Additionally the pager template is switched to the newer paginate.tpl that I have been
+     using in the dev-move-to-models branch.
+    * Reworked all Anime release naming regexes.
+
+Fixed:
+	* Problem with external yEnc decoders (hopefully). Closes issues 2383 and 2435.
+	* Path to bootstrap.min.js in Default theme.
+	* Path reference to settings.php for View Logs page. Fixes issue 2456.
+	* Fixed some fields in *.tsv files being processed incorrectly because it started with a
+	 double-quote, but didn't end with one.
+
+
+0.7.2.1 2017-05-04
+Changed:
+	* Updates to tmux configuration files for newer version (2.4) of tmux.
+
+Fixed:
+	* NULL value in predb.predate for IRCScraper. Closes issue 2449.
+
+
+0.7.2.0 2017-05-01
+Added:
+	* Per poster categorising of releases.
+	* Logging for IRCScraper's testing for duplicates, to try to determine why it sometimes fails
+	 to detect them. This also prevents the script from exiting because of the exception.
+
+Changed:
+	* Removed python module check in tmux/run.php, as python is no longer supported.
+	* Updates to scripts simple.sh, simple-expanded.sh, and threaded.sh to get rid of outdated
+	 elements.
+	* Composer uses '--prefer-dist' for stable branches, '--prefer-source' otherwise. Part of the
+	 move to not using the repo in production.
+	* SQL/Database optimisations.
+
+Fixed:
+	* Properly categorize ANiHLS and HAiKU releases as TV > Anime (please run
+	 'php misc/testing/Release/recategorize.php all' to recategorize releases).
+	* Properly categorise and rename SDCLiP releases.
+	* Properly populate anidb_episodes table.
+	* Fixes to IRCScraper class to make it more resilient for those suffing the intermittent missing
+	 catalogue error.
+
+
+0.7.1.2 2017-04-08
+Changed:
+	* Stable branches now prefer distributed version of code, instead of source. This may help
+	 with some local configuration problems, but is primarily intended to separate stable code
+	 from the repository meta data.
+
+0.7.1.1 2017-04-06:
+Fixed:
+	* Added missing field (collection_regexes_id) to multigroup_collections table definition.
+
+
+0.7.1.0 2017-04-03
+	***NOTE*** This requires an update of Composer itself, to v1.4.0 or later.
+	`composer self-update`
+Added:
+
+Changed:
+	* Removes conditional checking for TPG as it is no longer optional.
+	* Remove use cases for python backfill script.
+	* Remove nntpproxy support.
+	* Update fxp/composer-asset-plugin to v1.3.0
+		***NOTE*** This requires an update of Composer itself, to v1.4.0 or later.
+	* Increase release size floor values to -10/10 in NameFixer class uidCheck function for better
+	  mediainfo matching.
+	* Improve mediainfo uniqueid matching.
+	* Remove git repository checks from Tmux scripts. This is an effort to remove the use of the
+      repository from user code. Dev code will still use it for some tasks (e.g. apply tags for
+      releases).
+
+Fixed:
+	* Fix `zed update nzedb` (PR 2406).
+	* Redirect from index page to Install when 'install.lock' does not exist.
+	* Update control tool for sabnzbd v1.x API (PR 2398).
+	* Make NZBImport check for searchname dupes (Closes issue 2411).
+	* Update import predb daily batch script to handle changed layout on github. Also adds the
+      date of the file to successful download message.
+    * Gamma PC Games view doesn't display grouped by gamesinfo_id.
+
+
+0.7.0.0 2017-03-06
+***IMPORTANT*** If you are updating from an older version, you must update to this version and
+following the steps to migrate configuration files BEFORE you continue to update to the latest
+version.
 Added:
 	* New setting (site.main.incognito) that determines if the main page is shown to vistors, or if
 	 they are redirected to the login page instead.

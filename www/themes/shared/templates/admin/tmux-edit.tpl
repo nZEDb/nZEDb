@@ -223,8 +223,6 @@
 					example: you have Backfill Threads = 10, Backfill Quantity = 20k, Max Messages = 5k: you will run 10
 					threads, queue of 40 and download 200k headers.<br/>
 					All - Backfills all enabled groups using the multiprocessing script by the number of articles (set in tmux)</br>
-					Group - Backfills the number of groups (set in tmux), by Backfill Quantity (set in tmux), up to
-					backfill days (set in admin-view groups)<br/>
 					These settings are all per loop and does not use backfill date. Approximately every 80 minutes,
 					every activated backfill group will be backfilled (5k headers). This is to allow incomplete
 					collections to be completed and/or the 2 hour delay reset if the collection is still active. This

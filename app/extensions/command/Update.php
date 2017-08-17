@@ -111,33 +111,25 @@ class Update extends \app\extensions\console\Command
 			return;
 		}
 
-		$output = trim($this->git->pull());
-		$this->out($output);
-
-		return $output;
+		return trim($this->git->pull());
 	}
 
 	public function nzedb()
 	{
 		try {
-			$output = $this->git();
-			if ($output === 'Already up-to-date.') {
-				$this->out($output, 'info');
+			$status = $this->composer();
+			if ($status) {
+				$this->out('Composer failed to update!!', 'error');
+
+				return false;
 			} else {
-				$status = $this->composer();
-				if ($status) {
-					$this->out('Composer failed to update!!', 'error');
+				$fail = $this->db();
+				if ($fail) {
+					$this->out('Db updating failed!!', 'error');
 
-					return false;
-				} else {
-					$fail = $this->db();
-					if ($fail) {
-						$this->out('Db updating failed!!', 'error');
-
-						return 1;
-					}
-				};
-			}
+					return 1;
+				}
+			};
 
 			$this->scripts();
 
@@ -145,10 +137,10 @@ class Update extends \app\extensions\console\Command
 			$smarty->setCompileDir(nZEDb_SMARTY_TEMPLATES);
 			$cleared = $smarty->clearCompiledTemplate();
 			if ($cleared) {
-				$this->out('The Smarty compiled template cache has been cleaned for you', 'primary');
-			} else {
+				$this->out('The Smarty compiled template cache has been cleared for you', 'primary');
+			} else if (!empty(glob(nZEDb_SMARTY_TEMPLATES . '*.php', GLOB_NOSORT))) {
 				$this->out('You should clear your Smarty compiled template cache at: ' .
-					nZEDb_RES . "smarty" . DS . 'templates_c',
+					nZEDb_SMARTY_TEMPLATES,
 					'primary');
 			}
 		} catch (\Exception $e) {
@@ -194,9 +186,11 @@ class Update extends \app\extensions\console\Command
 	protected function composer()
 	{
 		$this->initialiseGit();
-		$command = 'composer install --prefer-source';
+		$command = 'composer install';
 		if (in_array($this->gitBranch, $this->git->getBranchesStable())) {
-			$command .= ' --no-dev';
+			$command .= ' --prefer-dist --no-dev';
+		} else {
+			$command .= ' --prefer-source';
 		}
 		$this->out('Running composer install process...', 'primary');
 		system($command, $status);
@@ -252,6 +246,7 @@ class Update extends \app\extensions\console\Command
 	 */
 	protected function scripts()
 	{
+		// TODO make this do something useful ;-)
 		if (![$this->updates]) {
 			$this->updates = ['script' => '0000-00-00 00:00:00'];
 		}

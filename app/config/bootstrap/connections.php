@@ -73,6 +73,8 @@ use lithium\data\Connections;
 // 	'strict' => false
 // ));
 
+\lithium\util\Inflector::rules('uninflected', ['predb']);
+
 $installed = nZEDb_CONFIGS . 'install.lock';
 
 // Check for install.lock first. If it exists, so should config.php
@@ -117,6 +119,7 @@ if (file_exists($installed)) {
 				'database'   => DB_NAME,
 				'encoding'   => 'UTF-8',
 				'persistent' => false,
+				'timezone'   => ini_get('date.timezone'),
 			]
 		);
 
@@ -160,6 +163,11 @@ if (file_exists($installed)) {
 			'database'   => $db['database'],
 			'encoding'   => 'UTF-8',
 			'persistent' => $db['persist'],
+			'timezone'   => ini_get('date.timezone'),
+			// If enabled this forces all table column names to be lower-cased. This should only
+			// be needed by users with long standing databases that were created with upper-cased
+			// names for some fields.
+			'lowercase'  =>	false,
 		]
 	);
 
@@ -176,7 +184,8 @@ if (file_exists($installed)) {
 			'login'    => 'root',
 			'password' => 'root_pass',
 			'database' => 'nZEDb',
-			'encoding' => 'UTF-8'
+			'encoding' => 'UTF-8',
+			'timezone' => ini_get('date.timezone'),
 		]
 	);
 }

@@ -85,10 +85,11 @@ class DbUpdate
 	public function loadTables(array $options = [])
 	{
 		$defaults = [
-			'ext'	=> 'tsv',
-			'files'	=> [],
-			'path'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data',
-			'regex'	=> '#^' . Misc::PATH_REGEX . '(?P<order>\d+)-(?P<table>\w+)\.tsv$#',
+			'enclosedby'	=> null,
+			'ext'			=> 'tsv',
+			'files'			=> [],
+			'path'			=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data',
+			'regex'			=> '#^' . Misc::PATH_REGEX . '(?P<order>\d+)-(?P<table>\w+)\.tsv$#',
 		];
 		$options += $defaults;
 
@@ -97,8 +98,11 @@ class DbUpdate
 		$files = empty($options['files']) ? Misc::getDirFiles($options) : $options['files'];
 		natsort($files);
 		$local = $this->pdo->isLocalDb() ? '' : 'LOCAL ';
+		$enclosedby = empty($options['enclosedby']) ? '' : 'OPTIONALLY ENCLOSED BY "' .
+			$options['enclosedby'] . '"';
 		$sql = 'LOAD DATA ' .
-			$local . 'INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" OPTIONALLY ENCLOSED BY "\"" LINES TERMINATED BY "\r\n" IGNORE 1 LINES (%s)';
+			$local . 'INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" ' . $enclosedby .
+			' LINES TERMINATED BY "\r\n" IGNORE 1 LINES (%s)';
 		foreach ($files as $file) {
 			if ($show === true) {
 				echo "File: $file\n";

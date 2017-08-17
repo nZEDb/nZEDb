@@ -180,7 +180,7 @@ class NameFixer
 		$preId = false;
 		if ($cats === 3) {
 			$query = sprintf('
-					SELECT rel.id AS releases_id
+					SELECT rel.id AS releases_id, rel.fromname
 					FROM releases rel
 					INNER JOIN release_nfos nfo ON (nfo.releases_id = rel.id)
 					WHERE nzbstatus = %d
@@ -191,7 +191,7 @@ class NameFixer
 			$preId = true;
 		} else {
 			$query = sprintf('
-					SELECT rel.id AS releases_id
+					SELECT rel.id AS releases_id, rel.fromname
 					FROM releases rel
 					INNER JOIN release_nfos nfo ON (nfo.releases_id = rel.id)
 					WHERE (rel.isrenamed = %d OR rel.categories_id = %d)
@@ -214,7 +214,7 @@ class NameFixer
 				foreach ($releases as $rel) {
 					$releaseRow = $this->pdo->queryOneRow(
 						sprintf('
-							SELECT nfo.releases_id AS nfoid, rel.groups_id, rel.categories_id, rel.name, rel.searchname,
+							SELECT nfo.releases_id AS nfoid, rel.groups_id, rel.fromname, rel.categories_id, rel.name, rel.searchname,
 								UNCOMPRESS(nfo) AS textstring, rel.id AS releases_id
 							FROM releases rel
 							INNER JOIN release_nfos nfo ON (nfo.releases_id = rel.id)
@@ -259,7 +259,7 @@ class NameFixer
 		$preId = false;
 		if ($cats === 3) {
 			$query = sprintf('
-					SELECT rf.name AS textstring, rel.categories_id, rel.name, rel.searchname, rel.groups_id,
+					SELECT rf.name AS textstring, rel.fromname, rel.categories_id, rel.name, rel.searchname, rel.groups_id,
 						rf.releases_id AS fileid, rel.id AS releases_id
 					FROM releases rel
 					INNER JOIN release_files rf ON (rf.releases_id = rel.id)
@@ -271,7 +271,7 @@ class NameFixer
 			$preId = true;
 		} else {
 			$query = sprintf('
-					SELECT rf.name AS textstring, rel.categories_id, rel.name, rel.searchname, rel.groups_id,
+					SELECT rf.name AS textstring, rel.fromname, rel.categories_id, rel.name, rel.searchname, rel.groups_id,
 						rf.releases_id AS fileid, rel.id AS releases_id
 					FROM releases rel
 					INNER JOIN release_files rf ON (rf.releases_id = rel.id)
@@ -321,7 +321,7 @@ class NameFixer
 
 		if ($cats === 3) {
 			$query = sprintf('
-					SELECT rel.id AS releases_id, rel.guid, rel.groups_id
+					SELECT rel.id AS releases_id, rel.fromname, rel.guid, rel.groups_id
 					FROM releases rel
 					WHERE nzbstatus = %d
 					AND predb_id = 0',
@@ -330,7 +330,7 @@ class NameFixer
 			$cats = 2;
 		} else {
 			$query = sprintf('
-					SELECT rel.id AS releases_id, rel.guid, rel.groups_id
+					SELECT rel.id AS releases_id, rel.fromname, rel.guid, rel.groups_id
 					FROM releases rel
 					WHERE (rel.isrenamed = %d OR rel.categories_id = %d)
 					AND proc_par2 = %d',
@@ -394,7 +394,7 @@ class NameFixer
 		if ($cats === 3) {
 			$query = sprintf('
 				SELECT
-					rel.id AS releases_id, rel.size AS relsize, rel.groups_id, rel.categories_id,
+					rel.id AS releases_id, rel.fromname, rel.size AS relsize, rel.groups_id, rel.categories_id,
 					rel.name, rel.name AS textstring, rel.predb_id, rel.searchname,
 					HEX(ru.uniqueid) AS uid
 				FROM releases rel
@@ -409,7 +409,7 @@ class NameFixer
 		} else {
 			$query = sprintf('
 				SELECT
-					rel.id AS releases_id, rel.size AS relsize, rel.groups_id, rel.categories_id,
+					rel.id AS releases_id, rel.fromname, rel.size AS relsize, rel.groups_id, rel.categories_id,
 					rel.name, rel.name AS textstring, rel.predb_id, rel.searchname,
 					HEX(ru.uniqueid) AS uid
 				FROM releases rel
@@ -568,7 +568,7 @@ class NameFixer
 				$this->matched = true;
 				$this->relid = $release['releases_id'];
 
-				$determinedCategory = $this->category->determineCategory($release['groups_id'], $newName);
+				$determinedCategory = $this->category->determineCategory($release['groups_id'], $newName, !empty($release['fromname']) ? $release['fromname'] : '');
 
 				if ($type === "PAR2, ") {
 					$newName = ucwords($newName);
@@ -579,6 +579,9 @@ class NameFixer
 
 				$this->fixed++;
 
+				if(!empty($release['fromname']) && (preg_match('/oz@lot[.]com/i', $release['fromname']) || preg_match('/anon@y[.]com/i', $release['fromname']))) {
+					$newName = preg_replace('/(KTR|GUSH|BIUK|WEIRD)$/', 'SDCLiP', $newName);
+				}
 				$newName = explode("\\", $newName);
 				$newName = preg_replace(['/^[-=_\.:\s]+/', '/[-=_\.:\s]+$/'], '', $newName[0]);
 
@@ -742,7 +745,7 @@ class NameFixer
 		//Find release matches with fulltext and then identify exact matches with cleaned LIKE string
 		$res = $this->pdo->queryDirect(
 			sprintf("
-				SELECT r.id AS releases_id, r.name, r.searchname,
+				SELECT r.id AS releases_id, r.name, r.fromname, r.searchname,
 					r.groups_id, r.categories_id
 				FROM releases r
 				%1\$s
@@ -839,7 +842,7 @@ class NameFixer
 
 			$query = $this->pdo->queryDirect(
 				sprintf("
-					SELECT r.id AS releases_id, r.name, r.searchname,
+					SELECT r.id AS releases_id, r.name, r.fromname, r.searchname,
 						r.groups_id, r.categories_id,
 						GROUP_CONCAT(rf.name ORDER BY LENGTH(rf.name) DESC SEPARATOR '||') AS filename
 					FROM releases r
@@ -903,6 +906,17 @@ class NameFixer
 		foreach(explode('||', $release['filename']) AS $key => $fileName) {
 			$this->_fileName = $fileName;
 			$this->_cleanMatchFiles();
+			$preMatch = preg_match('/(\d{2}\.\d{2}\.\d{2})+[\w-.]+[\w]$/i', $this->_fileName, $match);
+			if ($preMatch) {
+				$result = $this->pdo->queryOneRow(sprintf("SELECT filename AS filename FROM predb WHERE MATCH(filename) AGAINST ('$match[0]' IN BOOLEAN MODE)"));
+				$preFTmatch = preg_match('/(\d{2}\.\d{2}\.\d{2})+[\w-.]+[\w]$/i', $result['filename'], $match1);
+				if ($preFTmatch) {
+					if ($match[0] == $match1[0]) {
+						$this->_fileName = $result['filename'];
+					}
+				}
+			}
+
 			if ($this->_fileName !== '') {
 				$pre = $this->pdo->queryOneRow(
 					sprintf('
@@ -1080,7 +1094,7 @@ class NameFixer
 						$this->_updateSingleColumn('proc_files', self::PROC_FILES_DONE, $release['releases_id']);
 						break;
 					case "PAR2, ":
-						$this->_updateSingleColumn('proc_par2', self::PROC_FILES_DONE, $release['releases_id']);
+						$this->_updateSingleColumn('proc_par2', self::PROC_PAR2_DONE, $release['releases_id']);
 						break;
 					case "UID, ":
 						$this->_updateSingleColumn('proc_uid', self::PROC_UID_DONE, $release['releases_id']);
@@ -1646,13 +1660,13 @@ class NameFixer
 				STRAIGHT_JOIN releases r ON ru.releases_id = r.id
 				WHERE ru.uniqueid = UNHEX({$this->pdo->escapeString($release['uid'])})
 				AND ru.releases_id != {$release['releases_id']}
-				AND (r.predb_id > 0 OR r.anidbid > 0)"
+				AND (r.predb_id > 0 OR r.anidbid > 0 OR r.fromname = 'nonscene@Ef.net (EF)')"
 			);
 
 			if ($result instanceof \Traversable) {
 				foreach ($result AS $res) {
 					$floor = round(($res['relsize'] - $release['relsize']) / $res['relsize'] * 100, 0);
-					if ($floor >= -5 && $floor <= 5) {
+					if ($floor >= -10 && $floor <= 10) {
 						$this->updateRelease(
 							$release,
 							$res['searchname'],

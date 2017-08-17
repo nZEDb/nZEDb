@@ -8,7 +8,7 @@ use nzedb\utility\Misc;
  *
  * Class IRCClient
  */
-class IRCClient
+abstract class IRCClient
 {
 	/**
 	 * Hostname IRC server used when connecting.
@@ -473,9 +473,7 @@ class IRCClient
 	 *
 	 * @access protected
 	 */
-	protected function processChannelMessages()
-	{
-	}
+	abstract protected function processChannelMessages();
 
 	/**
 	 * Join a channel.
