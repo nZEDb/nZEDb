@@ -47,6 +47,18 @@ class Usenet extends \app\extensions\console\Command
 		parent::__construct($config + $defaults);
 	}
 
+	public function fetch()
+	{
+		if (empty($this->msgid)) {
+			$this->error("{:red}No message-id (msgid=) supplied.{:end}");
+			$this->msgid = $this->in("message-id?");
+		}
+
+		$this->out("{:cyan}Message-ID used: '{$this->msgid}'{:end}");
+
+		$nntp = new NNTP(['Settings' => new DB()]);
+	}
+
 	public function run()
 	{
 		if (!$this->request->args()) {
