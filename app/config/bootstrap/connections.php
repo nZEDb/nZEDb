@@ -171,6 +171,40 @@ if (file_exists($installed)) {
 		]
 	);
 
+	if (nZEDb_DEBUG) {
+		if (!defined()) {
+			define('DB_SYSTEM', strtolower($adapter));
+		}
+
+		if (!defined()) {
+			define('DB_HOST', $db['host']);
+		}
+
+		if (!defined()) {
+			define('DB_PORT', $db['port']);
+		}
+
+		if (!defined()) {
+			define('DB_SOCKET', $db['socket']);
+		}
+
+		if (!defined()) {
+			define('DB_USER', $db['user']);
+		}
+
+		if (!defined()) {
+			define('DB_PASSWORD', $db['password']);
+		}
+
+		if (!defined()) {
+			define('DB_NAME', $db['database']);
+		}
+
+		if (!defined()) {
+			define('DB_PCONNECT', $db['persist']);
+		}
+	}
+
 	\nzedb\utility\Misc::setCoversConstant(
 		\app\models\Settings::value('site.main.coverspath')
 	);
