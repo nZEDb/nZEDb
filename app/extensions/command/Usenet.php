@@ -19,6 +19,7 @@
 
 namespace app\extensions\command;
 
+use app\models\Settings;
 use nzedb\db\DB;
 use nzedb\NNTP;
 
@@ -36,6 +37,13 @@ class Usenet extends \app\extensions\console\Command
 
 	public $msgid = '<0c-A40009D167$y23340x3Gi4781d@I40$O3b586991.Y1al3kC5>';
 
+	public $showHeader = false;
+
+	/**
+	 * @var \nzedb\NNTP object
+	 */
+	private $usp = null;
+
 	/**
 	 * Constructor.
 	 *
@@ -49,6 +57,16 @@ class Usenet extends \app\extensions\console\Command
 			'response' => [],
 		];
 		parent::__construct($config + $defaults);
+
+		$this->usp = new NNTP(['Settings' => new DB()]);
+
+		$result = $this->usp->doConnect(Settings::value('..compressedheaders'));
+		if ($result === true) {
+			$this->out("{:green}Connected to USP{:end}");
+		} else {
+			$this->out("{:green}Damnit an error!!{:end}");
+			throw new \ErrorException($result->getMessage());
+		}
 	}
 
 	public function fetch()
@@ -63,21 +81,14 @@ class Usenet extends \app\extensions\console\Command
 			$this->group = $this->in("group name?");
 		}
 
-		$this->out("{:cyan}Using message-id: '{$this->msgid}'\nGroup: {$this->group}{:end}");
+		$this->out("{:cyan}Using\nmessage-id: '{$this->msgid}'\nGroup: {$this->group}{:end}");
 
-		$nntp = new NNTP(['Settings' => new DB()]);
+		$result = $this->usp->get_Header($this->group, $this->msgid);
 
-		$result = $nntp->doConnect();
-
-		if ($result === true) {
-			$this->out("{:green}Connected to USP.{:end}");
-			$result = $nntp->get_Header($this->msgid, $this->group);
-
-			if ($nntp->isError($result) === false) {
-				$this->out("{:green}Fetched headers{:end}");
-			} else {
-				$this->error("{$result->getMessage()}");
-				$this->out("{:green}Damnit an error!!{:end}");
+		if ($this->usp->isError($result) === false) {
+			$this->out("{:green}Fetched header(s){:end}");
+			if ($this->showHeader) {
+				var_dump($result);
 			}
 		} else {
 			$this->error("{$result->getMessage()}");
@@ -93,5 +104,4 @@ class Usenet extends \app\extensions\console\Command
 
 		return false;
 	}
-
 }
