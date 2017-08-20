@@ -73,7 +73,7 @@ class Usenet extends \app\extensions\console\Command
 	{
 		if (empty($this->msgid)) {
 			$this->error("{:red}No message-id (--msgid=) supplied.{:end}");
-			$this->msgid = $this->in("message-id?");
+			$this->msgid = $this->in("message-id (complex ids [most] will need single-quoting)?");
 		}
 
 		if (empty($this->group)) {
