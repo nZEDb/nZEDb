@@ -32,6 +32,10 @@ use nzedb\NNTP;
  */
 class Usenet extends \app\extensions\console\Command
 {
+	public $group = 'alt.binaries.moovee';
+
+	public $msgid = '<0c-A40009D167$y23340x3Gi4781d@I40$O3b586991.Y1al3kC5>';
+
 	/**
 	 * Constructor.
 	 *
@@ -50,13 +54,35 @@ class Usenet extends \app\extensions\console\Command
 	public function fetch()
 	{
 		if (empty($this->msgid)) {
-			$this->error("{:red}No message-id (msgid=) supplied.{:end}");
+			$this->error("{:red}No message-id (--msgid=) supplied.{:end}");
 			$this->msgid = $this->in("message-id?");
 		}
 
-		$this->out("{:cyan}Message-ID used: '{$this->msgid}'{:end}");
+		if (empty($this->group)) {
+			$this->error("{:red}No group name (--group=) supplied.{:end}");
+			$this->group = $this->in("group name?");
+		}
+
+		$this->out("{:cyan}Using message-id: '{$this->msgid}'\nGroup: {$this->group}{:end}");
 
 		$nntp = new NNTP(['Settings' => new DB()]);
+
+		$result = $nntp->doConnect();
+
+		if ($result === true) {
+			$this->out("{:green}Connected to USP.{:end}");
+			$result = $nntp->get_Header($this->msgid, $this->group);
+
+			if ($nntp->isError($result) === false) {
+				$this->out("{:green}Fetched headers{:end}");
+			} else {
+				$this->error("{$result->getMessage()}");
+				$this->out("{:green}Damnit an error!!{:end}");
+			}
+		} else {
+			$this->error("{$result->getMessage()}");
+			$this->out("{:green}Damnit an error!!{:end}");
+		}
 	}
 
 	public function run()
