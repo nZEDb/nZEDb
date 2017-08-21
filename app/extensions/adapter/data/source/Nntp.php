@@ -19,6 +19,14 @@
 namespace app\extensions\adapter\data\source;
 
 
+use app\models\Settings;
+
+
+/**
+ * The `Nntp` class provides the base-level abstraction for connecting to a Usenet Service Provider.
+ *
+ * @package app\extensions\adapter\data\source
+ */
 abstract class Nntp extends \lithium\data\Source
 {
 	/**
@@ -47,7 +55,7 @@ abstract class Nntp extends \lithium\data\Source
 
 	public function delete($query, array $options = [])
 	{
-		// TODO: Implement delete() method.
+		// TODO: add reporting that this is not supported.
 	}
 
 	public function disconnect()
@@ -62,7 +70,7 @@ abstract class Nntp extends \lithium\data\Source
 
 	public function update($query, array $options = [])
 	{
-		// TODO: Implement update() method.
+		// TODO: add reporting that this is not supported.
 	}
 }
 
