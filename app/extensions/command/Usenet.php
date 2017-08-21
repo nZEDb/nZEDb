@@ -19,6 +19,7 @@
 
 namespace app\extensions\command;
 
+use app\extensions\util\Yenc;
 use app\models\Settings;
 use nzedb\db\DB;
 use nzedb\NNTP;
@@ -36,6 +37,8 @@ class Usenet extends \app\extensions\console\Command
 	public $group = 'alt.binaries.moovee';
 
 	public $msgid = '<0c-A40009D167$y23340x3Gi4781d@I40$O3b586991.Y1al3kC5>';
+
+	public $showBody = false;
 
 	public $showHeader = false;
 
@@ -83,17 +86,46 @@ class Usenet extends \app\extensions\console\Command
 
 		$this->out("{:cyan}Using\nmessage-id: '{$this->msgid}'\nGroup: {$this->group}{:end}");
 
-		$result = $this->usp->get_Header($this->group, $this->msgid);
+		$path = nZEDb_TMP . trim($this->msgid, '<>');
+		if (!file_exists($path)) {
+			mkdir($path);
+		}
 
+		$result = $this->getHeader($this->msgid, true);
 		if ($this->usp->isError($result) === false) {
-			$this->out("{:green}Fetched header(s){:end}");
+			file_put_contents($path . DS . 'headers.txt', $result . "\r\n");
 			if ($this->showHeader) {
-				var_dump($result);
+				$this->out("{:green}Headers{:end}");
+				$this->out( $result);
+			} else {
+				$this->out("{:green}Fetched headers{:end}");
 			}
 		} else {
-			$this->error("{$result->getMessage()}");
 			$this->out("{:green}Damnit an error!!{:end}");
+			throw new \ErrorException($result->getMessage());
 		}
+
+		$result = $this->getBody($this->msgid, true);
+		if ($this->usp->isError($result) === false) {
+			file_put_contents($path . DS . 'body.txt', $result . "\r\n");
+			if ($this->showBody) {
+				$this->out("{:green}Body{:end}");
+				$this->out($result);
+			} else {
+				$this->out("{:green}Fetched body{:end}");
+			}
+			file_put_contents($path . DS . 'body.decoded', $this->decodeBody($result));
+		} else {
+			$this->out("{:green}Damnit an error!!{:end}");
+			throw new \ErrorException($result->getMessage());
+		}
+
+		/*
+		} else {
+			$this->out("{:green}Damnit an error!!{:end}");
+			throw new \ErrorException($article->getMessage());
+		}
+		*/
 	}
 
 	public function run()
@@ -103,5 +135,28 @@ class Usenet extends \app\extensions\console\Command
 		}
 
 		return false;
+	}
+
+	protected function getBody($identifier = null, $implode = false)
+	{
+		// Download the header.
+		$header = $this->usp->getBody($identifier, $implode);
+
+		return $header;
+	}
+
+	protected function getHeader($identifier = null, $implode = false)
+	{
+		// Download the header.
+		$header = $this->usp->getHeader($identifier, $implode);
+
+		return $header;
+	}
+
+	private function decodeBody(&$text)
+	{
+		return Yenc::decode($text);
+		//return Yenc::decodeIgnore($text, ['name' => 'php']);
+		//return false;
 	}
 }
