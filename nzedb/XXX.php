@@ -3,6 +3,11 @@ namespace nzedb;
 
 use app\models\Settings;
 use nzedb\db\DB;
+use nzedb\processing\adult\ADE;
+use nzedb\processing\adult\ADM;
+use nzedb\processing\adult\AEBN;
+use nzedb\processing\adult\Hotmovies;
+use nzedb\processing\adult\Popporn;
 
 /**
  * Class XXX
@@ -382,191 +387,160 @@ class XXX
 	}
 
 	/**
-	 * Fetch xxx info for the movie.
+	 * @param $movie
 	 *
-	 * @param string $xxxmovie
-	 *
-	 * @return boolean
+	 * @return false|int|string
+	 * @throws \Exception
 	 */
-	public function updateXXXInfo($xxxmovie)
+	public function updateXXXInfo($movie)
 	{
+		$cover = $backdrop = 0;
+		$xxxID = -2;
+		$this->whichclass = 'aebn';
+		$mov = new AEBN();
+		$mov->cookie = $this->cookie;
+		ColorCLI::doEcho(ColorCLI::info('Checking AEBN for movie info'));
+		$res = $mov->processSite($movie);
 
-		$res = false;
-		$this->whichclass = '';
-
-		$iafd = new IAFD();
-		$iafd->searchTerm = $xxxmovie;
-
-		if ($iafd->findme() !== false) {
-
-			switch ($iafd->classUsed) {
-				case "ade":
-					$mov = new ADE();
-					$mov->directLink = (string)$iafd->directUrl;
-					$res = $mov->getDirect();
-					$res['title'] = $iafd->title;
-					$res['directurl'] = (string)$iafd->directUrl;
-					$this->whichclass = $iafd->classUsed;
-					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD -> Adult DVD Empire"));
-					break;
-			}
+		if ($res === false) {
+			$this->whichclass = 'pop';
+			$mov = new Popporn();
+			$mov->cookie = $this->cookie;
+			ColorCLI::doEcho(ColorCLI::info('Checking PopPorn for movie info'));
+			$res = $mov->processSite($movie);
 		}
 
 		if ($res === false) {
-
-			$this->whichclass = "aebn";
-			$mov = new AEBN();
+			$this->whichclass = 'adm';
+			$mov = new ADM();
 			$mov->cookie = $this->cookie;
-			$mov->searchTerm = $xxxmovie;
-			$res = $mov->search();
-
-			if ($res === false) {
-				$this->whichclass = "ade";
-				$mov = new ADE();
-				$mov->searchTerm = $xxxmovie;
-				$res = $mov->search();
-			}
-
-			if ($res === false) {
-				$this->whichclass = "pop";
-				$mov = new Popporn();
-				$mov->cookie = $this->cookie;
-				$mov->searchTerm = $xxxmovie;
-				$res = $mov->search();
-			}
-
-			// Last in list as it doesn't have trailers
-			if ($res === false) {
-				$this->whichclass = "adm";
-				$mov = new ADM();
-				$mov->cookie = $this->cookie;
-				$mov->searchTerm = $xxxmovie;
-				$res = $mov->search();
-			}
-
-
-			// If a result is true getAll information.
-			if ($res !== false) {
-				if ($this->echooutput) {
-
-					switch ($this->whichclass) {
-						case "aebn":
-							$fromstr = "Adult Entertainment Broadcast Network";
-							break;
-						case "ade":
-							$fromstr = "Adult DVD Empire";
-							break;
-						case "pop":
-							$fromstr = "PopPorn";
-							break;
-						case "adm":
-							$fromstr = "Adult DVD Marketplace";
-							break;
-						default:
-							$fromstr = null;
-					}
-					$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from: " . $fromstr));
-				}
-				$res = $mov->getAll();
-			} else {
-				// Nothing was found, go ahead and set to -2
-				return -2;
-			}
+			ColorCLI::doEcho(ColorCLI::info('Checking ADM for movie info'));
+			$res = $mov->processSite($movie);
 		}
-		$mov = [];
 
-		$mov['trailers'] = (!empty($res['trailers'])) ? serialize($res['trailers']) : '';
-		$mov['extras'] = (!empty($res['extras'])) ? serialize($res['extras']) : '';
-		$mov['productinfo'] = (!empty($res['productinfo'])) ? serialize($res['productinfo']) : '';
-		$mov['backdrop'] = (!empty($res['backcover'])) ? $res['backcover'] : 0;
-		$mov['cover'] = (!empty($res['boxcover'])) ? $res['boxcover'] : 0;
-		$res['cast'] = (!empty($res['cast'])) ? join(",", $res['cast']) : '';
-		$res['genres'] = (!empty($res['genres'])) ? $this->getgenreid($res['genres']) : '';
-		$mov['title'] = html_entity_decode($res['title'], ENT_QUOTES, 'UTF-8');
-		$mov['plot'] = (!empty($res['sypnosis'])) ? html_entity_decode($res['sypnosis'], ENT_QUOTES, 'UTF-8') : '';
-		$mov['tagline'] = (!empty($res['tagline'])) ? html_entity_decode($res['tagline'], ENT_QUOTES, 'UTF-8') : '';
-		$mov['genre'] = html_entity_decode($res['genres'], ENT_QUOTES, 'UTF-8');
-		$mov['director'] = (!empty($res['director'])) ? html_entity_decode($res['director'], ENT_QUOTES, 'UTF-8') : '';
-		$mov['actors'] = html_entity_decode($res['cast'], ENT_QUOTES, 'UTF-8');
-		$mov['directurl'] = html_entity_decode($res['directurl'], ENT_QUOTES, 'UTF-8');
-		$mov['classused'] = $this->whichclass;
+		if ($res === false) {
+			$this->whichclass = 'ade';
+			$mov = new ADE();
+			ColorCLI::doEcho(ColorCLI::info('Checking ADE for movie info'));
+			$res = $mov->processSite($movie);
+		}
+
+		if ($res === false) {
+			$this->whichclass = 'hotm';
+			$mov = new Hotmovies();
+			$mov->cookie = $this->cookie;
+			ColorCLI::doEcho(ColorCLI::info('Checking HotMovies for movie info'));
+			$res = $mov->processSite($movie);
+		}
+
+
+		// If a result is true getAll information.
+		if ($res) {
+			if ($this->echooutput) {
+
+				switch ($this->whichclass) {
+					case 'aebn':
+						$fromstr = 'Adult Entertainment Broadcast Network';
+						break;
+					case 'ade':
+						$fromstr = 'Adult DVD Empire';
+						break;
+					case 'pop':
+						$fromstr = 'PopPorn';
+						break;
+					case 'adm':
+						$fromstr = 'Adult DVD Marketplace';
+						break;
+					case 'hotm':
+						$fromstr = 'HotMovies';
+						break;
+					default:
+						$fromstr = '';
+				}
+				ColorCLI::doEcho(ColorCLI::primary('Fetching XXX info from: ' . $fromstr));
+			}
+			$res = $mov->getAll();
+		} else {
+			// Nothing was found, go ahead and set to -2
+			return -2;
+		}
+
+		$res['cast'] = !empty($res['cast']) ? implode(',', $res['cast']) : '';
+		$res['genres'] = !empty($res['genres']) ? $this->getGenreID($res['genres']) : '';
+
+		$mov = [
+			'trailers'    => !empty($res['trailers']) ? serialize($res['trailers']) : '',
+			'extras'      => !empty($res['extras']) ? serialize($res['extras']) : '',
+			'productinfo' => !empty($res['productinfo']) ? serialize($res['productinfo']) : '',
+			'backdrop'    => !empty($res['backcover']) ? $res['backcover'] : 0,
+			'cover'       => !empty($res['boxcover']) ? $res['boxcover'] : 0,
+			'title'       => !empty($res['title']) ? html_entity_decode($res['title'], ENT_QUOTES, 'UTF-8') : '',
+			'plot'        => !empty($res['synopsis']) ? html_entity_decode($res['synopsis'], ENT_QUOTES, 'UTF-8') : '',
+			'tagline'     => !empty($res['tagline']) ? html_entity_decode($res['tagline'], ENT_QUOTES, 'UTF-8') : '',
+			'genre'       => !empty($res['genres']) ? html_entity_decode($res['genres'], ENT_QUOTES, 'UTF-8') : '',
+			'director'    => !empty($res['director']) ? html_entity_decode($res['director'], ENT_QUOTES, 'UTF-8') : '',
+			'actors'      => !empty($res['cast']) ? html_entity_decode($res['cast'], ENT_QUOTES, 'UTF-8') : '',
+			'directurl'   => !empty($res['directurl']) ? html_entity_decode($res['directurl'], ENT_QUOTES, 'UTF-8') : '',
+			'classused'   => $this->whichclass
+		];
 
 		$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM xxxinfo WHERE title = %s', $this->pdo->escapeString($mov['title'])));
-		$xxxID = 0;
-		if (isset($check['id'])) {
+
+		if ($check !== false && $check['id'] > 0) {
+
 			$xxxID = $check['id'];
+
+			// Update BoxCover.
+			if (!empty($mov['cover'])) {
+				$cover = $this->releaseImage->saveImage($xxxID . '-cover', $mov['cover'], $this->imgSavePath);
+			}
+
+			// BackCover.
+			if (!empty($mov['backdrop'])) {
+				$backdrop = $this->releaseImage->saveImage($xxxID . '-backdrop', $mov['backdrop'], $this->imgSavePath, 1920, 1024);
+			}
+
+			// Update Current XXX Information
+			$this->update($check['id'], $mov['title'], $mov['tagline'], $mov['plot'], $mov['genre'], $mov['director'], $mov['actors'], $mov['extras'], $mov['productinfo'], $mov['trailers'], $mov['directurl'], $mov['classused'], $cover, $backdrop);
 		}
 
-		if ($check === false || $xxxID > 0) {
-			// Update Current XXX Information - getXXXCovers.php
-			if ($xxxID > 0) {
-				$this->update($check['id'],
-							  $mov['title'],
-							  $mov['tagline'],
-							  $mov['plot'],
-							  $mov['genre'],
-							  $mov['director'],
-							  $mov['actors'],
-							  $mov['extras'],
-							  $mov['productinfo'],
-							  $mov['trailers'],
-							  $mov['directurl'],
-							  $mov['classused']);
-				$xxxID = $check['id'];
-			}
-
-			// Insert New XXX Information
-			if ($check === false) {
-				$xxxID = $this->pdo->queryInsert(
-					sprintf("
+		// Insert New XXX Information
+		if ($check === false) {
+			$xxxID = $this->pdo->queryInsert(
+				sprintf('
 					INSERT INTO xxxinfo
-						(title, tagline, plot, genre, director, actors, extras, productinfo, trailers, directurl, classused, cover, backdrop, createddate, updateddate)
+						(title, tagline, plot, genre, director, actors, extras, productinfo, trailers, directurl, classused, createddate, updateddate)
 					VALUES
-						(%s, %s, COMPRESS(%s), %s, %s, %s, %s, %s, %s, %s, %s, 0, 0, NOW(), NOW())",
-							$this->pdo->escapeString($mov['title']),
-							$this->pdo->escapeString($mov['tagline']),
-							$this->pdo->escapeString($mov['plot']),
-							$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
-							$this->pdo->escapeString($mov['director']),
-							$this->pdo->escapeString($mov['actors']),
-							$this->pdo->escapeString($mov['extras']),
-							$this->pdo->escapeString($mov['productinfo']),
-							$this->pdo->escapeString($mov['trailers']),
-							$this->pdo->escapeString($mov['directurl']),
-							$this->pdo->escapeString($mov['classused'])
-					)
-				);
+						(%s, %s, COMPRESS(%s), %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())',
+					$this->pdo->escapeString($mov['title']),
+					$this->pdo->escapeString($mov['tagline']),
+					$this->pdo->escapeString($mov['plot']),
+					$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
+					$this->pdo->escapeString($mov['director']),
+					$this->pdo->escapeString($mov['actors']),
+					$this->pdo->escapeString($mov['extras']),
+					$this->pdo->escapeString($mov['productinfo']),
+					$this->pdo->escapeString($mov['trailers']),
+					$this->pdo->escapeString($mov['directurl']),
+					$this->pdo->escapeString($mov['classused'])
+				)
+			);
+			// Update BoxCover.
+			if (!empty($mov['cover'])) {
+				$cover = $this->releaseImage->saveImage($xxxID . '-cover', $mov['cover'], $this->imgSavePath);
 			}
 
-			if ($xxxID > 0) {
-				// BoxCover.
-				if (isset($mov['cover'])) {
-					$mov['cover'] = $this->releaseImage->saveImage($xxxID . '-cover',
-																   $mov['cover'],
-																   $this->imgSavePath);
-				}
-
-				// BackCover.
-				if (isset($mov['backdrop'])) {
-					$mov['backdrop'] = $this->releaseImage->saveImage($xxxID . '-backdrop',
-																	  $mov['backdrop'],
-																	  $this->imgSavePath,
-																	  1920,
-																	  1024);
-				}
-
-				$this->pdo->queryExec(sprintf('UPDATE xxxinfo SET cover = %d, backdrop = %d  WHERE id = %d',
-											  $mov['cover'],
-											  $mov['backdrop'],
-											  $xxxID));
-			} else {
-				$xxxID = -2;
+			// BackCover.
+			if (!empty($mov['backdrop'])) {
+				$backdrop = $this->releaseImage->saveImage($xxxID . '-backdrop', $mov['backdrop'], $this->imgSavePath, 1920, 1024);
 			}
+
+			$this->pdo->queryExec(sprintf('UPDATE xxxinfo SET cover = %d, backdrop = %d WHERE id = %d', $cover, $backdrop, $xxxID));
 		}
 
 		if ($this->echooutput) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->headerOver(($xxxID !== false ? 'Added/updated XXX movie: ' : 'Nothing to update: ')) . $this->pdo->log->primary($mov['title'])
+			ColorCLI::doEcho(
+				ColorCLI::headerOver(($xxxID !== false ? 'Added/updated XXX movie: ' . ColorCLI::primary($mov['title']) : 'Nothing to update for XXX movie: ' . ColorCLI::primary($mov['title'])))
 			);
 		}
 
@@ -576,15 +550,17 @@ class XXX
 	/**
 	 * Process XXX releases where xxxinfo is 0
 	 *
+	 * @throws \Exception
 	 */
 	public function processXXXReleases()
 	{
-		$res = $this->pdo->query(sprintf("
+		$res = $this->pdo->query(sprintf('
 				SELECT r.searchname, r.id
 				FROM releases r
 				WHERE r.nzbstatus = 1
-				AND r.xxxinfo_id = 0 %s
-				LIMIT %d",
+				AND r.xxxinfo_id = 0
+				%s
+				LIMIT %d',
 				$this->catWhere,
 				$this->movieqty
 			)
@@ -594,7 +570,7 @@ class XXX
 		if ($movieCount > 0) {
 
 			if ($this->echooutput) {
-				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $movieCount . " XXX releases."));
+				ColorCLI::doEcho(ColorCLI::header('Processing ' . $movieCount . ' XXX releases.'));
 			}
 
 			// Loop over releases.
@@ -607,25 +583,26 @@ class XXX
 					$check = $this->checkXXXInfoExists($this->currentTitle);
 					if ($check === false) {
 						$this->currentRelID = $arr['id'];
-						$movieName = $this->currentTitle;
 						if ($this->debug && $this->echooutput) {
-							$this->pdo->log->doEcho("DB name: " . $arr['searchname'], true);
+							ColorCLI::doEcho('DB name: ' . $arr['searchname'], true);
 						}
 						if ($this->echooutput) {
-							$this->pdo->log->doEcho($this->pdo->log->primaryOver("Looking up: ") . $this->pdo->log->headerOver($movieName), true);
+							ColorCLI::doEcho(ColorCLI::primaryOver('Looking up: ') . ColorCLI::headerOver($this ->currentTitle), true);
 						}
 
-						$idcheck = $this->updateXXXInfo($movieName);
+						ColorCLI::doEcho(ColorCLI::info('Local match not found, checking web!'), true);
+						$idcheck = $this->updateXXXInfo($this->currentTitle);
 					} else {
+						ColorCLI::doEcho(ColorCLI::info('Local match found for XXX Movie: ' . ColorCLI::headerOver($this->currentTitle)), true);
 						$idcheck = (int)$check['id'];
 					}
 				} else {
-					$this->pdo->log->doEcho(".", true);
+					ColorCLI::doEcho('.', true);
 				}
 				$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d %s', $idcheck, $arr['id'], $this->catWhere));
 			}
 		} elseif ($this->echooutput) {
-			$this->pdo->log->doEcho($this->pdo->log->header('No xxx releases to process.'));
+			ColorCLI::doEcho(ColorCLI::header('No xxx releases to process.'));
 		}
 	}
 

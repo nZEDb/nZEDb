@@ -94,7 +94,7 @@ Advanced users may be interested to try the tmux version of nZEDb in either Comp
 ### Support
 
 There is a web forum were you can search for issues previously encountered by others:
-http://forums.nzedb.com/
+https://forums.nzedb.com/
 
 Also on IRC: irc.synirc.net #nZEDb
 
