@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5993104fafe3a3fcf64dcacbfe3303ee",
+    "content-hash": "61cb005bcdcdf9a0a5b9d309c32af70c",
     "packages": [
         {
             "name": "b3rs3rk/steamfront",
@@ -12,18 +12,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/b3rs3rk/steamfront.git",
-                "reference": "dc06fe132db557170c68cbd8c19c1773330906b7"
+                "reference": "286962ea793a8069729b4412a675c88a8d6c3ebd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/b3rs3rk/steamfront/zipball/dc06fe132db557170c68cbd8c19c1773330906b7",
-                "reference": "dc06fe132db557170c68cbd8c19c1773330906b7",
+                "url": "https://api.github.com/repos/b3rs3rk/steamfront/zipball/286962ea793a8069729b4412a675c88a8d6c3ebd",
+                "reference": "286962ea793a8069729b4412a675c88a8d6c3ebd",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "ext-json": "*",
-                "php": ">=5.4.0"
+                "php": ">=5.6.0"
             },
             "type": "library",
             "autoload": {
@@ -42,7 +42,7 @@
                 }
             ],
             "description": "PHP Wrapper for Accessing the Steam Storefront API",
-            "time": "2017-06-30 12:49:25"
+            "time": "2017-08-27 15:14:06"
         },
         {
             "name": "barracudanetworks/forkdaemon-php",
