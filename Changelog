@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-08-30 DariusIII
+	Chg: Disable caching in php-tmdb library
 2017-08-29 niel
 	Fix: Change check for gitHooks link, to only test for its existence, not if it is executable.
 2017-08-29 DariusIII
