@@ -1,7 +1,8 @@
 * Note *
-Pull requests will be accepted *only* against the dev branch, except for feature branch fixes/enhancements,
-in which case they should be against that branch.
-Please make sure any PR's comply with our coding standards policy: http://li3.me/docs/specs/accepted/LSR-0-coding.md
+Pull requests will be accepted *only* against the dev branch, except for feature branch
+fixes/enhancements, in which case they should be against that branch.
+Please make sure any PR's comply with our coding standards policy:
+http://li3.me/docs/specs/accepted/LSR-0-coding.md
 
 New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY
@@ -11,6 +12,12 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2017-09-02 niel
 	Mrg: dev-lithium-logger branch. Add basic logger which can be expanded later.
+2017-08-30 DariusIII
+	Chg: Disable caching in php-tmdb library
+2017-08-29 niel
+	Fix: Change check for gitHooks link, to only test for its existence, not if it is executable.
+2017-08-29 DariusIII
+	Fix: Set pagertotalitems to 0 if there is no totalcount returned from release queries
 2017-08-18 niel
 	Mrg: PR 2513, from jangrewe - Quick and probably incomplete fix for XSS attacks.
 2017-08-09 niel
