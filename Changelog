@@ -9,6 +9,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-09-02 niel
+	Mrg: dev-lithium-logger branch. Add basic logger which can be expanded later.
 2017-08-09 niel
 	Mrg: PR 2507, from Wally73 - Fix http to https in readme.
 	Chg: Temporarily change to using niel/steam_front library until b3rs3rk gets his updated.
