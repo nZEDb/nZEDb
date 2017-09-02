@@ -171,6 +171,56 @@ if (file_exists($installed)) {
 		]
 	);
 
+	if (nZEDb_DEBUG) {
+		if (!defined()) {
+			define('DB_SYSTEM', strtolower($adapter));
+		}
+
+		if (!defined()) {
+			define('DB_HOST', $db['host']);
+		}
+
+		if (!defined()) {
+			define('DB_PORT', $db['port']);
+		}
+
+		if (!defined()) {
+			define('DB_SOCKET', $db['socket']);
+		}
+
+		if (!defined()) {
+			define('DB_USER', $db['user']);
+		}
+
+		if (!defined()) {
+			define('DB_PASSWORD', $db['password']);
+		}
+
+		if (!defined()) {
+			define('DB_NAME', $db['database']);
+		}
+
+		if (!defined()) {
+			define('DB_PCONNECT', $db['persist']);
+		}
+
+		$usp =& $config['usp'];
+
+		define('NNTP_USERNAME', $usp['connection1']['username']);
+		define('NNTP_PASSWORD', $usp['connection1']['password']);
+		define('NNTP_SERVER', $usp['connection1']['server']);
+		define('NNTP_PORT', $usp['connection1']['port']);
+		define('NNTP_SSLENABLED', $usp['connection1']['ssl']);
+		define('NNTP_SOCKET_TIMEOUT', $usp['connection1']['timeout']);
+
+		define('NNTP_USERNAME_A', $usp['connection2']['username']);
+		define('NNTP_PASSWORD_A', $usp['connection2']['password']);
+		define('NNTP_SERVER_A', $usp['connection2']['server']);
+		define('NNTP_PORT_A', $usp['connection2']['port']);
+		define('NNTP_SSLENABLED_A', $usp['connection2']['ssl']);
+		define('NNTP_SOCKET_TIMEOUT_A', $usp['connection2']['timeout']);
+	}
+
 	\nzedb\utility\Misc::setCoversConstant(
 		\app\models\Settings::value('site.main.coverspath')
 	);
