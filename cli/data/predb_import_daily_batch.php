@@ -161,7 +161,7 @@ var_dump($match);
 				}
 
 				// Store the dump.
-				$dumpFile = nZEDb_TMP . $match['filename'];
+				$dumpFile = nZEDb_TMP . $match['stamp'] . '_predb_dump.csv';
 				$fetched = file_put_contents($dumpFile, $dump);
 				if (!$fetched) {
 					echo "Error storing dump file {$match['stamp']} in (" . nZEDb_RES . ').' .
@@ -181,7 +181,6 @@ var_dump($match);
 				// Truncate to clear any old data
 				$predb->executeTruncate();
 
-				var_dump($dumpFile);
 				// Import file into predb_imports
 				$predb->executeLoadData(
 					[
