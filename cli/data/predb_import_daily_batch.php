@@ -113,6 +113,9 @@ $total -= 1;
 $predb = new PreDb();
 
 $progress = $predb->progress(settings_array());
+if (is_numeric($argv[1])) {
+	$progress['last'] = $argv[1];
+}
 
 foreach ($data as $dir => $files) {
 	foreach ($files as $file) {
@@ -122,7 +125,6 @@ foreach ($data as $dir => $files) {
 			if (preg_match("#^$filePattern$#", $file['name'], $match)) {
 				$timematch = $progress['last'];
 
-var_dump($match);
 				// Skip patches the user does not want.
 				if ($match['stamp'] < $timematch) {
 					echo 'Skipping dump ' . $match['stamp'] .
