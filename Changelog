@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-09-27 DariusIII
+	Chg: Move isMusic check in determineCategory function to the end
 2017-09-19 DariusIII
 	Chg: Remove nZEDbPre2 channel from ircscraper_settings_example.php
 2017-08-12 niel
