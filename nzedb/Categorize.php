@@ -93,10 +93,10 @@ class Categorize extends Category
 			case $this->isPC():
 			case $this->isXxx():
 			case $this->isTV():
-			case $this->isMusic():
 			case $this->isMovie():
 			case $this->isConsole():
 			case $this->isBook():
+            case $this->isMusic():
 				return $this->tmpCat;
 		}
 
