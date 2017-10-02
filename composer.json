@@ -10,7 +10,6 @@
     },
     "classmap": [
       "www/pages/",
-      "libs/pixelead0/Tmdb/",
       "libs/PEAR/Net_NNTP/NNTP/",
       "libs/"
     ]
@@ -52,15 +51,15 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/nZEDb/Git.php"
-    },
-    {
-      "type": "vcs",
       "url": "https://github.com/niel/li3_docs"
     },
     {
       "type": "vcs",
       "url": "https://github.com/niel/li3_quality"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/nZEDb/Git.php"
     },
     {
       "type": "vcs",
@@ -99,6 +98,7 @@
     "dborsatto/php-giantbomb": "dev-master",
     "fxp/composer-asset-plugin": "~1.3.0",
     "google/recaptcha": "^1.1.2",
+    "guzzlehttp/guzzle": "^6.3",
     "james-heinrich/getid3": "^1.9.12",
     "joshpinkney/tv-maze-php-api": "dev-master",
     "moinax/tvdb": "^1.0.4",

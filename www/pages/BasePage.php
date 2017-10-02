@@ -294,7 +294,7 @@ class BasePage
 					</body>
 				</html>",
 				$this->serverurl,
-				$this->page,
+				htmlspecialchars($this->page),
 				(!empty($reason) ? 'Reason: ' . $reason : '')
 			)
 		);

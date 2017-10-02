@@ -2,6 +2,7 @@
 namespace nzedb\processing\post;
 
 use app\models\Settings;
+use lithium\analysis\Logger;
 use nzedb\Categorize;
 use nzedb\Category;
 use nzedb\Groups;
@@ -1425,6 +1426,7 @@ class ProcessAdditional
 				// Download it from usenet.
 				$sampleBinary = $this->_nntp->getMessages($this->_releaseGroupName, $this->_sampleMessageIDs, $this->_alternateNNTP);
 				if ($this->_nntp->isError($sampleBinary)) {
+					Logger::debug($sampleBinary, ['name' => 'default']);
 					$sampleBinary = false;
 				}
 
@@ -1480,6 +1482,7 @@ class ProcessAdditional
 				// Try to download it from usenet.
 				$mediaBinary = $this->_nntp->getMessages($this->_releaseGroupName, $this->_MediaInfoMessageIDs, $this->_alternateNNTP);
 				if ($this->_nntp->isError($mediaBinary)) {
+					Logger::debug($mediaBinary, ['name' => 'default']);
 					// If error set it to false.
 					$mediaBinary = false;
 				}
@@ -1534,6 +1537,7 @@ class ProcessAdditional
 				// Try to download it from usenet.
 				$audioBinary = $this->_nntp->getMessages($this->_releaseGroupName, $this->_AudioInfoMessageIDs, $this->_alternateNNTP);
 				if ($this->_nntp->isError($audioBinary)) {
+					Logger::debug($audioBinary, ['name' => 'default']);
 					$audioBinary = false;
 				}
 
@@ -1570,6 +1574,7 @@ class ProcessAdditional
 			// Try to download it.
 			$jpgBinary = $this->_nntp->getMessages($this->_releaseGroupName, $this->_JPGMessageIDs, $this->_alternateNNTP);
 			if ($this->_nntp->isError($jpgBinary)) {
+				Logger::alert($jpgBinary, ['name' => 'default']);
 				$jpgBinary = false;
 			}
 

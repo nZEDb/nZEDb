@@ -15,9 +15,9 @@ require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ReleaseImage;
 
-define('R', 1);
+define('R', 4);
 define('W', 2);
-define('E', 4);
+define('E', 1);
 
 // Check All folders up to nZEDb root folder.
 $string = DS;

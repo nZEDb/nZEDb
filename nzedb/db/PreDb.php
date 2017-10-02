@@ -138,7 +138,14 @@ SQL_EXPORT;
 			$this->prepareSQLLoadData($options);
 		}
 
-		return $this->ps['LoadData']->execute([':path' => $options['path']]);
+		try {
+			$result = $this->ps['LoadData']->execute([':path' => $options['path']]);
+		} catch (\Exception $e) {
+			var_dump($e);
+			throw new \Exception($e->getMessage());
+		}
+
+		return $result;
 	}
 
 	public function executeTruncate()
@@ -277,7 +284,7 @@ SQL_INSERT;
 			$enclosedby = "$optional ENCLOSED BY \"{$options['enclosedby']}\"";
 		}
 		$sql = <<<SQL_LOAD_DATA
-LOAD DATA $local INFILE :path
+LOAD DATA LOCAL INFILE :path
   IGNORE INTO TABLE predb_imports
   FIELDS TERMINATED BY '{$options['fields']}' {$enclosedby}
   LINES TERMINATED BY '{$options['lines']}'

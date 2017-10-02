@@ -84,6 +84,8 @@ if (PHP_SAPI === 'cli') {
 	require __DIR__ . '/bootstrap/console.php';
 }
 
+require_once __DIR__ . '/bootstrap/logger.php';
+
 /**
  * This file configures the yEnc utility class for using available extensions.
  */

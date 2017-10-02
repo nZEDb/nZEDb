@@ -19,6 +19,7 @@
 namespace app\extensions\util;
 
 use app\models\Settings;
+use lithium\core\ConfigException;
 use nzedb\utility\Misc;
 
 class Versions extends \lithium\core\Object
@@ -278,8 +279,15 @@ class Versions extends \lithium\core\Object
 
 	protected function initialiseGit()
 	{
-		if (!($this->git instanceof \app\extensions\util\Git)) {
-			$this->git = new \app\extensions\util\Git();
+
+		if ($this->_config['git'] instanceof \app\extensions\util\Git) {
+			$this->git =& $this->_config['git'];
+		} else if (!($this->git instanceof \app\extensions\util\Git)) {
+			try {
+				$this->git = new \app\extensions\util\Git();
+			} catch (\Exception $e) {
+				throw new ConfigException("Unable to initialise Git object!");
+			}
 		}
 	}
 
@@ -296,7 +304,9 @@ class Versions extends \lithium\core\Object
 			libxml_use_internal_errors($temp);
 
 			if ($this->xml === false) {
-				$this->error("Your versions XML file ($this->_config['path']) is broken, try updating from git.");
+				$this->error(
+					"Your versions XML file ({$this->_config['path']}) is broken, try updating from git."
+				);
 				throw new \Exception("Failed to open versions XML file '{$this->_config['path']}'");
 			}
 
@@ -317,11 +327,7 @@ class Versions extends \lithium\core\Object
 
 	protected function _init()
 	{
-		parent::_init();
-
-		if ($this->_config['git'] instanceof \app\extensions\util\Git) {
-			$this->git =& $this->_config['git'];
-		}
+		return parent::_init();
 	}
 
 	private function deprecated($methodOld, $methodUse)

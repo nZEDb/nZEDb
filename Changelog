@@ -1,7 +1,8 @@
 * Note *
-Pull requests will be accepted *only* against the dev branch, except for feature branch fixes/enhancements,
-in which case they should be against that branch.
-Please make sure any PR's comply with our coding standards policy: http://li3.me/docs/specs/accepted/LSR-0-coding.md
+Pull requests will be accepted *only* against the dev branch, except for feature branch
+fixes/enhancements, in which case they should be against that branch.
+Please make sure any PR's comply with our coding standards policy:
+http://li3.me/docs/specs/accepted/LSR-0-coding.md
 
 New updates are grouped by person (committer/merger), at the top of the file.
 All entries are dated according to merging into the code in dev branch. THIS MEANS THE CODE MAY
@@ -9,6 +10,36 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-10-02 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.0.0
+2017-09-28 niel
+	Mrg: PR 2520, from Wally73 - Changes the default sort order for Predb model.
+2017-09-27 DariusIII
+	Chg: Move isMusic check in determineCategory function to the end
+2017-09-19 DariusIII
+	Chg: Remove nZEDbPre2 channel from ircscraper_settings_example.php
+2017-08-12 niel
+	Fix: Error matching timestamp in predb_import_daily_batch.php caused by using wrong regex
+		match index. Switched to using named regex matches instead.
+2017-09-02 niel
+	Mrg: dev-lithium-logger branch. Add basic logger which can be expanded later.
+2017-08-30 DariusIII
+	Chg: Disable caching in php-tmdb library
+2017-08-29 niel
+	Fix: Change check for gitHooks link, to only test for its existence, not if it is executable.
+2017-08-29 DariusIII
+	Fix: Set pagertotalitems to 0 if there is no totalcount returned from release queries
+2017-08-18 niel
+	Mrg: PR 2513, from jangrewe - Quick and probably incomplete fix for XSS attacks.
+2017-08-09 niel
+	Mrg: PR 2507, from Wally73 - Fix http to https in readme.
+	Chg: Temporarily change to using niel/steam_front library until b3rs3rk gets his updated.
+2017-08-08 niel
+	Chg: Update command now tries updating with composer even if the nZEDb code is unchanged.
+	Mrg: Darius' refactored-adult post-processing branch.
+	Chg: Removing pixelead0 library that we replaced with php-tmdb/api.
+	Fix: Put braces around array reference in error string to prevent converting from array to
+		string error.
 2017-08-05 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.7.3.4
 
