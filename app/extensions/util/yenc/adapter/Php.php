@@ -29,6 +29,7 @@ class Php extends \lithium\core\Object
 {
 	public static function decode(&$text, $ignore = false)
 	{
+		throw new \ErrorException("This method is not implemented correctly yet.");
 		$crc = '';
 		// Extract the yEnc string itself.
 		if (preg_match("/=ybegin.*size=([^ $]+).*\\r\\n(.*)\\r\\n=yend.*size=([^ $\\r\\n]+)(.*)/ims",
@@ -50,7 +51,7 @@ class Php extends \lithium\core\Object
 
 		// Make sure the header and trailer file sizes match up.
 		if ($headerSize != $trailerSize) {
-			$message = 'Header and trailer file sizes do not match. This is a violation of the yEnc specification.';
+			$message = 'Header and trailing file sizes do not match. This is a violation of the yEnc specification.';
 			if (nZEDb_LOGGING || nZEDb_DEBUG) {
 				//TODO replace with lithium logger.
 //				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
@@ -75,7 +76,7 @@ class Php extends \lithium\core\Object
 			$message = "Header file size ($headerSize) and actual file size (" . strlen($decoded) .
 			") do not match. The file is probably corrupt.";
 			if (nZEDb_LOGGING || nZEDb_DEBUG) {
-				//TODO replace with lithium logger.
+				//TODO replace with lithium psr3 logger.
 //				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
 			}
 
@@ -143,6 +144,20 @@ class Php extends \lithium\core\Object
 		return true;
 	}
 
+	/**
+	 * yEncodes a string and returns it.
+	 *
+	 * @param $data           String to encode.
+	 * @param $filename       Name to use as the filename in the yEnc header (this does not have to
+	 *                        be an existing file).
+	 * @param int $lineLength Line length to use (can be up to 254 characters) Optional,
+	 *                        defaults to 128.
+	 * @param boolean $crc32  Set to <i>true</i> to include a CRC checksum in the trailer to
+	 *                        allow decoders to verify data integrity.
+	 *
+	 * @return yEncoded string.
+	 * @see decode()
+	 */
 	public static function encode($data, $filename, $lineLength = 128, $crc32 = true)
 	{
 		// yEnc 1.3 draft doesn't allow line lengths of more than 254 bytes.
