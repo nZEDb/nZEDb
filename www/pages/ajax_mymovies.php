@@ -4,6 +4,7 @@ use app\models\Settings;
 use nzedb\Category;
 use nzedb\Movie;
 use nzedb\UserMovies;
+use nzedb\processing\tv\TMDB;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
