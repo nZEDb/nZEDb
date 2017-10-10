@@ -2,6 +2,23 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
+0.8.0.0 2017-10-02
+***NOTE*** This version removes support of PHP 5.6
+
+Changed:
+	* Post-Processing of Adult releases has been refactored. This should improve identifying posts.
+	* Disable caching in php-tmdb library.
+	* Remove nZEDbPre2 channel from ircscraper_settings_example.php.
+	* Restored sort order of PreDB model to be by creation date.
+
+Fixed:
+	* `./zed update` always updates dependencies, even when code base hasn't changed.
+	* Quick fix for some XSS vulnerabilities.
+	* Make sure page count is set, even when there are no entries. Avoids an unset variable	error.
+	* predb_import_daily_batch.php had a bug which prevented matching of timestamps in some
+	 circumstances.
+
+
 0.7.4.0 2017-08-07
 ***NOTE*** As the latest version of Debian (Debian 9) now supports PHP 7.0, PHP 5.6 is now
 	deprecated. We will be removing support for it before the end of the year, probably within 2-3

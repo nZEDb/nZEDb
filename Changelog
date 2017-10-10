@@ -10,6 +10,23 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-10-10 DariusIII
+	Fix: Tmdb error on ajax_mymovies.php (Fixes issue #2526)
+2017-10-09 niel
+	Fix: Add missing use statement to fix TMDb not found error. Closes issue 2526.
+2017-10-02 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.0.0
+
+
+2017-09-28 niel
+	Mrg: PR 2520, from Wally73 - Changes the default sort order for Predb model.
+2017-09-27 DariusIII
+	Chg: Move isMusic check in determineCategory function to the end
+2017-09-19 DariusIII
+	Chg: Remove nZEDbPre2 channel from ircscraper_settings_example.php
+2017-08-12 niel
+	Fix: Error matching timestamp in predb_import_daily_batch.php caused by using wrong regex
+		match index. Switched to using named regex matches instead.
 2017-09-02 niel
 	Mrg: dev-lithium-logger branch. Add basic logger which can be expanded later.
 2017-08-30 DariusIII
