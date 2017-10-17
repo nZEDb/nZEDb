@@ -134,32 +134,10 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		printf($cli->header("Converting $tbl"));
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=FIXED");
 	}
-} else if (isset($argv[1]) && $argv[1] == "mariadb-tokudb") {
-	$tables = $pdo->query('SHOW TABLE STATUS WHERE (Engine != "TokuDB" OR Create_options != "`COMPRESSION`=tokudb_lzma") AND Engine != "SPHINX"');
-	foreach ($tables as $row) {
-		$tbl = $row['name'];
-		if ($tbl !== 'release_search_data') {
-			printf($cli->header("Converting $tbl"));
-			$sql = "ALTER TABLE $tbl ENGINE=TokuDB Compression=tokudb_lzma";
-			$pdo->queryExec($sql);
-			$pdo->queryExec("OPTIMIZE TABLE $tbl");
-		}
-	}
-} else if (isset($argv[1]) && $argv[1] == "tokudb") {
-	$tables = $pdo->query('SHOW TABLE STATUS WHERE (Engine != "TokuDB" OR ROW_FORMAT="tokudb_lzma" OR Create_options != "`COMPRESSION`=tokudb_lzma") AND Engine != "SPHINX"');
-	foreach ($tables as $row) {
-		$tbl = $row['name'];
-		if ($tbl !== 'release_search_data') {
-			printf($cli->header("Converting $tbl"));
-			$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_lzma";
-			$pdo->queryExec($sql);
-			$pdo->queryExec("OPTIMIZE TABLE $tbl");
-		}
-	}
 } else {
 	exit($cli->error(
 		"\nThis script will convert your tables to a new engine/format. Only tables not meeting the new engine/format will be converted.\n"
-		. "A comparison of these, excluding TokuDB, https://github.com/nZEDb/nZEDb/wiki/MySQL-Storage-Engine-Comparison\n\n"
+		. "A comparison of these, https://github.com/nZEDb/nZEDb/wiki/MySQL-Storage-Engine-Comparison\n\n"
 		. "php convert_mysql_tables.php dmyisam                                        ...: Converts all the tables to Myisam Dynamic. This is the default and is recommended where ram is limited.\n"
 		. "php convert_mysql_tables.php fmyisam                                        ...: Converts all the tables to Myisam Fixed. This can be faster, but to fully convert all tables requires changing varchar columns to char.\n"
 		. "                                                                                 This will use much more space than dynamic.\n"
@@ -172,13 +150,6 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		. "                                                                                 Alls parts* will be converted to MyISAM Dynamic. This is recommended when using Table Per Group.\n"
 		. "                                                                                 NB if your innodb version < 5.6 bookinfo / consoleinfo / musicinfo / release_search_data will not be converted as fulltext indexes are not supported.\n"
 		. "php convert_mysql_tables.php collections                                    ...: Converts collections, binaries, parts to MyIsam.\n"
-		. "php convert_mysql_tables.php mariadb-tokudb                                 ...: Converts all the tables to MariaDB Tokutek DB. Use this is you installed mariadb-tokudb-engine. \n"
-		. "                                                                                 The TokuDB engine needs to be activated first.\n"
-		. "                                                                                 https://mariadb.com/kb/en/how-to-enable-tokudb-in-mariadb/\n"
-		. "                                                                                 NB release_search_data will not be converted as tokudb does not support fulltext indexes.\n"
-		. "php convert_mysql_tables.php tokudb                                         ...: Converts all the tables to Tokutek DB. Use this if you downloaded and installed the TokuDB binaries.\n"
-		. "                                                                                 http://www.tokutek.com/resources/support/gadownloads/\n"
-		. "                                                                                 NB release_search_data will not be converted as tokudb does not support fulltext indexes.\n"
 		. "php convert_mysql_tables.php table [ fmyisam, dmyisam, dinnodb, cinnodb ]   ...: Converts 1 table to Engine, row_format specified.\n"
 		. "                                                                                 NB if converting to innodb and your innodb version < 5.6 release_search_data will not be converted as fulltext indexes are not supported.\n"
 	));
