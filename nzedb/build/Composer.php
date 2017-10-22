@@ -25,7 +25,7 @@ class Composer
 	public static function postInstallCmd(Event $event)
 	{
 		$last = $output = $return = null;
-		if (!exists(nZEDb_CONFIGS . 'settings.php')) {
+		if (! file_exists(nZEDb_CONFIGS . 'settings.php')) {
 			copy(nZEDb_CONFIGS . 'settings.example.php', nZEDb_CONFIGS . 'settings.php');
 		}
 
