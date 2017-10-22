@@ -25,6 +25,10 @@ class Composer
 	public static function postInstallCmd(Event $event)
 	{
 		$last = $output = $return = null;
+		if (!exists(nZEDb_CONFIGS . 'settings.php')) {
+			copy(nZEDb_CONFIGS . 'settings.example.php', nZEDb_CONFIGS . 'settings.php');
+		}
+
 		if (getenv('COMPOSER_DEV_MODE') == 1) {
 			echo "Updating git hooks... ";
 			$last = exec('build/git-hooks/addHooks.sh', $output, $return);
