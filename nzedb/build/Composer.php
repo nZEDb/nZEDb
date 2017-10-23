@@ -18,6 +18,8 @@
  */
 namespace nzedb\build;
 
+require_once __DIR__ . 'constants.php';
+
 use Composer\Script\Event;
 
 class Composer

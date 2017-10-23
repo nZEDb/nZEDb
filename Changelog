@@ -14,7 +14,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Defaults in settings.example.php for logging, are now enabled.
 	Chg: Composer post install script now copies settings.example.php to settings.php automatically.
 2017-10-11 niel
-	Fix: Force case specific check for SQL_CALC_FOUND_ROWS in DB::queryCalc() to avoid potential
+	Fix: Force case insensitive check for 'SQL_CALC_FOUND_ROWS' in DB::queryCalc() to avoid potential
 		problems.
 2017-10-10 DariusIII
 	Fix: Tmdb error on ajax_mymovies.php (Fixes issue #2526)
