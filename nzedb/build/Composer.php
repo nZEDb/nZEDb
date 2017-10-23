@@ -18,7 +18,7 @@
  */
 namespace nzedb\build;
 
-require_once __DIR__ . 'constants.php';
+require_once dirname(__DIR__) . '/constants.php';
 
 use Composer\Script\Event;
 
@@ -27,7 +27,7 @@ class Composer
 	public static function postInstallCmd(Event $event)
 	{
 		$last = $output = $return = null;
-		if (! file_exists(nZEDb_CONFIGS . 'settings.php')) {
+		if (!file_exists(nZEDb_CONFIGS . 'settings.php')) {
 			copy(nZEDb_CONFIGS . 'settings.example.php', nZEDb_CONFIGS . 'settings.php');
 		}
 
