@@ -92,7 +92,8 @@ if ($uid != '') {
 	$page->users->updateApiAccessed($uid);
 	$apiRequests = $page->users->getApiRequests($uid);
 	if ($apiRequests > $maxRequests) {
-		Misc::showApiError(500, 'Request limit reached (' . $apiRequests . '/' . $maxRequests . ')');
+		Misc::showApiError(429, 'Request limit reached (' . $apiRequests . '/' . $maxRequests .
+			')');
 	}
 }
 
