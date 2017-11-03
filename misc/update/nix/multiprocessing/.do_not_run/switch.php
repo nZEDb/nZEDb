@@ -22,7 +22,6 @@ require_once realpath(dirname(dirname(dirname(dirname(dirname(__DIR__))))) . DIR
 // Are we coming from python or php ? $options[0] => (string): python|php
 // The type of process we want to do: $options[1] => (string): releases
 $options = explode('  ', $argv[1]);
-
 $pdo = new DB();
 switch ($options[1]) {
 
@@ -270,6 +269,21 @@ switch ($options[1]) {
 		if (charCheck($options[2])) {
 			(new PostProcess(['Settings' => $pdo]))->processTv('', $options[2], (isset($options[3]) ? $options[3] : ''));
 		}
+		break;
+
+	/* Post process Amazon.
+	 *
+	 * $options[2] (char) Single character, first letter of release guid.
+	 */
+	case 'pp_amazon':
+		$amaArgs = explode(' ',$options[2]);
+
+		(new PostProcess(['Settings' => $pdo]))->processBooks($amaArgs[0],$amaArgs[1],$amaArgs[2],$amaArgs[3]);
+		(new PostProcess(['Settings' => $pdo]))->processConsoles($amaArgs[0],$amaArgs[1],$amaArgs[2],$amaArgs[3]);
+		(new PostProcess(['Settings' => $pdo]))->processGames();
+		(new PostProcess(['Settings' => $pdo]))->processMusic($amaArgs[0],$amaArgs[1],$amaArgs[2],$amaArgs[3]);
+		(new PostProcess(['Settings' => $pdo]))->processXXX();
+
 		break;
 }
 

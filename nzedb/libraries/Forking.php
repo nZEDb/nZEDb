@@ -159,7 +159,7 @@ class Forking extends \fork_daemon
 				break;
 
 			case 'postProcess_ama':
-				$this->processSingle();
+				$maxProcesses = $this->postProcessAmazonMainMethod();
 				break;
 
 			case 'postProcess_add':
@@ -604,6 +604,8 @@ class Forking extends \fork_daemon
 				$type = 'pp_movie  ';
 			} else if ($this->processTV) {
 				$type = 'pp_tv  ';
+			} else if ($this->processAmazon) {
+				$type = 'pp_amazon  ';
 			}
 
 			if ($type !== '') {
@@ -616,6 +618,42 @@ class Forking extends \fork_daemon
 
 	private $ppAddMinSize = '';
 	private $ppAddMaxSize = '';
+
+	/**
+	 * Check if we should process Amazon.
+	 *
+	 * @return bool
+	 */
+	private function checkProcessAmazon()
+	{
+		$pubkey = Settings::value('APIs..amazonpubkey');
+		$privkey = Settings::value('APIs..amazonprivkey');
+		$associatekey = Settings::value('APIs..amazonassociatetag');
+
+		return !empty($pubkey) && !empty($privkey) && !empty($associatekey);
+	}
+
+	private function postProcessAmazonMainMethod()
+	{
+		$maxProcesses = 1;
+		if ( $this->checkProcessAmazon() ) {
+			$this->processAmazon = true;
+			$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
+
+			$pubKeys = explode(' ',Settings::value('APIs..amazonpubkey'));
+			$privkeys = explode(' ',Settings::value('APIs..amazonprivkey'));
+			$associatekey = explode(' ',Settings::value('APIs..amazonassociatetag'));
+			$this->work = array();
+			$keyCount=0;
+			foreach ( $pubKeys as $pubKey){
+				#echo "Adding: ".$keyCount.' '.$pubKey.' '.$privkeys[$keyCount].' '.$associatekey[$keyCount]."\n";
+				array_push($this->work,array("id"=>$keyCount.' '.$pubKey.' '.$privkeys[$keyCount].' '.$associatekey[$keyCount++]));
+			}
+			$maxProcesses = $keyCount;
+		}
+
+		return $maxProcesses ;
+	}
 
 	/**
 	 * Check if we should process Additional's.
@@ -1101,6 +1139,7 @@ class Forking extends \fork_daemon
 	 * @var bool
 	 */
 	private $processAdditional = false; // Should we process additional?
+	private $processAmazon = false; // Should we process Amazon?
 	private $processNFO = false; // Should we process NFOs?
 	private $processMovies = false; // Should we process Movies?
 	private $processTV = false; // Should we process TV?
