@@ -10,8 +10,24 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-11-01 niel
+	Fix: Quick fix for bad status being returned for when Request limit is exceeded.
+2017-10-30 DariusIII
+	Fix: Update categorization to properly categorize sports related releases (fixes issue #2527)
+2017-10-22 niel
+	Chg: Defaults in settings.example.php for logging, are now enabled.
+	Chg: Composer post install script now copies settings.example.php to settings.php automatically.
+2017-10-11 niel
+	Fix: Force case insensitive check for 'SQL_CALC_FOUND_ROWS' in DB::queryCalc() to avoid potential
+		problems.
+2017-10-10 DariusIII
+	Fix: Tmdb error on ajax_mymovies.php (Fixes issue #2526)
+2017-10-09 niel
+	Fix: Add missing use statement to fix TMDb not found error. Closes issue 2526.
 2017-10-02 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.0.0
+
+
 2017-09-28 niel
 	Mrg: PR 2520, from Wally73 - Changes the default sort order for Predb model.
 2017-09-27 DariusIII

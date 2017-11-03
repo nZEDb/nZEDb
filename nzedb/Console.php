@@ -62,6 +62,12 @@ class Console
 	public $failCache;
 
 	/**
+	 * Stores the thread number, the select will use this to select a range for processing
+	 * @var int
+	 */
+	public $threadNumber;
+
+	/**
 	 * @param array $options Class instances / Echo to cli.
 	 */
 	public function __construct(array $options = [])
@@ -76,9 +82,11 @@ class Console
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
-		$this->pubkey = Settings::value('APIs..amazonpubkey');
-		$this->privkey = Settings::value('APIs..amazonprivkey');
-		$this->asstag = Settings::value('APIs..amazonassociatetag');
+		$this->pubkey = !empty($options['AmazonPub']) ?  $options['AmazonPub'] : Settings::value('APIs..amazonpubkey');
+		$this->privkey = !empty($options['AmazonKey']) ?  $options['AmazonKey'] : Settings::value('APIs..amazonprivkey');
+		$this->threadNumber = !empty($options['ThreadNumber']) ? $options['ThreadNumber'] : 0;
+		$this->asstag = !empty($options['AmazonAssociateKey']) ?  $options['AmazonAssociateKey'] : Settings::value('APIs..amazonassociatetag');
+
 		$result = Settings::value('..maxgamesprocessed');
 		$this->gameqty = ($result != '') ? $result : 150;
 		$result = Settings::value('..amazonsleep');
@@ -827,6 +835,8 @@ class Console
 	 */
 	public function processConsoleReleases()
 	{
+		$skip=$this->threadNumber*$this->gameqty;
+
 		$res = $this->pdo->queryDirect(
 						sprintf('
 							SELECT searchname, id
@@ -834,10 +844,11 @@ class Console
 							WHERE nzbstatus = %d %s
 							AND consoleinfo_id IS NULL %s
 							ORDER BY postdate DESC
-							LIMIT %d',
+							LIMIT %d,%d',
 							NZB::NZB_ADDED,
 							$this->renamed,
 							$this->catWhere,
+							$skip,
 							$this->gameqty
 						)
 		);

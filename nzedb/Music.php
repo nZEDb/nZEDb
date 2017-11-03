@@ -62,6 +62,12 @@ class Music
 	public $failCache;
 
 	/**
+	 * Stores the thread number, the select will use this to select a range for processing
+	 * @var int
+	 */
+	public $threadNumber;
+
+	/**
 	 * @param array $options Class instances/ echo to CLI.
 	 */
 	public function __construct(array $options = [])
@@ -74,9 +80,12 @@ class Music
 
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
-		$this->pubkey = Settings::value('APIs..amazonpubkey');
-		$this->privkey = Settings::value('APIs..amazonprivkey');
-		$this->asstag = Settings::value('APIs..amazonassociatetag');
+
+		$this->pubkey = !empty($options['AmazonPub']) ?  $options['AmazonPub'] : Settings::value('APIs..amazonpubkey');
+		$this->privkey = !empty($options['AmazonKey']) ?  $options['AmazonKey'] : Settings::value('APIs..amazonprivkey');
+		$this->threadNumber = !empty($options['ThreadNumber']) ? $options['ThreadNumber'] : 0;
+		$this->asstag = !empty($options['AmazonAssociateKey']) ?  $options['AmazonAssociateKey'] : Settings::value('APIs..amazonassociatetag');
+
 		$result = Settings::value('..maxmusicprocessed');
 		$this->musicqty = empty($result) ? $result : 150;
 		$result = Settings::value('..amazonsleep');
@@ -719,6 +728,8 @@ class Music
 	 */
 	public function processMusicReleases($local = false)
 	{
+		$skip=$this->threadNumber*$this->musicqty;
+
 		$res = $this->pdo->queryDirect(
 				sprintf('
 					SELECT searchname, id
@@ -727,11 +738,12 @@ class Music
 					AND nzbstatus = 1 %s
 					AND categories_id IN (%s, %s, %s)
 					ORDER BY postdate DESC
-					LIMIT %d',
+					LIMIT %d,%d',
 					$this->renamed,
 					Category::MUSIC_MP3,
 					Category::MUSIC_LOSSLESS,
 					Category::MUSIC_OTHER,
+					$skip,
 					$this->musicqty
 				)
 		);
@@ -751,6 +763,7 @@ class Music
 					$newname = $album["name"] . ' (' . $album["year"] . ')';
 
 					if ($this->echooutput) {
+						$this->pdo->log->doEcho($this->pdo->log->headerOver('Amazon Public Key: ') . $this->pdo->log->primary($this->pubkey));
 						$this->pdo->log->doEcho($this->pdo->log->headerOver('Looking up: ') . $this->pdo->log->primary($newname));
 					}
 
@@ -966,3 +979,4 @@ class Music
 		return ($str != '') ? $str : false;
 	}
 }
+

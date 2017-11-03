@@ -905,7 +905,7 @@ class DB extends \PDO
 	{
 		$data = $this->query($query, $cache, $cacheExpiry);
 
-		if (strpos($query, 'SQL_CALC_FOUND_ROWS') === false) {
+		if (stripos($query, 'SQL_CALC_FOUND_ROWS') === false) {
 			return $data;
 		}
 
