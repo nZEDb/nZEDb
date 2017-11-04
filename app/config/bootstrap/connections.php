@@ -172,35 +172,35 @@ if (file_exists($installed)) {
 	);
 
 	if (nZEDb_DEBUG) {
-		if (!defined()) {
+		if (!defined('DB_SYSTEM')) {
 			define('DB_SYSTEM', strtolower($adapter));
 		}
 
-		if (!defined()) {
+		if (!defined('DB_HOST')) {
 			define('DB_HOST', $db['host']);
 		}
 
-		if (!defined()) {
+		if (!defined('DB_PORT')) {
 			define('DB_PORT', $db['port']);
 		}
 
-		if (!defined()) {
+		if (!defined('DB_SOCKET')) {
 			define('DB_SOCKET', $db['socket']);
 		}
 
-		if (!defined()) {
+		if (!defined('DB_USER')) {
 			define('DB_USER', $db['user']);
 		}
 
-		if (!defined()) {
+		if (!defined('DB_PASSWORD')) {
 			define('DB_PASSWORD', $db['password']);
 		}
 
-		if (!defined()) {
+		if (!defined('DB_NAME')) {
 			define('DB_NAME', $db['database']);
 		}
 
-		if (!defined()) {
+		if (!defined('DB_PCONNECT')) {
 			define('DB_PCONNECT', $db['persist']);
 		}
 

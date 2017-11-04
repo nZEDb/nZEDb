@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-11-05 niel
+	Fix: Add the missing constant names to the checks for creating them in connections.php
 2017-11-01 niel
 	Fix: Quick fix for bad status being returned for when Request limit is exceeded.
 2017-10-30 DariusIII
