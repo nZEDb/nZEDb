@@ -849,70 +849,69 @@ class Misc
 
 	/**
 	 * Display error/error code.
-	 * @param int    $errorCode
-	 * @param string $errorText
+	 *
+	 * @param int    $status
+	 * @param string $message
 	 */
-	public static function showApiError($errorCode = 900, $errorText = '')
+	public static function showApiError($status = 900, $message = '')
 	{
-		if ($errorText === '') {
-			switch ($errorCode) {
+		if ($message === '') {
+			switch ($status) {
 				case 100:
-					$errorText = 'Incorrect user credentials';
+					$message = 'Incorrect user credentials';
 					break;
 				case 101:
-					$errorText = 'Account suspended';
+					$message = 'Account suspended';
 					break;
 				case 102:
-					$errorText = 'Insufficient privileges/not authorized';
+					$message = 'Insufficient privileges/not authorized';
 					break;
 				case 103:
-					$errorText = 'Registration denied';
+					$message = 'Registration denied';
 					break;
 				case 104:
-					$errorText = 'Registrations are closed';
+					$message = 'Registrations are closed';
 					break;
 				case 105:
-					$errorText = 'Invalid registration (Email Address Taken)';
+					$message = 'Invalid registration (Email Address Taken)';
 					break;
 				case 106:
-					$errorText = 'Invalid registration (Email Address Bad Format)';
+					$message = 'Invalid registration (Email Address Bad Format)';
 					break;
 				case 107:
-					$errorText = 'Registration Failed (Data error)';
+					$message = 'Registration Failed (Data error)';
 					break;
 				case 200:
-					$errorText = 'Missing parameter';
+					$message = 'Missing parameter';
 					break;
 				case 201:
-					$errorText = 'Incorrect parameter';
+					$message = 'Incorrect parameter';
 					break;
 				case 202:
-					$errorText = 'No such function';
+					$message = 'No such function';
 					break;
 				case 203:
-					$errorText = 'Function not available';
+					$message = 'Function not available';
 					break;
 				case 300:
-					$errorText = 'No such item';
+					$message = 'No such item';
 					break;
-				case 500:
-					$errorText = 'Request limit reached';
-					break;
-				case 501:
-					$errorText = 'Download limit reached';
+				case 429:
+					$message = 'Request limit reached';
 					break;
 				default:
-					$errorText = 'Unknown error';
+					$message = 'Unknown error';
 					break;
 			}
 		}
 
 		$response =
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
-			'<error code="' . $errorCode . '" description="' . $errorText . "\"/>\n";
+			'<error code="' . $status . '" description="' . $message . "\"/>\n";
 		header('Content-type: text/xml');
 		header('Content-Length: ' . strlen($response) );
-		header('X-nZEDb: API ERROR [' . $errorCode . '] ' . $errorText);
+		header('X-nZEDb: API ERROR [' . $status . '] ' . $message);
+		http_response_code($status);
 
 		exit($response);
 	}
