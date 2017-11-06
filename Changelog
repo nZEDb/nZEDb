@@ -15,7 +15,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2017-11-05 niel
-	Fix: Add the missing constant names to the checks for creating them in connections.php
+	Fix: Add the missing constant names to the checks for creating them in
+		app/config/bootstrap/connections.php.
 2017-11-01 niel
 	Fix: Quick fix for bad status being returned for when Request limit is exceeded.
 2017-10-30 DariusIII
