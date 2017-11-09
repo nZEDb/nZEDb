@@ -53,7 +53,7 @@ if (isset($_GET['t'])) {
 }
 
 $uid = $apiKey = '';
-$res = $catExclusions = [];
+$result = $catExclusions = [];
 $maxRequests = 0;
 
 // Page is accessible only by the apikey, or logged in users.
@@ -68,22 +68,22 @@ if ($page->users->isLoggedIn()) {
 } else {
 	if ($function != 'c' && $function != 'r') {
 		if (!isset($_GET['apikey'])) {
-			Misc::showApiError(200, 'Missing parameter (apikey)');
+			Misc::showApiError(403, 'Missing parameter (apikey)');
 		} else {
 			$apiKey = $_GET['apikey'];
-			$res    = $page->users->getByRssToken($apiKey);
-			if (!$res) {
-				Misc::showApiError(100, 'Incorrect user credentials (wrong API key)');
+			$result    = $page->users->getByRssToken($apiKey);
+			if ($result === false) {
+				Misc::showApiError(403, 'Incorrect user credentials (wrong API key)');
 			}
 		}
 
-		if ($page->users->isDisabled($res['username'])) {
+		if ($page->users->isDisabled($result['username'])) {
 			Misc::showApiError(101);
 		}
 
-		$uid = $res['id'];
+		$uid = $result['id'];
 		$catExclusions = $page->users->getCategoryExclusion($uid);
-		$maxRequests = $res['apirequests'];
+		$maxRequests = $result['apirequests'];
 	}
 }
 
