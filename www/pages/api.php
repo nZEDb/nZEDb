@@ -78,7 +78,7 @@ if ($page->users->isLoggedIn()) {
 		}
 
 		if ($page->users->isDisabled($result['username'])) {
-			Misc::showApiError(101);
+			Misc::showApiError(403, 'Account suspended');
 		}
 
 		$uid = $result['id'];
