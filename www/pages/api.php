@@ -58,13 +58,13 @@ $maxRequests = 0;
 
 // Page is accessible only by the apikey, or logged in users.
 if ($page->users->isLoggedIn()) {
+	if ($page->users->isDisabled($page->userdata['username'])) {
+		Misc::showApiError(403, 'Account suspended');
+	}
 	$uid = $page->userdata['id'];
 	$apiKey = $page->userdata['rsstoken'];
 	$catExclusions = $page->userdata['categoryexclusions'];
 	$maxRequests = $page->userdata['apirequests'];
-	if ($page->users->isDisabled($page->userdata['username'])) {
-		Misc::showApiError(403, 'Account suspended');
-	}
 } else {
 	if ($function != 'c' && $function != 'r') {
 		if (!isset($_GET['apikey'])) {
