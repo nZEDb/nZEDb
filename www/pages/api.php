@@ -63,7 +63,7 @@ if ($page->users->isLoggedIn()) {
 	$catExclusions = $page->userdata['categoryexclusions'];
 	$maxRequests = $page->userdata['apirequests'];
 	if ($page->users->isDisabled($page->userdata['username'])) {
-		Misc::showApiError(101);
+		Misc::showApiError(403, 'Account suspended');
 	}
 } else {
 	if ($function != 'c' && $function != 'r') {
