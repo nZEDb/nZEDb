@@ -86,7 +86,7 @@ Changed:
 	* The IRCScraper code has been changed to make it properly timezone aware. As before,
 	 predates are received as UTC/GMT time. However they are not converted using a call to the
 	 Database server (whose timezone is essentially unknown). Instead, the timezone of the
-	 connection to the server is used, which we are able to set as part of the ootstrap process.
+	 connection to the server is used, which we are able to set as part of the bootstrap process.
 	 By default, this timezone will be the same as the PHP code running the indexer, but it may
 	 be set to any valid zone by the user.
       Database changes: The 'predate' datetime field is replaced by a 'created' timestamp field
