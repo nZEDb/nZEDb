@@ -12,6 +12,9 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2017-11-09 niel
 	Fix: Correct status code for "Missing parameter (apikey)" redirect.
+	Mrg: dev-maintainance-mode.
+	Chg: Removed the check for logged in user during API key checking. This prevents allowing
+		incorrect keys to be used.
 2017-11-06 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.1.0
 
