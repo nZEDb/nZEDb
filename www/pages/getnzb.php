@@ -40,11 +40,11 @@ if ($page->users->isLoggedIn()) {
 // Check download limit on user role.
 $requests = $page->users->getDownloadRequests($uid);
 if ($requests > $maxDownloads) {
-	Misc::showApiError(501);
+	Misc::showApiError(429);
 }
 
 if (!isset($_GET['id'])) {
-	Misc::showApiError(200, 'parameter id is required');
+	Misc::showApiError(400, 'parameter id is required');
 }
 
 // Remove any suffixed id with .nzb which is added to help weblogging programs see nzb traffic.

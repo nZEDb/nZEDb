@@ -113,6 +113,9 @@ $total -= 1;
 $predb = new PreDb();
 
 $progress = $predb->progress(settings_array());
+if (is_numeric($argv[1])) {
+	$progress['last'] = $argv[1];
+}
 
 foreach ($data as $dir => $files) {
 	foreach ($files as $file) {
@@ -123,8 +126,8 @@ foreach ($data as $dir => $files) {
 				$timematch = $progress['last'];
 
 				// Skip patches the user does not want.
-				if ($match[1] < $timematch) {
-					echo 'Skipping dump ' . $match[2] .
+				if ($match['stamp'] < $timematch) {
+					echo 'Skipping dump ' . $match['stamp'] .
 						', as your minimum unix time argument is ' .
 						$timematch . PHP_EOL;
 					--$total;
@@ -136,18 +139,18 @@ foreach ($data as $dir => $files) {
 				echo "Downloading: {$file['download_url']}\n";
 
 				if (!$dump) {
-					echo "Error downloading dump {$match[2]} you can try manually importing it." .
+					echo "Error downloading dump {$match['stamp']} you can try manually importing it." .
 						PHP_EOL;
 					continue;
 				} else {
 					if (nZEDb_DEBUG) {
-						echo sprintf("Dump %s downloaded\n", date('Y-m-d', $match[2]));
+						echo sprintf("Dump %s downloaded\n", date('Y-m-d', $match['stamp']));
 					}
 				}
 
 				// Make sure we didn't get an HTML page.
 				if (strpos($dump, '<!DOCTYPE html>') !== false) {
-					echo "The dump file {$match[2]} might be missing from GitHub." . PHP_EOL;
+					echo "The dump file {$match['stamp']} might be missing from GitHub." . PHP_EOL;
 					continue;
 				}
 
@@ -155,15 +158,15 @@ foreach ($data as $dir => $files) {
 				$dump = gzdecode($dump);
 
 				if (!$dump) {
-					echo "Error decompressing dump {$match[2]}." . PHP_EOL;
+					echo "Error decompressing dump {$match['stamp']}." . PHP_EOL;
 					continue;
 				}
 
 				// Store the dump.
-				$dumpFile = nZEDb_RES . $match[2] . '_predb_dump.csv';
+				$dumpFile = nZEDb_TMP . $match['stamp'] . '_predb_dump.csv';
 				$fetched = file_put_contents($dumpFile, $dump);
 				if (!$fetched) {
-					echo "Error storing dump file {$match[2]} in (" . nZEDb_RES . ').' .
+					echo "Error storing dump file {$match['stamp']} in (" . nZEDb_RES . ').' .
 						PHP_EOL;
 					continue;
 				}
@@ -207,11 +210,11 @@ foreach ($data as $dir => $files) {
 				// Delete the dump.
 				unlink($dumpFile);
 
-				$progress = $predb->progress(settings_array($match[2] + 1, $progress),
+				$progress = $predb->progress(settings_array($match['stamp'] + 1, $progress),
 					['read' => false]);
 				echo sprintf("Successfully imported PreDB dump %d (%s), %d dumps remaining\n",
-					$match[2],
-					 date('Y-m-d', $match[2]),
+					$match['stamp'],
+					 date('Y-m-d', $match['stamp']),
 					--$total
 					);
 			} else {

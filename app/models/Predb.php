@@ -40,7 +40,7 @@ class Predb extends \app\extensions\data\Model
 	{
 		$options = [
 			'limit' => $limit,
-			'order' => ['title' => 'ASC'],
+			'order' => ['created' => 'DESC'],
 			'page'  => (int)$page
 		];
 

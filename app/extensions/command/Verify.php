@@ -25,9 +25,13 @@ use nzedb\utility\Text;
 
 /**
  * Verifies various parts of your indexer.
- *
  * Actions:
- *  * settings_table	Checks that all settings in the 10~settings.tsv exist in your Db.
+ * * settings_table Checks that all settings in the 10~settings.tsv exist in your Db.
+ * * permissions    Checks that path and/or db permissions for crucial locations in nZEDb for the user running the command.
+ *                  If an incorrect permission is encountered, a message will be printed.
+ *                  IT IS STRONGLY RECOMMENDED that you run this against your apache/nginx user, in addition to your normal CLI user.
+ *                  On linux you can run it against the apache/nginx user this way: sudo -u www-data ./zed verify permissions
+ *                  See this page for a quick guide on setting up your permissions in linux: https://github.com/nZEDb/nZEDb/wiki/Setting-permissions-on-linux
  */
 class Verify extends \app\extensions\console\Command
 {
@@ -53,6 +57,28 @@ class Verify extends \app\extensions\console\Command
 		}
 
 		return false;
+	}
+
+	public function permissions($dbPerms = false)
+	{
+		$this->primary("Checking file permissions...");
+		$error = false;
+
+		// Check All folders up to nZEDb root folder.
+		$path = DS;
+		foreach (explode(DS, nZEDb_ROOT) as $folder) {
+			if ($folder) {
+				$path .= $folder . DS;
+				$error |= !$this->isReadable($path);
+				$error |= !$this->isExecutable($path);
+			}
+		}
+
+		if ($error) {
+			$this->primary("Fix the above errors and rerun the command.");
+		} else {
+			$this->primary("Congratulations, file permissions look good!");
+		}
 	}
 
 	public function settingstable()
@@ -87,5 +113,25 @@ class Verify extends \app\extensions\console\Command
 	protected function _init()
 	{
 		parent::_init();
+	}
+
+	protected function isExecutable($path)
+	{
+		$check = is_executable($path);
+		if (!$check) {
+			$this->error("This path is not executable/traversable: '$path'.");
+		}
+
+		return $check;
+	}
+
+	protected function isReadable($path)
+	{
+		$check = is_readable($path);
+		if (!$check) {
+			$this->error("This path is not readable: '$path'.");
+		}
+
+		return $check;
 	}
 }

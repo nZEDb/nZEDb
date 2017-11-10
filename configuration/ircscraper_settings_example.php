@@ -74,7 +74,6 @@ define('SCRAPE_IRC_CHANNELS',
 		array(
 			//'#Channel'                => 'Password',
 			'#nZEDbPRE'                 => null,
-			'#nZEDbPRE2'                => null,
 			'#PreNNTmux'                => null
 		)
 	)

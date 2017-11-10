@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "abc6579907450f8e6d5bfc6cb6e30040",
+    "content-hash": "cae012a6064d4a54d28aff9ff2214f59",
     "packages": [
         {
             "name": "b3rs3rk/steamfront",
@@ -12,18 +12,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/b3rs3rk/steamfront.git",
-                "reference": "dc06fe132db557170c68cbd8c19c1773330906b7"
+                "reference": "286962ea793a8069729b4412a675c88a8d6c3ebd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/b3rs3rk/steamfront/zipball/dc06fe132db557170c68cbd8c19c1773330906b7",
-                "reference": "dc06fe132db557170c68cbd8c19c1773330906b7",
+                "url": "https://api.github.com/repos/b3rs3rk/steamfront/zipball/286962ea793a8069729b4412a675c88a8d6c3ebd",
+                "reference": "286962ea793a8069729b4412a675c88a8d6c3ebd",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "ext-json": "*",
-                "php": ">=5.4.0"
+                "php": ">=5.6.0"
             },
             "type": "library",
             "autoload": {
@@ -42,7 +42,7 @@
                 }
             ],
             "description": "PHP Wrapper for Accessing the Steam Storefront API",
-            "time": "2017-06-30 12:49:25"
+            "time": "2017-08-27 15:14:06"
         },
         {
             "name": "barracudanetworks/forkdaemon-php",
@@ -988,16 +988,16 @@
         },
         {
             "name": "composer/installers",
-            "version": "v1.3.0",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "79ad876c7498c0bbfe7eed065b8651c93bfd6045"
+                "reference": "9ce17fb70e9a38dd8acff0636a29f5cf4d575c1b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/79ad876c7498c0bbfe7eed065b8651c93bfd6045",
-                "reference": "79ad876c7498c0bbfe7eed065b8651c93bfd6045",
+                "url": "https://api.github.com/repos/composer/installers/zipball/9ce17fb70e9a38dd8acff0636a29f5cf4d575c1b",
+                "reference": "9ce17fb70e9a38dd8acff0636a29f5cf4d575c1b",
                 "shasum": ""
             },
             "require": {
@@ -1043,6 +1043,7 @@
                 "Hurad",
                 "ImageCMS",
                 "Kanboard",
+                "Lan Management System",
                 "MODX Evo",
                 "Mautic",
                 "Maya",
@@ -1066,6 +1067,7 @@
                 "croogo",
                 "dokuwiki",
                 "drupal",
+                "eZ Platform",
                 "elgg",
                 "expressionengine",
                 "fuelphp",
@@ -1082,6 +1084,7 @@
                 "mediawiki",
                 "modulework",
                 "moodle",
+                "osclass",
                 "phpbb",
                 "piwik",
                 "ppi",
@@ -1098,7 +1101,7 @@
                 "zend",
                 "zikula"
             ],
-            "time": "2017-04-24T06:37:16+00:00"
+            "time": "2017-08-09T07:53:48+00:00"
         },
         {
             "name": "dborsatto/php-giantbomb",

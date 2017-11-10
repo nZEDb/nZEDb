@@ -261,7 +261,7 @@ define('nZEDb_DEBUG', false);
  *
  * @default false
  */
-define('nZEDb_LOGGING', false);
+define('nZEDb_LOGGING', true);
 
 /**
  * var_dump missing autoloader files.
@@ -329,7 +329,7 @@ define('nZEDb_LOGGING_LOG_RUNNING_TIME', true);
  *
  * @default false
  */
-define('nZEDb_LOGGING_LOG_RESOURCE_USAGE', false);
+define('nZEDb_LOGGING_LOG_RESOURCE_USAGE', true);
 
 /*********************************************************************************
  * The following options require either nZEDb_DEBUG OR nZEDb_LOGGING to be true: *
@@ -340,42 +340,42 @@ define('nZEDb_LOGGING_LOG_RESOURCE_USAGE', false);
  *
  * @default false
  */
-define('nZEDb_LOGINFO', false);
+define('nZEDb_LOGINFO', true);
 
 /**
  * Log and/or echo debug Notice messages.
  *
  * @default false
  */
-define('nZEDb_LOGNOTICE', false);
+define('nZEDb_LOGNOTICE', true);
 
 /**
  * Log and/or echo debug Warning messages.
  *
  * @default false
  */
-define('nZEDb_LOGWARNING', false);
+define('nZEDb_LOGWARNING', true);
 
 /**
  * Log and/or echo debug Error messages.
  *
  * @default false
  */
-define('nZEDb_LOGERROR', false);
+define('nZEDb_LOGERROR', true);
 
 /**
  * Log and/or echo debug Fatal messages.
  *
  * @default false
  */
-define('nZEDb_LOGFATAL', false);
+define('nZEDb_LOGFATAL', true);
 
 /**
  * Log and/or echo debug failed SQL queries.
  *
  * @default false
  */
-define('nZEDb_LOGQUERIES', false);
+define('nZEDb_LOGQUERIES', true);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////// SQL Settings //////////////////////////////////////////////

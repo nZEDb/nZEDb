@@ -53,37 +53,37 @@ if (isset($_GET['t'])) {
 }
 
 $uid = $apiKey = '';
-$res = $catExclusions = [];
+$result = $catExclusions = [];
 $maxRequests = 0;
 
 // Page is accessible only by the apikey, or logged in users.
 if ($page->users->isLoggedIn()) {
+	if ($page->users->isDisabled($page->userdata['username'])) {
+		Misc::showApiError(403, 'Account suspended');
+	}
 	$uid = $page->userdata['id'];
 	$apiKey = $page->userdata['rsstoken'];
 	$catExclusions = $page->userdata['categoryexclusions'];
 	$maxRequests = $page->userdata['apirequests'];
-	if ($page->users->isDisabled($page->userdata['username'])) {
-		Misc::showApiError(101);
-	}
 } else {
 	if ($function != 'c' && $function != 'r') {
 		if (!isset($_GET['apikey'])) {
-			Misc::showApiError(200, 'Missing parameter (apikey)');
+			Misc::showApiError(403, 'Missing parameter (apikey)');
 		} else {
 			$apiKey = $_GET['apikey'];
-			$res    = $page->users->getByRssToken($apiKey);
-			if (!$res) {
-				Misc::showApiError(100, 'Incorrect user credentials (wrong API key)');
+			$result    = $page->users->getByRssToken($apiKey);
+			if ($result === false) {
+				Misc::showApiError(403, 'Incorrect user credentials (wrong API key)');
 			}
 		}
 
-		if ($page->users->isDisabled($res['username'])) {
-			Misc::showApiError(101);
+		if ($page->users->isDisabled($result['username'])) {
+			Misc::showApiError(403, 'Account suspended');
 		}
 
-		$uid = $res['id'];
+		$uid = $result['id'];
 		$catExclusions = $page->users->getCategoryExclusion($uid);
-		$maxRequests = $res['apirequests'];
+		$maxRequests = $result['apirequests'];
 	}
 }
 
@@ -92,7 +92,8 @@ if ($uid != '') {
 	$page->users->updateApiAccessed($uid);
 	$apiRequests = $page->users->getApiRequests($uid);
 	if ($apiRequests > $maxRequests) {
-		Misc::showApiError(500, 'Request limit reached (' . $apiRequests . '/' . $maxRequests . ')');
+		Misc::showApiError(429, 'Request limit reached (' . $apiRequests . '/' . $maxRequests .
+			')');
 	}
 }
 

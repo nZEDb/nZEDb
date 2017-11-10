@@ -93,10 +93,10 @@ class Categorize extends Category
 			case $this->isPC():
 			case $this->isXxx():
 			case $this->isTV():
-			case $this->isMusic():
 			case $this->isMovie():
 			case $this->isConsole():
 			case $this->isBook():
+            case $this->isMusic():
 				return $this->tmpCat;
 		}
 
@@ -177,6 +177,7 @@ class Categorize extends Category
 						case $this->isHDTV():
 						case $this->isSDTV():
 						case $this->isPC():
+                        case $this->isSportTV():
 							break;
 						default:
 							return false;
@@ -635,19 +636,20 @@ class Categorize extends Category
 
 	public function isSportTV()
 	{
-		switch (true) {
-			case preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])/i', $this->releaseName):
-				return false;
-			case preg_match('/[-._ ]?(Bellator|bundesliga|EPL|ESPN|FIA|la[-._ ]liga|MMA|motogp|NFL|NCAA|PGA|red[-._ ]bull.+race|Sengoku|Strikeforce|supercup|uefa|UFC|wtcc|WWE)[-._ ]/i', $this->releaseName):
-			case preg_match('/[-._ ]?(DTM|FIFA|formula[-._ ]1|indycar|Rugby|NASCAR|NBA|NHL|NRL|netball[-._ ]anz|ROH|SBK|Superleague|The[-._ ]Ultimate[-._ ]Fighter|TNA|V8[-._ ]Supercars|WBA|WrestleMania)[-._ ]/i', $this->releaseName):
-			case preg_match('/[-._ ]?(AFL|Grand Prix|Indy[-._ ]Car|(iMPACT|Smoky[-._ ]Mountain|Texas)[-._ ]Wrestling|Moto[-._ ]?GP|NSCS[-._ ]ROUND|NECW|Poker|PWX|Rugby|WCW)[-._ ]/i', $this->releaseName):
-			case preg_match('/[-._ ]?(Horse)[-._ ]Racing[-._ ]/i', $this->releaseName):
-				$this->tmpCat = Category::TV_SPORT;
+        switch (true) {
+            case preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])/i', $this->releaseName):
+                return false;
+            case preg_match('/[-._ ]?(Bellator|bundesliga|EPL|ESPN|FIA|la[-._ ]liga|MMA|motogp|NFL|MLB|NCAA|PGA|FIM|NJPW|red[-._ ]bull|.+race|Sengoku|Strikeforce|supercup|uefa|UFC|wtcc|WWE)[-._ ]/i', $this->releaseName):
+            case preg_match('/[-._ ]?(DTM|FIFA|formula[-._ ]1|indycar|Rugby|NASCAR|NBA|NHL|NRL|netball[-._ ]anz|ROH|SBK|Superleague|The[-._ ]Ultimate[-._ ]Fighter|TNA|V8[-._ ]Supercars|WBA|WrestleMania)[-._ ]/i', $this->releaseName):
+            case preg_match('/[-._ ]?(AFL|Grand Prix|Indy[-._ ]Car|(iMPACT|Smoky[-._ ]Mountain|Texas)[-._ ]Wrestling|Moto[-._ ]?GP|NSCS[-._ ]ROUND|NECW|Poker|PWX|Rugby|WCW)[-._ ]/i', $this->releaseName):
+            case preg_match('/[-._ ]?(Horse)[-._ ]Racing[-._ ]/i', $this->releaseName):
+            case preg_match('/[-._ ](VERUM|GRiP|Ebi|OVERTAKE)/i', $this->releaseName):
+                $this->tmpCat = Category::TV_SPORT;
 
-				return true;
-			default:
-				return false;
-		}
+                return true;
+            default:
+                return false;
+        }
 	}
 
 	public function isDocumentaryTV()

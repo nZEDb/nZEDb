@@ -16,31 +16,17 @@
  * @author    niel
  * @copyright 2017 nZEDb
  */
-namespace nzedb\build;
 
-require_once dirname(__DIR__) . '/constants.php';
+use lithium\analysis\Logger;
 
-use Composer\Script\Event;
+Logger::config([
+	'default' => [
+		'adapter'	=> 'File',
+		'path' 		=> nZEDb_LOGS,
+		'priority'	=> ['debug','emergency', 'alert', 'critical', 'error']
+	],
+	'system' => ['adapter' => 'Syslog']
+]);
 
-class Composer
-{
-	public static function postInstallCmd(Event $event)
-	{
-		$last = $output = $return = null;
-		if (!file_exists(nZEDb_CONFIGS . 'settings.php')) {
-			copy(nZEDb_CONFIGS . 'settings.example.php', nZEDb_CONFIGS . 'settings.php');
-		}
-
-		if (getenv('COMPOSER_DEV_MODE') == 1) {
-			echo "Updating git hooks... ";
-			$last = exec('build/git-hooks/addHooks.sh', $output, $return);
-			if ($return > 0) {
-				echo PHP_EOL;
-				exit($last);
-			}
-			echo "done" . PHP_EOL;
-		}
-	}
-}
 
 ?>

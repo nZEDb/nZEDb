@@ -4,6 +4,9 @@ use app\models\Settings;
 use nzedb\Category;
 use nzedb\Movie;
 use nzedb\UserMovies;
+use Tmdb\ApiToken;
+use Tmdb\Client;
+use Tmdb\Exception\TmdbApiException;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
@@ -31,7 +34,13 @@ if (isset($_REQUEST['del'])) {
 		$page->show404();
 	}
 
-	$tmdb = new TMDb(Settings::value('APIs..tmdbkey'), Settings::value('indexer.categorise.imdblanguage'));
+	$token = new ApiToken(Settings::value('APIs..tmdbkey'));
+    $tmdb = new Client($token, [
+            'cache' => [
+                'enabled' => false
+            ]
+        ]
+    );
 	$m = new Movie(['Settings' => $page->settings, 'TMDb' => $tmdb]);
 
 	if (is_numeric($_REQUEST['id'])) {
@@ -40,7 +49,11 @@ if (isset($_REQUEST['del'])) {
 			$obj = array($movie);
 		}
 	} else {
-		$searchm = $tmdb->searchMovie($_REQUEST['id']);
+		try {
+            $searchm = $tmdb->getMoviesApi()->getMovie($_REQUEST['id']);
+        } catch (TmdbApiException $e) {
+		    return false;
+        }
 		if ($searchm !== false) {
 			if (isset($searchm['results'])) {
 				$obj = array();

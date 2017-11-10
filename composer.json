@@ -51,15 +51,15 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/nZEDb/Git.php"
-    },
-    {
-      "type": "vcs",
       "url": "https://github.com/niel/li3_docs"
     },
     {
       "type": "vcs",
       "url": "https://github.com/niel/li3_quality"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/nZEDb/Git.php"
     },
     {
       "type": "vcs",

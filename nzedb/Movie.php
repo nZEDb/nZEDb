@@ -170,7 +170,7 @@ class Movie
 		$this->tmdbToken = new ApiToken(Settings::value('APIs..tmdbkey'));
 		$this->tmdbClient = new TmdbClient($this->tmdbToken, [
 				'cache' => [
-					'path' => nZEDb_TMP
+					'enabled' => false
 				]
 			]
 		);

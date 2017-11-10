@@ -58,7 +58,7 @@ class TMDB extends TV
 		$this->token = new ApiToken(Settings::value('APIs..tmdbkey'));
 		$this->client = new Client($this->token, [
 				'cache' => [
-					'path' => nZEDb_TMP
+					'enabled' => false
 				]
 			]
 		);

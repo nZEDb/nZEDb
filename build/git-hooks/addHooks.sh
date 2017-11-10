@@ -8,7 +8,7 @@ PC=/pre-commit
 NZEDB=${NZEDB%${HOOKS}}
 
 echo "${NZEDB}${GIT}"
-if [ -x "${NZEDB}${GIT}${PC}" ]
+if [ -e "${NZEDB}${GIT}${PC}" ]
 then
 	rm "${NZEDB}${GIT}${PC}"
 	echo .
