@@ -86,7 +86,8 @@ if (! defined('DB_MOCK')) {
 	}
 }
 
-if (DB_MOCK == true) {
+if (DB_MOCK === true) {
+	echo 'No connection defined' . PHP_EOL;
 	Connections::add('mock',
 		[
 			'type'     => 'database',
@@ -100,8 +101,10 @@ if (DB_MOCK == true) {
 			'timezone' => ini_get('date.timezone'),
 		]
 	);
+}
+
 // Check for install.lock first. If it exists, so should config.php
-} else if (file_exists($installed)) {
+if (file_exists($installed)) {
 	// This allows us to set up a db config separate to that created by /install
 	$config1 = LITHIUM_APP_PATH . DS . 'config' . DS . 'db-config.php';
 	$config2 = nZEDb_CONFIGS . 'config.php';
@@ -190,7 +193,7 @@ if (DB_MOCK == true) {
 			// If enabled this forces all table column names to be lower-cased. This should only
 			// be needed by users with long standing databases that were created with upper-cased
 			// names for some fields.
-			'lowercase'  =>	false,
+			'lowercase'  => false,
 		]
 	);
 
