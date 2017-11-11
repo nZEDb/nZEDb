@@ -6,7 +6,7 @@ ChangeLog file which list *when* changes are made to the dev branches.
 Added:
 	* settings.example.php has new constants for a maintenance mode. If the mode is set to true
 	 then the API/web site return a status of 503 with the message "Maintenance Mode". The page
-	 returned by the server should be defined the MAINTENANCE_MODE_HTML_PATH constant.
+	 returned by the server should be defined with the MAINTENANCE_MODE_HTML_PATH constant.
 
 
 0.8.1.0 2017-11-06
