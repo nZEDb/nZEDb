@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-11-11 niel
+	Mrg: PR 2546, from Wally73 - Update Configure.php for new settings.php version.
 2017-11-09 niel
 	Fix: Correct status code for "Missing parameter (apikey)" redirect.
 	Mrg: dev-maintainance-mode.
