@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-11-12 niel
+	Fix: Removed LOWER() from username checks in SQL, as usernames should always be case-sensitive.
 2017-11-11 niel
 	Mrg: PR 2546, from Wally73 - Update Configure.php for new settings.php version.
 2017-11-09 niel

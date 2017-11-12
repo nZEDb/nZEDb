@@ -20,7 +20,7 @@ if (!isset($argv[1])) {
 		. "php $argv[0] nZEDb-username speedlimit 50    ...: To set the speed limit to 50%\n"));
 }
 
-$usersettings = $pdo->queryOneRow(sprintf("SELECT * FROM users WHERE LOWER(username) = LOWER(%s) ", $pdo->escapeString($argv[1])));
+$usersettings = $pdo->queryOneRow(sprintf("SELECT * FROM users WHERE username = %s ", $pdo->escapeString($argv[1])));
 $saburl = $usersettings['saburl'];
 $sabapikey = $usersettings['sabapikey'];
 $sabapikeytype = $usersettings['sabapikeytype'];
