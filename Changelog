@@ -19,6 +19,11 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2017-11-09 niel
 	Fix: Correct status code for "Missing parameter (apikey)" redirect.
 	Mrg: dev-maintainance-mode.
+		**NOTE** This requires that you update your settings.php file. There are two things to
+		change.
+			1) the version number from 4 to 5. Near the top of the file.
+			2) The addition of the maintenance mode constants near the bottom of the file. This
+			  is optional, but it is wise to add them.
 	Chg: Removed the check for logged in user during API key checking. This prevents allowing
 		incorrect keys to be used.
 2017-11-06 niel
