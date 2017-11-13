@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-11-13
+	Fix: Use fully namespaced class name for Misc, to avoid not found exception for some users.
 2017-11-12 niel
 	Fix: Removed LOWER() from username checks in SQL, as usernames should always be case-sensitive.
 2017-11-11 niel
