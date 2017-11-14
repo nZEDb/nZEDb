@@ -1,19 +1,3 @@
-DROP TABLE IF EXISTS allgroups;
-CREATE TABLE allgroups (
-  id           INT(11)         NOT NULL AUTO_INCREMENT,
-  name         VARCHAR(255)    NOT NULL DEFAULT '',
-  first_record BIGINT UNSIGNED NOT NULL DEFAULT '0',
-  last_record  BIGINT UNSIGNED NOT NULL DEFAULT '0',
-  updated      DATETIME DEFAULT NULL,
-  PRIMARY KEY (id),
-  INDEX ix_allgroups_name (name)
-)
-  ENGINE = MYISAM
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_unicode_ci
-  AUTO_INCREMENT = 1;
-
-
 DROP TABLE IF EXISTS anidb_episodes;
 CREATE TABLE anidb_episodes (
   anidbid       INT(10) UNSIGNED        NOT NULL
