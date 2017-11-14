@@ -87,7 +87,6 @@ if (! defined('DB_MOCK')) {
 }
 
 if (DB_MOCK === true) {
-	echo 'No connection defined' . PHP_EOL;
 	Connections::add('mock',
 		[
 			'type'     => 'database',
