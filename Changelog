@@ -10,11 +10,20 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-11-13
+	Fix: Use fully namespaced class name for Misc, to avoid not found exception for some users.
+2017-11-12 niel
+	Fix: Removed LOWER() from username checks in SQL, as usernames should always be case-sensitive.
 2017-11-11 niel
 	Mrg: PR 2546, from Wally73 - Update Configure.php for new settings.php version.
 2017-11-09 niel
 	Fix: Correct status code for "Missing parameter (apikey)" redirect.
 	Mrg: dev-maintainance-mode.
+		**NOTE** This requires that you update your settings.php file. There are two things to
+		change.
+			1) the version number from 4 to 5. Near the top of the file.
+			2) The addition of the maintenance mode constants near the bottom of the file. This
+			  is optional, but it is wise to add them.
 	Chg: Removed the check for logged in user during API key checking. This prevents allowing
 		incorrect keys to be used.
 2017-11-06 niel

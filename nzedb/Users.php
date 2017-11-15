@@ -462,7 +462,7 @@ class Users
 	{
 		return $this->pdo->queryOneRow(
 			sprintf(
-				"SELECT * FROM users WHERE LOWER(username) = LOWER(%s)",
+				"SELECT * FROM users WHERE username = %s",
 				$this->pdo->escapeString($userName)
 			)
 		);

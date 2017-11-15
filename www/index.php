@@ -1,7 +1,7 @@
 <?php
 require_once 'smarty.php';
 
-Misc::maintainanceCheck();
+nzedb\utility\Misc::maintainanceCheck();
 
 if (!file_exists(nZEDb_CONFIGS . 'install.lock')) {
 	header('Location: install');
