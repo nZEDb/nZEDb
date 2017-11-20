@@ -98,7 +98,7 @@ class SphinxSearch
 	}
 
 	/**
-	 * Update Sphinx Relases index for given releaseid.
+	 * Update Sphinx Releases index for given releaseid.
 	 *
 	 * @param int $releaseID
 	 * @param \nzedb\db\DB $pdo
