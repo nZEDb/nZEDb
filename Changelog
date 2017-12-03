@@ -10,6 +10,10 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-12-03 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.2.0
+
+
 2017-11-13
 	Fix: Use fully namespaced class name for Misc, to avoid not found exception for some users.
 2017-11-12 niel
