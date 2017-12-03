@@ -1,6 +1,7 @@
 ### Hiding themes from user profiles:
 
-Add _ as the first character of the theme's folder name.
+All active theme directories should have their first character of the name capitalised. Delete
+the directories or change the initial character to lower-case to hide them.
 
 
 --------------------------------------------------------------------------------
