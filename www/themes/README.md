@@ -3,24 +3,28 @@
 All active theme directories should have their first character of the name capitalised. Delete
 the directories or change the initial character to lower-case to hide them.
 
+Do not disable the Default theme, as it is the fallback theme for any missing pages, including the entire admin part of the site.
+
 
 --------------------------------------------------------------------------------
-### How to make a new theme using the 'simple' theme:
+### How to make a new theme using the 'Default' theme:
 
 
-Copy the simple folder, paste it into the themes folder with a new name (for example mytheme).
+Copy the Default directory, paste it into the themes directory with a new name (for example Mytheme).
 
-Open the mytheme folder, go to templates/
+It is recommended to use the Default theme as it supposed to be kept up to date with new features, so should have everything found in other themes (however, the JS framework is older - so you might want to use one of the other themes).
+
+Open the Mytheme directory, go to templates/
 
 Open basepage.tpl in a text editor.
 
-Change `<link href="{$smarty.const.WWW_TOP}/themes/Simple/styles/style.css" rel="stylesheet" media="screen">`
+Change `<link href="{$smarty.const.WWW_TOP}/themes/Default/styles/style.css" rel="stylesheet" media="screen">`
 
-To `<link href="{$smarty.const.WWW_TOP}/themes/mytheme/styles/style.css" rel="stylesheet" media="screen">`
+To `<link href="{$smarty.const.WWW_TOP}/themes/Mytheme/styles/style.css" rel="stylesheet" media="screen">`
 
 
 
-Go back into the mythemes folder, go inside the styles folder.
+Go back into the Default directory, go inside the styles directory.
 
 Open style.css with a text editor.
 
