@@ -794,7 +794,7 @@ class Misc
 		$body .= '</html>' . $CRLF;
 
 		if (defined('PHPMAILER_ENABLED') && PHPMAILER_ENABLED == true) {
-			$mail = new \PHPMailer;
+			$mail = new PHPMailer\PHPMailer\PHPMailer;
 		} else {
 			$mail = null;
 		}
