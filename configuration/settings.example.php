@@ -18,7 +18,7 @@ use nzedb\utility\Misc;
  *                    $current_settings_file_version in nzedb\config\Configure.php
  * @version 4
  */
-define('nZEDb_SETTINGS_FILE_VERSION', 4);
+define('nZEDb_SETTINGS_FILE_VERSION', 5);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// Web Settings ////////////////////////////////////////////////
@@ -788,13 +788,57 @@ if (extension_loaded('xdebug')) {
 	ini_set('xdebug.var_display_max_depth', '3');
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////// Maintenance Mode Settings //////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Should the site be in maintenance mode.
+ * If enabled, it will output the selected HTML file added below to front-end pages as well as
+ * outputting a properly formatted API error response with the error text "Maintenance Mode" and
+ * status code 503.
+ * This will prevent nZEDb from making any MySQL/Sphinx/Cache calls so it's good to use this if you
+ * need to stop/restart those services.
+ *
+ * @note If your site uses some form of webserver-level caching, the cache may need to be cleared
+ *      when coming out of maintenance mode. Otherwise you'll have to wait until it expires to see
+ * 		your proper site again.
+ * @default false
+ */
+define('MAINTENANCE_MODE_ENABLED', false);
+
+/**
+ * The fully qualified absolute path to the maintenance mode HTML file.
+ * This should be a fully complete HTML file and NOT a smarty template. The idea of a maintenance
+ * file is it should be static HTML with no dependencies on other systems.
+ * That way it can safely be displayed without the database running or any other services (except
+ * PHP and the webserver of course).
+ *
+ * @note On my site I ripped the rendered HTML content of my home page and swapped out the center
+ *      container for a maintenance message. This is a good process. Be sure to remove all
+ *		references to user data. Links to other site pages can remain intact.
+ * @default ''
+ */
+define('MAINTENANCE_MODE_HTML_PATH', '');
+
+/**
+ * What IP addresses should be excluded from maintenance mode.
+ *
+ * Useful if you want to allow admins to access the site while everyone else sees the maintenance
+ * message.
+ *
+ * @note Keep in mind, if your site uses ipv6 you may need to enter your ipv6 address here as well.
+ * @default []
+ */
+define('MAINTENANCE_MODE_IP_EXCEPTIONS', []);
+
 /***************************************************************************************************
  * /////////////////////////////////////////////////////////////////////////////////////////////////
  * ///////////////////////////////////// Change log ////////////////////////////////////////////////
  * /////////////////////////////////////////////////////////////////////////////////////////////////
- * 2015-10-14    v4  Change defaults html_errors default to 0
+ * 2017-08-09	v5	Add maintainance mode.
+ * 2015-10-14   v4  Change defaults html_errors default to 0
  * 2015-08-26   v4  Add settings for PHP web/CLI SAPI's.
- *                Add settings for Xdebug.
+ *                	Add settings for Xdebug.
  *                  All new settings start from the "PHP CLI Settings" up to the "Change log",
  *                    lines ~544 to ~768
  * 2015-06-11   v3  Add support for APC or APCu extensions for caching data. Search for @version 3

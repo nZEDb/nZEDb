@@ -77,6 +77,32 @@ use lithium\data\Connections;
 
 $installed = nZEDb_CONFIGS . 'install.lock';
 
+if (! defined('DB_MOCK')) {
+	// Add new condition to use DB_MOCK mode here.
+	if (!defined('MAINTENANCE_MODE_ENABLED') || MAINTENANCE_MODE_ENABLED == true) {
+		define('DB_MOCK', true);
+	} else {
+		define('DB_MOCK', false);
+	}
+}
+
+if (DB_MOCK === true) {
+	echo 'No connection defined' . PHP_EOL;
+	Connections::add('mock',
+		[
+			'type'     => 'database',
+			'adapter'  => 'Mock',
+			'host'     => 'localhost',
+			'port'     => '3306',
+			'login'    => 'root',
+			'password' => 'root_pass',
+			'database' => 'nZEDb',
+			'encoding' => 'UTF-8',
+			'timezone' => ini_get('date.timezone'),
+		]
+	);
+}
+
 // Check for install.lock first. If it exists, so should config.php
 if (file_exists($installed)) {
 	// This allows us to set up a db config separate to that created by /install
@@ -167,7 +193,7 @@ if (file_exists($installed)) {
 			// If enabled this forces all table column names to be lower-cased. This should only
 			// be needed by users with long standing databases that were created with upper-cased
 			// names for some fields.
-			'lowercase'  =>	false,
+			'lowercase'  => false,
 		]
 	);
 
@@ -223,20 +249,6 @@ if (file_exists($installed)) {
 
 	\nzedb\utility\Misc::setCoversConstant(
 		\app\models\Settings::value('site.main.coverspath')
-	);
-} else {
-	Connections::add('mock',
-		[
-			'type'     => 'database',
-			'adapter'  => 'Mock',
-			'host'     => 'localhost',
-			'port'     => '3306',
-			'login'    => 'root',
-			'password' => 'root_pass',
-			'database' => 'nZEDb',
-			'encoding' => 'UTF-8',
-			'timezone' => ini_get('date.timezone'),
-		]
 	);
 }
 

@@ -53,38 +53,28 @@ if (isset($_GET['t'])) {
 }
 
 $uid = $apiKey = '';
-$res = $catExclusions = [];
+$result = $catExclusions = [];
 $maxRequests = 0;
 
-// Page is accessible only by the apikey, or logged in users.
-if ($page->users->isLoggedIn()) {
-	$uid = $page->userdata['id'];
-	$apiKey = $page->userdata['rsstoken'];
-	$catExclusions = $page->userdata['categoryexclusions'];
-	$maxRequests = $page->userdata['apirequests'];
-	if ($page->users->isDisabled($page->userdata['username'])) {
-		Misc::showApiError(101);
-	}
-} else {
-	if ($function != 'c' && $function != 'r') {
-		if (!isset($_GET['apikey'])) {
-			Misc::showApiError(200, 'Missing parameter (apikey)');
-		} else {
-			$apiKey = $_GET['apikey'];
-			$res    = $page->users->getByRssToken($apiKey);
-			if (!$res) {
-				Misc::showApiError(100, 'Incorrect user credentials (wrong API key)');
-			}
+// Page is accessible only by the apikey.
+if ($function != 'c' && $function != 'r') {
+	if (!isset($_GET['apikey'])) {
+		Misc::showApiError(403, 'Missing parameter (apikey)');
+	} else {
+		$apiKey = $_GET['apikey'];
+		$result = $page->users->getByRssToken($apiKey);
+		if ($result === false) {
+			Misc::showApiError(403, 'Incorrect user credentials (wrong API key)');
 		}
-
-		if ($page->users->isDisabled($res['username'])) {
-			Misc::showApiError(101);
-		}
-
-		$uid = $res['id'];
-		$catExclusions = $page->users->getCategoryExclusion($uid);
-		$maxRequests = $res['apirequests'];
 	}
+
+	if ($page->users->isDisabled($result['username'])) {
+		Misc::showApiError(403, 'Account suspended');
+	}
+
+	$uid = $result['id'];
+	$catExclusions = $page->users->getCategoryExclusion($uid);
+	$maxRequests = $result['apirequests'];
 }
 
 // Record user access to the api, if its been called by a user (i.e. capabilities request do not require a user to be logged in or key provided).
