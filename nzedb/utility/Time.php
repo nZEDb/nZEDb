@@ -62,7 +62,6 @@ class Time
 		];
 
 		$month = strtolower($month);
-		var_dump($month, $months);
 		$digit = false;
 		if (array_key_exists($month, $months)) {
 			$digit = $months[$month];
