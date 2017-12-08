@@ -9,10 +9,12 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
 2017-12-08 niel
 	Fix: Bad logic that caused "No connection defined" message for valid configurations.
 	Chg: Deleted misc/testing/Tests/verify_time_settings as differences in various settings is
 		irrelevant now.
+	Chg: Removing obsolete sources for IRCScraper settings.
 2017-12-03 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.2.0
 
