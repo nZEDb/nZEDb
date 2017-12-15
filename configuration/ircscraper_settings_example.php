@@ -86,25 +86,17 @@ define('SCRAPE_IRC_CHANNELS',
 define('SCRAPE_IRC_SOURCE_IGNORE',
 	serialize(
 		array(
-			'#a.b.cd.image'               => false,
 			'#a.b.console.ps3'            => false,
 			'#a.b.dvd'                    => false,
-			'#a.b.erotica'                => false,
-			'#a.b.flac'                   => false,
-			'#a.b.foreign'                => false,
 			'#a.b.games.nintendods'       => false,
 			'#a.b.inner-sanctum'          => false,
-			'#a.b.moovee'                 => false,
 			'#a.b.movies.divx'            => false,
 			'#a.b.sony.psp'               => false,
 			'#a.b.sounds.mp3.complete_cd' => false,
-			'#a.b.teevee'                 => false,
 			'#a.b.games.wii'              => false,
 			'#a.b.warez'                  => false,
 			'#a.b.games.xbox360'          => false,
 			'#pre@corrupt'                => false,
-			'#scnzb'                      => false,
-			'#tvnzb'                      => false,
 			'srrdb'                       => false
 		)
 	)
