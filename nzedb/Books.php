@@ -67,6 +67,12 @@ class Books
 	public $failCache;
 
 	/**
+	 * Stores the thread number, the select will use this to select a range for processing
+	 * @var int
+	 */
+	public $threadNumber;
+
+	/**
 	 * @param array $options Class instances / Echo to cli.
 	 */
 	public function __construct(array $options = [])
@@ -80,9 +86,11 @@ class Books
 		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
-		$this->pubkey = Settings::value('APIs..amazonpubkey');
-		$this->privkey = Settings::value('APIs..amazonprivkey');
-		$this->asstag = Settings::value('APIs..amazonassociatetag');
+		$this->pubkey = !empty($options['AmazonPub']) ?  $options['AmazonPub'] : Settings::value('APIs..amazonpubkey');
+		$this->privkey = !empty($options['AmazonKey']) ?  $options['AmazonKey'] : Settings::value('APIs..amazonprivkey');
+		$this->asstag = !empty($options['AmazonAssociateKey']) ?  $options['AmazonAssociateKey'] : Settings::value('APIs..amazonassociatetag');
+		$this->threadNumber = !empty($options['ThreadNumber']) ? $options['ThreadNumber'] : 0;
+
 		$result = Settings::value('..maxbooksprocessed');
 		$this->bookqty = ($result != '') ? $result : 300;
 		$result = Settings::value('..amazonsleep');
@@ -386,7 +394,7 @@ class Books
 		} else {
 			$bookids = explode(', ', $this->bookreqids);
 		}
-
+		$skip=$this->threadNumber*$this->bookqty;
 		$total = count($bookids);
 		if ($total > 0) {
 			for ($i = 0; $i < $total; $i++) {
@@ -399,7 +407,7 @@ class Books
 						AND bookinfo_id IS NULL
 						AND categories_id in (%s)
 						ORDER BY postdate
-						DESC LIMIT %d', $this->renamed, $bookids[$i], $this->bookqty)
+						DESC LIMIT %d,%d', $this->renamed, $bookids[$i], $skip,$this->bookqty)
 					), $bookids[$i]
 				);
 			}

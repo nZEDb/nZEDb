@@ -156,10 +156,10 @@ class PostProcess
 	 *
 	 * @return void
 	 */
-	public function processBooks()
+	public function processBooks($threadNumber=0,$amaPub='',$amaKey='', $amaAssociate='')
 	{
 		if (Settings::value('..lookupbooks') != 0) {
-			(new Books(['Echo' => $this->echooutput, 'Settings' => $this->pdo, ]))->processBookReleases();
+			(new Books(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ThreadNumber' => $threadNumber, 'AmazonPub' => $amaPub, 'AmazonKey' => $amaKey, 'AmazonAssociateKey' => $amaAssociate ]))->processBookReleases();
 		}
 	}
 
@@ -168,10 +168,10 @@ class PostProcess
 	 *
 	 * @return void
 	 */
-	public function processConsoles()
+	public function processConsoles($threadNumber=0,$amaPub='',$amaKey='', $amaAssociate='')
 	{
 		if (Settings::value('..lookupgames') != 0) {
-			(new Console(['Settings' => $this->pdo, 'Echo' => $this->echooutput]))->processConsoleReleases();
+			(new Console(['Settings' => $this->pdo, 'Echo' => $this->echooutput, 'ThreadNumber' => $threadNumber, 'AmazonPub' => $amaPub, 'AmazonKey' => $amaKey, 'AmazonAssociateKey' => $amaAssociate]))->processConsoleReleases();
 		}
 	}
 
@@ -210,10 +210,10 @@ class PostProcess
 	 *
 	 * @return void
 	 */
-	public function processMusic()
+	public function processMusic($threadNumber=0,$amaPub='',$amaKey='', $amaAssociate='')
 	{
-		if (Settings::value('..lookupmusic') != 0) {
-			(new Music(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processMusicReleases();
+		if (Settings::value('..lookupmusic') != 0 ){
+			(new Music(['Echo' => $this->echooutput, 'Settings' => $this->pdo,'ThreadNumber' => $threadNumber, 'AmazonPub' => $amaPub, 'AmazonKey' => $amaKey,'AmazonAssociateKey' => $amaAssociate]))->processMusicReleases();
 		}
 	}
 
