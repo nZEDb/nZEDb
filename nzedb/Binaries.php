@@ -159,6 +159,11 @@ class Binaries
 	protected $multiGroup;
 
 	/**
+	 * @var bool
+	 */
+	protected $allAsMgr;
+
+	/**
 	 * @var string How long it took in seconds to download headers
 	 */
 	protected $timeHeaders;
@@ -283,6 +288,7 @@ class Binaries
 		$this->_partRepairMaxTries = (Settings::value('..partrepairmaxtries') != '' ?
 			(int)Settings::value('..partrepairmaxtries') : 3);
 		$this->_showDroppedYEncParts = (Settings::value('..showdroppedyencparts') == 1 ? true : false);
+		$this->allAsMgr = Settings::value('..allasmgr') == 1 ? true : false;
 
 		$this->blackList = $this->whiteList = [];
 	}
@@ -383,6 +389,11 @@ class Binaries
 					$this->_colorCLI->doEcho($this->_colorCLI->primary('Part repair enabled. Checking for missing parts.'), true);
 				}
 				$this->partRepair($groupMySQL);
+				$mgrPosters = $this->getMultiGroupPosters();
+				if ($this->allAsMgr === true || ! empty($mgrPosters)) {
+					$tableNames = ProcessReleasesMultiGroup::tableNames();
+					$this->partRepair($groupMySQL, $tableNames);
+				}
 			} else if ($this->_echoCLI) {
 				$this->_colorCLI->doEcho($this->_colorCLI->primary('Part repair disabled by user.'), true);
 			}
@@ -615,7 +626,7 @@ class Binaries
 
 		$mgrPosters = $this->getMultiGroupPosters();
 
-		if(!empty($mgrPosters)) {
+		if ($this->allAsMgr === true || !empty($mgrPosters)) {
 			$mgrActive = true;
 			$mgrPosters = array_flip(array_column($mgrPosters, 'poster'));
 		} else {
@@ -758,7 +769,7 @@ class Binaries
 			}
 			$header['Bytes'] = (int)$header['Bytes'];
 
-			if($mgrActive === true && array_key_exists($header['From'], $mgrPosters)) {
+			if ($this->allAsMgr === true || ($mgrActive === true && array_key_exists($header['From'], $mgrPosters))) {
 				$mgrHeaders[] = $header;
 			} else {
 				$stdHeaders[] = $header;
@@ -1142,13 +1153,20 @@ class Binaries
 	/**
 	 * Attempt to get missing article headers.
 	 *
-	 * @param array $groupArr The info for this group from mysql.
+	 * @param array  $groupArr The info for this group from mysql.
+	 *
+	 * @param string $tables
 	 *
 	 * @return void
 	 */
-	public function partRepair($groupArr)
+	public function partRepair($groupArr, $tables = '')
 	{
-		$tableNames = $this->_groups->getCBPTableNames($groupArr['id']);
+		$tableNames = $tables;
+
+		if ($tableNames === '') {
+			$tableNames = $this->_groups->getCBPTableNames($groupArr['id']);
+		}
+
 		// Get all parts in partrepair table.
 		$missingParts = $this->_pdo->query(
 			sprintf('
