@@ -904,7 +904,7 @@ class Binaries
 				);
 
 				// Used to group articles together when forming the release.  MGR requires this to be group irrespective
-				$this->header['CollectionKey'] = $collMatch['name'] . $this->header['From'] . $ckId . $fileCount[3];
+                $this->header['CollectionKey'] = $collMatch['name'].$ckId.$fileCount[3];
 
 				// If this header's collection key isn't in memory, attempt to insert the collection
 				if (!isset($collectionIDs[$this->header['CollectionKey']])) {
