@@ -1,5 +1,6 @@
 section,subsection,name,value,hint,setting
 		addpar2	0	When going through PAR2 files, add them to the RAR file content list of the NZB.	addpar2
+		allasmgr	1	Treat all releases as MGR	allasmgr
 		alternate_nntp	0	This sets Postproccessing Additional/Nfo to use the alternate NNTP provider as set in config.php.	alternate_nntp
 		amazonsleep	1000	Sleep time in milliseconds to wait in between amazon requests. If you thread post-proc, multiply by the number of threads. ie Postprocessing Threads = 12, Amazon sleep time = 12000<br /><a href="https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html">https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html</a>	amazonsleep
 		backfillthreads	1	The number of threads for backfill.	backfillthreads
