@@ -288,7 +288,7 @@ class Binaries
 		$this->_partRepairMaxTries = (Settings::value('..partrepairmaxtries') != '' ?
 			(int)Settings::value('..partrepairmaxtries') : 3);
 		$this->_showDroppedYEncParts = (Settings::value('..showdroppedyencparts') == 1 ? true : false);
-		$this->allAsMgr = Settings::value('..allasmgr') == 1 ? true : false;
+		$this->allAsMgr = Settings::value('indexer.mgr.allasmgr') == 1 ? true : false;
 
 		$this->blackList = $this->whiteList = [];
 	}

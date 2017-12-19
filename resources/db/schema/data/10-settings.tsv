@@ -1,6 +1,5 @@
 section,subsection,name,value,hint,setting
 		addpar2	0	When going through PAR2 files, add them to the RAR file content list of the NZB.	addpar2
-		allasmgr	1	Treat all releases as MGR	allasmgr
 		alternate_nntp	0	This sets Postproccessing Additional/Nfo to use the alternate NNTP provider as set in config.php.	alternate_nntp
 		amazonsleep	1000	Sleep time in milliseconds to wait in between amazon requests. If you thread post-proc, multiply by the number of threads. ie Postprocessing Threads = 12, Amazon sleep time = 12000<br /><a href="https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html">https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html</a>	amazonsleep
 		backfillthreads	1	The number of threads for backfill.	backfillthreads
@@ -132,6 +131,7 @@ indexer	categorise	categorizeforeign	1	This only works if the above is set to en
 indexer	categorise	catwebdl	0	Whether to send WEB-DL to the WEB-DL section or not. If set to true they will go in WEB-DL category, false will send them in HD TV.<br/>This will also make them inaccessible to Sickbeard and possibly Couchpotato.	catwebdl
 indexer	categorise	imdblanguage	en	Which language to lookup when sending requests to IMDB/Tmdb. (If akas.imdb.com is set, imdb still returns the original titles.)	imdblanguage
 indexer	categorise	imdburl	0	akas.imdb.com returns titles in their original title, imdb.com returns titles based on your IP address (if you are in france, you will get french titles).	imdburl
+indexer	mgr	allasmgr	1	Treat all releases as MGR	allasmgr
 indexer	ppa	innerfileblacklist	/setup\.exe|password\.url/i	You can add a regex here to set releases to potentially passworded when a file name inside a rar/zip matches this regex.	innerfileblacklist
 indexer	processing	collection_timeout	48	How many hours to wait before deleting a stuck/broken collection. (This is to prevent the MySQL tables from swelling up.)	collection_timeout
 indexer	processing	last_run_time	3015-08-04 15:58:23	Last date the indexer (update_binaries or backfill) was run.	last_run_time
