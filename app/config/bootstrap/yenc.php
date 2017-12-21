@@ -18,6 +18,8 @@
  */
 
 use app\models\Settings;
+use lithium\aop\Filters;
+use lithium\action\Dispatcher;
 
 
 if (defined('nZEDb_INSTALLER') && nZEDb_INSTALLER !== false) {
@@ -41,6 +43,7 @@ if (defined('nZEDb_INSTALLER') && nZEDb_INSTALLER !== false) {
 		case extension_loaded('simple_php_yenc_decode'):
 			$adapter = 'SimplePhpYencDecode';
 			break;
+		// TODO remove this when API for yEnc changes.
 		case !empty(Settings::value('apps..yydecoderpath', true)) &&
 			(strpos(Settings::value('apps..yydecoderpath', true), 'simple_php_yenc_decode') === false):
 			$adapter = 'Ydecode';
@@ -68,10 +71,18 @@ app\extensions\util\Yenc::config(
 			'adapter' => 'SimplePhpYencDecode'
 		],
 
+		// TODO remove this when API for yEnc changes.
 		'ydecode' => [
 			'adapter' => 'Ydecode'
 		],
 	]
 );
+
+Filters::apply(Ypart::class,
+	'parseBlock',
+	function ($params, $next) {
+		return $next($params);
+	});
+
 
 ?>
