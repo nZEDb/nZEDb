@@ -79,7 +79,7 @@ $installed = nZEDb_CONFIGS . 'install.lock';
 
 if (! defined('DB_MOCK')) {
 	// Add new condition to use DB_MOCK mode here.
-	if (!defined('MAINTENANCE_MODE_ENABLED') || MAINTENANCE_MODE_ENABLED == true) {
+	if (defined('MAINTENANCE_MODE_ENABLED') && MAINTENANCE_MODE_ENABLED == true) {
 		define('DB_MOCK', true);
 	} else {
 		define('DB_MOCK', false);
@@ -87,6 +87,9 @@ if (! defined('DB_MOCK')) {
 }
 
 if (DB_MOCK === true) {
+	if (defined('nZEDb_DEBUG') && nZEDb_DEBUG === true) {
+		echo 'No connection defined, using mock connection.' . PHP_EOL;
+	}
 	Connections::add('mock',
 		[
 			'type'     => 'database',

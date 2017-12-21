@@ -2,11 +2,25 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
-0.8.2.0 2017-
+0.8.2.1 2017-12-08
+Fixed:
+	* Bad logic that caused "No connection defined" message for valid configurations. Closes Issue 2558
+
+
+0.8.2.0 2017-12-04
 Added:
 	* settings.example.php has new constants for a maintenance mode. If the mode is set to true
 	 then the API/web site return a status of 503 with the message "Maintenance Mode". The page
 	 returned by the server should be defined with the MAINTENANCE_MODE_HTML_PATH constant.
+
+Changed:
+	* Removed the logged in user check, during API key checking. This prevents incorrect keys from
+	being used.
+
+Fixed:
+	* Corrected status code for "Missing parameter (apikey)" redirect.
+	* Made username check be case-sensitive, as they should *always* be.
+	* Not found exception some users were experiencing.
 
 
 0.8.1.0 2017-11-06
