@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2017-12-21 niel
+	Add: Merging in dev-allasmgr. This adds the option to treat ALL groups as Multigroup.
 2017-12-18 niel
 	Chg: Additional info for debugging timezone problems.
 2017-12-15 niel
