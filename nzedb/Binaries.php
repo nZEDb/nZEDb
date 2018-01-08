@@ -1153,17 +1153,17 @@ class Binaries
 	/**
 	 * Attempt to get missing article headers.
 	 *
-	 * @param array  $groupArr The info for this group from mysql.
+	 * @param array	$groupArr	The info for this group from mysql.
 	 *
-	 * @param string $tables
+	 * @param array	$tables		The tables to scan.
 	 *
 	 * @return void
 	 */
-	public function partRepair($groupArr, $tables = '')
+	public function partRepair($groupArr, array $tables = null)
 	{
 		$tableNames = $tables;
 
-		if ($tableNames === '') {
+		if ($tableNames === null) {
 			$tableNames = $this->_groups->getCBPTableNames($groupArr['id']);
 		}
 
