@@ -52,13 +52,20 @@ class Verify extends \app\extensions\console\Command
 
 	public function run()
 	{
-		if (!$this->request->args()) {
+		if ($this->request->args() === null) {
 			return $this->_help();
 		}
 
 		return false;
 	}
 
+	/**
+	 * Check various permissions.
+	 *
+	 * TODO finish this.
+	 *
+	 * @param bool $dbPerms
+	 */
 	public function permissions($dbPerms = false)
 	{
 		$this->primary("Checking file permissions...");
@@ -84,25 +91,6 @@ class Verify extends \app\extensions\console\Command
 	public function settingstable()
 	{
 		$dummy = Settings::hasAllEntries($this);
-	}
-
-	/**
-	 * Invokes the `Help` command.
-	 * The invoked Help command will take over request and response objects of
-	 * the originally invoked command. Thus the response of the Help command
-	 * becomes the response of the original one.
-	 *
-	 * @return boolean
-	 */
-	protected function _help()
-	{
-		$help = new Help([
-			'request'  => $this->request,
-			'response' => $this->response,
-			'classes'  => $this->_classes
-		]);
-
-		return $help->run(get_class($this));
 	}
 
 	/**

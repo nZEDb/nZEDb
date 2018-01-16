@@ -34,7 +34,7 @@ use Smarty;
  *  * git		Performs git pull.
  *  * predb		Fetch and import TSV files into the predb table.
  *
- *@package app\extensions\command
+ * @package app\extensions\command
  */
 class Update extends \app\extensions\console\Command
 {
@@ -160,7 +160,7 @@ class Update extends \app\extensions\console\Command
 
 	public function run($command = null)
 	{
-		if (!$command || !$this->request->args()) {
+		if (!$command || ($this->request->args() === null)) {
 			return $this->_help($command);
 		}
 
