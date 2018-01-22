@@ -1372,7 +1372,11 @@ class DB extends \PDO
 			if ($options['timezone'] != $tz['session']) {
 				$result = $this->queryDirect("SET time_zone = '{$options['timezone']}';");
 				if ($result === false) {
-					throw new \ErrorException("Couldn't change session tz_session!");
+					$msg = "Couldn't change session tz_session!";
+					if (nZEDb_DEBUG) {
+						$msg += PHP_EOL . "DB: {$tz['session']}" . PHP_EOL . "PHP: {$options['timezone']}";
+					}
+					throw new \ErrorException($msg);
 				}
 			}
 
