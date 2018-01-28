@@ -19,8 +19,6 @@
 namespace app\extensions\command;
 
 use app\models\Settings;
-use lithium\console\command\Help;
-use nzedb\utility\Text;
 
 
 /**
