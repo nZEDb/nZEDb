@@ -87,6 +87,11 @@ class Verify extends \app\extensions\console\Command
 		$dummy = Settings::hasAllEntries($this);
 	}
 
+	public function table()
+	{
+		;
+	}
+
 	/**
 	 * Execute the given sub-command for the current request.
 	 *
