@@ -18,14 +18,15 @@
  */
 namespace app\extensions\command;
 
-use app\models\Settings;
+use app\extensions\command\verify\Permissions;
 
 
 /**
  * Verifies various parts of your indexer.
  * Actions:
- * * permissions    Checks that path and/or db permissions for crucial locations in nZEDb for the user
- *                  running the command.
+ * * permissions [ db | dirs ]
+ *                  Checks that path and/or db permissions for crucial locations in nZEDb for the
+ *                  user running the command.
  *                  If an incorrect permission is encountered, a message will be printed.
  *                  IT IS STRONGLY RECOMMENDED that you run this against your apache/nginx user, in
  *                  addition to your normal CLI user.
@@ -34,6 +35,12 @@ use app\models\Settings;
  *                  See this page for a quick guide on setting up your permissions in linux:
  *                      https://github.com/nZEDb/nZEDb/wiki/Setting-permissions-on-linux
  * * settings_table Checks that all settings in the 10~settings.tsv exist in your Db.
+ * * table <list>   Run checks against specific table(sets).
+ *                  <list> is a series of options in the form [ --settings | --cpb[=fix] ]
+ *                  The option alone (i.e. --cpb) means to check the table(set) but perform no
+ *                  other action. Optional actions follow an equals sign.
+ *                  - cpb: Collection, Parts, Binary sets of tables.
+ *                  - settings: Check that all settings in the 10~settings.tsv file exist in your Db.
  */
 class Verify extends \app\extensions\console\Command
 {
@@ -62,37 +69,54 @@ class Verify extends \app\extensions\console\Command
 	}
 
 	/**
-	 * Check various permissions.
+	 * Run the Permissions sub-command.
 	 *
-	 * TODO finish this.
-	 *
-	 * @param bool $dbPerms
+	 * @return boolean
 	 */
-	public function permissions($dbPerms = false)
+	public function permissions()
 	{
-		$this->primary("Checking file permissions...");
-		$error = false;
+		$request = $this->request;
+		$perms = new Permissions(['request' => $request]);
 
-		// Check All folders up to nZEDb root folder.
-		$path = DS;
-		foreach (explode(DS, nZEDb_ROOT) as $folder) {
-			if ($folder) {
-				$path .= $folder . DS;
-				$error |= !$this->isReadable($path);
-				$error |= !$this->isExecutable($path);
-			}
-		}
-
-		if ($error) {
-			$this->primary("Fix the above errors and rerun the command.");
-		} else {
-			$this->primary("Congratulations, file permissions look good!");
-		}
+		return $perms->run();
 	}
 
 	public function settingstable()
 	{
+		// TODO refactor to use sub-command
 		$dummy = Settings::hasAllEntries($this);
+	}
+
+	/**
+	 * Execute the given sub-command for the current request.
+	 *
+	 * @param string $command The sub-command name. example: Permissions, Tables.
+	 *
+	 * @return boolean
+	 */
+	protected function execute($command)
+	{
+		try {
+			if (!$class = $this->instance($command)) {
+				return false;
+			}
+		} catch (ClassNotFoundException $e) {
+			return false;
+		}
+		$data = [];
+		$params = $class->invokeMethod('_params');
+
+		foreach ($params as $param) {
+			$data[$param] = $class->invokeMethod("_{$param}", [$this->request]);
+		}
+
+		if ($message = $class->invokeMethod('_save', [$data])) {
+			$this->out($message);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -105,23 +129,25 @@ class Verify extends \app\extensions\console\Command
 		parent::_init();
 	}
 
-	protected function isExecutable($path)
+	/**
+	 * Get an instance of a sub-command
+	 *
+	 * @param string $name the name of the sub-command to instantiate
+	 * @param array  $config
+	 *
+	 * @return object
+	 */
+	protected function instance($name, array $config = [])
 	{
-		$check = is_executable($path);
-		if (!$check) {
-			$this->error("This path is not executable/traversable: '$path'.");
+		if ($class = Libraries::locate('command.create', Inflector::camelize($name))) {
+			$this->request->params['template'] = $this->template;
+
+			return new $class([
+				'request' => $this->request,
+				'classes' => $this->_classes
+			]);
 		}
 
-		return $check;
-	}
-
-	protected function isReadable($path)
-	{
-		$check = is_readable($path);
-		if (!$check) {
-			$this->error("This path is not readable: '$path'.");
-		}
-
-		return $check;
+		return parent::_instance($name, $config);
 	}
 }
