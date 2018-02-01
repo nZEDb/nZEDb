@@ -41,7 +41,7 @@ use app\extensions\command\verify\Tables;
  *                  The option alone (i.e. --cpb) means to check the table(set) but perform no
  *                  other action. Optional actions follow an equals sign.
  *                  - cpb: Collection, Parts, Binary sets of tables.
- *                  - settings: Check that all settings in the 10~settings.tsv file exist in your Db.
+ *                  - Settings: Check that settings in the 10~settings.tsv file exist in your Db.
  */
 class Verify extends \app\extensions\console\Command
 {
