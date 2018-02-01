@@ -21,7 +21,6 @@ namespace app\extensions\command\verify;
 
 
 use app\models\Settings;
-use app\extensions\data\Model;
 
 
 class Tables extends \app\extensions\console\Command
@@ -33,14 +32,11 @@ class Tables extends \app\extensions\console\Command
 
 	public function run()
 	{
-		//var_dump(__METHOD__);
-		//var_dump($this->request->params['args']);
 		if (empty($this->request)) {
 			return $this->_help();
 		}
 
 		foreach ($this->request->params['args'] as $arg) {
-			var_dump($arg);
 			switch ($arg) {
 				case 'Settings':
 					$this->tableSettings();
@@ -69,16 +65,21 @@ class Tables extends \app\extensions\console\Command
 
 	protected function tableSettings()
 	{
-		$output = static function($row, $header, $error) {
-			if ($error === false) {
-				$this->out("section, subsection, name", ['style' => 'primary']);
-				$error = true;
+		$output = function($row, $header, &$firstLine, $result)
+		{
+			if ($firstLine === true) {
+				$this->out('section, subsection, name', ['style' => 'info']);
+				$firstLine = false;
 			}
-			$this->out(" {$row['section']}, {$row['subsection']}, {$row['name']}: MISSING!",
-				['style' => 'info']);
+
+			if ($result === false) {
+				$this->out(" {$row['section']}, {$row['subsection']}, {$row['name']}: MISSING!",
+					['style' => 'error']);
+			}
 		};
 
-		$validate = static function($row) {
+		$validate = static function($row)
+		{
 			$result = Settings::value(
 				[
 					'section'    => $row['section'],
@@ -88,12 +89,13 @@ class Tables extends \app\extensions\console\Command
 				true);
 			return ($result !== null);
 		};
-		var_dump(__METHOD__);
 
 		$dummy = $this->validate(
 			[
 				'file' => nZEDb_RES . 'db/schema/data/10-settings.tsv',
 				'output' => $output,
+				'silent' => false,
+				'table' => 'Settings',
 				'test' => $validate,
 			]
 		);
@@ -114,7 +116,6 @@ class Tables extends \app\extensions\console\Command
 	 */
 	private function validate(array $options = [])
 	{
-		var_dump(__METHOD__);
 		$fix = $output = $test = '';
 		extract($options, EXTR_IF_EXISTS | EXTR_REFS); // create short-name variable refs
 
@@ -128,34 +129,33 @@ class Tables extends \app\extensions\console\Command
 		$rows = file($options['file']);
 
 		if (!is_array($rows)) {
-			var_dump($rows);
 			throw new \InvalidArgumentException("File {$options['file']} did not return a list of rows!");
 		}
 
 		// Move the column names/order off of the array.
-		$header = array_shift($rows);
-		$columns = explode([','], $header);
+		$header = trim(array_shift($rows));
+		$columns = explode(',', $header);
 		array_walk($columns, function(&$value) { $value = trim($value); });
 
 
 		if ($options['silent'] != true) {
-			$this->out("Verifying $table table...", ['style' => 'primary']);
+			$this->out("Verifying `{$options['table']}` table...", ['style' => 'primary']);
 		}
 
+		$result = $firstLine = true;
 		$error = false;
-		$result = true;
 		foreach ($rows as $row) {
 			$data = array_combine($columns, explode("\t", $row));
 			$check = $test($data, $columns);
-			if ($check === false) {
-				if ($options['silent'] === false) {
-					if (is_callable($output)) {
-						$output($data, $header, $error);
-					} else {
-						$this->defaultOutput($row, $header, $error);
-					}
+			if ($options['silent'] === false) {
+				if (is_callable($output)) {
+					$output($data, $header, $firstLine, $check);
+				} else {
+					$this->defaultOutput($row, $header, $error);
 				}
+			}
 
+			if ($check === false) {
 				if (is_callable($fix)) {
 					$fix($data);
 				}
