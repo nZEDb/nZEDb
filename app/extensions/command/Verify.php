@@ -19,6 +19,7 @@
 namespace app\extensions\command;
 
 use app\extensions\command\verify\Permissions;
+use app\extensions\command\verify\Tables;
 
 
 /**
@@ -62,6 +63,7 @@ class Verify extends \app\extensions\console\Command
 	public function run()
 	{
 		if ($this->request->args() === null) {
+			var_dump($this->request);
 			return $this->_help();
 		}
 
@@ -81,15 +83,12 @@ class Verify extends \app\extensions\console\Command
 		return $perms->run();
 	}
 
-	public function settingstable()
-	{
-		// TODO refactor to use sub-command
-		$dummy = Settings::hasAllEntries($this);
-	}
-
 	public function table()
 	{
-		;
+		$request = $this->request;
+		$tables = new Tables(['request' => $request]);
+
+		return $tables->run();
 	}
 
 	/**

@@ -20,7 +20,141 @@
 namespace app\extensions\command\verify;
 
 
-class Tables
-{
+use app\models\Settings;
+use app\extensions\data\Model;
 
+
+class Tables extends \app\extensions\console\Command
+{
+	public function __construct()
+	{
+		parent::__construct();
+	}
+
+	public function run()
+	{
+		if (empty($this->request->params['args'])) {
+			return $this->_help();
+		}
+
+		foreach ($this->request->params['args'] as $arg) {
+			switch ($arg) {
+				case 'Settings':
+					$this->tableSettings();
+					break;
+				case '':
+					$this->tableSetCPB();
+					break;
+//				case '':
+//					$this->();
+//					break;
+				default:
+					$this->out("Unknown table: '$arg'", ['style' => 'error']);
+			}
+		}
+	}
+
+	protected function _init()
+	{
+		parent::_init();
+	}
+
+	protected function tableSetCPB()
+	{
+		;
+	}
+
+	protected function tableSettings()
+	{
+		$dummy = $this->validate(new Settings(),
+			[
+				'file' => nZEDb_RES . 'db/schema/data/10-settings.tsv',
+				'test' => function() {},
+			]
+		);
+	}
+
+	/**
+	 * @param \app\extensions\data\Model $model   The specific table object for the intended db table.
+	 *                                            It must be a child of \app\extensions\data\Model
+	 * @param array                      $options Settings for the validation. Some more optional than
+	 *                                            others. Entries include:
+	 *                                            `test` - closure to use for validation.
+	 */
+	private function validate(Model $model, array $options = [])
+	{
+		$table = get_class($model);
+		$defaults = [
+			'file'		=> Text::pathCombine([
+				'db',
+				'schema',
+				'data',
+				'10-' . strtolower($table) . '.tsv'
+			], nZEDb_RES),
+			'silent'	=> true,
+			'test'		=> null,
+		];
+		$options += $defaults;
+
+		if (!file_exists($options['file'])) {
+			throw new \InvalidArgumentException("Unable to find {$options['file']}!");
+		}
+		$rows = file($options['file']);
+
+		if (!is_array($rows)) {
+			var_dump($rows);
+			throw new \InvalidArgumentException("File {$options['file']} did not return a list of rows!");
+		}
+
+		$columns = array_shift($rows);	// Move the column names/order off of the array.
+		$result = false;
+		//$row = [];
+		if ($columns !== null) {
+			if ($options['silent'] === true) {
+				$this->out("Verifying $table table...", ['style' => 'primary']);
+			}
+
+			$noOutput = true;
+			$result = true;
+			foreach ($rows as $row) {
+				$message = '';
+				//$this->out('():', ['style' => 'header']);
+			}
+		}
+	}
+
+	public static function hasAllEntry($console = null)
+	{
+		if ($dummy !== null) {
+			if ($console !== null) {
+				$console->primary("Verifying settings table...");
+				$console->info("(section, subsection, name):");
+			}
+			$result = true;
+			foreach ($settings as $line) {
+				$message = '';
+				list($setting['section'], $setting['subsection'], $setting['name']) =
+					explode("\t", $line);
+
+				$value = Settings::value(
+					[
+						'section'    => $setting['section'],
+						'subsection' => $setting['subsection'],
+						'name'       => $setting['name']
+					],
+					true);
+				if ($value === null) {
+					$result = false;
+					$message = "error";
+				}
+
+				if ($message != '' && $console !== null) {
+					$console->out(" {$setting['section']}, {$setting['subsection']}, {$setting['name']}: "
+						. "MISSING!");
+				}
+			}
+		}
+
+		return $result;
+	}
 }

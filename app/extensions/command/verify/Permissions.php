@@ -27,6 +27,11 @@ namespace app\extensions\command\verify;
  */
 class Permissions extends \app\extensions\console\Command
 {
+	public function __construct()
+	{
+		parent::__construct();
+	}
+
 	public function run()
 	{
 		if (empty($this->request->params['args'])) {
