@@ -26,18 +26,21 @@ use app\extensions\data\Model;
 
 class Tables extends \app\extensions\console\Command
 {
-	public function __construct()
+	public function __construct(array $config = [])
 	{
-		parent::__construct();
+		parent::__construct($config);
 	}
 
 	public function run()
 	{
-		if (empty($this->request->params['args'])) {
+		//var_dump(__METHOD__);
+		//var_dump($this->request->params['args']);
+		if (empty($this->request)) {
 			return $this->_help();
 		}
 
 		foreach ($this->request->params['args'] as $arg) {
+			var_dump($arg);
 			switch ($arg) {
 				case 'Settings':
 					$this->tableSettings();
@@ -85,8 +88,9 @@ class Tables extends \app\extensions\console\Command
 				true);
 			return ($result !== null);
 		};
+		var_dump(__METHOD__);
 
-		return $this->validate(new Settings(),
+		$dummy = $this->validate(
 			[
 				'file' => nZEDb_RES . 'db/schema/data/10-settings.tsv',
 				'output' => $output,
@@ -108,22 +112,9 @@ class Tables extends \app\extensions\console\Command
 	 *
 	 * @return boolean	true if no errors found, false otherwise
 	 */
-	private function validate(Model $model, array $options = [])
+	private function validate(array $options = [])
 	{
-		$table = get_class($model);
-		$defaults = [
-			'file'		=> Text::pathCombine([
-				'db',
-				'schema',
-				'data',
-				'10-' . strtolower($table) . '.tsv'
-			], nZEDb_RES),
-			'fix'		=> false,
-			'output'	=> null,
-			'silent'	=> true,
-			'test'		=> null,
-		];
-		$options += $defaults;
+		var_dump(__METHOD__);
 		$fix = $output = $test = '';
 		extract($options, EXTR_IF_EXISTS | EXTR_REFS); // create short-name variable refs
 

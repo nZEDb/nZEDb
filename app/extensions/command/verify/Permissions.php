@@ -27,9 +27,9 @@ namespace app\extensions\command\verify;
  */
 class Permissions extends \app\extensions\console\Command
 {
-	public function __construct()
+	public function __construct(array $config = [])
 	{
-		parent::__construct();
+		parent::__construct($config);
 	}
 
 	public function run()
