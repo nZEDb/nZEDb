@@ -42,7 +42,7 @@ class Tables extends \app\extensions\console\Command
 				case 'Settings':
 					$this->tableSettings();
 					break;
-				case '':
+				case 'cpb':
 					$this->tableSetCPB();
 					break;
 //				case '':
@@ -181,42 +181,6 @@ class Tables extends \app\extensions\console\Command
 
 		return $result;
 	}
-
-	public static function hasAllEntry($console = null)
-	{
-		if ($dummy !== null) {
-			if ($console !== null) {
-				$console->primary("Verifying settings table...");
-				$console->info("(section, subsection, name):");
-			}
-			$result = true;
-			foreach ($settings as $line) {
-				$message = '';
-				list($setting['section'], $setting['subsection'], $setting['name']) =
-					explode("\t", $line);
-
-				$value = Settings::value(
-					[
-						'section'    => $setting['section'],
-						'subsection' => $setting['subsection'],
-						'name'       => $setting['name']
-					],
-					true);
-				if ($value === null) {
-					$result = false;
-					$message = "error";
-				}
-
-				if ($message != '' && $console !== null) {
-					$console->out(" {$setting['section']}, {$setting['subsection']}, {$setting['name']}: "
-						. "MISSING!");
-				}
-			}
-		}
-
-		return $result;
-	}
-
 
 	protected function defaultOutput($row, $header, &$error)
 	{
