@@ -110,7 +110,6 @@ APIs		trakttvclientkey		The Trakt.tv API v2 Client ID (SHA256 hash - 64 characte
 APIs	anidb	banned	0	Timestamp of when we were 'banned'.	AniDB_banned
 APIs	anidb	last_full_update	0	The last time a full AniDB update occurred in unixtime.	lastanidbupdate
 APIs	anidb	max_update_frequency	7	The number of days between AniDB full updates.  Default is 7.	intanidbupdate
-APIs	APIKeys	section-label	3<sup>rd.</sup> Party API Keys
 APIs	recaptcha	enabled	1	Whether ReCaptcha should be used or not.\nThis allows for disabling it without having to remove your keys.	recaptchenabled
 APIs	recaptcha	secretkey		ReCaptcha SecretKey for verifying submitted captcha results.	recaptchasecretkey
 APIs	recaptcha	sitekey		ReCaptcha SiteKey for generating the captcha block for input forms.	recaptchasitekey
@@ -131,6 +130,7 @@ indexer	categorise	categorizeforeign	1	This only works if the above is set to en
 indexer	categorise	catwebdl	0	Whether to send WEB-DL to the WEB-DL section or not. If set to true they will go in WEB-DL category, false will send them in HD TV.<br/>This will also make them inaccessible to Sickbeard and possibly Couchpotato.	catwebdl
 indexer	categorise	imdblanguage	en	Which language to lookup when sending requests to IMDB/Tmdb. (If akas.imdb.com is set, imdb still returns the original titles.)	imdblanguage
 indexer	categorise	imdburl	0	akas.imdb.com returns titles in their original title, imdb.com returns titles based on your IP address (if you are in france, you will get french titles).	imdburl
+indexer	mgr	allasmgr	1	Treat all releases as MGR	allasmgr
 indexer	ppa	innerfileblacklist	/setup\.exe|password\.url/i	You can add a regex here to set releases to potentially passworded when a file name inside a rar/zip matches this regex.	innerfileblacklist
 indexer	processing	collection_timeout	48	How many hours to wait before deleting a stuck/broken collection. (This is to prevent the MySQL tables from swelling up.)	collection_timeout
 indexer	processing	last_run_time	3015-08-04 15:58:23	Last date the indexer (update_binaries or backfill) was run.	last_run_time

@@ -582,6 +582,15 @@
 					<div class="hint">The time in hours to check for crossposted releases - this will delete 1 of the releases if the 2 are posted by the same person in the same time period.</div>
 				</td>
 			</tr>
+
+			<tr>
+				<td style="width:180px;"><label for="allasmgr">Treat all releases as MGR:</label></td>
+				<td>
+					{html_radios id="allasmgr" name='allasmgr' values=$yesno_ids output=$yesno_names selected=$site->allasmgr separator='<br />'}
+					<div class="hint">This will make all releases to be treated as multigroup releases and go into one table for collection/binaries/parts/missed_parts processing.<br>
+						This setting will most likely cause higher load on server</div>
+				</td>
+			</tr>
 		</table>
 	</fieldset>
 
