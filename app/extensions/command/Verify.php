@@ -20,6 +20,7 @@ namespace app\extensions\command;
 
 use app\extensions\command\verify\Permissions;
 use app\extensions\command\verify\Tables;
+use lithium\core\ClassNotFoundException;
 
 
 /**
@@ -152,6 +153,6 @@ class Verify extends \app\extensions\console\Command
 			]);
 		}
 
-		return parent::_instance($name, $config);
+		return $this->_instance($name, $config);
 	}
 }

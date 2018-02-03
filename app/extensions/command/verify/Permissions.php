@@ -41,7 +41,7 @@ class Permissions extends \app\extensions\console\Command
 		foreach ($this->request->params['args'] as $arg) {
 			switch ($arg) {
 				case 'db':
-					$this->db();
+					$this->database();
 					break;
 				case 'dirs':
 					$this->dirs();
@@ -52,7 +52,7 @@ class Permissions extends \app\extensions\console\Command
 		}
 	}
 
-	protected function db()
+	protected function database()
 	{
 		$this->primary("Db permission checking, is not implemented yet!");
 	}
