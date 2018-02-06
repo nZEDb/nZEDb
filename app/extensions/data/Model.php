@@ -19,7 +19,10 @@
 
 namespace app\extensions\data;
 
+
+use app\models\Settings;
 use lithium\data\Entity;
+
 
 class Model extends \lithium\data\Model
 {
@@ -27,14 +30,16 @@ class Model extends \lithium\data\Model
 		'tpg' => null
 	];
 
-
-	public static function isModified($preEntry)
+	/**
+	 * Checks if a newly created `Entity` has been modified
+	 *
+	 * @param $preEntry
+	 *
+	 * @throws \InvalidArgumentException
+	 * @return bool
+	 */
+	public static function isModified(Entity $preEntry): bool
 	{
-		if (!($preEntry instanceof Entity)) {
-			$test = get_class($preEntry);
-			$test = $test ?: 'non-object';
-			throw new \InvalidArgumentException('$preEntry must be an object derived from the Lithium Entity class, a "' . $test . '" was passed instead.');
-		}
 		$modified = false;
 		foreach ($preEntry->modified() as $field => $value) {
 			if ($value) {
@@ -48,7 +53,14 @@ class Model extends \lithium\data\Model
 		return $modified;
 	}
 
-	protected static function tpg()
+	/**
+	 * Checks if Table Per Group mode is enabled.
+	 *
+	 * @throws \Exception	An exception is thrown by the Settings::value call if the value cannot
+	 * 						be retrieved.
+	 * @return boolean	Returns true or false indicating whether TPG mode is enabled.
+	 */
+	protected static function tpg(): boolean
 	{
 		$tpg = self::meta('tpg');
 		if ($tpg === null) {
