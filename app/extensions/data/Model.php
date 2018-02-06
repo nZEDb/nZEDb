@@ -23,6 +23,11 @@ use lithium\data\Entity;
 
 class Model extends \lithium\data\Model
 {
+	protected $_meta = [
+		'tpg' => null
+	];
+
+
 	public static function isModified($preEntry)
 	{
 		if (!($preEntry instanceof Entity)) {
@@ -41,5 +46,16 @@ class Model extends \lithium\data\Model
 		}
 
 		return $modified;
+	}
+
+	protected static function tpg()
+	{
+		$tpg = self::meta('tpg');
+		if ($tpg === null) {
+			$tpg = Settings::value('..tablepergroup') == 1 ? true : false;
+			self::meta('tpg', $tpg);
+		}
+
+		return $tpg;
 	}
 }
