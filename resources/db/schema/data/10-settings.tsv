@@ -110,7 +110,6 @@ APIs		trakttvclientkey		The Trakt.tv API v2 Client ID (SHA256 hash - 64 characte
 APIs	anidb	banned	0	Timestamp of when we were 'banned'.	AniDB_banned
 APIs	anidb	last_full_update	0	The last time a full AniDB update occurred in unixtime.	lastanidbupdate
 APIs	anidb	max_update_frequency	7	The number of days between AniDB full updates.  Default is 7.	intanidbupdate
-APIs	APIKeys	section-label	3<sup>rd.</sup> Party API Keys
 APIs	recaptcha	enabled	1	Whether ReCaptcha should be used or not.\nThis allows for disabling it without having to remove your keys.	recaptchenabled
 APIs	recaptcha	secretkey		ReCaptcha SecretKey for verifying submitted captcha results.	recaptchasecretkey
 APIs	recaptcha	sitekey		ReCaptcha SiteKey for generating the captcha block for input forms.	recaptchasitekey

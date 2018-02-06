@@ -218,7 +218,7 @@ class Settings extends \lithium\data\Model
 	 * either the value is passed to Settings::dottedToArray() for conversion. Otherwise the
 	 * value is returned unchanged.
 	 *
-	 * @param $setting    Setting array/string to check.
+	 * @param string|array $setting    Setting array/string to check.
 	 *
 	 * @return array|boolean
 	 */
@@ -236,10 +236,11 @@ class Settings extends \lithium\data\Model
 	/**
 	 * Return the value of supplied setting.
 	 * The setting can be either a normal condition array for the custom 'setting' finder or a
-	 * dotted string notation setting. Note that dotted notation will be converted to an array,
-	 * so it will be slower: Explicitly use the array format if speed it paramount.
+	 * dotted string notation setting. Note that dotted notation will be converted to an array by
+	 * the custom finder, so it will be slower: Explicitly use the array format if speed it paramount.
 	 * Be aware that this method only returns the first of any values found, so make sure your
 	 * $setting produces a unique result.
+	 *
 	 * @param      $setting
 	 * @param bool $returnAlways Indicates if the method should throw an exception (false) or return
 	 *                           null on failure. Defaults to throwing an exception.

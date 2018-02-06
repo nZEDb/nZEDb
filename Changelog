@@ -9,7 +9,9 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2018-02-01 niel
+	Upd: Updated dependencies.
+	Chg: Refactored verify console command to use sub-commands like lithium's g11n console command.
 2018-01-08 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.3.0
 
