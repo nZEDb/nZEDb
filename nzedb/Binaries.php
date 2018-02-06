@@ -1154,7 +1154,6 @@ class Binaries
 	 * Attempt to get missing article headers.
 	 *
 	 * @param array	$groupArr	The info for this group from mysql.
-	 *
 	 * @param array	$tables		The tables to scan.
 	 *
 	 * @return void
