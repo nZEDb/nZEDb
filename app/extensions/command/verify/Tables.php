@@ -20,6 +20,10 @@
 namespace app\extensions\command\verify;
 
 
+use app\models\Binaries;
+use app\models\Collections;
+use app\models\Group;
+use app\models\Parts;
 use app\models\Settings;
 
 
@@ -60,7 +64,17 @@ class Tables extends \app\extensions\console\Command
 
 	protected function tableSetCPB()
 	{
-		;
+		$active = Group::find('all',
+			[
+				'conditions' => [
+					'active' => true,
+				],
+				'fields'	=> [
+					'id',
+					'name',
+				],
+				'order'		=> 'name ASC'
+			]);
 	}
 
 	protected function tableSettings()
