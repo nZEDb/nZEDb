@@ -99,18 +99,18 @@ class Tables extends \app\extensions\console\Command
 				'test' => $validate,
 			]
 		);
+
+		return $dummy;
 	}
 
 	/**
-	 * @param \app\extensions\data\Model $model   The specific table object for the intended db table.
-	 *                                            It must be a child of \app\extensions\data\Model
-	 * @param array                      $options Settings for the validation. Some more optional than
-	 *                                            others. Entries include:
-	 *                                            `file`  - filename of data file to use
-	 *                                            `fix`   - whether to fix failures (false|closure)
-	 *                                            `output`- closure to format text output.
-	 *                                            `silent - disable output (boolean)
-	 *                                            `test`  - closure to use for validation.
+	 * @param array $options	Settings for the validation. Some more optional than others. Entries
+	 *                          include:
+	 *                          `file`  - filename of data file to use
+	 *                          `fix`   - whether to fix failures (false|closure)
+	 *                          `output`- closure to format text output.
+	 *                          `silent - disable output (boolean)
+	 *                          `test`  - closure to use for validation.
 	 *
 	 * @return boolean	true if no errors found, false otherwise
 	 */
@@ -135,7 +135,12 @@ class Tables extends \app\extensions\console\Command
 		// Move the column names/order off of the array.
 		$header = trim(array_shift($rows));
 		$columns = explode(',', $header);
-		array_walk($columns, function(&$value) { $value = trim($value); });
+		array_walk($columns,
+			function(&$value)
+			{
+				$value = trim($value);
+			}
+		);
 
 
 		if ($options['silent'] != true) {
