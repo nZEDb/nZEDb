@@ -10,11 +10,15 @@ test.php
 *#
 *~
 *.orig
+*.old
 
 /.idea/
 /app/libraries/*
 /app/resources/tmp/*
 /configuration/config.php
+/configuration/install.lock
+/configuration/ircscraper_settings.php
+/configuration/predb_progress.txt
 /configuration/settings.php
 /nzedb/config/ircscraper_settings.php
 /nzedb/config/ircscraper.php
