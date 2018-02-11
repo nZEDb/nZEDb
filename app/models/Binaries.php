@@ -19,6 +19,7 @@
 
 namespace app\models;
 
+
 use app\models\Settings;
 
 
@@ -30,14 +31,22 @@ class Binaries extends \app\extensions\data\Model
 			'group' => null	// Id of group or null if TPG not enabled.
 		];
 		$options += $default;
+		$baseTable = '';
 
 		if (self::tpg()) {
 			if ($options['group'] === null) {
 				throw new \ErrorException('Table Per Group is enabled, but no group id was provided');
 			}
-			// TODO handle table translation here.
-//		} else {
+
+			$baseTable = self::meta('source');	// Save the base table's value
+
+			self::meta('source', $baseTable . $options['group']);
 		}
 
+		parent::create($data, $options);
+
+		if (self::tpg()) {
+			self::meta('source', $baseTable);    // Restore the base table's value
+		}
 	}
 }
