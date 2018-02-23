@@ -117,8 +117,8 @@ class Update extends \app\extensions\console\Command
 	public function nzedb()
 	{
 		try {
-			$this->initialiseGit();
-			$this->git->pull();
+			$this->git();
+
 			$status = $this->composer();
 			if ($status) {
 				$this->out('Composer failed to update!!', 'error');
