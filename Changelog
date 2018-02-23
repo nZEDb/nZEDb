@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-02-23 niel
+	Mrg: PR 2571, from lawsontyler - GitHub Issue #2530 - Use the existing function that updates git
 2018-02-01 niel
 	Upd: Updated dependencies.
 	Chg: Refactored verify console command to use sub-commands like lithium's g11n console command.
