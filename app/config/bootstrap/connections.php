@@ -151,14 +151,14 @@ if (file_exists($installed)) {
 			]
 		);
 
-		Connections::add('dbsystem',
+		Connections::add('information_schema',
 			[
 				'type'       => 'database',
 				'adapter'    => $adapter,
 				'host'       => $host,
 				'login'      => DB_USER,
 				'password'   => DB_PASSWORD,
-				'database'   => $adapter,
+				'database'   => 'information_schema',
 				'encoding'   => 'UTF-8',
 				'persistent' => false,
 				'timezone'   => ini_get('date.timezone'),
