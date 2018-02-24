@@ -19,15 +19,68 @@
 namespace app\models;
 
 
+use lithium\data\Connections;
+
+
 class Tables extends \app\extensions\data\Model
 {
 	protected $_meta = [
-		'connection'	=> 'information_schema',
-		'key' 			=> null,
-		'source'		=> 'TABLES',
+		'connection' => 'information_schema',
+		'key'        => null,
+		'source'     => 'TABLES',
 	];
 
 	public $validates = [];
+
+	public static function cpb(string $base): array
+	{
+		if (!in_array($base, ['binaries', 'collections', 'missed_parts', 'parts'])) {
+			throw new \InvalidArgumentException("Argument must be one of: 'binaries', 'collections', 'missed_parts', or 'parts'");
+		};
+
+		$tables = self::find('tpg', ['base' => $base]);
+		$list = [];
+		foreach ($tables as $table) {
+			$list[] = $table->data()['table_name'];
+		}
+		natsort($list);
+
+		return $list;
+	}
+
+	public static function init()
+	{
+		static::finder('tpg',
+			function ($params, $next) {
+				$params = [
+					'type'    => 'all',
+					'options' => [
+						'conditions' => [
+							'table_name'   => [
+								'LIKE' => "{$params['options']['base']}_%"
+							],
+							'table_schema' => Connections::get('default',
+								['config' => true])['database'],
+						],
+						'fields'     => [
+							'table_name'
+						],
+					],
+				];
+
+				$array = array_diff_key(
+					$params['options'],
+					array_fill_keys(['conditions', 'fields', 'order', 'limit', 'page'], 0)
+				);
+				$params['options'] = array_diff_key($params['options'], $array);
+
+				$result = $next($params);
+
+				return $result;
+			}
+		);
+	}
 }
 
+Tables::init();
 ?>
