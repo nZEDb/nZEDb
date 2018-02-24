@@ -20,6 +20,7 @@
 namespace app\extensions\command\verify;
 
 
+use app\models\Group;
 use app\models\Settings;
 
 
@@ -39,6 +40,7 @@ class Tables extends \app\extensions\console\Command
 		foreach ($this->request->params['args'] as $arg) {
 			switch ($arg) {
 				case 'Settings':
+				case 'settings':
 					$this->tableSettings();
 					break;
 				case 'cpb':
@@ -60,7 +62,26 @@ class Tables extends \app\extensions\console\Command
 
 	protected function tableSetCPB()
 	{
-		;
+		$active = Group::find('all',
+			[
+				'conditions' => [
+					'active' => true,
+				],
+				'fields'	=> [
+					'id',
+					'name',
+				],
+				'order'		=> 'name ASC'
+			]
+		);
+
+		if (count($active->data()) < 1) {
+			$this->out("No active groups found to verify!");
+		} else {
+			// TODO grab list of binaries_*, collections_*, and parts_* tables
+			;
+			// TODO compare list of group IDs against created tables. Create any missing tables.
+		}
 	}
 
 	protected function tableSettings()
