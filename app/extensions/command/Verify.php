@@ -76,7 +76,7 @@ class Verify extends \app\extensions\console\Command
 	 *
 	 * @return boolean
 	 */
-	public function permissions()
+	public function permissions(): bool
 	{
 		$request = $this->request;
 		$perms = new Permissions(['request' => $request]);
@@ -84,7 +84,12 @@ class Verify extends \app\extensions\console\Command
 		return $perms->run();
 	}
 
-	public function table()
+	/**
+	 * Run the Table sub-command
+	 *
+	 * @return bool
+	 */
+	public function table(): bool
 	{
 		$request = $this->request;
 		$tables = new Tables(['request' => $request]);
