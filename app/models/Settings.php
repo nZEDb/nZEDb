@@ -292,3 +292,4 @@ class Settings extends \lithium\data\Model
 }
 
 Settings::init();
+?>
