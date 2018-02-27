@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "930a1cb5809b0bfc8ffebd81a2d30913",
+    "content-hash": "14f6489cf63119931d28c5a6d9bdd8c1",
     "packages": [
         {
             "name": "b3rs3rk/steamfront",
@@ -46,16 +46,16 @@
         },
         {
             "name": "barracudanetworks/forkdaemon-php",
-            "version": "v1.1.0",
+            "version": "v1.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/barracudanetworks/forkdaemon-php.git",
-                "reference": "98307c172debec0ea982ef369634292d84bd5b2a"
+                "reference": "6675af59d017afc3bbb32af1c0844353f1b7666a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/barracudanetworks/forkdaemon-php/zipball/98307c172debec0ea982ef369634292d84bd5b2a",
-                "reference": "98307c172debec0ea982ef369634292d84bd5b2a",
+                "url": "https://api.github.com/repos/barracudanetworks/forkdaemon-php/zipball/6675af59d017afc3bbb32af1c0844353f1b7666a",
+                "reference": "6675af59d017afc3bbb32af1c0844353f1b7666a",
                 "shasum": ""
             },
             "require": {
@@ -78,7 +78,7 @@
                 "forking",
                 "php"
             ],
-            "time": "2017-12-18T15:52:48+00:00"
+            "time": "2017-03-28T17:06:09+00:00"
         },
         {
             "name": "bower-asset/animate.css",
@@ -897,16 +897,16 @@
         },
         {
             "name": "bower-asset/select2-4.0.x",
-            "version": "4.0.5",
+            "version": "4.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/select2/select2.git",
-                "reference": "ebf10c93db7d6d7a0d1330119d4c6f32cbd231d7"
+                "reference": "566c7846fbf8c3b7674346f26d0ee872c0a77629"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/select2/select2/zipball/ebf10c93db7d6d7a0d1330119d4c6f32cbd231d7",
-                "reference": "ebf10c93db7d6d7a0d1330119d4c6f32cbd231d7",
+                "url": "https://api.github.com/repos/select2/select2/zipball/566c7846fbf8c3b7674346f26d0ee872c0a77629",
+                "reference": "566c7846fbf8c3b7674346f26d0ee872c0a77629",
                 "shasum": ""
             },
             "type": "bower-asset-library",
@@ -916,9 +916,6 @@
                     "src/scss/core.scss"
                 ]
             },
-            "license": [
-                "MIT"
-            ],
             "description": "Select2 is a jQuery based replacement for select boxes. It supports searching, remote data sets, and infinite scrolling of results."
         },
         {
@@ -964,16 +961,16 @@
         },
         {
             "name": "bower-asset/tinymce-builded",
-            "version": "4.6.6",
+            "version": "4.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/artursmirnov/tinymce_builded.git",
-                "reference": "3b7d216e010a2bb2ac3f901152d06f1661ec7960"
+                "reference": "a0f9d08d87eef41f80986025d6200b72cd072359"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/artursmirnov/tinymce_builded/zipball/3b7d216e010a2bb2ac3f901152d06f1661ec7960",
-                "reference": "3b7d216e010a2bb2ac3f901152d06f1661ec7960",
+                "url": "https://api.github.com/repos/artursmirnov/tinymce_builded/zipball/a0f9d08d87eef41f80986025d6200b72cd072359",
+                "reference": "a0f9d08d87eef41f80986025d6200b72cd072359",
                 "shasum": ""
             },
             "type": "bower-asset-library",
@@ -991,16 +988,16 @@
         },
         {
             "name": "composer/installers",
-            "version": "v1.5.0",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "049797d727261bf27f2690430d935067710049c2"
+                "reference": "9ce17fb70e9a38dd8acff0636a29f5cf4d575c1b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/049797d727261bf27f2690430d935067710049c2",
-                "reference": "049797d727261bf27f2690430d935067710049c2",
+                "url": "https://api.github.com/repos/composer/installers/zipball/9ce17fb70e9a38dd8acff0636a29f5cf4d575c1b",
+                "reference": "9ce17fb70e9a38dd8acff0636a29f5cf4d575c1b",
                 "shasum": ""
             },
             "require": {
@@ -1012,7 +1009,7 @@
             },
             "require-dev": {
                 "composer/composer": "1.0.*@dev",
-                "phpunit/phpunit": "^4.8.36"
+                "phpunit/phpunit": "4.1.*"
             },
             "type": "composer-plugin",
             "extra": {
@@ -1083,18 +1080,15 @@
                 "lavalite",
                 "lithium",
                 "magento",
-                "majima",
                 "mako",
                 "mediawiki",
                 "modulework",
-                "modx",
                 "moodle",
                 "osclass",
                 "phpbb",
                 "piwik",
                 "ppi",
                 "puppet",
-                "pxcms",
                 "reindex",
                 "roundcube",
                 "shopware",
@@ -1107,7 +1101,7 @@
                 "zend",
                 "zikula"
             ],
-            "time": "2017-12-29T09:13:20+00:00"
+            "time": "2017-08-09T07:53:48+00:00"
         },
         {
             "name": "dborsatto/php-giantbomb",
@@ -1508,16 +1502,16 @@
         },
         {
             "name": "james-heinrich/getid3",
-            "version": "v1.9.15",
+            "version": "v1.9.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/JamesHeinrich/getID3.git",
-                "reference": "df9b441e547da1018b1be0e239bee095c9962c96"
+                "reference": "30bd11473b0eef6f1b47866ef7ab0a557917fc21"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JamesHeinrich/getID3/zipball/df9b441e547da1018b1be0e239bee095c9962c96",
-                "reference": "df9b441e547da1018b1be0e239bee095c9962c96",
+                "url": "https://api.github.com/repos/JamesHeinrich/getID3/zipball/30bd11473b0eef6f1b47866ef7ab0a557917fc21",
+                "reference": "30bd11473b0eef6f1b47866ef7ab0a557917fc21",
                 "shasum": ""
             },
             "require": {
@@ -1540,7 +1534,7 @@
                 "php",
                 "tags"
             ],
-            "time": "2017-10-26T18:34:37+00:00"
+            "time": "2017-03-27T21:12:55+00:00"
         },
         {
             "name": "joshpinkney/tv-maze-php-api",
@@ -1548,12 +1542,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/JPinkney/TVMaze-PHP-API-Wrapper.git",
-                "reference": "174429341ef2009a42f77743faa342726d7d8467"
+                "reference": "03e60ddbb4a5516aee531be5f4fafc92922f8ae4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JPinkney/TVMaze-PHP-API-Wrapper/zipball/174429341ef2009a42f77743faa342726d7d8467",
-                "reference": "174429341ef2009a42f77743faa342726d7d8467",
+                "url": "https://api.github.com/repos/JPinkney/TVMaze-PHP-API-Wrapper/zipball/03e60ddbb4a5516aee531be5f4fafc92922f8ae4",
+                "reference": "03e60ddbb4a5516aee531be5f4fafc92922f8ae4",
                 "shasum": ""
             },
             "type": "library",
@@ -1573,20 +1567,20 @@
                 }
             ],
             "description": "TVMaze-API-Wrapper",
-            "time": "2018-01-09 14:46:56"
+            "time": "2016-05-04 01:31:56"
         },
         {
             "name": "kevinrob/guzzle-cache-middleware",
-            "version": "v2.1.1",
+            "version": "v1.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Kevinrob/guzzle-cache-middleware.git",
-                "reference": "6952064f7747756b0be7b4c234c0fd7535ea4c8c"
+                "reference": "2893fff87ef9f7f2c669957f5e446beea48d7a1d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Kevinrob/guzzle-cache-middleware/zipball/6952064f7747756b0be7b4c234c0fd7535ea4c8c",
-                "reference": "6952064f7747756b0be7b4c234c0fd7535ea4c8c",
+                "url": "https://api.github.com/repos/Kevinrob/guzzle-cache-middleware/zipball/2893fff87ef9f7f2c669957f5e446beea48d7a1d",
+                "reference": "2893fff87ef9f7f2c669957f5e446beea48d7a1d",
                 "shasum": ""
             },
             "require": {
@@ -1611,7 +1605,10 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Kevinrob\\GuzzleCache\\": "src/"
+                    "Kevinrob\\GuzzleCache\\": [
+                        "src/",
+                        "tests/"
+                    ]
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1648,7 +1645,7 @@
                 "rfc7234",
                 "validation"
             ],
-            "time": "2017-08-17T12:23:43+00:00"
+            "time": "2017-01-16T07:02:13+00:00"
         },
         {
             "name": "moinax/tvdb",
@@ -1717,28 +1714,28 @@
         },
         {
             "name": "php-tmdb/api",
-            "version": "v2.1.14",
+            "version": "v2.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-tmdb/api.git",
-                "reference": "2a271343f6a25499f250638fbbd0b1eb79a87e2a"
+                "reference": "1c2e87653f6df62ea9075b7118c2a80dcb355f66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-tmdb/api/zipball/2a271343f6a25499f250638fbbd0b1eb79a87e2a",
-                "reference": "2a271343f6a25499f250638fbbd0b1eb79a87e2a",
+                "url": "https://api.github.com/repos/php-tmdb/api/zipball/1c2e87653f6df62ea9075b7118c2a80dcb355f66",
+                "reference": "1c2e87653f6df62ea9075b7118c2a80dcb355f66",
                 "shasum": ""
             },
             "require": {
                 "doctrine/cache": "^1.6",
                 "ext-curl": "*",
                 "guzzlehttp/guzzle": "~6.0",
-                "kevinrob/guzzle-cache-middleware": "^1.2 || ^2.0",
+                "kevinrob/guzzle-cache-middleware": "^1.2",
                 "php": ">=5.6.0",
                 "psr/log": "~1.0",
                 "rtheunissen/guzzle-log-middleware": "^0.4.0",
-                "symfony/event-dispatcher": ">=2.4,<5",
-                "symfony/options-resolver": ">=2.6,<5"
+                "symfony/event-dispatcher": ">=2.4,<4",
+                "symfony/options-resolver": ">=2.6,<4"
             },
             "require-dev": {
                 "monolog/monolog": ">=1.11.0",
@@ -1781,60 +1778,48 @@
                 "tvdb",
                 "wrapper"
             ],
-            "time": "2018-01-20T18:33:44+00:00"
+            "time": "2017-06-02T03:27:09+00:00"
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v5.2.26",
+            "version": "v6.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "70362997bda4376378be7d92d81e2200550923f7"
+                "reference": "7a4459cff6abeb86b63cdbad760f567252f3f39c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/70362997bda4376378be7d92d81e2200550923f7",
-                "reference": "70362997bda4376378be7d92d81e2200550923f7",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/7a4459cff6abeb86b63cdbad760f567252f3f39c",
+                "reference": "7a4459cff6abeb86b63cdbad760f567252f3f39c",
                 "shasum": ""
             },
             "require": {
                 "ext-ctype": "*",
-                "php": ">=5.0.0"
+                "php": ">=5.5.0"
             },
             "require-dev": {
                 "doctrine/annotations": "1.2.*",
-                "jms/serializer": "0.16.*",
+                "friendsofphp/php-cs-fixer": "^2.2",
                 "phpdocumentor/phpdocumentor": "2.*",
-                "phpunit/phpunit": "4.8.*",
-                "symfony/debug": "2.8.*",
-                "symfony/filesystem": "2.8.*",
-                "symfony/translation": "2.8.*",
-                "symfony/yaml": "2.8.*",
-                "zendframework/zend-cache": "2.5.1",
-                "zendframework/zend-config": "2.5.1",
-                "zendframework/zend-eventmanager": "2.5.1",
-                "zendframework/zend-filter": "2.5.1",
-                "zendframework/zend-i18n": "2.5.1",
-                "zendframework/zend-json": "2.5.1",
-                "zendframework/zend-math": "2.5.1",
-                "zendframework/zend-serializer": "2.5.*",
-                "zendframework/zend-servicemanager": "2.5.*",
-                "zendframework/zend-stdlib": "2.5.1"
+                "phpunit/phpunit": "^4.8 || ^5.7",
+                "zendframework/zend-eventmanager": "3.0.*",
+                "zendframework/zend-i18n": "2.7.3",
+                "zendframework/zend-serializer": "2.7.*"
             },
             "suggest": {
-                "league/oauth2-google": "Needed for Google XOAUTH2 authentication"
+                "ext-mbstring": "Needed to send email in multibyte encoding charset",
+                "hayageek/oauth2-yahoo": "Needed for Yahoo XOAUTH2 authentication",
+                "league/oauth2-google": "Needed for Google XOAUTH2 authentication",
+                "psr/log": "For optional PSR-3 debug logging",
+                "stevenmaguire/oauth2-microsoft": "Needed for Microsoft XOAUTH2 authentication",
+                "symfony/polyfill-mbstring": "To support UTF-8 if the Mbstring PHP extension is not enabled (^1.2)"
             },
             "type": "library",
             "autoload": {
-                "classmap": [
-                    "class.phpmailer.php",
-                    "class.phpmaileroauth.php",
-                    "class.phpmaileroauthgoogle.php",
-                    "class.smtp.php",
-                    "class.pop3.php",
-                    "extras/EasyPeasyICS.php",
-                    "extras/ntlm_sasl_client.php"
-                ]
+                "psr-4": {
+                    "PHPMailer\\PHPMailer\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -1858,7 +1843,7 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2017-11-04T09:26:05+00:00"
+            "time": "2017-11-30T17:20:24+00:00"
         },
         {
             "name": "psr/http-message",
@@ -1959,16 +1944,16 @@
         },
         {
             "name": "rtheunissen/guzzle-log-middleware",
-            "version": "v0.4.1",
+            "version": "v0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rtheunissen/guzzle-log-middleware.git",
-                "reference": "202f474456e5b4a62c09a91054b3942cab48ad74"
+                "reference": "7b6f2884b623091e58276500f38499f238d7d4e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtheunissen/guzzle-log-middleware/zipball/202f474456e5b4a62c09a91054b3942cab48ad74",
-                "reference": "202f474456e5b4a62c09a91054b3942cab48ad74",
+                "url": "https://api.github.com/repos/rtheunissen/guzzle-log-middleware/zipball/7b6f2884b623091e58276500f38499f238d7d4e2",
+                "reference": "7b6f2884b623091e58276500f38499f238d7d4e2",
                 "shasum": ""
             },
             "require": {
@@ -1986,7 +1971,8 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Concat\\Http\\Middleware\\": "src/"
+                    "Concat\\Http\\Middleware\\": "src/",
+                    "Concat\\Http\\Middleware\\Test\\": "tests/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -2007,7 +1993,7 @@
                 "middleware",
                 "psr7"
             ],
-            "time": "2017-11-06T19:17:52+00:00"
+            "time": "2015-06-16T06:35:18+00:00"
         },
         {
             "name": "smarty/smarty",
@@ -2064,30 +2050,30 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v3.4.4",
+            "version": "v3.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
-                "reference": "26b87b6bca8f8f797331a30b76fdae5342dc26ca"
+                "reference": "67535f1e3fd662bdc68d7ba317c93eecd973617e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/26b87b6bca8f8f797331a30b76fdae5342dc26ca",
-                "reference": "26b87b6bca8f8f797331a30b76fdae5342dc26ca",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/67535f1e3fd662bdc68d7ba317c93eecd973617e",
+                "reference": "67535f1e3fd662bdc68d7ba317c93eecd973617e",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.5.9|>=7.0.8"
+                "php": ">=5.5.9"
             },
             "conflict": {
                 "symfony/dependency-injection": "<3.3"
             },
             "require-dev": {
                 "psr/log": "~1.0",
-                "symfony/config": "~2.8|~3.0|~4.0",
-                "symfony/dependency-injection": "~3.3|~4.0",
-                "symfony/expression-language": "~2.8|~3.0|~4.0",
-                "symfony/stopwatch": "~2.8|~3.0|~4.0"
+                "symfony/config": "~2.8|~3.0",
+                "symfony/dependency-injection": "~3.3",
+                "symfony/expression-language": "~2.8|~3.0",
+                "symfony/stopwatch": "~2.8|~3.0"
             },
             "suggest": {
                 "symfony/dependency-injection": "",
@@ -2096,7 +2082,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.4-dev"
+                    "dev-master": "3.3-dev"
                 }
             },
             "autoload": {
@@ -2123,29 +2109,29 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
-            "time": "2018-01-03T07:37:34+00:00"
+            "time": "2017-06-09T14:53:08+00:00"
         },
         {
             "name": "symfony/options-resolver",
-            "version": "v3.4.4",
+            "version": "v3.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/options-resolver.git",
-                "reference": "f3109a6aedd20e35c3a33190e932c2b063b7b50e"
+                "reference": "ff48982d295bcac1fd861f934f041ebc73ae40f0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/f3109a6aedd20e35c3a33190e932c2b063b7b50e",
-                "reference": "f3109a6aedd20e35c3a33190e932c2b063b7b50e",
+                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/ff48982d295bcac1fd861f934f041ebc73ae40f0",
+                "reference": "ff48982d295bcac1fd861f934f041ebc73ae40f0",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.5.9|>=7.0.8"
+                "php": ">=5.5.9"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.4-dev"
+                    "dev-master": "3.3-dev"
                 }
             },
             "autoload": {
@@ -2177,20 +2163,20 @@
                 "configuration",
                 "options"
             ],
-            "time": "2018-01-11T07:56:07+00:00"
+            "time": "2017-04-12T14:14:56+00:00"
         },
         {
             "name": "unionofrad/lithium",
-            "version": "v1.1.1",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/UnionOfRAD/lithium.git",
-                "reference": "bec3f4fdf61ea5002904754f43941ad1430ecec7"
+                "reference": "5d337263469dc14df1f4c05c226e2f24041f112b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/bec3f4fdf61ea5002904754f43941ad1430ecec7",
-                "reference": "bec3f4fdf61ea5002904754f43941ad1430ecec7",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/5d337263469dc14df1f4c05c226e2f24041f112b",
+                "reference": "5d337263469dc14df1f4c05c226e2f24041f112b",
                 "shasum": ""
             },
             "require": {
@@ -2198,7 +2184,7 @@
                 "php": "^5.5.14 || ^7.0.3"
             },
             "require-dev": {
-                "unionofrad/li3_fixtures": "^1.1"
+                "unionofrad/li3_fixtures": "1.1.*@dev"
             },
             "bin": [
                 "console/li3"
@@ -2223,7 +2209,7 @@
                 "li3",
                 "lithium"
             ],
-            "time": "2017-12-22T08:03:51+00:00"
+            "time": "2017-04-23T09:19:40+00:00"
         },
         {
             "name": "zeebinz/rarinfo",
@@ -2331,6 +2317,7 @@
         "ext-imagick": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
+        "ext-mcrypt": "*",
         "ext-mysqlnd": "*",
         "ext-openssl": "*",
         "ext-pcre": "*",

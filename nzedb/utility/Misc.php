@@ -794,14 +794,14 @@ class Misc
 		$body .= '</html>' . $CRLF;
 
 		if (defined('PHPMAILER_ENABLED') && PHPMAILER_ENABLED == true) {
-			$mail = new \PHPMailer;
+			$mail = new PHPMailer\PHPMailer\PHPMailer;
 		} else {
 			$mail = null;
 		}
 
 		// If the mailer couldn't instantiate there's a good chance the user has an incomplete update & we should fallback to php mail()
 		// @todo Log this failure.
-		if (!defined('PHPMAILER_ENABLED') || PHPMAILER_ENABLED !== true || !($mail instanceof \PHPMailer)) {
+		if (!defined('PHPMAILER_ENABLED') || PHPMAILER_ENABLED !== true || !($mail instanceof PHPMailer\PHPMailer\PHPMailer)) {
 			$headers = 'From: ' . $from . $CRLF;
 			$headers .= 'Reply-To: ' . $from . $CRLF;
 			$headers .= 'Return-Path: ' . $from . $CRLF;
@@ -828,7 +828,7 @@ class Misc
 				if ((!defined('PHPMAILER_SMTP_USER') || PHPMAILER_SMTP_USER === '') ||
 					(!defined('PHPMAILER_SMTP_PASSWORD') || PHPMAILER_SMTP_PASSWORD === '')
 				) {
-					throw new \phpmailerException(
+					throw new PHPMailer\PHPMailer\Exception(
 						'You opted to use SMTP and SMTP Auth but the PHPMAILER_SMTP_USER and/or PHPMAILER_SMTP_PASSWORD is/are not defined correctly. Please set them in www/settings.php'
 					);
 				}

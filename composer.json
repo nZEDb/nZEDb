@@ -104,7 +104,7 @@
     "nzedb/Git.php": "dev-master",
     "php": ">=5.6.9",
     "php-tmdb/api": "^2.1",
-    "phpmailer/phpmailer": "^5.2.21",
+    "phpmailer/phpmailer": "^6.0.2",
     "smarty/smarty": "~3.1.29",
     "unionofrad/lithium": "^1.1.0-beta",
     "zeebinz/rarinfo": "~2.5.0",
