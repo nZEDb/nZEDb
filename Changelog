@@ -9,7 +9,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2018-02-27 niel
+	Mrg: dev-phpmailer-migration branch. This upgrades the code to use v6.0 of PHPMailer.
 2018-02-23 niel
 	Mrg: PR 2571, from lawsontyler - GitHub Issue #2530 - Use the existing function that updates git
 2018-02-01 niel
