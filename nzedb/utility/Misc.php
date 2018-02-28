@@ -516,20 +516,16 @@ class Misc
 			$magicSwitch = empty($magicPath) ? '' : " -m $magicPath";
 			$output = self::runCmd('file' . $magicSwitch . ' -b "' . $path . '"');
 
-			if (is_array($output)) {
-				switch (count($output)) {
-					case 0:
-						$output = '';
-						break;
-					case 1:
-						$output = $output[0];
-						break;
-					default:
-						$output = implode(' ', $output);
-						break;
-				}
-			} else {
-				$output = '';
+			switch (count($output)) {
+				case 0:
+					$output = '';
+					break;
+				case 1:
+					$output = $output[0];
+					break;
+				default:
+					$output = implode(' ', $output);
+					break;
 			}
 		} else {
 			$fileInfo = empty($magicPath) ? finfo_open(FILEINFO_RAW) : finfo_open(FILEINFO_RAW, $magicPath);
