@@ -556,7 +556,8 @@ class Misc
 
 		$output = [];
 		$status = 1;
-		@exec($command, $output, $status); /** @scrutinizer ignore-unhandled */
+		/** @scrutinizer ignore-unhandled */
+		@exec($command, $output, $status);
 
 		if ($debug) {
 			echo '-Command Output: ' . PHP_EOL . '   ' . implode(PHP_EOL . '  ', $output) . PHP_EOL;
