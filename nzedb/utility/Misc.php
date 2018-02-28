@@ -556,7 +556,7 @@ class Misc
 
 		$output = [];
 		$status = 1;
-		@exec($command, $output, $status);
+		@exec($command, $output, $status); /** @scrutinizer ignore-unhandled */
 
 		if ($debug) {
 			echo '-Command Output: ' . PHP_EOL . '   ' . implode(PHP_EOL . '  ', $output) . PHP_EOL;
@@ -585,8 +585,10 @@ class Misc
 			// The 'G' modifier is available since PHP 5.1.0
 			case 'g':
 				$val *= 1024;
+			// Multiply again for each that matches.
 			case 'm':
 				$val *= 1024;
+			// Multiply again for each that matches.
 			case 'k':
 				$val *= 1024;
 		}
