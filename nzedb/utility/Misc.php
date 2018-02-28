@@ -482,9 +482,10 @@ class Misc
 			return false;
 		}*/
 
-		$string = '';
+		$string = false;
 		$gzFile = @gzopen($filePath, 'rb', 0);
 		if ($gzFile !== false) {
+			$string = '';
 			while (!gzeof($gzFile)) {
 				$temp = gzread($gzFile, 1024);
 				// Check for empty string.
@@ -497,7 +498,7 @@ class Misc
 			}
 			gzclose($gzFile);
 		}
-		return ($string === '' ? false : $string);
+		return $string;
 	}
 
 	/**
