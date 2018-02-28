@@ -239,7 +239,7 @@ class Misc
 			default:
 				$options['language'] = 'en';
 		}
-		$header[] = "Accept-Language: " . $options['language'];
+		$header = ["Accept-Language: " . $options['language']];
 		if (is_array($options['requestheaders'])) {
 			$header += $options['requestheaders'];
 		}
