@@ -7,10 +7,50 @@ build:
 
     environment:
         memcached:            true
-        php:
-            version: 7.0.8
-            ini:
-                 memory_limit:     "4096M"
+
+filter:
+    dependency_paths:
+        - "app/libraries/"
+        - "libraries/"
+        - "libs/"
+    excluded_paths:
+        - "docs/"
+        - "resources/"
+
+    nodes:
+        analysis:
+            project_setup:
+                override: true
+            tests:
+                override: [php-scrutinizer-run]
+
+        php70:
+          environment:
+              php:
+                  version: 7.0.25
+                  ini:
+                       memory_limit:     "4096M"
+
+      php71:
+         environment:
+             php:
+                 version: 7.1
+                 ini:
+                      memory_limit:     "4096M"
+
+      php71:
+         dependencies:
+             before:
+            # Overwrites inferred commands
+             override:
+                 - 'composer install --no-interaction --no-dev --prefer-source --no-scripts --ignore-platform-reqs'
+
+         environment:
+             php:
+                 version: 7.2
+                 ini:
+                      memory_limit:     "4096M"
+
 checks:
     php:
         avoid_closing_tag: false
