@@ -33,9 +33,9 @@ class Misc
 	 *
 	 * @return bool|string True is successful, otherwise the part of the path that failed testing.
 	 */
-	public static function canExecuteRead($dir)
+	public static function canExecuteRead($path)
 	{
-		$dirs = preg_split('#/#', $dir);
+		$dirs = preg_split('#/#', $path);
 		$fullPath = DS;
 		foreach ($dirs as $dir) {
 			if ($dir !== '') {
