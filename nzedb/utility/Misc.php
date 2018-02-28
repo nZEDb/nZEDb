@@ -28,17 +28,18 @@ class Misc
 	 * Checks all levels of the supplied path are readable and executable by current user.
 	 *
 	 * @todo Make this recursive with a switch to only check end point.
-	 * @param $path	*nix path to directory or file
+	 *
+	 * @param $dir *nix path to directory or file
 	 *
 	 * @return bool|string True is successful, otherwise the part of the path that failed testing.
 	 */
-	public static function canExecuteRead($path)
+	public static function canExecuteRead($dir)
 	{
-		$paths = preg_split('#/#', $path);
+		$dirs = preg_split('#/#', $dir);
 		$fullPath = DS;
-		foreach ($paths as $path) {
-			if ($path !== '') {
-				$fullPath .= $path . DS;
+		foreach ($dirs as $dir) {
+			if ($dir !== '') {
+				$fullPath .= $dir . DS;
 				if (!is_readable($fullPath) || !is_executable($fullPath)) {
 					return "The '$fullPath' directory must be readable and executable by all ." .
 					PHP_EOL;
