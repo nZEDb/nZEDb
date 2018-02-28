@@ -172,7 +172,7 @@ class Misc
 	public static function getThemesList()
 	{
 		$themes = scandir(nZEDb_THEMES);
-		$themelist[] = 'None';
+		$themelist = ['None'];
 		foreach ($themes as $theme) {
 			if (strpos($theme, ".") === false &&
 				is_dir(nZEDb_THEMES . $theme) &&
