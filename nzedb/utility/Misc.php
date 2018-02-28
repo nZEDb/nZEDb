@@ -291,7 +291,7 @@ class Misc
 	 * Get raw html from site URL for scraping
 	 *
 	 * @param string $url
-	 * @param bool|string $cookie
+	 * @param false|string $cookie
 	 *
 	 * @return bool|string
 	 */
@@ -300,10 +300,12 @@ class Misc
 		$response = false;
 		$cookiejar = new CookieJar();
 		$client = new Client();
+
 		if ($cookie !== false) {
 			$cookieJar = $cookiejar->setCookie(SetCookie::fromString($cookie));
 			$client = new Client(['cookies' => $cookieJar]);
 		}
+
 		try {
 			$response = $client->get($url)->getBody()->getContents();
 		} catch (RequestException $e) {
@@ -482,7 +484,7 @@ class Misc
 
 		$string = '';
 		$gzFile = @gzopen($filePath, 'rb', 0);
-		if ($gzFile) {
+		if ($gzFile !== false) {
 			while (!gzeof($gzFile)) {
 				$temp = gzread($gzFile, 1024);
 				// Check for empty string.
