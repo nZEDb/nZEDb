@@ -268,7 +268,7 @@ class Versions extends \lithium\core\Object
 				echo "Version file already up to date." . PHP_EOL;
 			}
 			$this->xml->asXML($this->_config['path']);
-			$this->changes = false;
+			$this->changes = 0;
 		}
 	}
 
