@@ -221,5 +221,6 @@ if ((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "du
 }
 
 if (file_exists("mysql-defaults.txt")) {
+	/** @scrutinizer ignore-unhandled */
 	@unlink("mysql-defaults.txt");
 }
