@@ -93,7 +93,7 @@ class Logger
 	private $timeStart;
 
 	/**
-	 * @var resource|null Resource for log file.
+	 * @var resource|null|false Resource for log file.
 	 * @access private
 	 */
 	private $resource = null;

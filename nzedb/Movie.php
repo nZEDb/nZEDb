@@ -22,7 +22,7 @@ class Movie
 	const SRC_DVD = 5;
 
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 
@@ -39,7 +39,7 @@ class Movie
 
 	/**
 	 * Current year of parsed search name.
-	 * @var string
+	 * @var string|false
 	 */
 	protected $currentYear = '';
 
