@@ -1321,7 +1321,7 @@ class Movie
 								urlencode(
 									$this->currentTitle .
 									' ' .
-									$this->currentYear
+									/** @scrutinizer ignore-type */ $this->currentYear
 								) .
 								'&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=' .
 								urlencode('www.imdb.com/title/') .
@@ -1359,8 +1359,8 @@ class Movie
 							'("' .
 							$this->currentTitle .
 							'" and "' .
-							$this->currentYear .
-							'") site:www.imdb.com/title/'
+							/** @scrutinizer ignore-type */
+							$this->currentYear . '") site:www.imdb.com/title/'
 						) .
 						'&qs=n&form=QBLH&filt=all'
 			]
@@ -1404,7 +1404,7 @@ class Movie
 							)
 						) .
 						'+' .
-						$this->currentYear
+						/** @scrutinizer ignore-type */ $this->currentYear
 					) .
 					'&vs=' .
 					urlencode('www.imdb.com/title/')
