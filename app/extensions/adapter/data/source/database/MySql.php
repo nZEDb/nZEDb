@@ -22,7 +22,7 @@ namespace app\extensions\adapter\data\source\database;
 class MySql extends \lithium\data\source\database\adapter\MySql
 {
 	/**
-	 * @var null Timezone of the session connection as set or retrieved by timezone().
+	 * @var string|null Timezone of the session connection as set or retrieved by timezone().
 	 */
 	protected $session_tz = null;
 
