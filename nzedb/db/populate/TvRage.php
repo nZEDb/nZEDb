@@ -28,7 +28,7 @@ class TvRage extends PopulateTitles
 
 	protected $showList;
 
-	public function  __constructor($options)
+	public function __construct($options)
 	{
 		$defaults = [
 			'pdo'	=> null,
