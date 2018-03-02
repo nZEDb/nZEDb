@@ -24,7 +24,7 @@ class Categorize extends Category
 	/**
 	 * Temporary category while we sort through the name.
 	 *
-	 * @var int
+	 * @var int|string    Temporary variable for storing the Category constant (which is technically a string).
 	 */
 	protected $tmpCat = Category::OTHER_MISC;
 

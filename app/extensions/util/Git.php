@@ -137,7 +137,7 @@ class Git extends \lithium\core\Object
 	/**
 	 * Run the log command.
 	 *
-	 * @param null $options
+	 * @param string|null $options
 	 *
 	 * @return string
 	 */

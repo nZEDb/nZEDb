@@ -6,7 +6,7 @@ use nzedb\db\DB;
 class Forum
 {
 	/**
-	 * @var Settings
+	 * @var nzedb\db\DB
 	 */
 	public $pdo;
 
