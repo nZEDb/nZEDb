@@ -715,9 +715,9 @@ class XXX
 	/**
 	 * Get Genre ID's Of the title
 	 *
-	 * @param $arr - Array or String
+	 * @param array|string $arr Array or String
 	 *
-	 * @return string - If array .. 1,2,3,4 if string .. 1
+	 * @return string	If array .. 1,2,3,4 if string .. 1
 	 */
 	private function getGenreID($arr)
 	{
