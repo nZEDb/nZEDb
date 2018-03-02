@@ -1386,7 +1386,7 @@ class ReleaseRemover
 	 * Echo the error and return false if on CLI.
 	 * Return the error if on browser.
 	 *
-	 * @return bool/string
+	 * @return string|false
 	 */
 	protected function returnError()
 	{

@@ -1243,17 +1243,12 @@ class NNTP extends \Net_NNTP_Client
 	}
 
 	/**
-	 * Loop over the compressed data when XFeature GZip Compress is turned on,
-	 * string the data until we find a indicator
-	 * (period, carriage feed, line return ;; .\r\n), decompress the data,
-	 * split the data (bunch of headers in a string) into an array, finally
-	 * return the array.
+	 * Loop over the compressed data when XFeature GZip Compress is turned on, string the data
+	 * until we find an indicator (period, carriage feed, line return ;; .\r\n), decompress the
+	 * data, split the data (bunch of headers in a string) into an array, finally return the array.
 	 *
-	 * @return string/print Have we failed to decompress the data, was there a
-	 *                 problem downloading the data, etc..
 	 * @return mixed  On success : (array)  The headers.
 	 *                On failure : (object) PEAR_Error.
-	 *
 	 * @access protected
 	 */
 	protected function &_getXFeatureTextResponse()

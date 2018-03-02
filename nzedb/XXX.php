@@ -15,7 +15,7 @@ use nzedb\processing\adult\Popporn;
 class XXX
 {
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 
@@ -693,7 +693,7 @@ class XXX
 	 * Get Genres for activeonly and/or an ID
 	 *
 	 * @param bool $activeOnly
-	 * @param null $gid
+	 * @param int|null $gid
 	 *
 	 * @return array|bool
 	 */
