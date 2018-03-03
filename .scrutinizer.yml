@@ -117,7 +117,12 @@ filter:
     excluded_paths:
         - "docs/"
         - "resources/"
+        - "apps/config/bootstrap/action.php"
         - "apps/config/bootstrap/cache.php"
+        - "apps/config/bootstrap/console.php"
+        - "apps/config/bootstrap/errors.php"
         - "apps/config/bootstrap/g11n.php"
+        - "apps/config/bootstrap/logger.php"
+        - "apps/config/bootstrap/media.php"
         - "apps/config/bootstrap/session.php"
         - "apps/config/routes.php"
