@@ -24,12 +24,12 @@ use yenc\yenc;
 
 class NzedbYenc extends \lithium\core\Object
 {
-	public static function decode(&$text, $ignore = false, array $options = [])
+	public static function decode(&$text)
 	{
 		return (new yenc())->decode($text);
 	}
 
-	public static function decodeIgnore(&$text, array $options = [])
+	public static function decodeIgnore(&$text)
 	{
 		return (new yenc())->decode($text, true);
 	}

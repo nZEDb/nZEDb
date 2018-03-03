@@ -27,7 +27,7 @@ namespace app\extensions\util\yenc\adapter;
  */
 class Php extends \lithium\core\Object
 {
-	public static function decode(&$text, $ignore = false)
+	public static function decode(&$text)
 	{
 		$crc = '';
 		// Extract the yEnc string itself.
