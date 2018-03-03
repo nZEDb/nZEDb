@@ -123,7 +123,6 @@ class ControlStructuresHaveCorrectFormat extends \li3_quality\qa\rules\syntax\Co
 	 */
 	public function apply($testable, array $config = [])
 	{
-		$lines = $testable->lines();
 		$tokens = $testable->tokens();
 		$filtered = $testable->findAll(array_keys($this->_tokenMap));
 
