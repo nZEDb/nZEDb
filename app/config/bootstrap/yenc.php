@@ -27,9 +27,9 @@ if (defined('nZEDb_INSTALLER') && nZEDb_INSTALLER !== false) {
 } else {
 	switch (true) {
 		case extension_loaded('yenc'):
-			if (method_exists('yenc\yEnc', 'version') &&
+			if (method_exists('\yenc\yEnc', 'version') &&
 				version_compare(
-					yenc\yEnc::version(),
+					\yenc\yEnc::version(),
 					'1.2.2',
 					'>='
 				)
