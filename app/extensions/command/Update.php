@@ -165,7 +165,7 @@ class Update extends \app\extensions\console\Command
 		}
 
 		if (!$command) {
-			return $this->_help($command);
+			return $this->_help();
 		}
 
 		if ($this->_execute($command)) {
