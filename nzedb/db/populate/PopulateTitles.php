@@ -56,7 +56,7 @@ class PopulateTitles
 
 	protected $tempTable;
 
-	public function  __constructor($options)
+	public function  __construct($options)
 	{
 		$defaults = [
 			'pdo'	=> null,
