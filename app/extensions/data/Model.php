@@ -21,6 +21,11 @@ namespace app\extensions\data;
 
 use lithium\data\Entity;
 
+/**
+ * @method array all(array $options)
+ * @method array count(array $options)
+ * @method array first(array $options)
+ */
 class Model extends \lithium\data\Model
 {
 	public static function isModified($preEntry)
