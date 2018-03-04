@@ -3,6 +3,7 @@ build:
         before:
        # Overwrites inferred commands
         override:
+            - 'composer global require hirak/prestissimo'
             - 'composer install --no-interaction --no-dev --prefer-source --no-scripts --ignore-platform-reqs'
 
     environment:
@@ -14,13 +15,6 @@ build:
                 override: true
             tests:
                 override: [php-scrutinizer-run]
-
-        php70:
-            environment:
-                php:
-                    version: 7.0.27
-                    ini:
-                        memory_limit:     "4096M"
 
         php71:
             environment:
