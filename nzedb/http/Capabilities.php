@@ -63,11 +63,11 @@ abstract class Capabilities
 	 *
 	 * @param array  $data   Data to print.
 	 * @param array  $params Additional request parameters
-	 * @param bool   $xml    True: Print as XML False: Print as JSON.
 	 * @param int    $offset How much releases to skip
+	 * @param bool   $xml    True: Print as XML False: Print as JSON.
 	 * @param string $type   What type of API query to format if XML
 	 */
-	public function output($data, $params, $xml = true, $offset, $type = '')
+	public function output($data, $params, $offset, $xml = true, $type = '')
 	{
 		$this->type = $type;
 

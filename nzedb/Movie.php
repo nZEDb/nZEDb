@@ -1506,11 +1506,11 @@ class Movie
 
 		if ($rt instanceof RottenTomato) {
 
-			$this->_getRTData('boxoffice', $rt);
-			$this->_getRTData('theaters', $rt);
-			$this->_getRTData('opening', $rt);
-			$this->_getRTData('upcoming', $rt);
-			$this->_getRTData('dvd', $rt);
+			$this->_getRTData($rt, 'boxoffice');
+			$this->_getRTData($rt, 'theaters');
+			$this->_getRTData($rt, 'opening');
+			$this->_getRTData($rt, 'upcoming');
+			$this->_getRTData($rt, 'dvd');
 
 			if ($this->echooutput) {
 				$this->pdo->log->doEcho($this->pdo->log->header("Updated successfully."));
@@ -1522,10 +1522,10 @@ class Movie
 	}
 
 	/**
-	 * @param string $operation
 	 * @param \nzedb\RottenTomato $rt
+	 * @param string              $operation
 	 */
-	protected function _getRTData($operation = '', $rt)
+	protected function _getRTData($rt, $operation = '')
 	{
 		$count = 0;
 		$check = false;
