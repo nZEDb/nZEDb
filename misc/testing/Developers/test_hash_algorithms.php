@@ -14,7 +14,7 @@ if (!isset($argv[1]) || !isset($argv[2])) {
  * Test various hashing/encoding/etc on a string.
  * Class hash_algorithms
  */
-class hash_algorithms
+class hashAlgorithms
 {
 	/**
 	 * The input string.
@@ -188,4 +188,4 @@ class hash_algorithms
 	}
 }
 
-new hash_algorithms($argv[1], $argv[2], ((isset($argv[3]) && strtolower($argv[3]) === 'true') ? true : false));
+new hashAlgorithms($argv[1], $argv[2], ((isset($argv[3]) && strtolower($argv[3]) === 'true') ? true : false));

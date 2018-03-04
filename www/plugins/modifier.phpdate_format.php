@@ -34,6 +34,7 @@ if (!is_dir($plugins_dir)) {
 }
 // End fix by nZEDb.
 require_once ($plugins_dir . 'shared.make_timestamp.php');
+
 /**
  * Smarty phpdate_format modifier plugin
  *
@@ -49,7 +50,7 @@ require_once ($plugins_dir . 'shared.make_timestamp.php');
  * @param string
  * @param string
  * @param string
- * @return string|void
+ * @return string|null
  * @uses smarty_make_timestamp()
  */
 function smarty_modifier_phpdate_format($string, $format="Y/m/d H:i:s", $default_date=null)
@@ -61,17 +62,39 @@ function smarty_modifier_phpdate_format($string, $format="Y/m/d H:i:s", $default
 	}*/
 	if (substr($format,0,5)=='DATE_'){
 		switch ($format){
-			case 'DATE_ATOM': $nformat=DATE_ATOM; break;
-			case 'DATE_COOKIE': $nformat=DATE_COOKIE; break;
-			case 'DATE_ISO8601': $nformat=DATE_ISO8601; break;
-			case 'DATE_RFC822': $nformat="D, d M y H:i:s O"; break; //The php constant is not quite right - as the time-zone comes out with invalid values like "UTC"...
-			case 'DATE_RFC850': $nformat=DATE_RFC850; break;
-			case 'DATE_RFC1036': $nformat=DATE_RFC1036; break;
-			case 'DATE_RFC1123': $nformat=DATE_RFC1123; break;
-			case 'DATE_RFC2822': $nformat=DATE_RFC2822; break;
-			case 'DATE_RFC3339': $nformat=DATE_RFC3339; break;
-			case 'DATE_RSS': $nformat="D, d M Y H:i:s O"; break; //as rfc822 ...
-			case 'DATE_W3C': $nformat=DATE_W3C; break;
+			case 'DATE_ATOM':
+				$nformat=DATE_ATOM;
+				break;
+			case 'DATE_COOKIE':
+				$nformat=DATE_COOKIE;
+				break;
+			case 'DATE_ISO8601':
+				$nformat=DATE_ISO8601;
+				break;
+			case 'DATE_RFC822':
+				$nformat="D, d M y H:i:s O";
+				break; //The php constant is not quite right - as the time-zone comes out with invalid values like "UTC"...
+			case 'DATE_RFC850':
+				$nformat=DATE_RFC850;
+				break;
+			case 'DATE_RFC1036':
+				$nformat=DATE_RFC1036;
+				break;
+			case 'DATE_RFC1123':
+				$nformat=DATE_RFC1123;
+				break;
+			case 'DATE_RFC2822':
+				$nformat=DATE_RFC2822;
+				break;
+			case 'DATE_RFC3339':
+				$nformat=DATE_RFC3339;
+				break;
+			case 'DATE_RSS':
+				$nformat="D, d M Y H:i:s O";
+				break; //as rfc822 ...
+			case 'DATE_W3C':
+				$nformat=DATE_W3C;
+				break;
 		}
 	} else {
 		$nformat=$format;
@@ -81,7 +104,7 @@ function smarty_modifier_phpdate_format($string, $format="Y/m/d H:i:s", $default
 	} elseif (isset($default_date) && $default_date != '') {
 		return date($nformat, smarty_make_timestamp($default_date));
 	} else {
-		return;
+		return null;
 	}
 }
 /* vim: set expandtab: */
