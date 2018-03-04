@@ -564,7 +564,8 @@ class NNTP extends \Net_NNTP_Client
 				 * If we exceed, return the data.
 				 * If we don't do this, these errors are fatal.
 				 */
-				if ((++$loops * $messageSize) >= 1700000000) {
+				$loops++;
+				if (($loops * $messageSize) >= 1700000000) {
 					return $body;
 				}
 

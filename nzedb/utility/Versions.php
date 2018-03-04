@@ -121,7 +121,7 @@ class Versions
 			if ($update) {
 				if (GIT_PRE_COMMIT === true) {
 					// only the pre-commit script is allowed to set the NEXT commit number
-					$count += 1;
+					$count++;
 				}
 				if ($count != $this->_vers->git->commit) {
 					echo $this->out->primary("Updating commit number to {$count}");
