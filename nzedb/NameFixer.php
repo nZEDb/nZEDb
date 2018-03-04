@@ -624,7 +624,7 @@ class NameFixer
 
 				$newTitle = $this->pdo->escapeString(substr($newName, 0, 255));
 
-				if ($echo == true) {
+				if ($echo === true) {
 					if ($nameStatus == 1) {
 						$status = '';
 						switch ($type) {

@@ -757,7 +757,7 @@ class DB extends \PDO
 		try {
 			return (bool)$this->pdo->query('SELECT 1+1');
 		} catch (\PDOException $e) {
-			if ($restart == true) {
+			if ($restart === true) {
 				$this->connect([
 					'checkVersion' => false,
 					'createDb'     => false,
