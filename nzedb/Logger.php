@@ -469,6 +469,7 @@ class Logger
 			$this->setLogFile();
 		}
 
+		/** @scrutinizer ignore-unhandled */
 		@fwrite(/** @scrutinizer ignore-type */ $this->resource, $this->logMessage . PHP_EOL);
 	}
 
