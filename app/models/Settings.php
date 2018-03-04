@@ -29,7 +29,7 @@ use nzedb\utility\Text;
  *
 *@package app\models
  */
-class Settings extends \lithium\data\Model
+class Settings extends \app\extensions\data\Model
 {
 	const REGISTER_STATUS_OPEN = 0;
 
