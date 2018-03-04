@@ -121,4 +121,4 @@ filter:
         - "app/config/bootstrap/media.php"
         - "app/config/bootstrap/session.php"
         - "app/config/routes.php"
-    paths: "*"
+    paths: ["*"]
