@@ -17,24 +17,24 @@ build:
                 override: [php-scrutinizer-run]
 
         php70:
-          environment:
-              php:
-                  version: 7.0.27
-                  ini:
-                       memory_limit:     "4096M"
+            environment:
+                php:
+                    version: 7.0.27
+                    ini:
+                        memory_limit:     "4096M"
 
         php71:
-           environment:
-               php:
-                   version: 7.1
-                   ini:
+            environment:
+                php:
+                    version: 7.1
+                    ini:
                         memory_limit:     "4096M"
 
         php72:
-           environment:
-               php:
-                   version: 7.2
-                   ini:
+            environment:
+                php:
+                    version: 7.2
+                    ini:
                         memory_limit:     "4096M"
 
 checks:
