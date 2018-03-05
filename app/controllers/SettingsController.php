@@ -25,12 +25,12 @@ use lithium\action\DispatchException;
 class SettingsController extends \lithium\action\Controller {
 
 	public function index() {
-		$settings = Settings::all();
+		$settings = Settings::find('all');
 		return compact('settings');
 	}
 
 	public function view() {
-		$setting = Settings::first($this->request->id);
+		$setting = Settings::find('first', $this->request->id);
 		return compact('setting');
 	}
 
@@ -38,19 +38,19 @@ class SettingsController extends \lithium\action\Controller {
 		$setting = Settings::create();
 
 		if (($this->request->data) && $setting->save($this->request->data)) {
-			return $this->redirect(array('Settings::view', 'args' => array($setting->id)));
+			return $this->redirect(['Settings::view', 'args' => [$setting->id]]);
 		}
 		return compact('setting');
 	}
 
 	public function edit() {
-		$setting = Settings::find($this->request->id);
+		$setting = Settings::find('first', $this->request->id);
 
 		if (!$setting) {
 			return $this->redirect('Settings::index');
 		}
 		if (($this->request->data) && $setting->save($this->request->data)) {
-			return $this->redirect(array('Settings::view', 'args' => array($setting->id)));
+			return $this->redirect(['Settings::view', 'args' => [$setting->id]]);
 		}
 		return compact('setting');
 	}
