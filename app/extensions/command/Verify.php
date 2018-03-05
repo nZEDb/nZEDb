@@ -21,6 +21,8 @@ namespace app\extensions\command;
 use app\extensions\command\verify\Permissions;
 use app\extensions\command\verify\Tables;
 use lithium\core\ClassNotFoundException;
+use lithium\core\Libraries;
+use lithium\util\Inflector;
 
 
 /**
