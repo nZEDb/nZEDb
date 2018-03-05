@@ -48,6 +48,8 @@ use lithium\util\Inflector;
  */
 class Verify extends \app\extensions\console\Command
 {
+	public $template;
+
 	/**
 	 * Constructor.
 	 *
