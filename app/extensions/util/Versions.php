@@ -327,7 +327,7 @@ class Versions extends \lithium\core\Object
 
 	protected function _init()
 	{
-		return parent::_init();
+		parent::_init();
 	}
 
 	private function deprecated($methodOld, $methodUse)
