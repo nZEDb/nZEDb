@@ -111,8 +111,10 @@ class Git extends \lithium\core\Object
 			$result = $this->run($cmd);
 		} catch (\Exception $e) {
 			$message = explode("\n", $e->getMessage());
-			if ($message[0] === "fatal: Not a valid object name $gitObject") {
-				$result = false;
+			if (is_array($message)) {
+				if ($message[0] === "fatal: Not a valid object name $gitObject") {
+					$result = false;
+				}
 			} else {
 				throw new \Exception($message);
 			}
