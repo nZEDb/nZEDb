@@ -3,6 +3,7 @@ build:
         before:
        # Overwrites inferred commands
         override:
+            - 'composer global require hirak/prestissimo'
             - 'composer install --no-interaction --no-dev --prefer-source --no-scripts --ignore-platform-reqs'
 
     environment:
@@ -10,30 +11,26 @@ build:
 
     nodes:
         analysis:
+            environment:
+                php:
+                    version: 7.1
             project_setup:
                 override: true
             tests:
                 override: [php-scrutinizer-run]
 
-        php70:
-          environment:
-              php:
-                  version: 7.0.27
-                  ini:
-                       memory_limit:     "4096M"
-
         php71:
-           environment:
-               php:
-                   version: 7.1
-                   ini:
+            environment:
+                php:
+                    version: 7.1
+                    ini:
                         memory_limit:     "4096M"
 
         php72:
-           environment:
-               php:
-                   version: 7.2
-                   ini:
+            environment:
+                php:
+                    version: 7.2
+                    ini:
                         memory_limit:     "4096M"
 
 checks:
@@ -115,14 +112,16 @@ filter:
         - "libraries/"
         - "libs/"
     excluded_paths:
+        - ".github"
         - "docs/"
         - "resources/"
-        - "apps/config/bootstrap/action.php"
-        - "apps/config/bootstrap/cache.php"
-        - "apps/config/bootstrap/console.php"
-        - "apps/config/bootstrap/errors.php"
-        - "apps/config/bootstrap/g11n.php"
-        - "apps/config/bootstrap/logger.php"
-        - "apps/config/bootstrap/media.php"
-        - "apps/config/bootstrap/session.php"
-        - "apps/config/routes.php"
+        - "app/config/bootstrap/action.php"
+        - "app/config/bootstrap/cache.php"
+        - "app/config/bootstrap/console.php"
+        - "app/config/bootstrap/errors.php"
+        - "app/config/bootstrap/g11n.php"
+        - "app/config/bootstrap/logger.php"
+        - "app/config/bootstrap/media.php"
+        - "app/config/bootstrap/session.php"
+        - "app/config/routes.php"
+    paths: ["*"]

@@ -123,7 +123,7 @@ class TraktTv extends TV
 					$videoId = $this->getByTitle($release['cleanname'], parent::TYPE_TV, parent::SOURCE_TRAKT);
 
 					// Force local lookup only
-					if ($local == true) {
+					if ($local === true) {
 						$lookupSetting = false;
 					} else {
 						$lookupSetting = true;

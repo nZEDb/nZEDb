@@ -17,7 +17,7 @@ class Categorize extends Category
 	protected $categorizeForeign;
 
 	/**
-	 * @var bool
+	 * @var bool Indicates whether the WebDL category should be used or not.
 	 */
 	protected $catWebDL;
 
@@ -695,7 +695,7 @@ class Categorize extends Category
 
 			return true;
 		}
-		if ($this->catWebDL == false) {
+		if ($this->catWebDL === false) {
 			if (preg_match('/web[-._ ]dl|web-?rip/i', $this->releaseName)) {
 				$this->tmpCat = Category::TV_HD;
 
@@ -832,7 +832,7 @@ class Categorize extends Category
 
 			return true;
 		}
-		if ($this->catWebDL == false) {
+		if ($this->catWebDL === false) {
 			if (preg_match('/web[-._ ]dl|web-?rip/i', $this->releaseName)) {
 				$this->tmpCat = Category::MOVIE_HD;
 
@@ -985,7 +985,7 @@ class Categorize extends Category
 			return true;
 		}
 
-		if ($this->catWebDL == false) {
+		if ($this->catWebDL === false) {
 			if (preg_match('/web[-._ ]dl|web-?rip/i', $this->releaseName)) {
 				$this->tmpCat = Category::XXX_X264;
 				return true;

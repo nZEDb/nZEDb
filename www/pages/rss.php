@@ -117,5 +117,5 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 	} else {
 		$relData = $rss->getRss(explode(',', $userCat), $userNum, $userShow, $userAnidb, $uid, $userAirDate);
 	}
-	$rss->output($relData, $params, $outputXML, $offset, 'rss');
+	$rss->output($relData, $params, $offset, $outputXML, 'rss');
 }

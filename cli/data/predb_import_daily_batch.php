@@ -108,7 +108,7 @@ $total = 0;
 foreach ($data as $dir => $files) {
 	$total += count($files);
 }
-$total -= 1;
+$total--;
 
 $predb = new PreDb();
 

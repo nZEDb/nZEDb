@@ -121,7 +121,7 @@ switch ($function) {
 				$categoryID, $offset, $limit, '', $maxAge, $catExclusions, $groupName, $minSize
 			);
 		}
-		$api->output($relData, $params, $outputXML, $offset, 'api');
+		$api->output($relData, $params, $offset, $outputXML, 'api');
 		break;
 	// Search tv releases.
 	case 'tv':
@@ -177,7 +177,7 @@ switch ($function) {
 		);
 
 		$api->addLanguage($relData);
-		$api->output($relData, $params, $outputXML, $offset, 'api');
+		$api->output($relData, $params, $offset, $outputXML, 'api');
 		break;
 
 	// Search movie releases.
@@ -206,7 +206,7 @@ switch ($function) {
 		);
 
 		$api->addLanguage($relData);
-		$api->output($relData, $params, $outputXML, $offset, 'api');
+		$api->output($relData, $params, $offset, $outputXML, 'api');
 		break;
 
 	// Get NZB.
@@ -244,7 +244,7 @@ switch ($function) {
 		if ($data) {
 			$relData[] = $data;
 		}
-		$api->output($relData, $params, $outputXML, $offset, 'api');
+		$api->output($relData, $params, $offset, $outputXML, 'api');
 		break;
 
 	// Get an NFO file for an individual release.
@@ -276,7 +276,7 @@ switch ($function) {
 
 	// Capabilities request.
 	case 'c':
-		$api->output('', $params, $outputXML, $offset, 'caps');
+		$api->output('', $params, $offset, $outputXML, 'caps');
 		break;
 	// Register request.
 	case 'r':
@@ -313,6 +313,6 @@ switch ($function) {
 		$params['password'] = $password;
 		$params['token'] = $userData['rsstoken'];
 
-		$api->output('', $params, true, $offset, 'reg');
+		$api->output('', $params, $offset, true, 'reg');
 		break;
 }

@@ -157,15 +157,29 @@ $checks = array(
 		foreach ($paths as $path) {
 			$list = array_merge($list, Libraries::locate($path, null, array('recursive' => false)));
 		}
-		$list = array_filter($list, function($class) { return method_exists($class, 'enabled'); });
-		$map = array_combine($list, array_map(function($c) { return $c::enabled(); }, $list));
+		$list = array_filter($list, function($class) {
+		        return method_exists($class, 'enabled');
+		    }
+		);
+		$map = array_combine($list, array_map(function($c) {
+		        return $c::enabled();
+		    },
+            $list)
+        );
 
 		return $support('Database support', $map);
 	},
 	'cacheSupport' => function() use ($support) {
 		$list = Libraries::locate('adapter.storage.cache', null, array('recursive' => false));
-		$list = array_filter($list, function($class) { return method_exists($class, 'enabled'); });
-		$map = array_combine($list, array_map(function($c) { return $c::enabled(); }, $list));
+		$list = array_filter($list, function($class) {
+		        return method_exists($class, 'enabled');
+		    }
+		);
+		$map = array_combine($list, array_map(function($c) {
+				return $c::enabled();
+			},
+            $list)
+        );
 
 		return $support('Cache support', $map);
 	},

@@ -463,7 +463,8 @@ class Sharing
 				}
 			}
 			// Update once in a while in case the user cancels the script.
-			if ($total++ % 10 == 0) {
+			$total++;
+			if ($total % 10 == 0) {
 				$this->siteSettings['lastarticle'] = $currentArticle;
 				$this->pdo->queryExec(sprintf('UPDATE sharing SET last_article = %d', $currentArticle));
 			}

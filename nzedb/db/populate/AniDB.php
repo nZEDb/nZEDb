@@ -126,7 +126,7 @@ class AniDB
 	/**
 	 * Retrieves supplemental anime info from the AniDB API
 	 *
-	 * @return array|bool
+	 * @return array|false
 	 */
 	private function getAniDbAPI($anidbId)
 	{
@@ -289,11 +289,12 @@ class AniDB
 	/**
 	 * Inserts new anime info from AniDB to anidb table
 	 *
+	 * @param       $anidbId
 	 * @param array $AniDBInfoArray
 	 *
 	 * @return string
 	 */
-	private function insertAniDBInfoEps(array $AniDBInfoArray = [], $anidbId)
+	private function insertAniDBInfoEps($anidbId, array $AniDBInfoArray = [])
 	{
 		$this->pdo->queryInsert(
 			sprintf('
@@ -318,7 +319,7 @@ class AniDB
 			)
 		);
 		if (!empty($AniDBInfoArray['epsarr'])) {
-			$this->insertAniDBEpisodes($AniDBInfoArray['epsarr'], $anidbId);
+			$this->insertAniDBEpisodes($anidbId, $AniDBInfoArray['epsarr']);
 		}
 
 		return $AniDBInfoArray['picture'];
@@ -327,9 +328,10 @@ class AniDB
 	/**
 	 * Inserts new anime info from AniDB to anidb table
 	 *
+	 * @param       $anidbId
 	 * @param array $episodeArr
 	 */
-	private function insertAniDBEpisodes(array $episodeArr = [], $anidbId)
+	private function insertAniDBEpisodes($anidbId, array $episodeArr = [])
 	{
 		if (!empty($episodeArr)) {
 			foreach ($episodeArr as $episode) {
@@ -438,15 +440,17 @@ class AniDB
 					exit;
 				}
 
-				if ($AniDBAPIArray === false && $this->echooutput) {
-					ColorCLI::doEcho(
-						ColorCLI::info(
-							'Anime ID: ' . $anidb['anidbid'] . ' not available for update yet.'
-						),
-						true
-					);
+				if ($AniDBAPIArray === false) {
+					if ($this->echooutput) {
+						ColorCLI::doEcho(
+							ColorCLI::info(
+								'Anime ID: ' . $anidb['anidbid'] . ' not available for update yet.'
+							),
+							true
+						);
+					}
 				} else {
-					$this->updateAniChildTables($AniDBAPIArray, $anidb['anidbid']);
+					$this->updateAniChildTables($anidb['anidbid'], $AniDBAPIArray);
 					if (nZEDb_DEBUG) {
 						ColorCLI::doEcho(
 							ColorCLI::headerOver(
@@ -479,7 +483,7 @@ class AniDB
 					true
 				);
 			} else {
-				$this->updateAniChildTables($AniDBAPIArray, $anidbId);
+				$this->updateAniChildTables($anidbId, $AniDBAPIArray);
 				if (nZEDb_DEBUG) {
 					ColorCLI::doEcho(
 						ColorCLI::headerOver(
@@ -506,11 +510,12 @@ class AniDB
 	/**
 	 * Updates existing anime info in anidb info/episodes tables
 	 *
+	 * @param       $anidbId
 	 * @param array $AniDBInfoArray
 	 *
 	 * @return string
 	 */
-	private function updateAniDBInfoEps(array $AniDBInfoArray = [], $anidbId)
+	private function updateAniDBInfoEps($anidbId, array $AniDBInfoArray = [])
 	{
 		$this->pdo->queryExec(
 			sprintf('
@@ -535,7 +540,7 @@ class AniDB
 			)
 		);
 		if (!empty($AniDBInfoArray['epsarr'])) {
-			$this->insertAniDBEpisodes($AniDBInfoArray['epsarr'], $anidbId);
+			$this->insertAniDBEpisodes($anidbId, $AniDBInfoArray['epsarr']);
 		}
 
 		return $AniDBInfoArray['picture'];
@@ -544,10 +549,10 @@ class AniDB
 	/**
 	 * Directs flow for updating child AniDB tables
 	 *
-	 * @param array $AniDBInfoArray
 	 * @param       $anidbId
+	 * @param array $AniDBInfoArray
 	 */
-	private function updateAniChildTables(array $AniDBInfoArray = [], $anidbId)
+	private function updateAniChildTables($anidbId, array $AniDBInfoArray = [])
 	{
 		$check = $this->pdo->queryOneRow(
 			sprintf('
@@ -559,9 +564,9 @@ class AniDB
 		);
 
 		if ($check === false) {
-			$picture = $this->insertAniDBInfoEps($AniDBInfoArray, $anidbId);
+			$picture = $this->insertAniDBInfoEps($anidbId, $AniDBInfoArray);
 		} else {
-			$picture = $this->updateAniDBInfoEps($AniDBInfoArray, $anidbId);
+			$picture = $this->updateAniDBInfoEps($anidbId, $AniDBInfoArray);
 		}
 
 		if (!empty($picture) && !file_exists($this->imgSavePath . $anidbId . '.jpg')) {
