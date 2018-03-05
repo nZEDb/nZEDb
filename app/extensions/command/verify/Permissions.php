@@ -72,7 +72,7 @@ class Permissions extends \app\extensions\console\Command
 			}
 		}
 
-		if ($error) {
+		if ($error !== false) {
 			$this->primary("Fix the above errors and rerun the command.");
 		} else {
 			$this->primary("Congratulations, file permissions look good!");
