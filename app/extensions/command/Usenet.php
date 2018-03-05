@@ -63,7 +63,7 @@ class Usenet extends \app\extensions\console\Command
 
 		$this->usp = new NNTP(['Settings' => new DB()]);
 
-		$result = $this->usp->doConnect(Settings::value('..compressedheaders'));
+		$result = $this->usp->doConnect((bool)Settings::value('..compressedheaders'));
 		if ($result === true) {
 			$this->out("{:green}Connected to USP{:end}");
 		} else {
@@ -95,10 +95,10 @@ class Usenet extends \app\extensions\console\Command
 		if ($this->usp->isError($result) === false) {
 			file_put_contents($path . DS . 'headers.txt', $result . "\r\n");
 			if ($this->showHeader) {
-				$this->out("{:green}Headers{:end}");
-				$this->out( $result);
+				$this->out("{:green}Headers:{:end}");
+				$this->out(/** @scrutinizer ignore-type */ $result);
 			} else {
-				$this->out("{:green}Fetched headers{:end}");
+				$this->out("{:green}Fetched headers.{:end}");
 			}
 		} else {
 			$this->out("{:green}Damnit an error!!{:end}");
@@ -109,10 +109,10 @@ class Usenet extends \app\extensions\console\Command
 		if ($this->usp->isError($result) === false) {
 			file_put_contents($path . DS . 'body.txt', $result . "\r\n");
 			if ($this->showBody) {
-				$this->out("{:green}Body{:end}");
+				$this->out("{:green}Body:{:end}");
 				$this->out($result);
 			} else {
-				$this->out("{:green}Fetched body{:end}");
+				$this->out("{:green}Fetched body.{:end}");
 			}
 			file_put_contents($path . DS . 'body.decoded', $this->decodeBody($result));
 		} else {
