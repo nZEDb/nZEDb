@@ -20,7 +20,6 @@ namespace app\extensions\command;
 
 use app\extensions\util\Git;
 use app\extensions\util\Versions;
-use lithium\console\command\Help;
 use nzedb\db\DbUpdate;
 use Smarty;
 
@@ -75,6 +74,13 @@ class Update extends \app\extensions\console\Command
 		$this->nzedb();
 	}
 
+	/**
+	 * Update database tables/data by running patches.
+	 *
+	 * @return int|null		Error number on failure, otherwise null.
+	 *
+	 * @throws \Exception	Unknown failure.
+	 */
 	public function db()
 	{
 		// TODO Add check to determine if the indexer or other scripts are running. Hopefully
@@ -99,6 +105,8 @@ class Update extends \app\extensions\console\Command
 		} else {
 			$this->out("Up to date.", 'info');
 		}
+
+		return null;
 	}
 
 	public function git()
@@ -126,7 +134,7 @@ class Update extends \app\extensions\console\Command
 				return false;
 			} else {
 				$fail = $this->db();
-				if ($fail) {
+				if (is_integer($fail)) {
 					$this->out('Db updating failed!!', 'error');
 
 					return 1;
@@ -156,25 +164,6 @@ class Update extends \app\extensions\console\Command
 	public function predb()
 	{
 		$this->out('predb not available yet!', 'error');
-	}
-
-	public function run($command = null)
-	{
-		if (!$command || ($this->request->args() === null)) {
-			return $this->_help();
-		}
-
-		if (!$command) {
-			return $this->_help();
-		}
-
-		if ($this->_execute($command)) {
-			return true;
-		}
-
-		$this->error("{$command} could not be created.");
-
-		return false;
 	}
 
 	/**
@@ -207,25 +196,6 @@ class Update extends \app\extensions\console\Command
 	}
 
 	/**
-	 * Invokes the `Help` command.
-	 * The invoked Help command will take over request and response objects of
-	 * the originally invoked command. Thus the response of the Help command
-	 * becomes the response of the original one.
-	 *
-	 * @return boolean
-	 */
-	protected function _help()
-	{
-		$help = new Help([
-			'request'  => $this->request,
-			'response' => $this->response,
-			'classes'  => $this->_classes
-		]);
-
-		return $help->run(get_class($this));
-	}
-
-	/**
 	 * Class initializer. Parses template and sets up params that need to be filled.
 	 *
 	 * @return void
@@ -238,7 +208,7 @@ class Update extends \app\extensions\console\Command
 			$this->git =& $this->_config['git'];
 		}
 
-		if (file_exists(SELF::UPDATES_FILE)) {
+		if (file_exists(self::UPDATES_FILE)) {
 			$this->updates = json_decode(file_get_contents(UPDATES_FILE), true);
 		}
 	}
