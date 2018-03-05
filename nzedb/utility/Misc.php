@@ -28,17 +28,18 @@ class Misc
 	 * Checks all levels of the supplied path are readable and executable by current user.
 	 *
 	 * @todo Make this recursive with a switch to only check end point.
-	 * @param $path	*nix path to directory or file
+	 *
+	 * @param $dir *nix path to directory or file
 	 *
 	 * @return bool|string True is successful, otherwise the part of the path that failed testing.
 	 */
 	public static function canExecuteRead($path)
 	{
-		$paths = preg_split('#/#', $path);
+		$dirs = preg_split('#/#', $path);
 		$fullPath = DS;
-		foreach ($paths as $path) {
-			if ($path !== '') {
-				$fullPath .= $path . DS;
+		foreach ($dirs as $dir) {
+			if ($dir !== '') {
+				$fullPath .= $dir . DS;
 				if (!is_readable($fullPath) || !is_executable($fullPath)) {
 					return "The '$fullPath' directory must be readable and executable by all ." .
 					PHP_EOL;
@@ -171,7 +172,7 @@ class Misc
 	public static function getThemesList()
 	{
 		$themes = scandir(nZEDb_THEMES);
-		$themelist[] = 'None';
+		$themelist = ['None'];
 		foreach ($themes as $theme) {
 			if (strpos($theme, ".") === false &&
 				is_dir(nZEDb_THEMES . $theme) &&
@@ -238,7 +239,7 @@ class Misc
 			default:
 				$options['language'] = 'en';
 		}
-		$header[] = "Accept-Language: " . $options['language'];
+		$header = ["Accept-Language: " . $options['language']];
 		if (is_array($options['requestheaders'])) {
 			$header += $options['requestheaders'];
 		}
@@ -290,7 +291,7 @@ class Misc
 	 * Get raw html from site URL for scraping
 	 *
 	 * @param string $url
-	 * @param bool|string $cookie
+	 * @param false|string $cookie
 	 *
 	 * @return bool|string
 	 */
@@ -299,10 +300,12 @@ class Misc
 		$response = false;
 		$cookiejar = new CookieJar();
 		$client = new Client();
+
 		if ($cookie !== false) {
 			$cookieJar = $cookiejar->setCookie(SetCookie::fromString($cookie));
 			$client = new Client(['cookies' => $cookieJar]);
 		}
+
 		try {
 			$response = $client->get($url)->getBody()->getContents();
 		} catch (RequestException $e) {
@@ -479,9 +482,10 @@ class Misc
 			return false;
 		}*/
 
-		$string = '';
+		$string = false;
 		$gzFile = @gzopen($filePath, 'rb', 0);
-		if ($gzFile) {
+		if ($gzFile !== false) {
+			$string = '';
 			while (!gzeof($gzFile)) {
 				$temp = gzread($gzFile, 1024);
 				// Check for empty string.
@@ -494,7 +498,7 @@ class Misc
 			}
 			gzclose($gzFile);
 		}
-		return ($string === '' ? false : $string);
+		return $string;
 	}
 
 	/**
@@ -512,20 +516,16 @@ class Misc
 			$magicSwitch = empty($magicPath) ? '' : " -m $magicPath";
 			$output = self::runCmd('file' . $magicSwitch . ' -b "' . $path . '"');
 
-			if (is_array($output)) {
-				switch (count($output)) {
-					case 0:
-						$output = '';
-						break;
-					case 1:
-						$output = $output[0];
-						break;
-					default:
-						$output = implode(' ', $output);
-						break;
-				}
-			} else {
-				$output = '';
+			switch (count($output)) {
+				case 0:
+					$output = '';
+					break;
+				case 1:
+					$output = $output[0];
+					break;
+				default:
+					$output = implode(' ', $output);
+					break;
 			}
 		} else {
 			$fileInfo = empty($magicPath) ? finfo_open(FILEINFO_RAW) : finfo_open(FILEINFO_RAW, $magicPath);
@@ -556,6 +556,7 @@ class Misc
 
 		$output = [];
 		$status = 1;
+		/** @scrutinizer ignore-unhandled */
 		@exec($command, $output, $status);
 
 		if ($debug) {
@@ -585,8 +586,10 @@ class Misc
 			// The 'G' modifier is available since PHP 5.1.0
 			case 'g':
 				$val *= 1024;
+			// Multiply again for each that matches.
 			case 'm':
 				$val *= 1024;
+			// Multiply again for each that matches.
 			case 'k':
 				$val *= 1024;
 		}
@@ -794,14 +797,14 @@ class Misc
 		$body .= '</html>' . $CRLF;
 
 		if (defined('PHPMAILER_ENABLED') && PHPMAILER_ENABLED == true) {
-			$mail = new \PHPMailer;
+			$mail = new PHPMailer\PHPMailer\PHPMailer;
 		} else {
 			$mail = null;
 		}
 
 		// If the mailer couldn't instantiate there's a good chance the user has an incomplete update & we should fallback to php mail()
 		// @todo Log this failure.
-		if (!defined('PHPMAILER_ENABLED') || PHPMAILER_ENABLED !== true || !($mail instanceof \PHPMailer)) {
+		if (!defined('PHPMAILER_ENABLED') || PHPMAILER_ENABLED !== true || !($mail instanceof PHPMailer\PHPMailer\PHPMailer)) {
 			$headers = 'From: ' . $from . $CRLF;
 			$headers .= 'Reply-To: ' . $from . $CRLF;
 			$headers .= 'Return-Path: ' . $from . $CRLF;
@@ -828,7 +831,7 @@ class Misc
 				if ((!defined('PHPMAILER_SMTP_USER') || PHPMAILER_SMTP_USER === '') ||
 					(!defined('PHPMAILER_SMTP_PASSWORD') || PHPMAILER_SMTP_PASSWORD === '')
 				) {
-					throw new \phpmailerException(
+					throw new PHPMailer\PHPMailer\Exception(
 						'You opted to use SMTP and SMTP Auth but the PHPMAILER_SMTP_USER and/or PHPMAILER_SMTP_PASSWORD is/are not defined correctly. Please set them in www/settings.php'
 					);
 				}

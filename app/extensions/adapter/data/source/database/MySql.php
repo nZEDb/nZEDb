@@ -22,7 +22,7 @@ namespace app\extensions\adapter\data\source\database;
 class MySql extends \lithium\data\source\database\adapter\MySql
 {
 	/**
-	 * @var null Timezone of the session connection as set or retrieved by timezone().
+	 * @var string|null Timezone of the session connection as set or retrieved by timezone().
 	 */
 	protected $session_tz = null;
 
@@ -94,8 +94,9 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 	/**
 	 * Get/Set the timezone for the connection.
 	 *
-	 * @param null $value If null returns the current timezone for the connection. Otherwise it
-	 *                    attemps to set the timezone for the connection to the value supplied.
+	 * @param string|null $value If null returns the current timezone for the connection. Otherwise
+	 *                           it attemps to set the timezone for the connection to the value
+	 *                           supplied.
 	 *
 	 * @return bool|string TZ string of the connection if $value is null, otherwise a boolean
 	 *					   indicating if setting the timezone succeeded or failed.

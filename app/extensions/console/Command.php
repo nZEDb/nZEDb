@@ -33,20 +33,34 @@ class Command extends \lithium\console\Command
 		parent::__construct($config + $defaults);
 	}
 
-	public function info($text)
+	public function error($text, array $options = [])
 	{
 		if ($this->silent) {
 			return;
 		}
-		$this->out($text, 'info');
+		$options['style'] = 'error';
+
+		$this->out($text, $options);
 	}
 
-	public function primary($text)
+	public function info($text, array $options = [])
 	{
 		if ($this->silent) {
 			return;
 		}
-		$this->out($text, 'primary');
+		$options['style'] = 'info';
+
+		$this->out($text, $options);
+	}
+
+	public function primary($text, array $options = [])
+	{
+		if ($this->silent) {
+			return;
+		}
+		$options['style'] = 'primary';
+
+		$this->out($text, $options);
 	}
 }
 ?>

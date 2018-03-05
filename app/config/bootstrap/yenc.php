@@ -25,9 +25,9 @@ if (defined('nZEDb_INSTALLER') && nZEDb_INSTALLER !== false) {
 } else {
 	switch (true) {
 		case extension_loaded('yenc'):
-			if (method_exists('yenc\yEnc', 'version') &&
+			if (method_exists('\yenc\yEnc', 'version') &&
 				version_compare(
-					yenc\yEnc::version(),
+					\yenc\yEnc::version(),
 					'1.2.2',
 					'>='
 				)
@@ -40,10 +40,6 @@ if (defined('nZEDb_INSTALLER') && nZEDb_INSTALLER !== false) {
 			}
 		case extension_loaded('simple_php_yenc_decode'):
 			$adapter = 'SimplePhpYencDecode';
-			break;
-		case !empty(Settings::value('apps..yydecoderpath', true)) &&
-			(strpos(Settings::value('apps..yydecoderpath', true), 'simple_php_yenc_decode') === false):
-			$adapter = 'Ydecode';
 			break;
 		default:
 			$adapter = 'Php';

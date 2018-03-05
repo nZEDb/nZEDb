@@ -41,7 +41,7 @@ class AEBN extends AdultMovies
 	/**
 	 * Returned results in all methods except search/geturl
 	 *
-	 * @var array
+	 * @var array|false
 	 */
 	protected $_res = [
 		'backcover'   => [],

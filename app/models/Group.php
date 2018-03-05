@@ -32,9 +32,10 @@ class Group extends \lithium\data\Model
 		);
 
 		if ($group === null && $options['create'] === true) {
-			$group = self::createMissing($name,
+			$group = static::createMissing(
 				[
-					'description'	=> $options['description']
+					'description'	=> $options['description'],
+					'name'			=> $name,
 				]
 			);
 		}
@@ -55,7 +56,7 @@ class Group extends \lithium\data\Model
 			throw new \InvalidArgumentException("");
 		}
 
-		$group = self::create($data);
+		$group = static::create($data);
 
 		$group->save();
 

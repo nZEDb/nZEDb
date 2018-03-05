@@ -506,7 +506,7 @@ class IRCScraper extends IRCClient
 	protected function _resetPreVariables()
 	{
 		$this->_nuked = false;
-		$this->dbEntry = [];
+		$this->dbEntry = null;
 		$this->_curPre =
 			[
 				'title'    => '',

@@ -24,7 +24,7 @@ class AniDB
 	public $imgSavePath;
 
 	/**
-	 * @var Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 

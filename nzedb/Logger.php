@@ -93,7 +93,7 @@ class Logger
 	private $timeStart;
 
 	/**
-	 * @var resource|null Resource for log file.
+	 * @var resource|null|false Resource for log file.
 	 * @access private
 	 */
 	private $resource = null;
@@ -469,7 +469,8 @@ class Logger
 			$this->setLogFile();
 		}
 
-		@fwrite($this->resource, $this->logMessage . PHP_EOL);
+		/** @scrutinizer ignore-unhandled */
+		@fwrite(/** @scrutinizer ignore-type */ $this->resource, $this->logMessage . PHP_EOL);
 	}
 
 	/**

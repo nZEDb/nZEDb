@@ -130,7 +130,7 @@ class Usenet extends \app\extensions\console\Command
 
 	public function run()
 	{
-		if (!$this->request->args()) {
+		if ($this->request->args() === null) {
 			return $this->_help();
 		}
 

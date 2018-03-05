@@ -389,7 +389,7 @@ class AmazonProductAPI
 	 * @param        $private_key
 	 * @param string $associate_tag
 	 *
-	 * @return bool|SimpleXMLElement|string
+	 * @return SimpleXMLElement|false|string
 	 */
 	private function aws_signed_request($region, $params, $public_key, $private_key, $associate_tag = "")
 	{

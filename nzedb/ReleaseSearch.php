@@ -10,7 +10,7 @@ class ReleaseSearch
 	const SPHINX   = 2;
 
 	/***
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 
