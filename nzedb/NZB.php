@@ -111,7 +111,7 @@ class NZB
 	/**
 	 * Default constructor.
 	 *
-	 * @param Settings $pdo
+	 * @param \nzedb\db\DB $pdo
 	 *
 	 * @access public
 	 */
