@@ -1,7 +1,7 @@
 <?php
 
 if (!isset($argv[1]) || !isset($argv[2])) {
-	exit (
+	exit(
 		'Argument 1 is a input string. ie PRE name.' . PHP_EOL .
 		'Argument 2 is a expected hash or encoding. ie MD5 string. Passing true on Argument 3 ignores this.' . PHP_EOL .
 		'Argument 3 (optional) False, exit on first match. True, write all matches to text file in current path.' . PHP_EOL .
@@ -12,24 +12,26 @@ if (!isset($argv[1]) || !isset($argv[2])) {
 
 /**
  * Test various hashing/encoding/etc on a string.
- * Class hash_algorithms
  */
 class HashAlgorithms
 {
 	/**
 	 * The input string.
+	 *
 	 * @var string
 	 */
 	protected $_inputString;
 
 	/**
 	 * The string we are expecting to get.
+	 *
 	 * @var array
 	 */
 	protected $_expectedString;
 
 	/**
 	 * Write results to file?
+	 *
 	 * @var bool
 	 */
 	protected $_writeToFile;
@@ -37,19 +39,19 @@ class HashAlgorithms
 	/**
 	 * @param string $inputString
 	 * @param string $expectedString
-	 * @param bool $writeToFile
+	 * @param bool   $writeToFile
 	 *
 	 * @access public
 	 */
 	public function __construct($inputString, $expectedString, $writeToFile)
 	{
 		$this->_inputString = $inputString;
-		$this->_expectedString = array(
+		$this->_expectedString = [
 			$expectedString,
 			strtolower($expectedString),
 			strtoupper($expectedString),
-			strrev($expectedString)
-		);
+			strrev($expectedString),
+		];
 		$this->_writeToFile = $writeToFile;
 		$this->_testStrings();
 	}
@@ -68,7 +70,7 @@ class HashAlgorithms
 
 		$firstArray = $this->_hashesToArray($this->_inputString);
 
-		$secondArray = array();
+		$secondArray = [];
 		foreach ($firstArray as $key => $value) {
 			if (!$this->_writeToFile) {
 				if (in_array($value, $this->_expectedString)) {
@@ -89,7 +91,7 @@ class HashAlgorithms
 			$secondArray[$key] = $this->_hashesToArray($value);
 		}
 
-		$thirdArray = array();
+		$thirdArray = [];
 		foreach ($secondArray as $key => $value) {
 			foreach ($value as $key2 => $value2) {
 				if (!$this->_writeToFile) {
@@ -141,8 +143,10 @@ class HashAlgorithms
 							);
 						}
 					} else {
-						file_put_contents('hash_matches.txt',
-							$key . ' => ' . $key2 . ' => ' . $key3 . "\t\t" . $value3 . PHP_EOL, FILE_APPEND
+						file_put_contents(
+							'hash_matches.txt',
+							$key . ' => ' . $key2 . ' => ' . $key3 . "\t\t" . $value3 . PHP_EOL,
+							FILE_APPEND
 						);
 					}
 				}
@@ -159,7 +163,7 @@ class HashAlgorithms
 	 */
 	protected function _hashesToArray($string)
 	{
-		$strings = array(
+		$strings = [
 			'input'         => $string,
 			'lower'         => strtolower($string),
 			'lower_reverse' => strtolower(strrev($string)),
@@ -168,10 +172,10 @@ class HashAlgorithms
 			'reverse'        => strrev($string),
 			'reverse_upper' => strrev(strtoupper($string)),
 			'reverse_lower' => strrev(strtolower($string)),
-		);
+		];
 
-		$hashTypes = array('md5', 'md4', 'sha1', 'sha256', 'sha512');
-		$tmpArray = array();
+		$hashTypes = ['md5', 'md4', 'sha1', 'sha256', 'sha512'];
+		$tmpArray = [];
 		foreach ($hashTypes as $hash) {
 			foreach ($strings as $key => $value) {
 				$tmpArray[$hash . '_' . $key] = hash($hash, $value, false);
