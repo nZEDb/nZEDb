@@ -52,7 +52,7 @@ if ($user !== false) {
 	}
 
 	if ($result === false || $hash === false) {
-		echo $pdo->log->error('An error occured during update attempt.' . PHP_EOL . $pdo->errorInfo());
+		echo $pdo->log->error('An error occured during update attempt.' . PHP_EOL . implode("\n", $pdo->errorInfo()));
 	} else {
 		echo $pdo->log->headerOver("Updated {$user['username']}'s password hash to: ") . $pdo->log->primary("$hash");
 	}
