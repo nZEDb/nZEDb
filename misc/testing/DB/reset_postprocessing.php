@@ -259,7 +259,7 @@ if (isset($argv[1]) && ($argv[1] === "books" || $argv[1] === "all")) {
 	} else {
 		echo $pdo->log->header("Resetting all failed Book postprocessing");
 		$where = ' WHERE bookinfo_id IN (-2, 0) AND categories_id BETWEEN ' . Category::BOOKS_ROOT .
-				' AND ' . Category::BOOKS_OTHER;
+				' AND ' . Category::BOOKS_UNKNOWN;
 	}
 
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
