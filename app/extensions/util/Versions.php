@@ -13,6 +13,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2016 nZEDb
  */
@@ -28,11 +29,13 @@ class Versions extends \lithium\core\Object
 	 * These constants are bitwise for checking what has changed.
 	 */
 	const UPDATED_GIT_TAG		= 1;
+
 	const UPDATED_SQL_DB_PATCH	= 2;
+
 	const UPDATED_SQL_FILE_LAST	= 4;
 
 	/**
-	 * @var integer Bitwise mask of elements that have been changed.
+	 * @var int Bitwise mask of elements that have been changed.
 	 */
 	protected $changes = 0;
 
@@ -68,7 +71,9 @@ class Versions extends \lithium\core\Object
 
 	/**
 	 * Checks the git's latest version tag against the XML's stored value. Version should be
-	 * Major.Minor.Revision[.fix][-dev|-RCx]
+	 * Major.Minor.Revision[.fix][-dev|-RCx].
+	 *
+	 * @param mixed $update
 	 *
 	 * @return string|false version string if matched or false.
 	 */
@@ -80,8 +85,11 @@ class Versions extends \lithium\core\Object
 		if ($result !== false) {
 			if (!$this->git->isStable($this->git->getBranch())) {
 				$this->loadXMLFile();
-				$result = preg_match(Misc::VERSION_REGEX, $this->versions->git->tag->__toString(),
-					$matches) ? $matches['digits'] : false;
+				$result = preg_match(
+					Misc::VERSION_REGEX,
+					$this->versions->git->tag->__toString(),
+					$matches
+				) ? $matches['digits'] : false;
 				if ($result !== false) {
 					if (version_compare($matches['digits'], '0.0.0', '!=')) {
 						$this->versions->git->tag = '0.0.0-dev';
@@ -132,9 +140,9 @@ class Versions extends \lithium\core\Object
 	/**
 	 * Checks the database sqlpatch setting against the XML's stored value.
 	 *
-	 * @param boolean $verbose
+	 * @param bool $verbose
 	 *
-	 * @return boolean|string The new database sqlpatch version, or false.
+	 * @return string|false The new database sqlpatch version, or false on failure.
 	 */
 	public function checkSQLDb($verbose = true)
 	{
@@ -164,11 +172,6 @@ class Versions extends \lithium\core\Object
 			$this->versions->sql->file = $lastFile;
 			$this->changes |= self::UPDATED_SQL_FILE_LAST;
 		}
-/*
-		if ($this->versions->sql->file->__toString() != $lastFile) {
-			$this->versions->sql->file = $lastFile;
-			$this->changes |= self::UPDATED_SQL_DB_PATCH;
-		}*/
 	}
 
 	public function getGitBranch()
@@ -242,7 +245,7 @@ class Versions extends \lithium\core\Object
 	/**
 	 * Check whether the XML has been changed by one of the methods here.
 	 *
-	 * @return boolean True if the XML has been changed.
+	 * @return bool True if the XML has been changed.
 	 */
 	public function hasChanged()
 	{
@@ -254,18 +257,18 @@ class Versions extends \lithium\core\Object
 		if ($this->hasChanged()) {
 			if ($verbose === true && $this->changes > 0) {
 				if ($this->isChanged(self::UPDATED_GIT_TAG)) {
-					echo "Updated git tag version to " . $this->versions->git->tag . PHP_EOL;
+					echo 'Updated git tag version to ' . $this->versions->git->tag . PHP_EOL;
 				}
 
 				if ($this->isChanged(self::UPDATED_SQL_DB_PATCH)) {
-					echo "Updated Db SQL revision to " . $this->versions->sql->db . PHP_EOL;
+					echo 'Updated Db SQL revision to ' . $this->versions->sql->db . PHP_EOL;
 				}
 
 				if ($this->isChanged(self::UPDATED_SQL_FILE_LAST)) {
-					echo "Updated latest SQL file to " . $this->versions->sql->file . PHP_EOL;
+					echo 'Updated latest SQL file to ' . $this->versions->sql->file . PHP_EOL;
 				}
-			} else if ($this->changes == 0) {
-				echo "Version file already up to date." . PHP_EOL;
+			} elseif ($this->changes == 0) {
+				echo 'Version file already up to date.' . PHP_EOL;
 			}
 			$this->xml->asXML($this->_config['path']);
 			$this->changes = 0;
@@ -279,14 +282,13 @@ class Versions extends \lithium\core\Object
 
 	protected function initialiseGit()
 	{
-
 		if ($this->_config['git'] instanceof \app\extensions\util\Git) {
 			$this->git =& $this->_config['git'];
-		} else if (!($this->git instanceof \app\extensions\util\Git)) {
+		} elseif (!($this->git instanceof \app\extensions\util\Git)) {
 			try {
 				$this->git = new \app\extensions\util\Git();
 			} catch (\Exception $e) {
-				throw new ConfigException("Unable to initialise Git object!");
+				throw new ConfigException('Unable to initialise Git object!');
 			}
 		}
 	}
@@ -332,7 +334,9 @@ class Versions extends \lithium\core\Object
 
 	private function deprecated($methodOld, $methodUse)
 	{
-		trigger_error("This method ($methodOld) is deprecated. Please use '$methodUse' instead.",
-			E_USER_NOTICE);
+		trigger_error(
+			"This method ($methodOld) is deprecated. Please use '$methodUse' instead.",
+			E_USER_NOTICE
+		);
 	}
 }
