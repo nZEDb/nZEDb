@@ -110,7 +110,7 @@ class Usenet extends \app\extensions\console\Command
 			file_put_contents($path . DS . 'body.txt', $result . "\r\n");
 			if ($this->showBody) {
 				$this->out("{:green}Body:{:end}");
-				$this->out($result);
+				$this->out(/** @scrutinizer ignore-type */ $result);
 			} else {
 				$this->out("{:green}Fetched body.{:end}");
 			}
