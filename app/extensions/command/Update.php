@@ -40,7 +40,7 @@ class Update extends \app\extensions\console\Command
 	const UPDATES_FILE = nZEDb_CONFIGS . 'updates.json';
 
 	/**
-	 * @var \app\extensions\util\Git object.
+	 * @var \app\extensions\util\Git|null
 	 */
 	protected $git;
 
@@ -50,8 +50,6 @@ class Update extends \app\extensions\console\Command
 	protected $updates = null;
 
 	private $gitBranch;
-
-	private $gitTag;
 
 	/**
 	 * Constructor.
