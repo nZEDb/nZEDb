@@ -55,12 +55,12 @@ function determineMovieCategory($name)
 	}
 
 	// Hack to catch 1080 named releases that didnt reveal their encoding.
-	if (strrpos($name, '1080') != false) {
+	if (strrpos($name, '1080') !== false) {
 		return Category::MOVIE_HD;
 	}
 
 	// Hack to catch 720 named releases that didnt reveal their encoding.
-	if (strrpos($name, '720') != false) {
+	if (strrpos($name, '720') !== false) {
 		return Category::MOVIE_HD;
 	}
 
