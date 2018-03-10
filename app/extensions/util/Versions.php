@@ -275,7 +275,7 @@ class Versions extends \lithium\core\Object
 		}
 	}
 
-	protected function error($message)
+	protected function error(/** @scrutinizer ignore-unused */ $message)
 	{
 		// TODO handle console error message.
 	}
