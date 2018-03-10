@@ -35,7 +35,7 @@ if (isset($argv[1]) && $argv[1] === "all") {
 		echo $pdo->log->header("Resetting all postprocessing");
 		$qry = $pdo->queryDirect("SELECT id FROM releases");
 		$affected = 0;
-		if ($qry instanceof \Traversable) {
+		if ($qry instanceof \PDOStatement) {
 			$total = $qry->rowCount();
 			foreach ($qry as $releases) {
 				$pdo->queryExec(
