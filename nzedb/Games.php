@@ -483,7 +483,7 @@ class Games
 	 *
 	 * @param $gameInfo
 	 *
-	 * @return bool
+	 * @return int|false
 	 * @throws \RuntimeException
 	 * @throws \InvalidArgumentException
 	 */
