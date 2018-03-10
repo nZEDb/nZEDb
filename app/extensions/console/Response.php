@@ -340,7 +340,7 @@ class Response extends \lithium\console\Response
 
 	public function getColourCode($fgColour, $bgColour = null)
 	{
-		$bgColour = empty($bg) && isset(self::$coloursBackground[$bgColour]) ?
+		$bgColour = isset(self::$coloursBackground[$bgColour]) ?
 			";48;5;" . self::$colours256[$bgColour] : '';
 		return "\033[38;5;" . self::$colours256[$fgColour] . $bgColour . "m";
 	}
