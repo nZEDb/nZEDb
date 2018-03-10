@@ -43,7 +43,7 @@ function run_query($query, $test)
 
 $path = nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-ddl.sql';
 $handle = fopen($path, "r");
-if ($handle) {
+if ($handle !== false) {
 	while (($line = fgets($handle)) !== false) {
 		if (preg_match('/(?P<statement>CREATE UNIQUE INDEX)\s+(?P<index>[\w-]+)\s+ON\s+(?P<table>[\w-]+)\s*\((?P<column>[\w-]+(?:\s*\((?P<size>\d+)\))?)\);/i', $line, $match)) {
 			$columns = explode(',', $match['column']);
