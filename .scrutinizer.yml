@@ -4,7 +4,7 @@ build:
        # Overwrites inferred commands
         override:
             - 'composer global require hirak/prestissimo'
-            - 'composer install --no-interaction --no-dev --prefer-source --no-scripts --ignore-platform-reqs'
+            - 'composer install --no-interaction --prefer-source --no-scripts --ignore-platform-reqs'
 
     environment:
         memcached:            true
