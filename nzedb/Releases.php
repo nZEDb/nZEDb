@@ -604,6 +604,8 @@ class Releases
 	 * @param array        $identifiers ['g' => Release GUID(mandatory), 'id => ReleaseID(optional, pass false)]
 	 * @param NZB          $nzb
 	 * @param ReleaseImage $releaseImage
+	 *
+	 * @return boolean
 	 */
 	public function deleteSingle($identifiers, $nzb, $releaseImage)
 	{
@@ -632,7 +634,7 @@ class Releases
 		$query->bindParam(':is_numeric', $param1, \PDO::PARAM_BOOL);
 		$query->bindParam(':identifier', $param2);
 
-		$query->execute();
+		return $query->execute();
 	}
 
 	/**
