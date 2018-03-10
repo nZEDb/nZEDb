@@ -8,7 +8,7 @@ use nzedb\db\DB;
 $pdo = new DB();
 
 if (isset($argv[1]) && $argv[1] === "true") {
-	getOddGames($pdo->log);
+	getOddGames();
 } else {
 	exit($pdo->log->error("\nThis script attempts to recategorize 150 games each run in 0day and ISO that have a match on giantbomb.\n"
 					. "php $argv[0] true       ...:recategorize 0day/ISO games.\n"));
