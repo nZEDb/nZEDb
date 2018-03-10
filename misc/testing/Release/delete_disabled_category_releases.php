@@ -19,7 +19,7 @@ if (isset($argv[1]) && $argv[1] == "true") {
 	$releaseImage = new ReleaseImage($pdo);
 	$catlist = $category->getDisabledIDs();
 	$relsdeleted = 0;
-	if (count($catlist > 0)) {
+	if (count($catlist) > 0) {
 		foreach ($catlist as $cat) {
 			$rels = $pdo->query(sprintf("SELECT id, guid FROM releases WHERE categories_id = %d", $cat['id']));
 			if (count($rels)) {
