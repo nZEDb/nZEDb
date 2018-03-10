@@ -131,7 +131,7 @@ $groups = $db->queryDirect('SELECT name FROM groups WHERE active = 1');
 
 $activeGroups = [];
 
-if ($groups instanceof \Traversable) {
+if ($groups instanceof \PDOStatement) {
 	foreach ($groups as $group) {
 		if (isset($groupList[$group['name']])) {
 			$activeGroups[$group['name']] = $groupList[$group['name']];
