@@ -212,7 +212,7 @@ class PreDb
 				}
 			}
 		}
-		if ($echo == 1) {
+		if ($echo === true) {
 			echo $this->pdo->log->header("\n" . $updated . " releases have had their names changed out of: " . number_format($checked) . " files.");
 		} else {
 			echo $this->pdo->log->header("\n" . $updated . " releases could have their names changed. " . number_format($checked) . " files were checked.");
