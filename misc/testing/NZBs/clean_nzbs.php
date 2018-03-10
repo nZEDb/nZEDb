@@ -61,7 +61,7 @@ echo $pdo->log->header("Checked / releases deleted\n");
 $checked = $deleted = 0;
 
 $res = $pdo->queryDirect('SELECT id, guid, nzbstatus FROM releases');
-if ($res instanceof \Traversable) {
+if ($res instanceof \PDOStatement) {
 	foreach ($res as $row) {
 		$nzbpath = $nzb->getNZBPath($row["guid"]);
 		if (!is_file($nzbpath)) {
