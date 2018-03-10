@@ -49,7 +49,7 @@ function reCategorize($argv)
 		echo $pdo->log->header("Categorizing all releases using searchname. This can take a while, be patient.");
 	}
 	$timestart = TIME();
-	if (isset($argv[1]) && (is_numeric($argv[1]) || preg_match('/\([\d, ]+\)/', $argv[1])) || $argv[1] === 'misc') {
+	if (isset($argv[1]) && (is_numeric($argv[1] || preg_match('/\([\d, ]+\)/', $argv[1])) || $argv[1] === 'misc')) {
 		$chgcount = categorizeRelease(str_replace(" AND", "WHERE", $where), $update, true);
 	} else {
 		$chgcount = categorizeRelease('', $update, true);
