@@ -13,12 +13,11 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2016 nZEDb
  */
-
 namespace app\extensions\util;
-
 
 class Yenc extends \lithium\core\Adaptable
 {
@@ -26,6 +25,7 @@ class Yenc extends \lithium\core\Adaptable
 	 * `Libraries::locate()`-compatible path to adapter for this class.
 	 *
 	 * @see lithium\core\Libraries::locate()
+	 *
 	 * @var string Dot-delimited path.
 	 */
 	protected static $_adapters = 'adapter.extensions.util.yenc';
@@ -38,12 +38,12 @@ class Yenc extends \lithium\core\Adaptable
 	protected static $_configurations = [];
 
 	/**
-	 * @param       $text	 yEncoded text to decode back to an 8 bit form.
+	 * @param       $text    yEncoded text to decode back to an 8 bit form.
 	 * @param array $options Options needed for method. Mainly:
-	 *						 - 'name' of the configuration to use.
-	 *                       * 'file' whether to create the file or just return the string.
+	 *                       - 'name' of the configuration to use.
+	 *                       - 'file' whether to create the file or just return the string.
 	 *
-	 * @return string		 8 bit decoded version of $text.
+	 * @return string 8 bit decoded version of $text.
 	 */
 	public static function decode(&$text, array $options = [])
 	{
@@ -65,12 +65,12 @@ class Yenc extends \lithium\core\Adaptable
 	}
 
 	/**
-	 * @param binary  $data     8 bit data to convert to yEncoded text.
-	 * @param string  $filename Name of file to recreate as.
-	 * @param int     $line     Maximum number of characters in each line.
-	 * @param boolean $crc32    Whether to add CRC checksum to yend line. This is recommended.
-	 * @param array $options    Options needed for method. Mainly the 'name' of the configuration
-	 *                          to use.
+	 * @param        $data     8 bit data to convert to yEncoded text.
+	 * @param string $filename Name of file to recreate as.
+	 * @param int    $line     Maximum number of characters in each line.
+	 * @param bool   $crc32    Whether to add CRC checksum to yend line. This is recommended.
+	 * @param array  $options  Options needed for method. Mainly the 'name' of the configuration
+	 *                         to use.
 	 *
 	 * @return string|\Exception The yEncoded version of $data.
 	 */
