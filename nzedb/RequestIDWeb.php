@@ -178,7 +178,7 @@ class RequestIDWeb extends RequestID
 
 						// Buffer groupID queries.
 						$this->_release['groupname'] = $requestArray[(int)$result['ident']]['group'];
-						if (isset($groupIDarray[$this->_release['groupname']])) {
+						if (isset($groupIDArray[$this->_release['groupname']])) {
 							$this->_release['groups_id'] = $groupIDArray[$this->_release['groupname']];
 						} else {
 							$this->_release['groups_id'] = $this->groups->getIDByName($this->_release['groupname']);
