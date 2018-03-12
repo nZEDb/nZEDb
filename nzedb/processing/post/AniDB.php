@@ -25,7 +25,7 @@ class AniDB
 	public $padb;
 
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 

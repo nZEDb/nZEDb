@@ -16,7 +16,7 @@ class Nfo
 	/**
 	 * Instance of class DB
 	 *
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 * @access public
 	 */
 	public $pdo;

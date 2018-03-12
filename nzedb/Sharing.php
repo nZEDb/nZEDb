@@ -45,7 +45,7 @@ class Sharing
 	 */
 
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 * @access protected
 	 */
 	protected $pdo;

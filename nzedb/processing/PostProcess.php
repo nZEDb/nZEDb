@@ -27,7 +27,7 @@ use nzedb\utility;
 class PostProcess
 {
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 

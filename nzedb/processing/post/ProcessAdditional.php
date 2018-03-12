@@ -28,7 +28,7 @@ class ProcessAdditional
 	const maxCompressedFilesToCheck = 20;
 
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 

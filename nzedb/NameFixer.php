@@ -100,7 +100,7 @@ class NameFixer
 	protected $fullall;
 
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 

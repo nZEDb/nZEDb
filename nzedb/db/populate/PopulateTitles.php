@@ -26,7 +26,7 @@ use nzedb\utility\Misc;
 class PopulateTitles
 {
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 

@@ -13,7 +13,7 @@ class Genres
 	const STATUS_DISABLED = 1;
 
 	/**
-	 * @var \nzedb\db\Settings;
+	 * @var \nzedb\db\DB;
 	 */
 	public $pdo;
 

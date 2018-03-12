@@ -1093,7 +1093,7 @@ class Forking extends \fork_daemon
 	private $safeBackfillGroup = '';
 
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 

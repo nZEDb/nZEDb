@@ -20,7 +20,7 @@ Class RSS extends Capabilities
 	public $releases;
 
 	/** Settings class
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 

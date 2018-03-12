@@ -46,7 +46,7 @@ class Games
 	public $maxHitRequest;
 
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 

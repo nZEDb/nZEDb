@@ -6,7 +6,7 @@ use nzedb\db\DB;
 class Regexes
 {
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 

@@ -11,7 +11,7 @@ use nzedb\db\DB;
 class ReleaseFiles
 {
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	protected $pdo;
 
@@ -21,7 +21,7 @@ class ReleaseFiles
 	public $sphinxSearch;
 
 	/**
-	 * @param \nzedb\db\Settings $settings
+	 * @param \nzedb\db\DB $settings
 	 */
 	public function __construct($settings = null)
 	{

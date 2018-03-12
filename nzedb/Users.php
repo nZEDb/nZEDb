@@ -39,7 +39,7 @@ class Users
 	const QUEUE_NZBGET  = 2;
 
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 

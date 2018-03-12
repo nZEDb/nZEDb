@@ -32,7 +32,7 @@ abstract class RequestID
 	protected $category;
 
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	protected $pdo;
 

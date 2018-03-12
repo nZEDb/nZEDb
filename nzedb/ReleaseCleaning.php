@@ -35,7 +35,7 @@ class ReleaseCleaning
 	public $groupName = '';
 
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 
@@ -55,7 +55,7 @@ class ReleaseCleaning
 	protected $_regexes;
 
 	/**
-	 * @param \nzedb\db\Settings $settings
+	 * @param \nzedb\db\DB $settings
 	 */
 	public function __construct($settings = null)
 	{

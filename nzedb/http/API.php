@@ -33,7 +33,7 @@ use nzedb\utility\Misc;
 class API extends Capabilities {
 
 	/** Settings class
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 

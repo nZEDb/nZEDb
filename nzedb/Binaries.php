@@ -80,7 +80,7 @@ class Binaries
 	protected $_partRepair;
 
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	protected $_pdo;
 

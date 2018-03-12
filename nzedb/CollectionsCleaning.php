@@ -73,7 +73,7 @@ class CollectionsCleaning
 	public $subject = '';
 
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 

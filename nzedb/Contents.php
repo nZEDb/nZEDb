@@ -10,7 +10,7 @@ class Contents
 	const TYPEINDEX = 3;
 
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 

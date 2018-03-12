@@ -33,7 +33,7 @@ class DbUpdate
 	public $backedup;
 
 	/**
-	 * @var \nzedb\db\Settings    Instance variable for DB object.
+	 * @var \nzedb\db\DB    Instance variable for DB object.
 	 */
 	public $pdo;
 

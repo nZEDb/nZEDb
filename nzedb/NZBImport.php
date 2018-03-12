@@ -13,7 +13,7 @@ use nzedb\Groups;
 class NZBImport
 {
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 * @access protected
 	 */
 	protected $pdo;

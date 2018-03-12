@@ -11,7 +11,7 @@ use nzedb\db\DB;
 class UserSeries
 {
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 
