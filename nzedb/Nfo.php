@@ -343,7 +343,7 @@ class Nfo
 						$groupIDQuery
 					)
 				);
-				if ($nfoStats instanceof \Traversable) {
+				if ($nfoStats instanceof \PDOStatement) {
 					$outString = PHP_EOL . 'Available to process';
 					foreach ($nfoStats as $row) {
 						$outString .= ', ' . $row['status'] . ' = ' . number_format($row['count']);
@@ -419,7 +419,7 @@ class Nfo
 			)
 		);
 
-		if ($releases instanceof \Traversable) {
+		if ($releases instanceof \PDOStatement) {
 			foreach ($releases as $release) {
 				// remove any release_nfos for failed
 				$this->pdo->queryExec(sprintf('

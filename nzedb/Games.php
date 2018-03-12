@@ -167,7 +167,7 @@ class Games
 			LIMIT 20"
 		);
 
-		if ($results instanceof \Traversable) {
+		if ($results instanceof \PDOStatement) {
 			$bestMatchPct = 0;
 			foreach ($results as $result) {
 				// If we have an exact string match set best match and break out
@@ -781,7 +781,7 @@ class Games
 			)
 		);
 
-		if ($res instanceof \Traversable && $res->rowCount() > 0) {
+		if ($res instanceof \PDOStatement && $res->rowCount() > 0) {
 			if ($this->echoOutput) {
 				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $res->rowCount() . ' games release(s).'));
 			}

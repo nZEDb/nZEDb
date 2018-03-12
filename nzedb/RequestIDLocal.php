@@ -68,8 +68,10 @@ class RequestIDLocal extends RequestID
 	protected function _processReleases()
 	{
 		$renamed = $checked = 0;
-		if ($this->_releases instanceof \Traversable) {
-			foreach ($this->_releases as $this->_release) {
+		if ($this->_releases instanceof \PDOStatement) {
+			/* @var $releases \PDOStatement[] */
+			$releases = &$this->_releases;
+			foreach ($releases as $this->_release) {
 				$this->_requestID = $this->_siftReqId();
 
 				// Do a local lookup using multiple possible methods
@@ -114,8 +116,8 @@ class RequestIDLocal extends RequestID
 			)
 		);
 
-		if ($check instanceof \Traversable) {
-			if ($check->rowCount() == 1) {
+		if ($check instanceof \PDOStatement) {
+			if ($check->rowCount() === 1) {
 				foreach ($check as $row) {
 					if (preg_match('/s\d+/i', $row['title']) && !preg_match('/s\d+e\d+/i', $row['title'])) {
 						return false;

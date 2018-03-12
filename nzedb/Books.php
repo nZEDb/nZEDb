@@ -415,7 +415,7 @@ class Books
 	 */
 	protected function processBookReleasesHelper($res, $categoryID)
 	{
-		if ($res instanceof \Traversable && $res->rowCount() > 0) {
+		if ($res instanceof \PDOStatement && $res->rowCount() > 0) {
 			if ($this->echooutput) {
 				$this->pdo->log->doEcho($this->pdo->log->header("\nProcessing " . $res->rowCount() . ' book release(s) for category ID ' . $categoryID));
 			}

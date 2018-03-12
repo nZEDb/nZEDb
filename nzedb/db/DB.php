@@ -711,7 +711,7 @@ class DB extends \PDO
 		}
 
 		$optimised = 0;
-		if ($tableArray instanceof \Traversable && $tableArray->rowCount()) {
+		if ($tableArray instanceof \PDOStatement && $tableArray->rowCount() > 0) {
 
 			$tableNames = '';
 			foreach ($tableArray as $table) {
@@ -728,7 +728,7 @@ class DB extends \PDO
 				$this->queryExec(sprintf('OPTIMIZE %s TABLE %s', $local, $tableNames));
 				$this->logOptimize($admin, 'OPTIMIZE', $tableNames);
 
-				if ($myIsamTables instanceof \Traversable && $myIsamTables->rowCount()) {
+				if ($myIsamTables instanceof \PDOStatement && $myIsamTables->rowCount() > 0) {
 					$tableNames = '';
 					foreach ($myIsamTables as $table) {
 						$tableNames .= $table['name'] . ',';

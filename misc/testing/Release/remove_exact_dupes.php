@@ -38,7 +38,7 @@ if ($crosspostt != 0) {
 
 do {
 	$resrel = $pdo->queryDirect($query);
-	if ($resrel instanceof \Traversable) {
+	if ($resrel instanceof \PDOStatement) {
 		$total = $resrel->rowCount();
 		echo $pdo->log->header(number_format($total) . " Releases have Duplicates");
 		foreach ($resrel as $rowrel) {

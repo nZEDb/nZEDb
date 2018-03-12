@@ -36,7 +36,7 @@ $query2 = "DROP TRIGGER IF EXISTS delete_collections%s";
 $query3 = "CREATE TRIGGER delete_collections%s BEFORE DELETE ON collections%s FOR EACH ROW BEGIN DELETE FROM binaries%s WHERE collection_id = OLD.id; DELETE FROM parts%s WHERE collection_id = OLD.id; END";
 $query4 = "ALTER TABLE binaries%s ADD INDEX ix_parts_collection_id(collection_id)";
 
-if ($tables instanceof \Traversable) {
+if ($tables instanceof \PDOStatement) {
 	foreach ($tables as $table) {
 		echo "Updating table binaries{$table['suffix']}" . PHP_EOL;
 		$pdo->queryExec(sprintf($query1, $table['suffix']), true);

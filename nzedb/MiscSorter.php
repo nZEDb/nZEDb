@@ -57,7 +57,7 @@ class MiscSorter
 			)
 		);
 
-		if ($res !== false && $res instanceof \Traversable) {
+		if ($res !== false && $res instanceof \PDOStatement) {
 
 			foreach ($res as $row) {
 
@@ -350,7 +350,7 @@ class MiscSorter
 
 		} catch (\Exception $e) {
 			echo 'Caught exception: ', $e->getMessage() . PHP_EOL;
-			unset($s, $amaz, $amazon);
+			unset($amaz, $amazon);
 		}
 
 		if (isset($amaz) && isset($amaz->Items->Item)) {
@@ -396,9 +396,8 @@ class MiscSorter
 
 		$rel = $this->_doAmazonLocal('bookinfo', (string)$amaz->Items->Item->ASIN);
 
-		if (count($rel) == 0) {
+		if (\count($rel) === 0) {
 			$bookId = (new Books(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->updateBookInfo('', $amaz);
-			unset($book);
 		} else {
 			$bookId = $rel['id'];
 		}

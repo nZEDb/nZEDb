@@ -201,7 +201,7 @@ class NZB
 	{
 		$collections = $this->pdo->queryDirect($this->_collectionsQuery . $relID);
 
-		if (!$collections instanceof \Traversable) {
+		if (! $collections instanceof \PDOStatement) {
 			return false;
 		}
 

@@ -99,7 +99,7 @@ class TraktTv extends TV
 			echo $this->pdo->log->header("Processing TRAKT lookup for " . number_format($tvcount) . " release(s).");
 		}
 
-		if ($res instanceof \Traversable) {
+		if ($res instanceof \PDOStatement) {
 			foreach ($res as $row) {
 
 				$traktid = false;

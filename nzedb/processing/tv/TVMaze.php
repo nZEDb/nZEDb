@@ -71,7 +71,7 @@ class TVMaze extends TV
 			echo $this->pdo->log->header("Processing TVMaze lookup for " . number_format($tvcount) . " release(s).");
 		}
 
-		if ($res instanceof \Traversable) {
+		if ($res instanceof \PDOStatement) {
 
 			$this->titleCache = [];
 

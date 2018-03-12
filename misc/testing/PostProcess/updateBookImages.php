@@ -39,7 +39,7 @@ foreach ($itr as $filePath) {
 }
 
 $qry = $pdo->queryDirect("SELECT id FROM bookinfo WHERE cover = 1");
-if ($qry instanceof \Traversable) {
+if ($qry instanceof \PDOStatement) {
 	foreach ($qry as $rows) {
 		if (!is_file($path2covers . $rows['id'] . '.jpg')) {
 			$pdo->queryDirect("UPDATE bookinfo SET cover = 0 WHERE cover = 1 AND id = " . $rows['id']);

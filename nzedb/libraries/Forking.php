@@ -564,7 +564,7 @@ class Forking extends \fork_daemon
 
 		$groups = $this->pdo->queryDirect('SELECT id FROM groups WHERE (active = 1 OR backfill = 1)');
 
-		if ($groups instanceof \Traversable) {
+		if ($groups instanceof \PDOStatement) {
 			foreach ($groups as $group) {
 				if ($this->pdo->queryOneRow(sprintf('SELECT id FROM collections_%d  LIMIT 1', $group['id'])) !== false) {
 					$this->work[] = ['id' => $group['id']];

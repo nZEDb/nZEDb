@@ -34,7 +34,7 @@ $tables = $pdo->queryDirect("SELECT SUBSTR(TABLE_NAME, 12) AS suffix FROM inform
 
 $query1 = "ALTER table collections%s add noise char(32) not null default '' after releaseid";
 
-if ($tables instanceof \Traversable) {
+if ($tables instanceof \PDOStatement) {
 	foreach ($tables as $table) {
 		echo "Updating table collections{$table['suffix']}" . PHP_EOL;
 		$pdo->queryExec(sprintf($query1, $table['suffix']), true);

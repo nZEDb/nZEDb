@@ -112,7 +112,7 @@ class Steam
 			LIMIT 20"
 		);
 
-		if ($results instanceof \Traversable) {
+		if ($results instanceof \PDOStatement) {
 			$bestMatchPct = 0;
 			foreach ($results as $result) {
 				// If we have an exact string match set best match and break out

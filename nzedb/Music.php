@@ -735,7 +735,7 @@ class Music
 					$this->musicqty
 				)
 		);
-		if ($res instanceof \Traversable && $res->rowCount() > 0) {
+		if ($res instanceof \PDOStatement && $res->rowCount() > 0) {
 			if ($this->echooutput) {
 				$this->pdo->log->doEcho(
 					$this->pdo->log->header("Processing " . $res->rowCount() . ' music release(s).'

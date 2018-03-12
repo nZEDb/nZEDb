@@ -34,7 +34,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "check")) {
 	}
 	echo $pdo->log->header("Scanning for releases missing previews");
 	$res = $pdo->queryDirect("SELECT id, guid FROM releases where nzbstatus = 1 AND haspreview = 1");
-	if ($res instanceof \Traversable) {
+	if ($res instanceof \PDOStatement) {
 		foreach ($res as $row) {
 			$nzbpath = $path2preview . $row["guid"] . "_thumb.jpg";
 			if (!file_exists($nzbpath)) {

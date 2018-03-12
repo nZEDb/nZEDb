@@ -79,7 +79,7 @@ class AniDB
 			)
 		);
 
-		if ($results instanceof \Traversable) {
+		if ($results instanceof \PDOStatement) {
 
 			$this->doRandomSleep();
 

@@ -100,7 +100,7 @@ class TMDB extends TV
 			echo ColorCLI::header('Processing TMDB lookup for ' . number_format($tvcount) . ' release(s).');
 		}
 
-		if ($res instanceof \Traversable) {
+		if ($res instanceof \PDOStatement) {
 
 			$this->titleCache = [];
 

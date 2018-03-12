@@ -111,9 +111,11 @@ class RequestIDWeb extends RequestID
 		// Array to store results.
 		$requestArray = [];
 
-		if ($this->_releases instanceof \Traversable) {
+		if ($this->_releases instanceof \PDOStatement) {
 			// Loop all the results.
-			foreach ($this->_releases as $release) {
+			/* @var $releases \PDOStatement[] */
+			$releases = &$this->_releases;
+			foreach ($releases as $release) {
 
 				$this->_release['name'] = $release['name'];
 				// Try to find a request ID for the release.

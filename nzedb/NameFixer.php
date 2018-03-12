@@ -204,7 +204,7 @@ class NameFixer
 
 		$releases = $this->_getReleases($time, $cats, $query);
 
-		if ($releases instanceof \Traversable && $releases !== false) {
+		if ($releases instanceof \PDOStatement && $releases !== false) {
 			$total = $releases->rowCount();
 
 			if ($total > 0) {
@@ -284,7 +284,7 @@ class NameFixer
 		}
 
 		$releases = $this->_getReleases($time, $cats, $query);
-		if ($releases instanceof \Traversable && $releases !== false) {
+		if ($releases instanceof \PDOStatement) {
 
 			$total = $releases->rowCount();
 			if ($total > 0) {
@@ -342,7 +342,7 @@ class NameFixer
 
 		$releases = $this->_getReleases($time, $cats, $query);
 
-		if ($releases instanceof \Traversable && $releases !== false) {
+		if ($releases instanceof \PDOStatement) {
 
 			$total = $releases->rowCount();
 			if ($total > 0) {
@@ -428,7 +428,7 @@ class NameFixer
 		}
 
 		$releases = $this->_getReleases($time, $cats, $query);
-		if ($releases instanceof \Traversable && $releases !== false) {
+		if ($releases instanceof \PDOStatement) {
 			$total = $releases->rowCount();
 			if ($total > 0) {
 				$this->_totalReleases = $total;
@@ -453,7 +453,7 @@ class NameFixer
 	 *
 	 * @param string $limit limit defined by maxperrun
 	 *
-	 * @return bool|\PDOStatement False on failure, PDOStatement with query results on success.
+	 * @return \PDOStatement|false False on failure, PDOStatement with query results on success.
 	 */
 	protected function _getReleases($time, $cats, $query, $limit = '')
 	{
@@ -762,7 +762,7 @@ class NameFixer
 		}
 
 		// Run if row count is positive, but do not run if row count exceeds 10 (as this is likely a failed title match)
-		if ($total > 0 && $total <= 15 && $res instanceof \Traversable) {
+		if ($res instanceof \PDOStatement && $total > 0 && $total <= 15) {
 			foreach ($res as $row) {
 				if ($pre['title'] !== $row['searchname']) {
 					$this->updateRelease($row, $pre['title'], $method = "Title Match source: " . $pre['source'], $echo, "PreDB FT Exact, ", $namestatus, $show, $pre['predb_id']);
@@ -861,7 +861,7 @@ class NameFixer
 			if ($query !== false) {
 				$total = $query->rowCount();
 
-				if ($total > 0 && $query instanceof \Traversable) {
+				if ($query instanceof \PDOStatement && $total > 0) {
 					echo $this->pdo->log->header($n . number_format($total) . ' releases to process.');
 
 					foreach ($query as $row) {
@@ -1663,7 +1663,7 @@ class NameFixer
 				AND (r.predb_id > 0 OR r.anidbid > 0 OR r.fromname = 'nonscene@Ef.net (EF)')"
 			);
 
-			if ($result instanceof \Traversable) {
+			if ($result instanceof \PDOStatement) {
 				foreach ($result AS $res) {
 					$floor = round(($res['relsize'] - $release['relsize']) / $res['relsize'] * 100, 0);
 					if ($floor >= -10 && $floor <= 10) {

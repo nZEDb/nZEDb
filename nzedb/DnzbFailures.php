@@ -169,7 +169,7 @@ class DnzbFailures
 			)
 		);
 
-		if ($check instanceof \Traversable) {
+		if ($check instanceof \PDOStatement) {
 			foreach ($check as $dbl) {
 				if ($dbl['text'] == $text) {
 					$dupe = 1;
