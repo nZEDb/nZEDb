@@ -84,15 +84,9 @@ if (!isset($argv[1])) {
 		}
 
 	} else if (isset($pieces[1]) && $pieces[0] == 'miscsorter') {
-		$nntp = new NNTP(['Settings' => $pdo]);
-		if ((Settings::value('..alternate_nntp') == 1 ? $nntp->doConnect(true, true) :
-				$nntp->doConnect()) !== true) {
-			exit($pdo->log->error("Unable to connect to usenet."));
-		}
-
-		$sorter = new MiscSorter(true);
+		$sorter = new MiscSorter(true, $pdo);
 		$relID = $pieces[1];
-		$res = $sorter->nfosorter(null, $relID, $nntp);
+		$res = $sorter->nfosorter(null, $relID);
 		if ($res != true) {
 			$pdo->queryExec(sprintf('UPDATE releases SET proc_sorter = 1 WHERE id = %d', $relID));
 			echo '.';
