@@ -1,7 +1,6 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
 use nzedb\utility\Misc;
 
 /**
@@ -51,17 +50,12 @@ class ReleaseImage
 	 *
 	 * @param Settings $pdo
 	 */
-	public function __construct(&$pdo = null)
+	public function __construct()
 	{
-		// Creates the nZEDb_COVERS constant
-		if ($pdo === null) {
-			$pdo = new Settings();
-		}
-		//                                                            Table    |  Column
 		$this->audSavePath    = nZEDb_COVERS . 'audiosample' . DS; // releases    guid
 		$this->imgSavePath    = nZEDb_COVERS . 'preview'     . DS; // releases    guid
 		$this->jpgSavePath    = nZEDb_COVERS . 'sample'      . DS; // releases    guid
-		$this->movieImgSavePath = nZEDb_COVERS . 'movies'      . DS; // releases    imdbid
+		$this->movieImgSavePath = nZEDb_COVERS . 'movies'    . DS; // releases    imdbid
 		$this->vidSavePath    = nZEDb_COVERS . 'video'       . DS; // releases    guid
 
 		/* For reference. *
