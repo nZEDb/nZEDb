@@ -33,7 +33,9 @@ if (count($groups) === 0) {
 
 $nntp = new NNTP(['Settings' => $pdo]);
 
-$nntp->doConnect() or exit('Could not connect to Usenet!' . PHP_EOL);
+if ($nntp->doConnect() !== true) {
+	exit('Could not connect to Usenet!' . PHP_EOL);
+}
 
 $binaries = new Binaries(['NNTP' => $nntp, 'Settings' => $pdo]);
 
