@@ -37,6 +37,10 @@ class PreDb extends DB
 		'UpdateGroupID'	=> null,
 	];
 
+	protected $tableMain;
+
+	protected $tableTemp;
+
 	public function __construct(array $options = [])
 	{
 		$defaults = [];
@@ -278,7 +282,6 @@ SQL_INSERT;
 		];
 		$options += $defaults;
 
-		$local = $options['local'] === false ? 'LOCAL' : '';
 		if (!empty($options['enclosedby'])) {
 			$optional = $options['optional'] === true ? ' OPTIONALLY' : '';
 			$enclosedby = "$optional ENCLOSED BY \"{$options['enclosedby']}\"";
