@@ -137,7 +137,7 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 			date('r', $lastDate) . ").");
 	}
 
-	$interval = floor(($upperbound - $lowerbound) * 0.5);
+	$interval = (int)floor(($upperbound - $lowerbound) * 0.5);
 	$templowered = '';
 	$dateofnextone = $lastDate;
 	// Match on days not timestamp to speed things up.
