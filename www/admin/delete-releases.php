@@ -70,7 +70,7 @@ $page->smarty->assign([
 $page->content = $page->smarty->fetch('delete-releases.tpl');
 $page->render();
 
-function parseResponse($response)
+function parseResponse(array $response)
 {
 	$options = [];
 	foreach ($response as $key => $value) {
