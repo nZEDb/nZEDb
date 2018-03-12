@@ -72,10 +72,11 @@ if (isset($_REQUEST["id"])) {
 		case 'view':
 		default:
 			$page->title = "XXX Movie Edit";
-			if (stristr($xxx['genre'], ",")) {
+			if (strpos($xxx['genre'], ',') !== false) {
 				$xxx['genre'] = explode(",", $xxx['genre']);
 			}
-			$xxx['trailers'] = (!empty($xxx['trailers'])) ? unserialize($xxx['trailers']) : '';
+			$xxx['trailers'] = (!empty($xxx['trailers'])) ? unserialize($xxx['trailers'], false) :
+				'';
 			$xxx['trailers'] = $xxx['trailers']['url'];
 			$page->smarty->assign('genres', $gen->getGenres(Category::XXX_ROOT));
 			$page->smarty->assign('xxxmovie', $xxx);
