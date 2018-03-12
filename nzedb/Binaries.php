@@ -1682,11 +1682,11 @@ class Binaries
 	/**
 	 * Updates a blacklist from binary blacklist edit admin web page.
 	 *
-	 * @param Array $blacklistArray
+	 * @param array $blacklistArray
 	 *
 	 * @return boolean
 	 */
-	public function updateBlacklist($blacklistArray)
+	public function updateBlacklist(array $blacklistArray)
 	{
 		return $this->_pdo->queryExec(
 			sprintf('
@@ -1709,11 +1709,11 @@ class Binaries
 	/**
 	 * Adds a new blacklist from binary blacklist edit admin web page.
 	 *
-	 * @param Array $blacklistArray
+	 * @param array $blacklistArray
 	 *
 	 * @return bool
 	 */
-	public function addBlacklist($blacklistArray)
+	public function addBlacklist(array $blacklistArray)
 	{
 		return $this->_pdo->queryInsert(
 			sprintf('
