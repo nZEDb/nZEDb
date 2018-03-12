@@ -18,9 +18,9 @@ if (isset($_POST["useremail"])) {
 		$mailbody = "Values submitted from contact form:<br/>";
 
 		//@TODO take this loop out, it's not safe.
-		while (list ($key, $val) = each($_POST)) {
+		foreach($_POST as $key => $value) {
 			if ($key != 'submit') {
-				$mailbody .= "$key : $val<br/>";
+				$mailbody .= "$key : $value<br/>";
 			}
 		}
 
