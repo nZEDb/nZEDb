@@ -22,7 +22,7 @@ if (isset($argv[1]) && !empty($argv[1]) && isset($argv[2]) && is_numeric($argv[2
 	$series = $tvdb->client->getSeries((string)$argv[1]);
 
 	// Use the first show found (highest match) and get the requested season/episode from $argv
-	if ($series) {
+	if (!empty($series)) {
 
 		echo PHP_EOL . $c->info("Server Time: " . $serverTime) . PHP_EOL;
 		print_r($series[0]);
