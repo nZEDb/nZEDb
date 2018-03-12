@@ -9,19 +9,19 @@ $bin  = new Binaries(['Settings' => $page->settings]);
 $error = '';
 $regex = ['id' => '', 'groupname' => '', 'regex' => '', 'description' => ''];
 
-switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
+switch (($_REQUEST['action'] ?? 'view')) {
 	case 'submit':
-		if ($_POST["groupname"] == '') {
+		if ($_POST['groupname'] === '') {
 			$error = "Group must be a valid usenet group";
 			break;
 		}
 
-		if ($_POST["regex"] == '') {
+		if ($_POST['regex'] === '') {
 			$error = "Regex cannot be empty";
 			break;
 		}
 
-		if ($_POST["id"] == '') {
+		if ($_POST['id'] === '') {
 			$bin->addBlacklist($_POST);
 		} else {
 			$ret = $bin->updateBlacklist($_POST);
@@ -31,7 +31,7 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 		break;
 
 	case 'addtest':
-		if (isset($_GET['regex']) && isset($_GET['groupname'])) {
+		if (isset($_GET['regex'], $_GET['groupname'])) {
 			$regex += [
 				'groupname' => $_GET['groupname'],
 				'regex' => $_GET['regex'],

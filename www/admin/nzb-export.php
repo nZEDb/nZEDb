@@ -15,15 +15,15 @@ $rel  = new Releases(['Settings' => $page->settings]);
 $folder = $group = $fromDate = $toDate = $gzip = $output = '';
 if ($page->isPostBack()) {
 	$folder = $_POST["folder"];
-	$fromDate = (isset($_POST["postfrom"]) ? $_POST["postfrom"] : '');
-	$toDate   = (isset($_POST["postto"]) ? $_POST["postto"] : '');
+	$fromDate = ($_POST["postfrom"] ?? '');
+	$toDate   = ($_POST["postto"] ?? '');
 	$group = $_POST["group"];
 	$gzip = $_POST["gzip"];
 
 	if ($folder != '') {
 		$output = (new NZBExport(['Browser'  => true, 'Settings' => $page->settings, 'Releases' => $rel]))->beginExport([
 				$folder, $fromDate, $toDate, ($_POST["group"] === '-1' ? 0 : (int)$_POST["group"]),
-				($_POST["gzip"] === '1' ? true : false)
+				($_POST["gzip"] === '1')
 			]
 		);
 	} else {

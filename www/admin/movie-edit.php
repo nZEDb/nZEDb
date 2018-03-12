@@ -8,7 +8,7 @@ $movie = new Movie(['Settings' => $page->settings]);
 $id    = 0;
 
 // Set the current action.
-$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
+$action = $_REQUEST['action'] ?? 'view';
 
 if (isset($_REQUEST["id"])) {
 	$id  = $_REQUEST["id"];

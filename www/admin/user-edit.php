@@ -21,7 +21,7 @@ foreach ($userRoles as $userRole) {
 	}
 }
 
-switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
+switch (($_REQUEST['action'] ?? 'view')) {
 	case 'add':
 		$user                += [
 			'role'        => $defaultRole,
@@ -95,9 +95,9 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 				'firstname' => $_POST["firstname"],
 				'lastname'  => $_POST["lastname"],
 				'email'     => $_POST["email"],
-				'grabs'     => (isset($_POST["grabs"]) ? $_POST["grabs"] : '0'),
+				'grabs'     => ($_POST["grabs"] ?? '0'),
 				'role'      => $_POST["role"],
-				'invites'   => (isset($_POST["invites"]) ? $_POST["invites"] : '0'),
+				'invites'   => ($_POST["invites"] ?? '0'),
 				'movieview' => $_POST["movieview"]
 			];
 		}

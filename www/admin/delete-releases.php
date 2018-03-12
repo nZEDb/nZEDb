@@ -8,7 +8,7 @@ $page->title = "Delete Releases";
 $error = $done = '';
 $release = [];
 
-switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
+switch (($_REQUEST['action'] ?? 'view')) {
 	case 'submit':
 		$values = parseResponse($_POST);
 		if ($values === false) {
@@ -16,7 +16,7 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 		} else {
 			$RR        = new ReleaseRemover(['Browser' => true, 'Settings' => $page->settings]);
 			$succeeded = $RR->removeByCriteria($values);
-			if (is_string($succeeded) && substr($succeeded, 0, 7) === 'Success') {
+			if (is_string($succeeded) && strpos($succeeded, 'Success') === 0) {
 				$done = $succeeded;
 
 			} else {

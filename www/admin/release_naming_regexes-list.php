@@ -9,7 +9,7 @@ $regexes = new Regexes(['Settings' => $page->settings, 'Table_Name' => 'release_
 $page->title = "Release Naming Regex List";
 
 $group = (isset($_REQUEST['group']) && !empty($_REQUEST['group']) ? $_REQUEST['group'] : '');
-$offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
+$offset = $_REQUEST["offset"] ?? 0;
 $regex  = $regexes->getRegex($group, ITEMS_PER_PAGE, $offset);
 
 $page->smarty->assign([

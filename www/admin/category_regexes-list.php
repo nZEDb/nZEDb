@@ -9,7 +9,7 @@ $regexes = new Regexes(['Settings' => $page->settings, 'Table_Name' => 'category
 $page->title = "Category Regex List";
 
 $group = ((isset($_REQUEST['group']) && !empty($_REQUEST['group'])) ? $_REQUEST['group'] : '');
-$offset = (isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0);
+$offset = ($_REQUEST["offset"] ?? 0);
 $regex = $regexes->getRegex($group, ITEMS_PER_PAGE, $offset);
 $count = $regexes->getCount($group);
 

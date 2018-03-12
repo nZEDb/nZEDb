@@ -15,8 +15,8 @@ if (isset($_REQUEST['animetitle']) && !empty($_REQUEST['animetitle'])) {
 
 $animecount = $AniDB->getAnimeCount($aname);
 
-$offset  = isset($_REQUEST['offset']) ? $_REQUEST['offset'] : 0;
-$asearch = ($aname != '') ? 'animetitle=' . $aname . '&amp;' : '';
+$offset  = $_REQUEST['offset'] ?? 0;
+$asearch = ($aname !== '') ? 'animetitle=' . $aname . '&amp;' : '';
 
 $page->smarty->assign('pagertotalitems', $animecount);
 $page->smarty->assign('pageroffset', $offset);

@@ -10,7 +10,7 @@ foreach ($page->users->getRoles() as $userRole) {
 	$roles[$userRole['id']] = $userRole['name'];
 }
 
-$offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
+$offset = $_REQUEST["offset"] ?? 0;
 $ordering = $page->users->getBrowseOrdering();
 $orderBy = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
 

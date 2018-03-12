@@ -9,11 +9,11 @@ $page = new AdminPage();
 $relPosters = new ProcessReleasesMultiGroup(['Settings' => $page->settings]);
 
 // Set the current action.
-$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
+$action = $_REQUEST['action'] ?? 'view';
 
 switch ($action) {
 	case 'submit':
-		if ($_POST['id'] == '') {
+		if ($_POST['id'] === '') {
 			// Add a new mg poster.
 			$poster = MultigroupPosters::create();
 		} else {

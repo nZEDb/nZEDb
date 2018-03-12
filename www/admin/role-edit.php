@@ -13,7 +13,7 @@ foreach ($userRoles as $userRole) {
 	$roles[$userRole['id']] = $userRole['name'];
 }
 
-switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
+switch (($_REQUEST['action'] ?? 'view')) {
 	case 'add':
 		$page->title              = "User Roles Add";
 		$role = [

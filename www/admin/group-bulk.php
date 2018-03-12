@@ -7,7 +7,7 @@ $page = new AdminPage();
 $msgs = $error = false;
 
 // Set the current action.
-$action = (isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view');
+$action = ($_REQUEST['action'] ?? 'view');
 
 switch ($action) {
 	case 'submit':

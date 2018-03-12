@@ -10,7 +10,7 @@ $page->title = "XXX Movie List";
 
 $xxxcount = $xxxmovie->getCount();
 
-$offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
+$offset = $_REQUEST["offset"] ?? 0;
 $page->smarty->assign('pagertotalitems', $xxxcount);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);

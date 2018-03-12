@@ -10,7 +10,7 @@ $page->title = "Release List";
 
 $releaseCount = $releases->getCount();
 
-$offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
+$offset = $_REQUEST["offset"] ?? 0;
 $page->smarty->assign('pagertotalitems', $releaseCount);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);

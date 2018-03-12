@@ -10,7 +10,7 @@ $genres = new Genres(['Settings' => $page->settings]);
 $page->title = "Music Genres";
 
 $activeOnly = isset($_REQUEST['activeonly']);
-$offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
+$offset = $_REQUEST['offset'] ?? 0;
 
 $page->smarty->assign([
 		'genrelist'         => $genres->getRange($offset, ITEMS_PER_PAGE,

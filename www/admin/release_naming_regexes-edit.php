@@ -9,7 +9,7 @@ $regexes = new Regexes(['Settings' => $page->settings, 'Table_Name' => 'release_
 $error = '';
 $regex = ['id' => '', 'group_regex' => '', 'regex' => '', 'description' => '', 'ordinal' => ''];
 
-switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
+switch (($_REQUEST['action'] ?? 'view')) {
 	case 'submit':
 		if ($_POST["group_regex"] == '') {
 			$error = "Group regex must not be empty!";

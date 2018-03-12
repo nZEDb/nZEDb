@@ -15,11 +15,11 @@ foreach ($userroles as $r) {
 }
 
 // set the current action
-$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
+$action = $_REQUEST['action'] ?? 'view';
 
 switch ($action) {
 	case 'submit':
-		if ($_POST["id"] == "") {
+		if ($_POST['id'] === '') {
 			$menu->add($_POST);
 		} else {
 			$ret = $menu->update($_POST);

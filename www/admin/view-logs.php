@@ -7,9 +7,9 @@ use nzedb\Logger;
 $page        = new AdminPage();
 $page->title = 'View Logs';
 
-$type = isset($_GET['t']) ? $_GET['t'] : 'all';
+$type = $_GET['t'] ?? 'all';
 $page->smarty->assign('type', $type);
-$offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
+$offset = $_GET['offset'] ?? 0;
 
 $logPath = Logger::getDefaultLogPaths();
 $logPath = $logPath['LogPath'];

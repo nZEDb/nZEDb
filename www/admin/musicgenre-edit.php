@@ -13,7 +13,7 @@ $page   = new AdminPage();
 $genres = new Genres(['Settings' => $page->settings]);
 $genre = ['id' => '', 'title' => '', 'disabled' => ''];
 
-switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
+switch (($_REQUEST['action'] ?? 'view')) {
 	case 'submit':
 		$ret = $genres->update($_POST["id"], $_POST["disabled"]);
 		header("Location:" . WWW_TOP . "/musicgenre-list.php");

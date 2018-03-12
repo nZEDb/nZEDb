@@ -10,7 +10,7 @@ $contents = new Contents(['Settings' => $page->settings]);
 $id       = 0;
 
 // Set the current action.
-$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
+$action = $_REQUEST['action'] ?? 'view';
 
 switch ($action) {
 	case 'add':
@@ -25,7 +25,7 @@ switch ($action) {
 	case 'submit':
 		// Validate and add or update.
 		$returnid = 0;
-		if (!isset($_POST["id"]) || $_POST["id"] == "") {
+		if (! isset($_POST['id']) || $_POST['id'] === '') {
 			$returnid = $contents->add($_POST);
 		} else {
 			$content  = $contents->update($_POST);
@@ -36,9 +36,9 @@ switch ($action) {
 
 	case 'view':
 	default:
-		if (isset($_GET["id"])) {
-			$page->title = "Content Edit";
-			$id          = $_GET["id"];
+		if (isset($_GET['id'])) {
+			$page->title = 'Content Edit';
+			$id          = $_GET['id'];
 
 			$content = $contents->getByID($id, Users::ROLE_ADMIN);
 			$page->smarty->assign('content', $content);
@@ -52,10 +52,10 @@ $page->smarty->assign('status_names', ['Enabled', 'Disabled']);
 $page->smarty->assign('yesno_ids', [1, 0]);
 $page->smarty->assign('yesno_names', ['Yes', 'No']);
 
-$contenttypelist = ["1" => "Useful Link", "2" => "Article", "3" => "Homepage"];
+$contenttypelist = [1 => 'Useful Link', 2 => 'Article', 3 => 'Homepage'];
 $page->smarty->assign('contenttypelist', $contenttypelist);
 
-$rolelist = ["0" => "Everyone", "1" => "Logged in Users", "2" => "Admins"];
+$rolelist = [0 => 'Everyone', 1 => 'Logged in Users', 2 => 'Admins'];
 $page->smarty->assign('rolelist', $rolelist);
 
 $page->content = $page->smarty->fetch('content-add.tpl');

@@ -13,7 +13,7 @@ if (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname'])) {
 
 $groupcount = $groups->getCount($gname, 1);
 
-$offset    = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
+$offset    = $_REQUEST["offset"] ?? 0;
 $groupname = (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname'])) ?
 	$_REQUEST['groupname'] : '';
 
