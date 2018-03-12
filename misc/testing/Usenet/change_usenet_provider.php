@@ -131,7 +131,10 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 	}
 
 	if ($debug && $bfcheck) {
-		echo $pdo->log->primary("Searching for postdates.\nGroup's Firstdate: " . $firstDate . ' (' . ((is_int($firstDate)) ? date('r', $firstDate) : 'n/a') . ").\nGroup's Lastdate: " . $lastDate . ' (' . date('r', $lastDate) . ").");
+		echo $pdo->log->primary(
+			"Searching for postdates.\nGroup's Firstdate: " . $firstDate . ' (' .
+			date('r', $firstDate) . ").\nGroup's Lastdate: " . $lastDate . ' (' .
+			date('r', $lastDate) . ").");
 	}
 
 	$interval = floor(($upperbound - $lowerbound) * 0.5);
