@@ -116,7 +116,7 @@ class CollectionsCleaning
 
 		// Try DB regex first.
 		$potentialString = $this->_regexes->tryRegex($subject, $groupName);
-		if ($potentialString) {
+		if ($potentialString !== '') {
 			return [
 				'id'   => $this->_regexes->matchedRegex,
 				'name' => $potentialString
