@@ -276,8 +276,9 @@ switch ($options[1]) {
 /**
  * Create / process releases for a groupID.
  *
- * @param ProcessReleases|ProcessReleasesMultiGroup $releases
- * @param int                                       $groupID
+ * @param ProcessReleases $releases Can be instance of ProcessReleasesMultiGroup or
+ *                                  ProcessReleases.
+ * @param int             $groupID
  */
 function processReleases($releases, $groupID)
 {
