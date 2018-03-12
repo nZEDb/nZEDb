@@ -7,7 +7,7 @@ use nzedb\Users;
 
 $page     = new AdminPage();
 $contents = new Contents(['Settings' => $page->settings]);
-$id       = 0;
+$contentID       = 0;
 
 // Set the current action.
 $action = $_REQUEST['action'] ?? 'view';
@@ -38,9 +38,9 @@ switch ($action) {
 	default:
 		if (isset($_GET['id'])) {
 			$page->title = 'Content Edit';
-			$id          = $_GET['id'];
+			$contentID   = $_GET['id'];
 
-			$content = $contents->getByID($id, Users::ROLE_ADMIN);
+			$content = $contents->getByID($contentID, Users::ROLE_ADMIN);
 			$page->smarty->assign('content', $content);
 		}
 		break;

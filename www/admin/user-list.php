@@ -17,7 +17,7 @@ $orderBy = isset($_REQUEST['ob']) && in_array($_REQUEST['ob'], $ordering, false)
 $variables = ['username' => '', 'email' => '', 'host' => '', 'role' => ''];
 $uSearch = '';
 foreach ($variables as $key => $variable) {
-	checkREQUEST($key);
+	checkRequest($key);
 }
 
 $page->smarty->assign([
@@ -50,7 +50,7 @@ $page->smarty->assign('pager', $page->smarty->fetch('pager.tpl'));
 $page->content = $page->smarty->fetch('user-list.tpl');
 $page->render();
 
-function checkREQUEST($param) {
+function checkRequest($param) {
 	global $uSearch, $variables;
 	if (isset($_REQUEST[$param])) {
 		$variables[$param] = $_REQUEST[$param];

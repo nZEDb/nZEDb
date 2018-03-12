@@ -20,33 +20,33 @@ $admin = new AdminPage;
 $settings = ['Settings' => $admin->settings];
 switch ($_GET['action']) {
 	case 'binary_blacklist_delete':
-		$id = (int)$_GET['row_id'];
-		(new Binaries($settings))->deleteBlacklist($id);
-		print "Blacklist $id deleted.";
+		$tempID = (int)$_GET['row_id'];
+		(new Binaries($settings))->deleteBlacklist($tempID);
+		print "Blacklist $tempID deleted.";
 		break;
 
 	case 'category_regex_delete':
-		$id = (int)$_GET['row_id'];
+		$tempID = (int)$_GET['row_id'];
 		(new Regexes([
 						 'Settings' => $admin->settings, 'Table_Name' => 'category_regexes'
-					 ]))->deleteRegex($id);
-		print "Regex $id deleted.";
+					 ]))->deleteRegex($tempID);
+		print "Regex $tempID deleted.";
 		break;
 
 	case 'collection_regex_delete':
-		$id = (int)$_GET['row_id'];
+		$tempID = (int)$_GET['row_id'];
 		(new Regexes([
 						 'Settings' => $admin->settings, 'Table_Name' => 'collection_regexes'
-					 ]))->deleteRegex($id);
-		print "Regex $id deleted.";
+					 ]))->deleteRegex($tempID);
+		print "Regex $tempID deleted.";
 		break;
 
 	case 'release_naming_regex_delete':
-		$id = (int)$_GET['row_id'];
+		$tempID = (int)$_GET['row_id'];
 		(new Regexes([
 						 'Settings' => $admin->settings, 'Table_Name' => 'release_naming_regexes'
-					 ]))->deleteRegex($id);
-		print "Regex $id deleted.";
+					 ]))->deleteRegex($tempID);
+		print "Regex $tempID deleted.";
 		break;
 
 	case 'group_edit_purge_all':
@@ -61,24 +61,24 @@ switch ($_GET['action']) {
 		break;
 
 	case 'group_edit_purge_single':
-		$id = (int)$_GET['group_id'];
+		$tempID = (int)$_GET['group_id'];
 		session_write_close();
-		(new Groups($settings))->purge($id);
-		print "Group $id purged.";
+		(new Groups($settings))->purge($tempID);
+		print "Group $tempID purged.";
 		break;
 
 	case 'group_edit_reset_single':
-		$id = (int)$_GET['group_id'];
+		$tempID = (int)$_GET['group_id'];
 		session_write_close();
-		(new Groups($settings))->reset($id);
-		print "Group $id reset.";
+		(new Groups($settings))->reset($tempID);
+		print "Group $tempID reset.";
 		break;
 
 	case 'group_edit_delete_single':
-		$id = (int)$_GET['group_id'];
+		$tempID = (int)$_GET['group_id'];
 		session_write_close();
-		(new Groups($settings))->delete($id);
-		print "Group $id deleted.";
+		(new Groups($settings))->delete($tempID);
+		print "Group $tempID deleted.";
 		break;
 
 	case 'toggle_group_active_status':
@@ -131,9 +131,9 @@ switch ($_GET['action']) {
 												   $admin->settings->escapeString($guid['site_guid'])));
 			$total = count($ids);
 			if ($total > 0) {
-				$rc = new ReleaseComments($admin->settings);
-				foreach ($ids as $id) {
-					$rc->deleteComment($id['id']);
+				$relComments = new ReleaseComments($admin->settings);
+				foreach ($ids as $tempID) {
+					$relComments->deleteComment($tempID['id']);
 				}
 			}
 			$admin->settings->queryExec(sprintf('UPDATE sharing_sites SET comments = 0 WHERE id = %d',

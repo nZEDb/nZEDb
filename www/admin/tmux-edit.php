@@ -5,7 +5,6 @@ use nzedb\Tmux;
 
 $page = new AdminPage();
 $tmux = new Tmux();
-$id   = 0;
 
 // Set the current action.
 $action = $_REQUEST['action'] ?? 'view';

@@ -20,9 +20,9 @@ if ($page->isPostBack()) {
 	if (isset($_FILES['uploadedfiles'])) {
 		foreach ($_FILES['uploadedfiles']['error'] as $key => $error) {
 			if ($error == UPLOAD_ERR_OK) {
-				$tmp_name         = $_FILES['uploadedfiles']['tmp_name'][$key];
+				$tempName         = $_FILES['uploadedfiles']['tmp_name'][$key];
 				$name             = $_FILES['uploadedfiles']['name'][$key];
-				$filesToProcess[] = $tmp_name;
+				$filesToProcess[] = $tempName;
 			}
 		}
 	} else {

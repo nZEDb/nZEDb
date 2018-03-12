@@ -5,17 +5,17 @@ use nzedb\Games;
 use nzedb\Genres;
 use nzedb\Category;
 
-$page  = new AdminPage();
-$games = new Games(['Settings' => $page->settings]);
-$gen   = new Genres(['Settings' => $page->settings]);
-$id    = 0;
+$page   = new AdminPage();
+$games  = new Games(['Settings' => $page->settings]);
+$gen    = new Genres(['Settings' => $page->settings]);
+$gameID = 0;
 
 // Set the current action.
 $action = $_REQUEST['action'] ?? 'view';
 
 if (isset($_REQUEST['id'])) {
-	$id   = $_REQUEST['id'];
-	$game = $games->getGamesInfo($id);
+	$gameID   = $_REQUEST['id'];
+	$game = $games->getGamesInfo($gameID);
 
 	if (!$game) {
 		$page->show404();
@@ -23,12 +23,12 @@ if (isset($_REQUEST['id'])) {
 
 	switch ($action) {
 		case 'submit':
-			$coverLoc = nZEDb_COVERS . 'games/' . $id . '.jpg';
+			$coverLoc = nZEDb_COVERS . 'games/' . $gameID . '.jpg';
 
 			if ($_FILES['cover']['size'] > 0) {
 				$tmpName   = $_FILES['cover']['tmp_name'];
-				$file_info = getimagesize($tmpName);
-				if (!empty($file_info)) {
+				$fileInfo = getimagesize($tmpName);
+				if (!empty($fileInfo)) {
 					move_uploaded_file($_FILES['cover']['tmp_name'], $coverLoc);
 				}
 			}
@@ -36,7 +36,7 @@ if (isset($_REQUEST['id'])) {
 			$_POST['cover']       = (file_exists($coverLoc)) ? 1 : 0;
 			$_POST['releasedate'] = (empty($_POST['releasedate']) || !strtotime($_POST['releasedate'])) ? $game['releasedate'] : date('Y-m-d H:i:s', strtotime($_POST['releasedate']));
 
-			$games->update($id,
+			$games->update($gameID,
 						   $_POST['title'],
 						   $_POST['asin'],
 						   $_POST['url'],

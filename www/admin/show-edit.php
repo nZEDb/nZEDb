@@ -5,7 +5,7 @@ require_once nZEDb_WWW . 'pages/smartyTV.php';
 use nzedb\Videos;
 
 $page   = new AdminPage();
-$tv = new smartyTV(['Settings' => $page->settings]);
+$stv = new smartyTV(['Settings' => $page->settings]);
 $video = new Videos(['Settings' => $page->settings]);
 
 switch (($_REQUEST['action'] ?? 'view')) {

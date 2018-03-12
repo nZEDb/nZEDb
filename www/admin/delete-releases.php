@@ -14,7 +14,8 @@ switch (($_REQUEST['action'] ?? 'view')) {
 		if ($values === false) {
 			$page->smarty->assign('error', 'Your search criteria is wrong.');
 		} else {
-			$RR        = new ReleaseRemover(['Browser' => true, 'Settings' => $page->settings]);
+			$relRemove = new ReleaseRemover(['Browser' => true, 'Settings' =>
+				$page->settings]);
 			$succeeded = $RR->removeByCriteria($values);
 			if (is_string($succeeded) && strpos($succeeded, 'Success') === 0) {
 				$done = $succeeded;

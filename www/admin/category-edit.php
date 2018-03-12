@@ -5,7 +5,7 @@ use nzedb\Category;
 
 $page = new AdminPage();
 $category = new Category(['Settings' => $page->settings]);
-$id = 0;
+$categoryID = 0;
 
 // Set the current action.
 $action = $_REQUEST['action'] ?? 'view';
@@ -24,8 +24,8 @@ switch ($action) {
 	default:
 		if (isset($_GET['id'])) {
 			$page->title = 'Category Edit';
-			$id          = $_GET['id'];
-			$cat         = $category->getById($id);
+			$categoryID  = $_GET['id'];
+			$cat         = $category->getById($categoryID);
 			$page->smarty->assign('category', $cat);
 		}
 		break;

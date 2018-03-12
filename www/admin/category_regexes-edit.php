@@ -52,7 +52,7 @@ switch (($_REQUEST['action'] ?? 'view')) {
 		break;
 }
 
-$categories_db = $page->settings->queryDirect(
+$categoriesDb = $page->settings->queryDirect(
 	'SELECT c.id, c.title, cp.title AS parent_title
 	FROM categories c
 	INNER JOIN categories cp ON c.parentid = cp.id
@@ -60,11 +60,11 @@ $categories_db = $page->settings->queryDirect(
 	ORDER BY c.id ASC'
 );
 $categories = ['category_names', 'categories_id'];
-if ($categories_db) {
-	foreach ($categories_db as $category_db) {
+if ($categoriesDb) {
+	foreach ($categoriesDb as $categoryDb) {
 		$categories['category_names'][] =
-			$category_db['parent_title'] . ' ' . $category_db['title'] . ': ' . $category_db['id'];
-		$categories['category_ids'][]   = $category_db['id'];
+			$categoryDb['parent_title'] . ' ' . $categoryDb['title'] . ': ' . $categoryDb['id'];
+		$categories['category_ids'][]   = $categoryDb['id'];
 	}
 }
 

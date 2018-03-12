@@ -10,7 +10,6 @@ use nzedb\utility\Misc;
 // new to get information on books groups
 
 $page  = new AdminPage();
-$id    = 0;
 $error = '';
 $category = new Category();
 
@@ -189,36 +188,36 @@ $page->smarty->assign('coversPath', nZEDb_COVERS);
 $result = $page->settings->query("SELECT id, title FROM categories WHERE id IN ({$category::getCategoryValue('MUSIC_AUDIOBOOK')}, {$category::getCategoryValue('BOOKS_EBOOK')}, {$category::getCategoryValue('BOOKS_TECHNICAL')}, {$category::getCategoryValue('BOOKS_FOREIGN')})");
 
 // setup the display lists for these categories, this could have been static, but then if names changed they would be wrong
-$book_reqids_ids   = [];
-$book_reqids_names = [];
+$bookReqidsIDs   = [];
+$bookReqidsNames = [];
 foreach ($result as $bookcategory) {
-	$book_reqids_ids[]   = $bookcategory['id'];
-	$book_reqids_names[] = $bookcategory['title'];
+	$bookReqidsIDs[]   = $bookcategory['id'];
+	$bookReqidsNames[] = $bookcategory['title'];
 }
 
 // convert from a string array to an int array as we want to use int
-$book_reqids_ids = array_map(
+$bookReqidsIDs = array_map(
 	function($value)
 	{
 		return (int)$value;
 	},
-	$book_reqids_ids
+	$bookReqidsIDs
 );
-$page->smarty->assign('book_reqids_ids', $book_reqids_ids);
-$page->smarty->assign('book_reqids_names', $book_reqids_names);
+$page->smarty->assign('book_reqids_ids', $bookReqidsIDs);
+$page->smarty->assign('book_reqids_names', $bookReqidsNames);
 
 // convert from a list to an array as we need to use an array, but teh sites table only saves strings
-$books_selected = explode(',', Settings::value('..book_reqids'));
+$booksSelected = explode(',', Settings::value('..book_reqids'));
 
 // convert from a string array to an int array
-$books_selected = array_map(
+$booksSelected = array_map(
 	function($value)
 	{
 		return (int)$value;
 	},
-	$books_selected
+	$booksSelected
 );
-$page->smarty->assign('book_reqids_selected', $books_selected);
+$page->smarty->assign('book_reqids_selected', $booksSelected);
 
 $page->smarty->assign('loggingopt_ids', [0, 1, 2, 3]);
 $page->smarty->assign('loggingopt_names',

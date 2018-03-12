@@ -3,15 +3,15 @@ require_once './config.php';
 
 use nzedb\Menu;
 
-$page = new AdminPage();
-$menu = new Menu($page->settings);
-$id   = 0;
+$page   = new AdminPage();
+$menu   = new Menu($page->settings);
+$menuID = 0;
 
 // Get the user roles.
 $userroles = $page->users->getRoles();
 $roles     = [];
-foreach ($userroles as $r) {
-	$roles[$r['id']] = $r['name'];
+foreach ($userroles as $role) {
+	$roles[$role['id']] = $role['name'];
 }
 
 // set the current action
@@ -36,8 +36,8 @@ switch ($action) {
 		];
 		if (isset($_GET['id'])) {
 
-			$id          = $_GET['id'];
-			$menuRow     = $menu->getById($id);
+			$menuID          = $_GET['id'];
+			$menuRow     = $menu->getById($menuID);
 		}
 		$page->title = 'Menu Edit';
 		$page->smarty->assign('menu', $menuRow);

@@ -8,14 +8,14 @@ use nzedb\Category;
 $page  = new AdminPage();
 $music = new Music(['Settings' => $page->settings]);
 $gen   = new Genres(['Settings' => $page->settings]);
-$id    = 0;
+$musicID    = 0;
 
 // Set the current action.
 $action = $_REQUEST['action'] ?? 'view';
 
 if (isset($_REQUEST['id'])) {
-	$id  = $_REQUEST['id'];
-	$mus = $music->getMusicInfo($id);
+	$musicID  = $_REQUEST['id'];
+	$mus = $music->getMusicInfo($musicID);
 
 	if (!$mus) {
 		$page->show404();
@@ -23,12 +23,12 @@ if (isset($_REQUEST['id'])) {
 
 	switch ($action) {
 		case 'submit':
-			$coverLoc = nZEDb_COVERS . 'music/' . $id . '.jpg';
+			$coverLoc = nZEDb_COVERS . 'music/' . $musicID . '.jpg';
 
 			if ($_FILES['cover']['size'] > 0) {
 				$tmpName   = $_FILES['cover']['tmp_name'];
-				$file_info = getimagesize($tmpName);
-				if (!empty($file_info)) {
+				$fileInfo = getimagesize($tmpName);
+				if (!empty($fileInfo)) {
 					move_uploaded_file($_FILES['cover']['tmp_name'], $coverLoc);
 				}
 			}
@@ -38,7 +38,7 @@ if (isset($_REQUEST['id'])) {
 				'null' : $_POST['salesrank']);
 			$_POST['releasedate'] = (empty($_POST['releasedate']) || !strtotime($_POST['releasedate'])) ? $mus['releasedate'] : date('Y-m-d H:i:s', strtotime($_POST['releasedate']));
 
-			$music->update($id,
+			$music->update($musicID,
 						   $_POST['title'],
 						   $_POST['asin'],
 						   $_POST['url'],

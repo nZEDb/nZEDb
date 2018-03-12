@@ -19,33 +19,33 @@ if (!empty($_POST)) {
 	if (!empty($_POST['sharing_name']) && !preg_match('/\s+/', $_POST['sharing_name']) &&
 		strlen($_POST['sharing_name']) < 255
 	) {
-		$site_name = trim($_POST['sharing_name']);
+		$siteName = trim($_POST['sharing_name']);
 	} else {
-		$site_name = $ourSite['site_name'];
+		$siteName = $ourSite['site_name'];
 	}
 	if (!empty($_POST['sharing_maxpush']) && is_numeric($_POST['sharing_maxpush'])) {
-		$max_push = trim($_POST['sharing_maxpush']);
+		$maxPush = trim($_POST['sharing_maxpush']);
 	} else {
-		$max_push = $ourSite['max_push'];
+		$maxPush = $ourSite['max_push'];
 	}
 	if (!empty($_POST['sharing_maxpull']) && is_numeric($_POST['sharing_maxpush'])) {
-		$max_pull = trim($_POST['sharing_maxpull']);
+		$maxPull = trim($_POST['sharing_maxpull']);
 	} else {
-		$max_pull = $ourSite['max_pull'];
+		$maxPull = $ourSite['max_pull'];
 	}
 	if (!empty($_POST['sharing_maxdownload']) && is_numeric($_POST['sharing_maxdownload'])) {
-		$max_download = trim($_POST['sharing_maxdownload']);
+		$maxDownload = trim($_POST['sharing_maxdownload']);
 	} else {
-		$max_download = $ourSite['max_download'];
+		$maxDownload = $ourSite['max_download'];
 	}
 	$page->settings->queryExec(
 		sprintf('
 			UPDATE sharing
 			SET site_name = %s, max_push = %d, max_pull = %d, max_download = %d',
-				$page->settings->escapeString($site_name),
-				$max_push,
-				$max_pull,
-				$max_download
+				$page->settings->escapeString($siteName),
+				$maxPush,
+				$maxPull,
+				$maxDownload
 		)
 	);
 	$ourSite = $page->settings->queryOneRow('SELECT * FROM sharing');

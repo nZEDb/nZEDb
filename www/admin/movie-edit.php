@@ -5,14 +5,14 @@ use nzedb\Movie;
 
 $page  = new AdminPage();
 $movie = new Movie(['Settings' => $page->settings]);
-$id    = 0;
+$movieID    = 0;
 
 // Set the current action.
 $action = $_REQUEST['action'] ?? 'view';
 
 if (isset($_REQUEST['id'])) {
-	$id  = $_REQUEST['id'];
-	$mov = $movie->getMovieInfo($id);
+	$movieID  = $_REQUEST['id'];
+	$mov = $movie->getMovieInfo($movieID);
 
 	if (!$mov) {
 		$page->show404();
@@ -20,21 +20,21 @@ if (isset($_REQUEST['id'])) {
 
 	switch ($action) {
 		case 'submit':
-			$coverLoc    = nZEDb_COVERS . 'movies/' . $id . '-cover.jpg';
-			$backdropLoc = nZEDb_COVERS . 'movies/' . $id . '-backdrop.jpg';
+			$coverLoc    = nZEDb_COVERS . 'movies/' . $movieID . '-cover.jpg';
+			$backdropLoc = nZEDb_COVERS . 'movies/' . $movieID . '-backdrop.jpg';
 
 			if ($_FILES['cover']['size'] > 0) {
 				$tmpName   = $_FILES['cover']['tmp_name'];
-				$file_info = getimagesize($tmpName);
-				if (!empty($file_info)) {
+				$fileInfo = getimagesize($tmpName);
+				if (!empty($fileInfo)) {
 					move_uploaded_file($_FILES['cover']['tmp_name'], $coverLoc);
 				}
 			}
 
 			if ($_FILES['backdrop']['size'] > 0) {
 				$tmpName   = $_FILES['backdrop']['tmp_name'];
-				$file_info = getimagesize($tmpName);
-				if (!empty($file_info)) {
+				$fileInfo = getimagesize($tmpName);
+				if (!empty($fileInfo)) {
 					move_uploaded_file($_FILES['backdrop']['tmp_name'], $backdropLoc);
 				}
 			}
@@ -48,7 +48,7 @@ if (isset($_REQUEST['id'])) {
 				'cover'    => $_POST['cover'],
 				'director' => $_POST['director'],
 				'genre'    => $_POST['genre'],
-				'imdbid'   => $id,
+				'imdbid'   => $movieID,
 				'language' => $_POST['language'],
 				'plot'     => $_POST['plot'],
 				'rating'   => $_POST['rating'],

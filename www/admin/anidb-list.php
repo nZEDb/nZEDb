@@ -4,7 +4,7 @@ require_once './config.php';
 use nzedb\AniDB;
 
 $page  = new AdminPage();
-$AniDB = new AniDB(['Settings' => $page->settings]);
+$aniDB = new AniDB(['Settings' => $page->settings]);
 
 $page->title = 'AniDB Titles';
 
@@ -13,7 +13,7 @@ if (isset($_REQUEST['animetitle']) && !empty($_REQUEST['animetitle'])) {
 	$aname = $_REQUEST['animetitle'];
 }
 
-$animecount = $AniDB->getAnimeCount($aname);
+$animecount = $aniDB->getAnimeCount($aname);
 
 $offset  = $_REQUEST['offset'] ?? 0;
 $asearch = ($aname !== '') ? 'animetitle=' . $aname . '&amp;' : '';
@@ -27,7 +27,7 @@ $page->smarty->assign('pager', $pager);
 
 $page->smarty->assign('animetitle', $aname);
 
-$anidblist = $AniDB->getAnimeRange($offset, ITEMS_PER_PAGE, $aname);
+$anidblist = $aniDB->getAnimeRange($offset, ITEMS_PER_PAGE, $aname);
 $page->smarty->assign('anidblist', $anidblist);
 
 $page->content = $page->smarty->fetch('anidb-list.tpl');

@@ -4,15 +4,14 @@ require_once './config.php';
 use nzedb\AniDB;
 
 $page  = new AdminPage();
-$AniDB = new AniDB(['Settings' => $page->settings]);
-$id    = 0;
+$aniDB = new AniDB(['Settings' => $page->settings]);
 
 // Set the current action.
 $action = $_REQUEST['action'] ?? 'view';
 
 switch ($action) {
 	case 'submit':
-		$AniDB->updateTitle($_POST['anidbid'],
+		$aniDB->updateTitle($_POST['anidbid'],
 							$_POST['type'],
 							$_POST['startdate'],
 							$_POST['enddate'],
@@ -36,8 +35,8 @@ switch ($action) {
 	default:
 		if (isset($_GET['id'])) {
 			$page->title   = 'AniDB Edit';
-			$AniDBAPIArray = $AniDB->getAnimeInfo($_GET['id']);
-			$page->smarty->assign('anime', $AniDBAPIArray);
+			$aniDbAPIArray = $aniDB->getAnimeInfo($_GET['id']);
+			$page->smarty->assign('anime', $aniDbAPIArray);
 		}
 		break;
 }

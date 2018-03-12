@@ -5,7 +5,7 @@ use nzedb\Groups;
 
 $page   = new AdminPage();
 $groups = new Groups(['Settings' => $page->settings]);
-$id     = 0;
+$groupID = 0;
 
 // Set the current action.
 $action = $_REQUEST['action'] ?? 'view';
@@ -29,8 +29,8 @@ switch ($action) {
 	default:
 		if (isset($_GET['id'])) {
 			$page->title = 'Newsgroup Edit';
-			$id          = $_GET['id'];
-			$group       = $groups->getByID($id);
+			$groupID     = $_GET['id'];
+			$group       = $groups->getByID($groupID);
 		} else {
 			$page->title = 'Newsgroup Add';
 			$group = [

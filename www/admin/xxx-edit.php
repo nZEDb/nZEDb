@@ -8,14 +8,14 @@ use nzedb\XXX;
 $page     = new AdminPage();
 $xxxmovie = new XXX(['Settings' => $page->settings]);
 $gen      = new Genres(['Settings' => $page->settings]);
-$id       = 0;
+$requestID       = 0;
 
 // Set the current action.
 $action = $_REQUEST['action'] ?? 'view';
 
 if (isset($_REQUEST['id'])) {
-	$id  = $_REQUEST['id'];
-	$xxx = $xxxmovie->getXXXInfo($id);
+	$requestID  = $_REQUEST['id'];
+	$xxx = $xxxmovie->getXXXInfo($requestID);
 
 	if (!$xxx) {
 		$page->show404();
@@ -23,21 +23,21 @@ if (isset($_REQUEST['id'])) {
 
 	switch ($action) {
 		case 'submit':
-			$coverLoc    = nZEDb_COVERS . 'xxx/' . $id . '-cover.jpg';
-			$backdropLoc = nZEDb_COVERS . 'xxx/' . $id . '-backdrop.jpg';
+			$coverLoc    = nZEDb_COVERS . 'xxx/' . $requestID . '-cover.jpg';
+			$backdropLoc = nZEDb_COVERS . 'xxx/' . $requestID . '-backdrop.jpg';
 
 			if ($_FILES['cover']['size'] > 0) {
 				$tmpName   = $_FILES['cover']['tmp_name'];
-				$file_info = getimagesize($tmpName);
-				if (!empty($file_info)) {
+				$fileInfo = getimagesize($tmpName);
+				if (!empty($fileInfo)) {
 					move_uploaded_file($_FILES['cover']['tmp_name'], $coverLoc);
 				}
 			}
 
 			if ($_FILES['backdrop']['size'] > 0) {
 				$tmpName   = $_FILES['backdrop']['tmp_name'];
-				$file_info = getimagesize($tmpName);
-				if (!empty($file_info)) {
+				$fileInfo = getimagesize($tmpName);
+				if (!empty($fileInfo)) {
 					move_uploaded_file($_FILES['backdrop']['tmp_name'], $backdropLoc);
 				}
 			}
@@ -51,7 +51,7 @@ if (isset($_REQUEST['id'])) {
 			}
 			$trailerurl['url'] = $_POST['trailerurl'];
 			$trailerurl        = serialize($trailerurl);
-			$xxxmovie->update($id,
+			$xxxmovie->update($requestID,
 							  $_POST['title'],
 							  $_POST['tagline'],
 							  $_POST['plot'],

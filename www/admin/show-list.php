@@ -4,7 +4,7 @@ require_once './config.php';
 use nzedb\Videos;
 
 $page   = new AdminPage();
-$tv = new Videos(['Settings' => $page->settings]);
+$vids = new Videos(['Settings' => $page->settings]);
 
 $page->title = 'TV Shows List';
 
@@ -13,8 +13,8 @@ $offset = $_REQUEST['offset'] ?? 0;
 
 $page->smarty->assign([
 		'showname'          => $tvshowname,
-		'tvshowlist'        => $tv->getRange($offset, ITEMS_PER_PAGE, $tvshowname),
-		'pagertotalitems'   => $tv->getCount($tvshowname),
+		'tvshowlist'        => $vids->getRange($offset, ITEMS_PER_PAGE, $tvshowname),
+		'pagertotalitems'   => $vids->getCount($tvshowname),
 		'pageroffset'       => $offset,
 		'pageritemsperpage' => ITEMS_PER_PAGE,
 		'pagerquerysuffix'  => '',

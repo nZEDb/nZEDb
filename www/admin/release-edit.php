@@ -7,7 +7,7 @@ use nzedb\Releases;
 $page = new AdminPage(true);
 $releases = new Releases(['Settings' => $page->settings]);
 $category = new Category(['Settings' => $page->settings]);
-$id = 0;
+$catID = 0;
 
 // Set the current action.
 $action = ($_REQUEST['action'] ?? 'view');
@@ -36,8 +36,8 @@ switch ($action) {
 	default:
 		if (isset($_GET['id'])) {
 			$page->title = 'Release Edit';
-			$id          = $_GET['id'];
-			$release     = $releases->getById($id);
+			$catID          = $_GET['id'];
+			$release     = $releases->getById($catID);
 			$page->smarty->assign('release', $release);
 		}
 		break;
