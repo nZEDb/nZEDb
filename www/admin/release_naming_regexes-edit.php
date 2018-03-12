@@ -11,17 +11,17 @@ $regex = ['id' => '', 'group_regex' => '', 'regex' => '', 'description' => '', '
 
 switch (($_REQUEST['action'] ?? 'view')) {
 	case 'submit':
-		if ($_POST["group_regex"] == '') {
+		if ($_POST["group_regex"] === '') {
 			$error = "Group regex must not be empty!";
 			break;
 		}
 
-		if ($_POST["regex"] == '') {
+		if ($_POST["regex"] === '') {
 			$error = "Regex cannot be empty";
 			break;
 		}
 
-		if ($_POST['description'] == '') {
+		if ($_POST['description'] === '') {
 			$_POST['description'] = '';
 		}
 
@@ -30,7 +30,7 @@ switch (($_REQUEST['action'] ?? 'view')) {
 			break;
 		}
 
-		if ($_POST["id"] == '') {
+		if ($_POST["id"] === '') {
 			$regexes->addRegex($_POST);
 		} else {
 			$regexes->updateRegex($_POST);

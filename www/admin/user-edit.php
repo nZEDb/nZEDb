@@ -15,7 +15,7 @@ $defaultRole    = Users::ROLE_USER;
 $defaultInvites = Users::DEFAULT_INVITES;
 foreach ($userRoles as $userRole) {
 	$roles[$userRole['id']] = $userRole['name'];
-	if ($userRole['isdefault'] == 1) {
+	if ($userRole['isdefault'] === 1) {
 		$defaultRole    = $userRole['id'];
 		$defaultInvites = $userRole['defaultinvites'];
 	}
@@ -36,10 +36,10 @@ switch (($_REQUEST['action'] ?? 'view')) {
 		break;
 
 	case 'submit':
-		if ($_POST["id"] == '') {
+		if ($_POST['id'] === '') {
 			$invites = $defaultInvites;
 			foreach ($userRoles as $role) {
-				if ($role['id'] == $_POST['role']) {
+				if ($role['id'] === $_POST['role']) {
 					$invites = $role['defaultinvites'];
 				}
 			}
@@ -55,7 +55,7 @@ switch (($_REQUEST['action'] ?? 'view')) {
 				(isset($_POST['consoleview']) ? '1' : '0'), (isset($_POST['gameview']) ? '1' : '0'),
 				(isset($_POST['bookview']) ? '1' : '0')
 			);
-			if ($_POST['password'] != '') {
+			if ($_POST['password'] !== '') {
 				$page->users->updatePassword($_POST["id"], $_POST['password']);
 			}
 		}

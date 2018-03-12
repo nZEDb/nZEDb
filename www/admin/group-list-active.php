@@ -22,7 +22,7 @@ $page->smarty->assign('pagertotalitems', $groupcount);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
 
-$groupsearch = ($gname != "") ? 'groupname=' . $gname . '&amp;' : '';
+$groupsearch = ($gname !== '') ? 'groupname=' . $gname . '&amp;' : '';
 $page->smarty->assign('pagerquerybase',
 					  WWW_TOP . "/group-list-active.php?" . $groupsearch . "offset=");
 $pager = $page->smarty->fetch("pager.tpl");

@@ -20,7 +20,7 @@ if ($page->isPostBack()) {
 	$group = $_POST["group"];
 	$gzip = $_POST["gzip"];
 
-	if ($folder != '') {
+	if ($folder !== '') {
 		$output = (new NZBExport(['Browser'  => true, 'Settings' => $page->settings, 'Releases' => $rel]))->beginExport([
 				$folder, $fromDate, $toDate, ($_POST["group"] === '-1' ? 0 : (int)$_POST["group"]),
 				($_POST["gzip"] === '1')

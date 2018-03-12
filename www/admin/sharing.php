@@ -4,7 +4,7 @@ require_once './config.php';
 $page = new AdminPage();
 $page->title = 'Sharing Settings';
 
-$offset = (isset($_GET['offset']) ? $_GET['offset'] : 0);
+$offset = ($_GET['offset'] ?? 0);
 
 $allSites = $page->settings->query(sprintf('SELECT * FROM sharing_sites ORDER BY id LIMIT %d OFFSET %d',
 										   25,

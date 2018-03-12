@@ -12,7 +12,7 @@ $action = $_REQUEST['action'] ?? 'view';
 
 switch ($action) {
 	case 'submit':
-		if ($_POST["id"] == "") {
+		if ($_POST['id'] === '') {
 			// Add a new group.
 			$_POST["name"] = $groups->isValidGroup($_POST["name"]);
 			if ($_POST["name"] !== false) {

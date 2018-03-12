@@ -31,34 +31,34 @@ switch ($action) {
 
 		if (is_int($ret)) {
 			// TODO convert to switch
-			if ($ret == Settings::ERR_BADUNRARPATH) {
+			if ($ret === Settings::ERR_BADUNRARPATH) {
 				$error = "The unrar path does not point to a valid binary";
 			} else {
-				if ($ret == Settings::ERR_BADFFMPEGPATH) {
+				if ($ret === Settings::ERR_BADFFMPEGPATH) {
 					$error = "The ffmpeg path does not point to a valid binary";
 				} else {
-					if ($ret == Settings::ERR_BADMEDIAINFOPATH) {
+					if ($ret === Settings::ERR_BADMEDIAINFOPATH) {
 						$error = "The mediainfo path does not point to a valid binary";
 					} else {
-						if ($ret == Settings::ERR_BADNZBPATH) {
+						if ($ret === Settings::ERR_BADNZBPATH) {
 							$error = "The nzb path does not point to an existing directory";
 						} else {
-							if ($ret == Settings::ERR_DEEPNOUNRAR) {
+							if ($ret === Settings::ERR_DEEPNOUNRAR) {
 								$error = "Deep password check requires a valid path to unrar binary";
 							} else {
-								if ($ret == Settings::ERR_BADTMPUNRARPATH) {
+								if ($ret === Settings::ERR_BADTMPUNRARPATH) {
 									$error = "The temp unrar path is not a valid directory";
 								} else {
-									if ($ret == Settings::ERR_BADNZBPATH_UNREADABLE) {
+									if ($ret === Settings::ERR_BADNZBPATH_UNREADABLE) {
 										$error = "The nzb path cannot be read from. Check the permissions.";
 									} else {
-										if ($ret == Settings::ERR_BADNZBPATH_UNSET) {
+										if ($ret === Settings::ERR_BADNZBPATH_UNSET) {
 											$error = "The nzb path is required, please set it.";
 										} else {
-											if ($ret == Settings::ERR_BAD_COVERS_PATH) {
+											if ($ret === Settings::ERR_BAD_COVERS_PATH) {
 												$error = 'The covers&apos; path is required and must exist. Please set it.';
 											} else {
-												if ($ret == Settings::ERR_BAD_YYDECODER_PATH) {
+												if ($ret === Settings::ERR_BAD_YYDECODER_PATH) {
 													$error = 'The yydecoder&apos;s path must exist. Please set it or leave it empty.';
 												}
 											}
@@ -72,7 +72,7 @@ switch ($action) {
 			}
 		}
 
-		if ($error == "") {
+		if ($error === '') {
 			$site     = $ret;
 			$returnid = $site['id'];
 			header("Location:" . WWW_TOP . "/site-edit.php?id=" . $returnid);

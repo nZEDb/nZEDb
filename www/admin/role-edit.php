@@ -27,7 +27,7 @@ switch (($_REQUEST['action'] ?? 'view')) {
 		break;
 
 	case 'submit':
-		if ($_POST["id"] == "") {
+		if ($_POST['id'] === '') {
 			$ret = $page->users->addRole($_POST['name'], $_POST['apirequests'], $_POST['downloadrequests'],
 				$_POST['defaultinvites'], $_POST['canpreview']
 			);
