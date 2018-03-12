@@ -97,7 +97,7 @@ if (!isset($argv[1])) {
 		if ($res = $pdo->queryOneRow(sprintf('SELECT id AS predb_id, title, source, searched FROM predb '
 							. 'WHERE id = %d', $pre))) {
 			$namefixer->done = $namefixer->matched = false;
-			$ftmatched = $searched = 0;
+			$searched = 0;
 			$ftmatched = $namefixer->matchPredbFT($res, 1, 1, true, 1);
 			if ($ftmatched > 0) {
 				$searched = 1;
