@@ -60,7 +60,7 @@ abstract class RequestID
 
 	/**
 	 * Releases with potential Request ID's we can work on.
-	 * @var \PDOStatement|bool
+	 * @var \PDOStatement|false
 	 */
 	protected $_releases;
 
