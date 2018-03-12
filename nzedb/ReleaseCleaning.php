@@ -84,7 +84,8 @@ class ReleaseCleaning
 					$title = $this->pdo->queryOneRow("SELECT title, id from predb WHERE title = " .
 													 $this->pdo->escapeString(trim($val)));
 					// don't match against ab.teevee if title is for just the season
-					if ($this->groupName == 'alt.binaries.teevee' and preg_match('/\.S\d\d\./', $title['title'], $match)) {
+					if ($this->groupName == 'alt.binaries.teevee' &&
+						preg_match('/\.S\d\d\./',  $title['title'], $match)) {
 						$title = false;
 					}
 					if ($title !== false) {
