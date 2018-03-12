@@ -492,9 +492,9 @@ abstract class TV extends Videos
 	 */
 	public function parseInfo($relname)
 	{
-		$showInfo['name'] = $this->parseName($relname);
+		$showInfo = ['name' => $this->parseName($relname)];
 
-		if (!empty($showInfo['name'])) {
+		if (! empty($showInfo['name'])) {
 
 			// Retrieve the country from the cleaned name
 			$showInfo['country'] = $this->parseCountry($showInfo['name']);
