@@ -58,6 +58,8 @@ class DB extends \PDO
 	 */
 	protected $_debug;
 
+	protected $settings;
+
 	/**
 	 * @var bool Should we cache the results of the query method?
 	 */
@@ -1155,7 +1157,7 @@ class DB extends \PDO
 	public function rowsToArray(array $rows)
 	{
 		foreach ($rows as $row) {
-			if (is_array($row)) {
+			if (\is_array($row)) {
 				$this->rowToArray($row);
 			}
 		}
