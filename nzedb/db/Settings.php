@@ -41,7 +41,7 @@ class Settings extends DB
 	const ERR_BAD_COVERS_PATH       = -9;
 	const ERR_BAD_YYDECODER_PATH    = -10;
 
-	private $settings;
+	private $table;
 
 	public function __construct(array $options = [])
 	{
@@ -49,8 +49,6 @@ class Settings extends DB
 		$result = parent::exec("describe site", true);
 		$this->table = ($result === false) ? 'settings' : 'site';
 		$this->setCovers();
-
-		return $this->pdo;
 	}
 
 	/**
@@ -76,7 +74,7 @@ class Settings extends DB
 	public function getSetting($options = [])
 	{
 		// todo: think about making this static so it can be accessed without instantiating.
-		if (!is_array($options)) {
+		if (! \is_array($options)) {
 			$options = $this->_dottedToArray($options);
 			if (isset($options['setting']) && isset($this->settings[$options['setting']])) {
 				return $this->settings[$options['setting']];
@@ -106,9 +104,9 @@ class Settings extends DB
 		$results = $this->queryArray($sql);
 
 		$tree = [];
-		if (is_array($results)) {
+		if (\is_array($results)) {
 			foreach ($results as $result) {
-				if (!empty($result['section']) || !$excludeUnsectioned) {
+				if (! $excludeUnsectioned || ! empty($result['section'])) {
 					$tree[$result['section']][$result['subsection']][$result['name']] =
 						['value' => $result['value'], 'hint' => $result['hint']];
 				}
@@ -118,21 +116,6 @@ class Settings extends DB
 		}
 
 		return $tree;
-	}
-
-	public function rowToArray(array $row)
-	{
-		$this->settings[$row['setting']] = $row['value'];
-	}
-
-	public function rowsToArray(array $rows)
-	{
-		foreach ($rows as $row) {
-			if (is_array($row)) {
-				$this->rowToArray($row);
-			}
-		}
-		return $this->settings;
 	}
 
 	public function setCovers()
@@ -153,13 +136,13 @@ class Settings extends DB
 	 *
 	 * @return boolean	true or false indicating success/failure.
 	 */
-	public function setSetting(array $options)
+	public function setSetting(array $options) : bool
 	{
-		if (count($options) == 1) {
-			foreach ($options as $key => $value) {
-				$options = $this->_dottedToArray($key);
-				$options['value'] = $value;
-			}
+		if (\count($options) === 1) {
+			$key = $this->_dottedToArray(key($options));
+			$value = current($options);
+			$options = $key;
+			$options['value'] = $value;
 		}
 
 		$result = false;
