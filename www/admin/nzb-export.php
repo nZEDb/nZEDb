@@ -14,16 +14,16 @@ $rel  = new Releases(['Settings' => $page->settings]);
 
 $folder = $group = $fromDate = $toDate = $gzip = $output = '';
 if ($page->isPostBack()) {
-	$folder = $_POST["folder"];
-	$fromDate = ($_POST["postfrom"] ?? '');
-	$toDate   = ($_POST["postto"] ?? '');
-	$group = $_POST["group"];
-	$gzip = $_POST["gzip"];
+	$folder = $_POST['folder'];
+	$fromDate = ($_POST['postfrom'] ?? '');
+	$toDate   = ($_POST['postto'] ?? '');
+	$group = $_POST['group'];
+	$gzip = $_POST['gzip'];
 
 	if ($folder !== '') {
 		$output = (new NZBExport(['Browser'  => true, 'Settings' => $page->settings, 'Releases' => $rel]))->beginExport([
-				$folder, $fromDate, $toDate, ($_POST["group"] === '-1' ? 0 : (int)$_POST["group"]),
-				($_POST["gzip"] === '1')
+				$folder, $fromDate, $toDate, ($_POST['group'] === '-1' ? 0 : (int)$_POST['group']),
+				($_POST['gzip'] === '1')
 			]
 		);
 	} else {
@@ -34,7 +34,7 @@ if ($page->isPostBack()) {
 	$toDate = $rel->getLatestUsenetPostDate();
 }
 
-$page->title = "Export Nzbs";
+$page->title = 'Export Nzbs';
 $page->smarty->assign([
 		'output'    => $output,
 		'folder'    => $folder,

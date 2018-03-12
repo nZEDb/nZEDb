@@ -6,16 +6,16 @@ use nzedb\XXX;
 $page     = new AdminPage();
 $xxxmovie = new XXX(['Settings' => $page->settings]);
 
-$page->title = "XXX Movie List";
+$page->title = 'XXX Movie List';
 
 $xxxcount = $xxxmovie->getCount();
 
-$offset = $_REQUEST["offset"] ?? 0;
+$offset = $_REQUEST['offset'] ?? 0;
 $page->smarty->assign('pagertotalitems', $xxxcount);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/xxx-list.php?offset=");
-$pager = $page->smarty->fetch("pager.tpl");
+$page->smarty->assign('pagerquerybase', WWW_TOP . '/xxx-list.php?offset=');
+$pager = $page->smarty->fetch('pager.tpl');
 $page->smarty->assign('pager', $pager);
 
 $xxxmovielist = $xxxmovie->getRange($offset, ITEMS_PER_PAGE);

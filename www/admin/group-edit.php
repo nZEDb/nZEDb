@@ -14,25 +14,25 @@ switch ($action) {
 	case 'submit':
 		if ($_POST['id'] === '') {
 			// Add a new group.
-			$_POST["name"] = $groups->isValidGroup($_POST["name"]);
-			if ($_POST["name"] !== false) {
+			$_POST['name'] = $groups->isValidGroup($_POST['name']);
+			if ($_POST['name'] !== false) {
 				$groups->add($_POST);
 			}
 		} else {
 			// Update an existing group.
 			$groups->update($_POST);
 		}
-		header("Location:" . WWW_TOP . "/group-list.php");
+		header('Location:' . WWW_TOP . '/group-list.php');
 		break;
 
 	case 'view':
 	default:
-		if (isset($_GET["id"])) {
-			$page->title = "Newsgroup Edit";
-			$id          = $_GET["id"];
+		if (isset($_GET['id'])) {
+			$page->title = 'Newsgroup Edit';
+			$id          = $_GET['id'];
 			$group       = $groups->getByID($id);
 		} else {
-			$page->title = "Newsgroup Add";
+			$page->title = 'Newsgroup Add';
 			$group = [
 				'id'                    => '',
 				'name'                  => '',

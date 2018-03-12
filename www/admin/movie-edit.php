@@ -10,8 +10,8 @@ $id    = 0;
 // Set the current action.
 $action = $_REQUEST['action'] ?? 'view';
 
-if (isset($_REQUEST["id"])) {
-	$id  = $_REQUEST["id"];
+if (isset($_REQUEST['id'])) {
+	$id  = $_REQUEST['id'];
 	$mov = $movie->getMovieInfo($id);
 
 	if (!$mov) {
@@ -20,8 +20,8 @@ if (isset($_REQUEST["id"])) {
 
 	switch ($action) {
 		case 'submit':
-			$coverLoc    = nZEDb_COVERS . "movies/" . $id . '-cover.jpg';
-			$backdropLoc = nZEDb_COVERS . "movies/" . $id . '-backdrop.jpg';
+			$coverLoc    = nZEDb_COVERS . 'movies/' . $id . '-cover.jpg';
+			$backdropLoc = nZEDb_COVERS . 'movies/' . $id . '-backdrop.jpg';
 
 			if ($_FILES['cover']['size'] > 0) {
 				$tmpName   = $_FILES['cover']['tmp_name'];
@@ -43,27 +43,27 @@ if (isset($_REQUEST["id"])) {
 			$_POST['backdrop'] = (file_exists($backdropLoc)) ? 1 : 0;
 
 			$movie->update([
-				'actors'   => $_POST["actors"],
+				'actors'   => $_POST['actors'],
 				'backdrop' => $_POST['backdrop'],
-				'cover'    => $_POST["cover"],
-				'director' => $_POST["director"],
-				'genre'    => $_POST["genre"],
+				'cover'    => $_POST['cover'],
+				'director' => $_POST['director'],
+				'genre'    => $_POST['genre'],
 				'imdbid'   => $id,
-				'language' => $_POST["language"],
-				'plot'     => $_POST["plot"],
-				'rating'   => $_POST["rating"],
+				'language' => $_POST['language'],
+				'plot'     => $_POST['plot'],
+				'rating'   => $_POST['rating'],
 				'tagline'  => $_POST['tagline'],
-				'title'    => $_POST["title"],
-				'year'     => $_POST["year"]
+				'title'    => $_POST['title'],
+				'year'     => $_POST['year']
 			]);
 
-			header("Location:" . WWW_TOP . "/movie-list.php");
+			header('Location:' . WWW_TOP . '/movie-list.php');
 			die();
 			break;
 
 		case 'view':
 		default:
-			$page->title = "Movie Edit";
+			$page->title = 'Movie Edit';
 			$page->smarty->assign('movie', $mov);
 			break;
 	}

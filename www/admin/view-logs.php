@@ -77,9 +77,9 @@ $page->smarty->assign(
 $page->smarty->assign('pagertotalitems', $total);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/view-logs.php?t=" . $type . "&amp;offset=");
+$page->smarty->assign('pagerquerybase', WWW_TOP . '/view-logs.php?t=' . $type . '&amp;offset=');
 
-$pager = $page->smarty->fetch("pager.tpl");
+$pager = $page->smarty->fetch('pager.tpl');
 $page->smarty->assign('pager', $pager);
 
 $page->content = $page->smarty->fetch('view-logs.tpl');

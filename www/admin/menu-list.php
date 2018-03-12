@@ -6,7 +6,7 @@ use nzedb\Menu;
 $page = new AdminPage();
 $menu = new Menu($page->settings);
 
-$page->title = "Menu List";
+$page->title = 'Menu List';
 
 $menulist = $menu->getAll();
 $page->smarty->assign('menulist', $menulist);

@@ -11,13 +11,13 @@ $regex = ['id' => '', 'group_regex' => '', 'regex' => '', 'description' => '', '
 
 switch (($_REQUEST['action'] ?? 'view')) {
 	case 'submit':
-		if ($_POST["group_regex"] === '') {
-			$error = "Group regex must not be empty!";
+		if ($_POST['group_regex'] === '') {
+			$error = 'Group regex must not be empty!';
 			break;
 		}
 
-		if ($_POST["regex"] === '') {
-			$error = "Regex cannot be empty";
+		if ($_POST['regex'] === '') {
+			$error = 'Regex cannot be empty';
 			break;
 		}
 
@@ -26,26 +26,26 @@ switch (($_REQUEST['action'] ?? 'view')) {
 		}
 
 		if (!is_numeric($_POST['ordinal']) || $_POST['ordinal'] < 0) {
-			$error = "Ordinal must be a number, 0 or higher.";
+			$error = 'Ordinal must be a number, 0 or higher.';
 			break;
 		}
 
-		if ($_POST["id"] === '') {
+		if ($_POST['id'] === '') {
 			$regexes->addRegex($_POST);
 		} else {
 			$regexes->updateRegex($_POST);
 		}
 
-		header("Location:" . WWW_TOP . "/release_naming_regexes-list.php");
+		header('Location:' . WWW_TOP . '/release_naming_regexes-list.php');
 		break;
 
 	case 'view':
 	default:
-		if (isset($_GET["id"])) {
-			$page->title = "Release Naming Regex Edit";
-			$regex = $regexes->getRegexByID($_GET["id"]);
+		if (isset($_GET['id'])) {
+			$page->title = 'Release Naming Regex Edit';
+			$regex = $regexes->getRegexByID($_GET['id']);
 		} else {
-			$page->title = "Release Naming Regex Add";
+			$page->title = 'Release Naming Regex Add';
 			$regex += ['status' => 1];
 		}
 		break;

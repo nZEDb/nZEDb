@@ -4,7 +4,7 @@ require_once './config.php';
 use nzedb\ReleaseRemover;
 
 $page        = new AdminPage();
-$page->title = "Delete Releases";
+$page->title = 'Delete Releases';
 $error = $done = '';
 $release = [];
 

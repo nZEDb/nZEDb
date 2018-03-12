@@ -56,9 +56,9 @@ $total = $page->settings->queryOneRow('SELECT COUNT(id) AS total FROM sharing_si
 $page->smarty->assign('pagertotalitems', ($total === false ? 0 : $total['total']));
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', 25);
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/sharing.php?offset=");
+$page->smarty->assign('pagerquerybase', WWW_TOP . '/sharing.php?offset=');
 
-$pager = $page->smarty->fetch("pager.tpl");
+$pager = $page->smarty->fetch('pager.tpl');
 $page->smarty->assign('pager', $pager);
 
 $page->smarty->assign(['local' => $ourSite, 'sites' => $allSites]);

@@ -12,12 +12,12 @@ $regex = ['id' => '', 'regex' => '', 'description' => '', 'group_regex' => '', '
 switch (($_REQUEST['action'] ?? 'view')) {
 	case 'submit':
 		if ($_POST['group_regex'] === '') {
-			$error = "Group regex must not be empty!";
+			$error = 'Group regex must not be empty!';
 			break;
 		}
 
 		if ($_POST['regex'] === '') {
-			$error = "Regex cannot be empty";
+			$error = 'Regex cannot be empty';
 			break;
 		}
 
@@ -26,7 +26,7 @@ switch (($_REQUEST['action'] ?? 'view')) {
 		}
 
 		if (!is_numeric($_POST['ordinal']) || $_POST['ordinal'] < 0) {
-			$error = "Ordinal must be a number, 0 or higher.";
+			$error = 'Ordinal must be a number, 0 or higher.';
 			break;
 		}
 
@@ -36,16 +36,16 @@ switch (($_REQUEST['action'] ?? 'view')) {
 			$regexes->updateRegex($_POST);
 		}
 
-		header("Location:" . WWW_TOP . "/category_regexes-list.php");
+		header('Location:' . WWW_TOP . '/category_regexes-list.php');
 		break;
 
 	case 'view':
 	default:
-		if (isset($_GET["id"])) {
-			$page->title = "Category Regex Edit";
-			$regex = $regexes->getRegexByID($_GET["id"]);
+		if (isset($_GET['id'])) {
+			$page->title = 'Category Regex Edit';
+			$regex = $regexes->getRegexByID($_GET['id']);
 		} else {
-			$page->title = "Category Regex Add";
+			$page->title = 'Category Regex Add';
 			$regex += ['status' => 1];
 		}
 

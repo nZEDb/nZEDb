@@ -6,7 +6,7 @@ use nzedb\Regexes;
 
 $page = new AdminPage();
 
-$page->title = "Collections Regex Test";
+$page->title = 'Collections Regex Test';
 
 
 $group = trim(isset($_POST['group']) && !empty($_POST['group']) ? $_POST['group'] : '');

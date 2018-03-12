@@ -23,13 +23,13 @@ switch ($action) {
 		$poster->poster = $_POST['poster'];
 		$poster->save();
 
-		header("Location:" . WWW_TOP . "/posters-list.php");
+		header('Location:' . WWW_TOP . '/posters-list.php');
 		break;
 
 	case 'view':
 	default:
 		if (!empty($_GET['id'])) {
-			$page->title = "MultiGroup Poster Edit";
+			$page->title = 'MultiGroup Poster Edit';
 			// Note: explicitly setting default stuff below, which could be shortened to:
 			// $entry = MultigroupPosters::find($_GET['id']);
 			$poster = MultigroupPosters::find('first',
@@ -46,7 +46,7 @@ switch ($action) {
 				]
 			);
 		} else {
-			$page->title = "MultiGroup Poster Add";
+			$page->title = 'MultiGroup Poster Add';
 			$poster = '';
 		}
 		$page->smarty->assign('poster', $poster);

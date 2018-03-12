@@ -12,16 +12,16 @@ $action = $_REQUEST['action'] ?? 'view';
 
 switch ($action) {
 	case 'submit':
-		$error = "";
+		$error = '';
 		$ret = $tmux->update($_POST);
-		$page->title = "Tmux Settings Edit";
+		$page->title = 'Tmux Settings Edit';
 		$settings = $tmux->get();
 		$page->smarty->assign('ftmux', $settings);
 		break;
 
 	case 'view':
 	default:
-		$page->title = "Tmux Settings Edit";
+		$page->title = 'Tmux Settings Edit';
 		$settings    = $tmux->get();
 		$page->smarty->assign('ftmux', $settings);
 		break;

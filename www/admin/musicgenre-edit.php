@@ -15,15 +15,15 @@ $genre = ['id' => '', 'title' => '', 'disabled' => ''];
 
 switch (($_REQUEST['action'] ?? 'view')) {
 	case 'submit':
-		$ret = $genres->update($_POST["id"], $_POST["disabled"]);
-		header("Location:" . WWW_TOP . "/musicgenre-list.php");
+		$ret = $genres->update($_POST['id'], $_POST['disabled']);
+		header('Location:' . WWW_TOP . '/musicgenre-list.php');
 		break;
 
 	case 'view':
 	default:
-		if (isset($_GET["id"])) {
-			$page->title = "Music Genre Edit";
-			$genre = $genres->getById($_GET["id"]);
+		if (isset($_GET['id'])) {
+			$page->title = 'Music Genre Edit';
+			$genre = $genres->getById($_GET['id']);
 		}
 		break;
 }

@@ -52,12 +52,12 @@ switch ($_GET['action']) {
 	case 'group_edit_purge_all':
 		session_write_close();
 		(new Groups($settings))->purge();
-		print "All groups purged.";
+		print 'All groups purged.';
 		break;
 
 	case 'group_edit_reset_all':
 		(new Groups($settings))->resetall();
-		print "All groups reset.";
+		print 'All groups reset.';
 		break;
 
 	case 'group_edit_purge_single':

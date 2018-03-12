@@ -15,4 +15,4 @@ if (isset($_GET['from'])) {
 } else {
 	$referrer = $_SERVER['HTTP_REFERER'];
 }
-header("Location: " . $referrer);
+header('Location: ' . $referrer);

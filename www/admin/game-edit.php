@@ -13,8 +13,8 @@ $id    = 0;
 // Set the current action.
 $action = $_REQUEST['action'] ?? 'view';
 
-if (isset($_REQUEST["id"])) {
-	$id   = $_REQUEST["id"];
+if (isset($_REQUEST['id'])) {
+	$id   = $_REQUEST['id'];
 	$game = $games->getGamesInfo($id);
 
 	if (!$game) {
@@ -23,7 +23,7 @@ if (isset($_REQUEST["id"])) {
 
 	switch ($action) {
 		case 'submit':
-			$coverLoc = nZEDb_COVERS . "games/" . $id . '.jpg';
+			$coverLoc = nZEDb_COVERS . 'games/' . $id . '.jpg';
 
 			if ($_FILES['cover']['size'] > 0) {
 				$tmpName   = $_FILES['cover']['tmp_name'];
@@ -34,26 +34,26 @@ if (isset($_REQUEST["id"])) {
 			}
 
 			$_POST['cover']       = (file_exists($coverLoc)) ? 1 : 0;
-			$_POST['releasedate'] = (empty($_POST['releasedate']) || !strtotime($_POST['releasedate'])) ? $game['releasedate'] : date("Y-m-d H:i:s", strtotime($_POST['releasedate']));
+			$_POST['releasedate'] = (empty($_POST['releasedate']) || !strtotime($_POST['releasedate'])) ? $game['releasedate'] : date('Y-m-d H:i:s', strtotime($_POST['releasedate']));
 
 			$games->update($id,
-						   $_POST["title"],
+						   $_POST['title'],
 						   $_POST['asin'],
 						   $_POST['url'],
-						   $_POST["publisher"],
-						   $_POST["releasedate"],
-						   $_POST["esrb"],
-						   $_POST["cover"],
+						   $_POST['publisher'],
+						   $_POST['releasedate'],
+						   $_POST['esrb'],
+						   $_POST['cover'],
 						   $_POST['trailerurl'],
-						   $_POST["genre"]);
+						   $_POST['genre']);
 
-			header("Location:" . WWW_TOP . "/game-list.php");
+			header('Location:' . WWW_TOP . '/game-list.php');
 			die();
 			break;
 
 		case 'view':
 		default:
-			$page->title = "Game Edit";
+			$page->title = 'Game Edit';
 			$page->smarty->assign('game', $game);
 			$page->smarty->assign('genres', $gen->getGenres(Category::PC_ROOT));
 			break;

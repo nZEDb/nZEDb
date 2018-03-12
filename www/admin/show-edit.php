@@ -14,24 +14,24 @@ switch (($_REQUEST['action'] ?? 'view')) {
 		//$tv->update($_POST["id"], $_POST["title"],$_POST["summary"], $_POST['countries_id']);
 
 		if (isset($_POST['from']) && !empty($_POST['from'])) {
-			header("Location:" . $_POST['from']);
+			header('Location:' . $_POST['from']);
 			exit;
 		}
 
-		header("Location:" . WWW_TOP . "/show-list.php");
+		header('Location:' . WWW_TOP . '/show-list.php');
 		break;
 
 	case 'view':
 	default:
-		if (isset($_GET["id"])) {
-			$page->title = "TV Show Edit";
-			$show = $video->getByVideoID($_GET["id"]);
+		if (isset($_GET['id'])) {
+			$page->title = 'TV Show Edit';
+			$show = $video->getByVideoID($_GET['id']);
 		}
 		break;
 }
 
 $page->smarty->assign('show', $show);
 
-$page->title   = "Edit TV Show Data";
+$page->title   = 'Edit TV Show Data';
 $page->content = $page->smarty->fetch('show-edit.tpl');
 $page->render();

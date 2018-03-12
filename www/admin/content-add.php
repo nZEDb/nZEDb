@@ -14,11 +14,11 @@ $action = $_REQUEST['action'] ?? 'view';
 
 switch ($action) {
 	case 'add':
-		$page->title          = "Content Add";
+		$page->title          = 'Content Add';
 		$content              = new Content();
-		$content->showinmenu  = "1";
-		$content->status      = "1";
-		$content->contenttype = "2";
+		$content->showinmenu  = '1';
+		$content->status      = '1';
+		$content->contenttype = '2';
 		$page->smarty->assign('content', $content);
 		break;
 
@@ -31,7 +31,7 @@ switch ($action) {
 			$content  = $contents->update($_POST);
 			$returnid = $content->id;
 		}
-		header("Location:content-add.php?id=" . $returnid);
+		header('Location:content-add.php?id=' . $returnid);
 		break;
 
 	case 'view':

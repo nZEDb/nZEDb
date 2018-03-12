@@ -13,8 +13,8 @@ $id       = 0;
 // Set the current action.
 $action = $_REQUEST['action'] ?? 'view';
 
-if (isset($_REQUEST["id"])) {
-	$id  = $_REQUEST["id"];
+if (isset($_REQUEST['id'])) {
+	$id  = $_REQUEST['id'];
 	$xxx = $xxxmovie->getXXXInfo($id);
 
 	if (!$xxx) {
@@ -23,8 +23,8 @@ if (isset($_REQUEST["id"])) {
 
 	switch ($action) {
 		case 'submit':
-			$coverLoc    = nZEDb_COVERS . "xxx/" . $id . '-cover.jpg';
-			$backdropLoc = nZEDb_COVERS . "xxx/" . $id . '-backdrop.jpg';
+			$coverLoc    = nZEDb_COVERS . 'xxx/' . $id . '-cover.jpg';
+			$backdropLoc = nZEDb_COVERS . 'xxx/' . $id . '-backdrop.jpg';
 
 			if ($_FILES['cover']['size'] > 0) {
 				$tmpName   = $_FILES['cover']['tmp_name'];
@@ -45,7 +45,7 @@ if (isset($_REQUEST["id"])) {
 			$_POST['cover']    = (file_exists($coverLoc)) ? 1 : 0;
 			$_POST['backdrop'] = (file_exists($backdropLoc)) ? 1 : 0;
 			if (is_array($_POST['genre'])) {
-				$genre = implode(",", $_POST['genre']);
+				$genre = implode(',', $_POST['genre']);
 			} else {
 				$genre = $_POST['genre'];
 			}
@@ -65,15 +65,15 @@ if (isset($_REQUEST["id"])) {
 							  $_POST['classused'],
 							  $_POST['cover'],
 							  $_POST['backdrop']);
-			header("Location:" . WWW_TOP . "/xxx-list.php");
+			header('Location:' . WWW_TOP . '/xxx-list.php');
 			die();
 			break;
 
 		case 'view':
 		default:
-			$page->title = "XXX Movie Edit";
+			$page->title = 'XXX Movie Edit';
 			if (strpos($xxx['genre'], ',') !== false) {
-				$xxx['genre'] = explode(",", $xxx['genre']);
+				$xxx['genre'] = explode(',', $xxx['genre']);
 			}
 			$xxx['trailers'] = (!empty($xxx['trailers'])) ? unserialize($xxx['trailers'], false) :
 				'';

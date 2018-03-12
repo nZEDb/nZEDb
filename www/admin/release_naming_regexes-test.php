@@ -5,7 +5,7 @@ use nzedb\Regexes;
 
 $page = new AdminPage();
 
-$page->title = "Release Naming Regex Test";
+$page->title = 'Release Naming Regex Test';
 
 $data = [];
 $group      = trim(isset($_POST['group']) && !empty($_POST['group']) ? $_POST['group'] : '');

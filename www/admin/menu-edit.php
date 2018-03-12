@@ -25,7 +25,7 @@ switch ($action) {
 			$ret = $menu->update($_POST);
 		}
 
-		header("Location:" . WWW_TOP . "/menu-list.php");
+		header('Location:' . WWW_TOP . '/menu-list.php');
 		break;
 
 	case 'view':
@@ -34,12 +34,12 @@ switch ($action) {
 			'id' => '', 'title' => '', 'href' => '', 'tooltip' => '',
 			'menueval' => '', 'role' => 0, 'ordinal' => 0, 'newwindow' => 0
 		];
-		if (isset($_GET["id"])) {
+		if (isset($_GET['id'])) {
 
-			$id          = $_GET["id"];
+			$id          = $_GET['id'];
 			$menuRow     = $menu->getById($id);
 		}
-		$page->title = "Menu Edit";
+		$page->title = 'Menu Edit';
 		$page->smarty->assign('menu', $menuRow);
 		break;
 }

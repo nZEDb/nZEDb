@@ -6,7 +6,7 @@ use nzedb\Binaries;
 $page = new AdminPage();
 $bin  = new Binaries(['Settings' => $page->settings]);
 
-$page->title = "Binary Black/Whitelist List";
+$page->title = 'Binary Black/Whitelist List';
 
 $binlist = $bin->getBlacklist(false);
 $page->smarty->assign('binlist', $binlist);

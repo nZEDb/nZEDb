@@ -12,12 +12,12 @@ $regex = ['id' => '', 'groupname' => '', 'regex' => '', 'description' => ''];
 switch (($_REQUEST['action'] ?? 'view')) {
 	case 'submit':
 		if ($_POST['groupname'] === '') {
-			$error = "Group must be a valid usenet group";
+			$error = 'Group must be a valid usenet group';
 			break;
 		}
 
 		if ($_POST['regex'] === '') {
-			$error = "Regex cannot be empty";
+			$error = 'Regex cannot be empty';
 			break;
 		}
 
@@ -27,7 +27,7 @@ switch (($_REQUEST['action'] ?? 'view')) {
 			$ret = $bin->updateBlacklist($_POST);
 		}
 
-		header("Location:" . WWW_TOP . "/binaryblacklist-list.php");
+		header('Location:' . WWW_TOP . '/binaryblacklist-list.php');
 		break;
 
 	case 'addtest':
@@ -43,11 +43,11 @@ switch (($_REQUEST['action'] ?? 'view')) {
 
 	case 'view':
 	default:
-		if (isset($_GET["id"])) {
-			$page->title = "Binary Black/Whitelist Edit";
-			$regex = $bin->getBlacklistByID($_GET["id"]);
+		if (isset($_GET['id'])) {
+			$page->title = 'Binary Black/Whitelist Edit';
+			$regex = $bin->getBlacklistByID($_GET['id']);
 		} else {
-			$page->title = "Binary Black/Whitelist Add";
+			$page->title = 'Binary Black/Whitelist Add';
 			$regex += [
 				'status' => 1,
 				'optype' => 1,

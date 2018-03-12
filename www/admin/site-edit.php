@@ -19,7 +19,7 @@ $action = $_REQUEST['action'] ?? 'view';
 
 switch ($action) {
 	case 'submit':
-		$error = "";
+		$error = '';
 
 		if (!empty($_POST['book_reqids'])) {
 			// book_reqids is an array it needs to be a comma separated string, make it so.
@@ -32,28 +32,28 @@ switch ($action) {
 		if (is_int($ret)) {
 			// TODO convert to switch
 			if ($ret === Settings::ERR_BADUNRARPATH) {
-				$error = "The unrar path does not point to a valid binary";
+				$error = 'The unrar path does not point to a valid binary';
 			} else {
 				if ($ret === Settings::ERR_BADFFMPEGPATH) {
-					$error = "The ffmpeg path does not point to a valid binary";
+					$error = 'The ffmpeg path does not point to a valid binary';
 				} else {
 					if ($ret === Settings::ERR_BADMEDIAINFOPATH) {
-						$error = "The mediainfo path does not point to a valid binary";
+						$error = 'The mediainfo path does not point to a valid binary';
 					} else {
 						if ($ret === Settings::ERR_BADNZBPATH) {
-							$error = "The nzb path does not point to an existing directory";
+							$error = 'The nzb path does not point to an existing directory';
 						} else {
 							if ($ret === Settings::ERR_DEEPNOUNRAR) {
-								$error = "Deep password check requires a valid path to unrar binary";
+								$error = 'Deep password check requires a valid path to unrar binary';
 							} else {
 								if ($ret === Settings::ERR_BADTMPUNRARPATH) {
-									$error = "The temp unrar path is not a valid directory";
+									$error = 'The temp unrar path is not a valid directory';
 								} else {
 									if ($ret === Settings::ERR_BADNZBPATH_UNREADABLE) {
-										$error = "The nzb path cannot be read from. Check the permissions.";
+										$error = 'The nzb path cannot be read from. Check the permissions.';
 									} else {
 										if ($ret === Settings::ERR_BADNZBPATH_UNSET) {
-											$error = "The nzb path is required, please set it.";
+											$error = 'The nzb path is required, please set it.';
 										} else {
 											if ($ret === Settings::ERR_BAD_COVERS_PATH) {
 												$error = 'The covers&apos; path is required and must exist. Please set it.';
@@ -75,7 +75,7 @@ switch ($action) {
 		if ($error === '') {
 			$site     = $ret;
 			$returnid = $site['id'];
-			header("Location:" . WWW_TOP . "/site-edit.php?id=" . $returnid);
+			header('Location:' . WWW_TOP . '/site-edit.php?id=' . $returnid);
 		} else {
 			$page->smarty->assign('error', $error);
 			$page->smarty->assign('settings', $page->settings->rowsToArray($_POST));
@@ -84,7 +84,7 @@ switch ($action) {
 
 	case 'view':
 	default:
-		$page->title = "Site Edit";
+		$page->title = 'Site Edit';
 		$site        = $page->settings;
 		$page->smarty->assign('site', $site);
 		$page->smarty->assign('settings', $site->getSettingsAsTree());
@@ -192,8 +192,8 @@ $result = $page->settings->query("SELECT id, title FROM categories WHERE id IN (
 $book_reqids_ids   = [];
 $book_reqids_names = [];
 foreach ($result as $bookcategory) {
-	$book_reqids_ids[]   = $bookcategory["id"];
-	$book_reqids_names[] = $bookcategory["title"];
+	$book_reqids_ids[]   = $bookcategory['id'];
+	$book_reqids_names[] = $bookcategory['title'];
 }
 
 // convert from a string array to an int array as we want to use int
@@ -208,7 +208,7 @@ $page->smarty->assign('book_reqids_ids', $book_reqids_ids);
 $page->smarty->assign('book_reqids_names', $book_reqids_names);
 
 // convert from a list to an array as we need to use an array, but teh sites table only saves strings
-$books_selected = explode(",", Settings::value('..book_reqids'));
+$books_selected = explode(',', Settings::value('..book_reqids'));
 
 // convert from a string array to an int array
 $books_selected = array_map(
