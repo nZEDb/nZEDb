@@ -25,7 +25,7 @@ $page->smarty->assign(
 		'tz'               => \lithium\data\Connections::config()['default']['object']->timezone(),
 	]
 );
-// Pager has to be set outside of main assign, or it will no recieve the scope of those variables.
+// Pager has to be set outside of main assign, or it will no receive the scope of those variables.
 $page->smarty->assign('pager', $page->smarty->fetch('paginate.tpl'));
 
 $page->content = $page->smarty->fetch('predb.tpl');
