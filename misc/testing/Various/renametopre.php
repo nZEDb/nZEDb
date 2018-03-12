@@ -154,8 +154,7 @@ function preName($argv, $argc)
 						$propername = true;
 					}
 				if ($cleanName != $row['name'] && $cleanName != $row['searchname']) {
-					if (strlen(utf8_decode($cleanName)) <= 3) {
-					} else {
+					if (strlen(utf8_decode($cleanName)) > 3) {
 						$determinedcat = $category->determineCategory($row["groups_id"], $cleanName);
 						if ($propername == true) {
 							$pdo->queryExec(
@@ -305,7 +304,7 @@ function releaseCleaner($subject, $fromName, $size, $groupname, $usepre)
 	$groups = new Groups();
 	$releaseCleaning = new ReleaseCleaning($groups->pdo);
 	$cleanerName = $releaseCleaning->releaseCleaner($subject, $fromName, $size, $groupname, $usepre);
-	if (!is_array($cleanerName) && $cleanerName != false) {
+	if (!is_array($cleanerName) && $cleanerName !== false) {
 		return ["cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false];
 	} else {
 		return $cleanerName;
