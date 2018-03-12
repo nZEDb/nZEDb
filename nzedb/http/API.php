@@ -106,7 +106,7 @@ class API extends Capabilities {
 	 */
 	public function categoryID()
 	{
-		$categoryID[] = -1;
+		$categoryID = [-1];
 		if (isset($this->getRequest['cat'])) {
 			$categoryIDs = urldecode($this->getRequest['cat']);
 			// Append Web-DL category ID if HD present for SickBeard / Sonarr compatibility.
