@@ -729,8 +729,12 @@ class Misc
 			//get child nodes from all namespaces
 			foreach ($xml->children($namespace) as $childXml) {
 				//recurse into child nodes
+				/*
 				$childArray = self::xmlToArray($childXml, $options);
 				list($childTagName, $childProperties) = each($childArray);
+				*/
+				$childTagName = $childXml->getName();
+				$childProperties = current(self::xmlToArray($childXml, $options));
 
 				//replace characters in tag name
 				if ($options['keySearch']) $childTagName =
