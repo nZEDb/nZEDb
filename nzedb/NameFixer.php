@@ -204,7 +204,7 @@ class NameFixer
 
 		$releases = $this->_getReleases($time, $cats, $query);
 
-		if ($releases instanceof \PDOStatement && $releases !== false) {
+		if ($releases !== false) {
 			$total = $releases->rowCount();
 
 			if ($total > 0) {
@@ -284,7 +284,7 @@ class NameFixer
 		}
 
 		$releases = $this->_getReleases($time, $cats, $query);
-		if ($releases instanceof \PDOStatement) {
+		if ($releases !== false) {
 
 			$total = $releases->rowCount();
 			if ($total > 0) {
@@ -342,7 +342,7 @@ class NameFixer
 
 		$releases = $this->_getReleases($time, $cats, $query);
 
-		if ($releases instanceof \PDOStatement) {
+		if ($releases !== false) {
 
 			$total = $releases->rowCount();
 			if ($total > 0) {
@@ -428,7 +428,7 @@ class NameFixer
 		}
 
 		$releases = $this->_getReleases($time, $cats, $query);
-		if ($releases instanceof \PDOStatement) {
+		if ($releases !== false) {
 			$total = $releases->rowCount();
 			if ($total > 0) {
 				$this->_totalReleases = $total;
