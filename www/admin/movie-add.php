@@ -9,7 +9,7 @@ $movieID    = 0;
 
 $page->title = 'Movie Add';
 
-if (isset($_REQUEST['id']) && ctype_digit($_REQUEST['id']) && strlen($_REQUEST['id']) == 7) {
+if (isset($_REQUEST['id']) && ctype_digit($_REQUEST['id']) && strlen($_REQUEST['id']) === 7) {
 	$movieID       = $_REQUEST['id'];
 	$movCheck = $movie->getMovieInfo($movieID);
 	if (!$movCheck || (isset($_REQUEST['update']) && $_REQUEST['update'] == 1)) {

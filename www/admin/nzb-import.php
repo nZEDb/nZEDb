@@ -19,7 +19,7 @@ if ($page->isPostBack()) {
 	// Get the list of NZB files from php /tmp folder if nzb files were uploaded.
 	if (isset($_FILES['uploadedfiles'])) {
 		foreach ($_FILES['uploadedfiles']['error'] as $key => $error) {
-			if ($error == UPLOAD_ERR_OK) {
+			if ($error === UPLOAD_ERR_OK) {
 				$tempName         = $_FILES['uploadedfiles']['tmp_name'][$key];
 				$name             = $_FILES['uploadedfiles']['name'][$key];
 				$filesToProcess[] = $tempName;

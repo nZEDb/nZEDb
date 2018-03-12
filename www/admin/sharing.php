@@ -15,7 +15,7 @@ if (count($allSites) === 0) {
 
 $ourSite = $page->settings->queryOneRow('SELECT * FROM sharing');
 
-if (!empty($_POST)) {
+if (count($_POST) !== 0) {
 	if (!empty($_POST['sharing_name']) && !preg_match('/\s+/', $_POST['sharing_name']) &&
 		strlen($_POST['sharing_name']) < 255
 	) {

@@ -8,9 +8,8 @@ use nzedb\Releases;
 $page     = new AdminPage();
 $releases = new Releases(['Settings' => $page->settings]);
 $logging  = new Logging(['Settings' => $page->settings]);
-if (Settings::value('site.main.loggingopt') == '0') {
-	$loggingon = '0';
-} else {
+$loggingon = Settings::value('site.main.loggingopt');
+if ($loggingon !== '0') {
 	$loggingon = '1';
 }
 
@@ -33,7 +32,7 @@ $page->smarty->assign('recent', $recent);
 $usersbymonth = $page->users->getUsersByMonth();
 $page->smarty->assign('usersbymonth', $usersbymonth);
 
-if ($loggingon == '1') {
+if ($loggingon === '1') {
 	$toplogincombined = $logging->getTopCombined();
 	$page->smarty->assign('toplogincombined', $toplogincombined);
 
