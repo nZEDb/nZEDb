@@ -412,21 +412,29 @@ class Misc
 
 	public static function setCoversConstant($path)
 	{
-		if (!defined('nZEDb_COVERS')) {
-			switch (true) {
-				case (substr($path, 0, 1) == '/' ||
-					substr($path, 1, 1) == ':' ||
-					substr($path, 0, 1) == '\\'):
-					define('nZEDb_COVERS', Text::trailingSlash($path));
-					break;
-				case (strlen($path) > 0 && substr($path, 0, 1) != '/' && substr($path, 1, 1) != ':' &&
-					substr($path, 0, 1) != '\\'):
-					define('nZEDb_COVERS', realpath(nZEDb_ROOT . Text::trailingSlash($path)));
-					break;
-				case empty($path): // Default to resources location.
-				default:
-					define('nZEDb_COVERS', nZEDb_RES . 'covers' . DS);
+		if (! \defined('nZEDb_COVERS')) {
+			$fullpath = nZEDb_RES . 'covers' . DS;
+			if (\strlen($path) > 1) {
+				switch (true) {
+					case (
+						$path[0] === '/' ||
+						$path[0] === '\\'):
+						$path[1] === ':' ||
+						$fullpath = Text::trailingSlash($path);
+						break;
+					case (
+						\strlen($path) > 0 &&
+						$path[0] !== '/' &&
+						$path[1] !== ':' &&
+						$path[0] !== '\\'):
+						$fullpath = Text::trailingSlash($path);
+						break;
+					case empty($path): // Default to resources location.
+					default:
+						$fullpath = nZEDb_RES . 'covers' . DS;
+				}
 			}
+			\define('nZEDb_COVERS', $fullpath);
 		}
 	}
 
