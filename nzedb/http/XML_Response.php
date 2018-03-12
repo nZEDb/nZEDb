@@ -224,9 +224,7 @@ class XML_Response
 	{
 		$this->xml->startElement($element['name']);
 		foreach($element['data'] AS $elem => $value) {
-			$subelement['name'] = $elem;
-			$subelement['data'] = $value;
-			$this->addNode($subelement);
+			$this->addNode(['name' => $elem, 'data' => $value]);
 		}
 		$this->xml->endElement();
 	}
