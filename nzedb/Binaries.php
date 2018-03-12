@@ -853,7 +853,7 @@ class Binaries
 	/**
 	 * Parse headers into collections/binaries and store header data as parts
 	 *
-	 * @param array $headers The retrieved headers
+	 * @param array $headers	The retrieved headers
 	 * @param bool  $multiGroup Is this task being run in MGR mode?
 	 */
 	protected function storeHeaders(array $headers, $multiGroup)
@@ -867,10 +867,12 @@ class Binaries
 			"INSERT IGNORE INTO {$this->tableNames['pname']} (binaries_id, number, messageid, partnumber, size) VALUES ";
 
 		// Loop articles, figure out files/parts.
+		/* @var $headers string[] */
 		foreach ($headers as $this->header)
 		{
 			// Set up the info for inserting into parts/binaries/collections tables.
 			if (!isset($articles[$this->header['matches'][1]])) {
+				$fileCount = [0, 0, 0];
 
 				// check whether file count should be ignored (XXX packs for now only).
 				$whitelistMatch = false;
@@ -904,7 +906,7 @@ class Binaries
 				);
 
 				// Used to group articles together when forming the release.  MGR requires this to be group irrespective
-                $this->header['CollectionKey'] = $collMatch['name'].$ckId.$fileCount[3];
+                $this->header['CollectionKey'] = $collMatch['name'] . $ckId . $fileCount[3];
 
 				// If this header's collection key isn't in memory, attempt to insert the collection
 				if (!isset($collectionIDs[$this->header['CollectionKey']])) {
