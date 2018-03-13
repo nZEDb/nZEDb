@@ -970,7 +970,7 @@ class DB extends \PDO
 	 * @param string $query  The query to run.
 	 * @param bool   $ignore Ignore errors, do not log them?
 	 *
-	 * @return bool|\PDOStatement
+	 * @return \PDOStatement|false
 	 */
 	public function queryDirect($query, $ignore = false)
 	{
