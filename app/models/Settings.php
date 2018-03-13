@@ -13,6 +13,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2016 nZEDb
  */
@@ -20,14 +21,11 @@ namespace app\models;
 
 use nzedb\utility\Text;
 
-
 /**
  * Settings - model for settings table.
  *
- * li3 app completely ignore the 'setting' column and only uses 'section', 'subsection', and 'name'
+ * li3 app completely ignores the 'setting' column and only uses 'section', 'subsection', and 'name'
  * for finding values/hints.
- *
-*@package app\models
  */
 class Settings extends \app\extensions\data\Model
 {
@@ -62,63 +60,63 @@ class Settings extends \app\extensions\data\Model
 	public $validates = [
 		'section' => [
 			[
-				'required'	=> false
-			]
+				'required'	=> false,
+			],
 		],
 		'subsection' => [
 			[
-				'required' => false
-			]
+				'required' => false,
+			],
 		],
 		'name' => [
 			[
-				'required' => true
+				'required' => true,
 			],
 			[
 				'notEmpty',
-				'message' => 'You must supply a name for this setting.'
-			]
+				'message' => 'You must supply a name for this setting.',
+			],
 		],
 		'value' => [
 			[
-				'required' => true
-			]
+				'required' => true,
+			],
 		],
 		'hint' => [
 			[
-				'required' => true
+				'required' => true,
 			],
 			[
 				'notEmpty',
-				'message' => 'You must supply a hint/description for this setting.'
-			]
+				'message' => 'You must supply a hint/description for this setting.',
+			],
 		],
 		'setting' => [
 			[
-				'required' => true
+				'required' => true,
 			],
 			[
 				'notEmpty',
-				'message' => 'You must supply a name for this setting.'
-			]
+				'message' => 'You must supply a name for this setting.',
+			],
 		],
 	];
 
 	protected $_meta = [
-		'key' => ['section', 'subsection', 'name']
+		'key' => ['section', 'subsection', 'name'],
 	];
 
 	public static function hasAllEntries($console = null)
 	{
 		$filepath = Text::pathCombine(['db', 'schema', 'data', '10-settings.tsv'], nZEDb_RES);
-		if (!file_exists($filepath)) {
+		if (! file_exists($filepath)) {
 			throw new \InvalidArgumentException("Unable to find {$filepath}");
 		}
 		$settings = file($filepath);
 
-		if (!is_array($settings)) {
-			var_dump($settings);
-			throw new \InvalidArgumentException("Settings is not an array!");
+		if (! \is_array($settings)) {
+			//var_dump($settings);
+			throw new \InvalidArgumentException('Settings is not an array!');
 		}
 
 		$setting = [];
@@ -126,8 +124,8 @@ class Settings extends \app\extensions\data\Model
 		$result = false;
 		if ($dummy !== null) {
 			if ($console !== null) {
-				$console->primary("Verifying settings table...");
-				$console->info("(section, subsection, name):");
+				$console->primary('Verifying settings table...');
+				$console->info('(section, subsection, name):');
 			}
 			$result = true;
 			foreach ($settings as $line) {
@@ -135,21 +133,22 @@ class Settings extends \app\extensions\data\Model
 				list($setting['section'], $setting['subsection'], $setting['name']) =
 					explode("\t", $line);
 
-				$value = Settings::value(
+				$value = static::value(
 					[
 						'section'    => $setting['section'],
 						'subsection' => $setting['subsection'],
-						'name'       => $setting['name']
+						'name'       => $setting['name'],
 					],
-					true);
+					true
+				);
 				if ($value === null) {
 					$result = false;
-					$message = "error";
+					$message = 'error';
 				}
 
-				if ($message != '' && $console !== null) {
+				if ($message !== '' && $console !== null) {
 					$console->out(" {$setting['section']}, {$setting['subsection']}, {$setting['name']}: "
-						. "MISSING!");
+						. 'MISSING!');
 				}
 			}
 		}
@@ -159,9 +158,9 @@ class Settings extends \app\extensions\data\Model
 
 	public static function init()
 	{
-		static::finder('setting',
+		static::finder(
+			'setting',
 			function ($params, $next) {
-
 				$params['options']['conditions'] = self::settingToArray($params['options']['conditions']);
 				$params['type'] = 'first';
 
@@ -183,30 +182,31 @@ class Settings extends \app\extensions\data\Model
 	/**
 	 * Return a tree-like array of all or selected settings.
 	 *
-	 *	@param array $options	Options array for Settings::find() i.e. ['conditions' => ...].
-	 * @param bool $excludeUnsectioned If rows with empty 'section' field should be excluded.
-	 *		Note this doesn't prevent empty 'subsection' fields.
-	 * @return array
+	 * @param array $options            Options array for Settings::find() i.e. ['conditions' => ...].
+	 * @param bool  $excludeUnsectioned If rows with empty 'section' field should be excluded.
+	 *                                  Note this doesn't prevent empty 'subsection' fields.
+	 *
 	 * @throws \RuntimeException
+	 *
+	 * @return array
 	 */
-	public static function toTree(array $options = [], $excludeUnsectioned = true)
+	public static function toTree(array $options = [], $excludeUnsectioned = true) : array
 	{
-		$results = empty($options) ?
-			Settings::find('all') :
-			Settings::find('all', $options);
+		$results = empty($options) ? static::find('all') : static::find('all', $options);
+		/** @scrutinizer ignore-call  Scrutinizer mistakenly believes this returns lithium\aop\chain, instead of lithium\data\Recordset */
 		$results = $results->data();
 
 		$tree = [];
-		if (is_array($results)) {
+		if (\is_array($results)) {
 			foreach ($results as $result) {
-				if (!empty($result['section']) || !$excludeUnsectioned) {
+				if (! $excludeUnsectioned || ! empty($result['section'])) {
 					$tree[$result['section']][$result['subsection']][$result['name']] =
 						['value' => $result['value'], 'hint' => $result['hint']];
 				}
 			}
 		} else {
 			throw new \RuntimeException(
-				"NO results from Settings table! Check your table has been created and populated."
+				'NO results from Settings table! Check your table has been created and populated.'
 			);
 		}
 
@@ -214,13 +214,13 @@ class Settings extends \app\extensions\data\Model
 	}
 
 	/**
-	 * Checks the supplied parameter is either a string or an array with single element. If
-	 * either the value is passed to Settings::dottedToArray() for conversion. Otherwise the
-	 * value is returned unchanged.
+	 * Checks the supplied parameter is either a string or an array with single element.
+	 * If either of the above the value is passed to Settings::dottedToArray() for conversion.
+	 * Otherwise, the value is returned unchanged.
 	 *
-	 * @param string|array $setting    Setting array/string to check.
+	 * @param string|array $setting Setting array/string to check.
 	 *
-	 * @return array|boolean
+	 * @return array|bool
 	 */
 	public static function settingToArray($setting)
 	{
@@ -235,6 +235,7 @@ class Settings extends \app\extensions\data\Model
 
 	/**
 	 * Return the value of supplied setting.
+	 *
 	 * The setting can be either a normal condition array for the custom 'setting' finder or a
 	 * dotted string notation setting. Note that dotted notation will be converted to an array by
 	 * the custom finder, so it will be slower: Explicitly use the array format if speed it paramount.
@@ -245,17 +246,18 @@ class Settings extends \app\extensions\data\Model
 	 * @param bool $returnAlways Indicates if the method should throw an exception (false) or return
 	 *                           null on failure. Defaults to throwing an exception.
 	 *
-	 * @return string|null		 The setting's value, or null on failure IF 'returnAlways' is true.
 	 * @throws \Exception
+	 *
+	 * @return string|null The setting's value, or null on failure IF 'returnAlways' is true.
 	 */
 	public static function value($setting, $returnAlways = false)
 	{
-		$result = Settings::find('setting', ['conditions' => $setting, 'fields' => ['value']]);
+		$result = static::find('setting', ['conditions' => $setting, 'fields' => ['value']]);
 
-		if ($result !== false && $result->count() > 0) {
+		if ($result !== false && $result->/** @scrutinizer ignore-call */ count() > 0) {
 			$value = $result->data()[0]['value'];
-		} else if ($returnAlways === false) {
-			throw new \Exception("Unable to fetch setting from Db!");
+		} elseif ($returnAlways === false) {
+			throw new \Exception('Unable to fetch setting from Db!');
 		} else {
 			$value = null;
 		}
@@ -266,9 +268,9 @@ class Settings extends \app\extensions\data\Model
 	protected static function dottedToArray($setting)
 	{
 		$result = [];
-		if (is_string($setting)) {
+		if (\is_string($setting)) {
 			$array = explode('.', $setting);
-			$count = count($array);
+			$count = \count($array);
 			if ($count > 3) {
 				return false;
 			}
@@ -277,7 +279,8 @@ class Settings extends \app\extensions\data\Model
 				array_unshift($array, '');
 				$count++;
 			}
-						list(
+
+			list(
 				$result['section'],
 				$result['subsection'],
 				$result['name'],
@@ -287,7 +290,6 @@ class Settings extends \app\extensions\data\Model
 		}
 
 		return $result;
-
 	}
 }
 
