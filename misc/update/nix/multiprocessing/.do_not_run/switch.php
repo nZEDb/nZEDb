@@ -162,7 +162,7 @@ switch ($options[1]) {
 		// Run functions that run on releases table after all others completed.
 		} else {
 			// Run MGR once after all other release updates for standard groups
-			processReleases(new ProcessReleasesMultiGroup(['Settings' => $pdo]), '');
+			processReleases(new ProcessReleasesMultiGroup(['Settings' => $pdo]), null);
 
 			$groupCount = rtrim($options[2], '_');
 			if (!is_numeric($groupCount)) {
@@ -278,7 +278,7 @@ switch ($options[1]) {
  *
  * @param ProcessReleases $releases Can be instance of ProcessReleasesMultiGroup or
  *                                  ProcessReleases.
- * @param int             $groupID
+ * @param int|null        $groupID
  */
 function processReleases($releases, $groupID)
 {

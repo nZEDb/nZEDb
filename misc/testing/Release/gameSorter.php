@@ -71,7 +71,7 @@ function getOddGames()
 				// Sleep so not to flood giantbomb.
 				$diff = floor((microtime(true) - $startTime) * 1000000);
 				if ($gen->sleepTime * 1000 - $diff > 0 && $usedgb === true) {
-					usleep($gen->sleepTime * 1000 - $diff);
+					usleep((int)($gen->sleepTime * 1000 - $diff));
 				}
 			}
 		} else {

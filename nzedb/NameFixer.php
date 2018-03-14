@@ -165,9 +165,9 @@ class NameFixer
 	/**
 	 * Attempts to fix release names using the NFO.
 	 *
-	 * @param int $time    1: 24 hours, 2: no time limit
-	 * @param boolean $echo    1: change the name, anything else: preview of what could have been changed.
-	 * @param int $cats    1: other categories, 2: all categories
+	 * @param int  $time    1: 24 hours, 2: no time limit
+	 * @param bool $echo    1: change the name, anything else: preview of what could have been changed.
+	 * @param int  $cats    1: other categories, 2: all categories
 	 * @param $nameStatus
 	 * @param $show
 	 */
@@ -245,9 +245,9 @@ class NameFixer
 	/**
 	 * Attempts to fix release names using the File name.
 	 *
-	 * @param int $time   1: 24 hours, 2: no time limit
-	 * @param boolean $echo   1: change the name, anything else: preview of what could have been changed.
-	 * @param int $cats   1: other categories, 2: all categories
+	 * @param int  $time   1: 24 hours, 2: no time limit
+	 * @param bool $echo   1: change the name, anything else: preview of what could have been changed.
+	 * @param int  $cats   1: other categories, 2: all categories
 	 * @param $nameStatus
 	 * @param $show
 	 */
@@ -308,9 +308,10 @@ class NameFixer
 	/**
 	 * Attempts to fix release names using the Par2 File.
 	 *
-	 * @param int $time   1: 24 hours, 2: no time limit
-	 * @param int $echo   1: change the name, anything else: preview of what could have been changed.
-	 * @param int $cats   1: other categories, 2: all categories
+	 * @param int  $time 1: 24 hours, 2: no time limit
+	 * @param bool $echo 1: change the name, anything else: preview of what could have been
+	 *                   changed.
+	 * @param int  $cats 1: other categories, 2: all categories
 	 * @param $nameStatus
 	 * @param $show
 	 * @param NNTP $nntp
@@ -378,11 +379,12 @@ class NameFixer
 	/**
 	 * Attempts to fix release names using the mediainfo xml Unique_ID.
 	 *
-	 * @param int     $time 1: 24 hours, 2: no time limit
-	 * @param boolean $echo 1: change the name, anything else: preview of what could have been changed.
-	 * @param int     $cats 1: other categories, 2: all categories
-	 * @param         $nameStatus
-	 * @param         $show
+	 * @param int  $time 1: 24 hours, 2: no time limit
+	 * @param bool $echo 1: change the name, anything else: preview of what could have been
+	 *                   changed.
+	 * @param int  $cats 1: other categories, 2: all categories
+	 * @param      $nameStatus
+	 * @param      $show
 	 */
 	public function fixNamesWithMedia($time, $echo, $cats, $nameStatus, $show)
 	{
@@ -487,12 +489,13 @@ class NameFixer
 	/**
 	 * Echo the amount of releases that found a new name.
 	 *
-	 * @param int    $echo 1: change the name, anything else: preview of what could have been changed.
+	 * @param bool   $echo 1: change the name, anything else: preview of what could have been
+	 *                     changed.
 	 * @param string $type The function type that found the name.
 	 */
 	protected function _echoFoundCount($echo, $type)
 	{
-		if ($echo == 1) {
+		if ($echo === true) {
 			echo $this->pdo->log->header(
 				PHP_EOL .
 				number_format($this->fixed) .

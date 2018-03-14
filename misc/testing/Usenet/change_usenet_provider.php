@@ -142,8 +142,8 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 	$dateofnextone = $lastDate;
 	// Match on days not timestamp to speed things up.
 	while (daysOld($dateofnextone) < $days) {
-		while (($tmpDate = $binaries->postdate(($upperbound - $interval), $data)) > $goaldate) {
-			$upperbound = $upperbound - $interval;
+		while (($tmpDate = $binaries->postdate((int)($upperbound - $interval), $data)) > $goaldate) {
+			$upperbound -= $interval;
 		}
 
 		if (!$templowered) {

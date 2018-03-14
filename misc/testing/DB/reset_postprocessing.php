@@ -317,7 +317,7 @@ if (isset($argv[1]) && ($argv[1] === 'nfos' || $argv[1] === 'all')) {
 
 	$qry = $pdo->queryDirect('SELECT id FROM releases' . $where);
 	$concount = 0;
-	if ($qry instanceof \Traversable) {
+	if ($qry instanceof \PDOStatement) {
 		$total = $qry->rowCount();
 		foreach ($qry as $releases) {
 			$pdo->queryExec('UPDATE releases SET nfostatus = -1 WHERE id = ' . $releases['id']);

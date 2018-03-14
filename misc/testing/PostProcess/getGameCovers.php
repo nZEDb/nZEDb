@@ -31,7 +31,7 @@ if ($total > 0) {
 		}
 
 		// amazon limits are 1 per 1 sec
-		$diff = floor((microtime(true) - $starttime) * 1000000);
+		$diff = (int)floor((microtime(true) - $starttime) * 1000000);
 		if (1000000 - $diff > 0) {
 			echo $pdo->log->alternate("Sleeping");
 			usleep(1000000 - $diff);
