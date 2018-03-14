@@ -46,7 +46,7 @@ define('SCRAPE_IRC_USERNAME', "$username");
  * @note Put your password between quotes: 'mypassword'
  * @note If you are using ZNC and having issues, try 'username:password' or 'username/network:<password>'
  **********************************************************************************************************************/
-define('SCRAPE_IRC_PASSWORD', false);
+define('SCRAPE_IRC_PASSWORD', null);
 
 /***********************************************************************************************************************
  * This is an optional field you can use for ignoring categories.
