@@ -38,10 +38,10 @@ class Yenc extends \lithium\core\Adaptable
 	protected static $_configurations = [];
 
 	/**
-	 * @param       $text    yEncoded text to decode back to an 8 bit form.
-	 * @param array $options Options needed for method. Mainly:
-	 *                       - 'name' of the configuration to use.
-	 *                       - 'file' whether to create the file or just return the string.
+	 * @param string $text    yEncoded text to decode back to an 8 bit form.
+	 * @param array  $options Options needed for method. Mainly:
+	 *                        - 'name' of the configuration to use.
+	 *                        - 'file' whether to create the file or just return the string.
 	 *
 	 * @return string 8 bit decoded version of $text.
 	 */
