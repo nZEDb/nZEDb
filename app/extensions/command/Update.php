@@ -207,7 +207,7 @@ class Update extends \app\extensions\console\Command
 		}
 
 		if (file_exists(self::UPDATES_FILE)) {
-			$this->updates = json_decode(file_get_contents(UPDATES_FILE), true);
+			$this->updates = json_decode(file_get_contents(self::UPDATES_FILE), true);
 		}
 	}
 
