@@ -103,6 +103,7 @@ abstract class Capabilities
 			);
 			header('Content-type: application/json');
 		}
+
 		if ($response === false) {
 			Misc::showApiError(201);
 		} else {
@@ -146,7 +147,7 @@ abstract class Capabilities
 			],
 			'registration' => [
 				'available' => 'yes',
-				'open'      => Settings::value('..registerstatus') == 0 ? 'yes' : 'no'
+				'open'      => (int)Settings::value('..registerstatus') === 0 ? 'yes' : 'no'
 			],
 			'searching' => [
 				'search'       => ['available' => 'yes', 'supportedParams' => 'q'],
@@ -155,10 +156,10 @@ abstract class Capabilities
 				'audio-search' => ['available' => 'no',  'supportedParams' => '']
 			],
 			'categories' =>
-				($this->type === 'caps'
+				$this->type === 'caps'
 					? (new Category(['Settings' => $this->pdo]))->getForMenu()
 					: null
-				)
+
 		];
 	}
 }

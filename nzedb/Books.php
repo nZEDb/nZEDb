@@ -10,6 +10,8 @@ use nzedb\db\DB;
  */
 class Books
 {
+	public $catWhere;
+
 	/**
 	 * @var \nzedb\db\DB
 	 */
@@ -467,7 +469,7 @@ class Books
 					}
 				}
 				// Sleep to not flood amazon.
-				$diff = floor((microtime(true) - $startTime) * 1000000);
+				$diff = (int)floor((microtime(true) - $startTime) * 1000000);
 				if ($this->sleeptime * 1000 - $diff > 0 && $usedAmazon === true) {
 					usleep($this->sleeptime * 1000 - $diff);
 				}

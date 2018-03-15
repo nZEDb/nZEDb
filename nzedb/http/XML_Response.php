@@ -46,6 +46,8 @@ class XML_Response
 	 */
 	protected $namespace;
 
+	protected $offset;
+
 	/**
 	 * The trailing URL parameters on the request
 	 *
@@ -93,7 +95,7 @@ class XML_Response
 	 *
 	 * @param array $options
 	 */
-	public function __construct($options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Parameters' => null,
@@ -116,29 +118,30 @@ class XML_Response
 	}
 
 	/**
-	 * @return bool|void
+	 * @return string|false
 	 */
 	public function returnXML()
 	{
+		$content = false;
 		if ($this->xml) {
 			switch ($this->type) {
 				case 'caps':
-					return $this->returnCaps();
+					$content = $this->returnCaps();
 					break;
 				case 'api':
 					$this->namespace = 'newznab';
-					return $this->returnApiRss();
+					$content = $this->returnApiRss();
 					break;
 				case 'rss':
 					$this->namespace = 'nZEDb';
-					return $this->returnApiRss();
+					$content = $this->returnApiRss();
 					break;
 				case 'reg':
-					return $this->returnReg();
+					$content = $this->returnReg();
 					break;
 			}
 		}
-		return false;
+		return $content;
 	}
 
 	/**

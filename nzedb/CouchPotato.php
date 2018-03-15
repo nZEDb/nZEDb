@@ -30,13 +30,13 @@ class CouchPotato
 {
 	/**
 	 * URL to the CP server.
-	 * @var string|array|bool
+	 * @var string
 	 */
 	public $cpurl = '';
 
 	/**
 	 * The CP key.
-	 * @var string|array|bool
+	 * @var string
 	 */
 	public $cpapi = '';
 
@@ -68,11 +68,7 @@ class CouchPotato
 		$this->imdbid = $id;
 
 		return Misc::getUrl([
-				'url' => $this->cpurl .
-					'/api/' .
-					$this->cpapi .
-					'/movie.add/?identifier=tt' .
-					$this->imdbid,
+				'url' => $this->cpurl . '/api/' . $this->cpapi . '/movie.add/?identifier=tt' . $this->imdbid,
 				'verifypeer' => false,
 			]
 		);

@@ -66,9 +66,9 @@ class DB extends \PDO
 	private $cacheEnabled = false;
 
 	/**
-	 * @var null|\nzedb\libraries\Cache
+	 * @var \nzedb\libraries\Cache
 	 */
-	private $cacheServer = null;
+	private $cacheServer;
 
 	/**
 	 * @var string Lower-cased name of DBMS type (MySQl/Postgres, etc.) in use.
@@ -96,7 +96,7 @@ class DB extends \PDO
 	private $host;
 
 	/**
-	 * @var Database name to use.
+	 * @var string Database name to use.
 	 */
 	private $name = null;
 
@@ -137,13 +137,13 @@ class DB extends \PDO
 	private $sqlDeleteQuick = '';
 
 	/**
-	 * @var Original timezone of the database connection. Usually the same as $tz_server, but may
-	 * be changed during connection process.
+	 * @var string Original timezone of the database connection. Usually the same as $tz_server, but
+	 *             may be changed during connection process.
 	 */
 	private $tz_original;
 
 	/**
-	 * @var timezone the database is configured to as default.
+	 * @var string Timezone the database is configured to as default.
 	 */
 	private $tz_server;
 
@@ -324,7 +324,7 @@ class DB extends \PDO
 		}
 
 		$found  = false;
-		$tables = self::getDatabasesList();
+		$tables = $this->getDatabasesList();
 		foreach ($tables as $table) {
 			if ($table['database'] == $name) {
 				$found = true;
@@ -1126,11 +1126,11 @@ class DB extends \PDO
 		}
 
 		$rows = $this->query($query);
-		if (!$rows || count($rows) == 0) {
+		if (empty($rows)) {
 			$rows = false;
 		}
 
-		return is_array($rows) ? $rows[0] : $rows;
+		return \is_array($rows) ? $rows[0] : $rows;
 	}
 
 	/**
@@ -1182,7 +1182,7 @@ class DB extends \PDO
 	 */
 	public function setCovers()
 	{
-		$path = app\models\Settings::value([
+		$path = \app\models\Settings::value([
 			'section'    => 'site',
 			'subsection' => 'main',
 			'name'       => 'coverspath',
@@ -1599,7 +1599,7 @@ class DB extends \PDO
 			throw new \RuntimeException("No database name passed to " . __METHOD__, 1);
 		}
 
-		$found = self::checkDbExists($name);
+		$found = $this->checkDbExists($name);
 		if ($found) {
 			try {
 				$this->pdo->query("DROP DATABASE $name");

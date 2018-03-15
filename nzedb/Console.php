@@ -10,6 +10,8 @@ class Console
 	const CONS_UPROC = 0; // Release has not been processed.
 	const CONS_NTFND = -2;
 
+	public $catWhere;
+
 	/**
 	 * @var \nzedb\db\DB
 	 */
@@ -440,8 +442,8 @@ class Console
 
 			if ($this->_matchConToGameInfo($gameInfo, $con) === true) {
 
-				$con += $this->_setConAfterMatch($amaz);
-				$con += $this->_matchGenre($amaz);
+				$con += $this->setConAfterMatch($amaz);
+				$con += $this->matchGenre($amaz);
 
 				// Set covers properties
 				$con['coverurl'] = (string)$amaz->Items->Item->LargeImage->URL;
@@ -555,11 +557,11 @@ class Console
 	}
 
 	/**
-	 * @param array $amaz
+	 * @param \SimpleXMLElement $amaz
 	 *
 	 * @return array
 	 */
-	protected function _setConAfterMatch($amaz = [])
+	protected function setConAfterMatch($amaz) : array
 	{
 		$con = [];
 		$con['asin'] = (string)$amaz->Items->Item->ASIN;
@@ -568,7 +570,7 @@ class Console
 		$con['url'] = str_replace("%26tag%3Dws", "%26tag%3Dopensourceins%2D21", $con['url']);
 
 		$con['salesrank'] = (string)$amaz->Items->Item->SalesRank;
-		if ($con['salesrank'] == "") {
+		if ($con['salesrank'] === '') {
 			$con['salesrank'] = "null";
 		}
 
@@ -577,14 +579,14 @@ class Console
 		$con['releasedate'] = (string)$amaz->Items->Item->ItemAttributes->ReleaseDate;
 
 		if (!isset($con['releasedate'])) {
-			$con['releasedate'] = "";
+			$con['releasedate'] = '';
 		}
 
 		if ($con['releasedate'] == "''") {
-			$con['releasedate'] = "";
+			$con['releasedate'] = '';
 		}
 
-		$con['review'] = "";
+		$con['review'] = '';
 		if (isset($amaz->Items->Item->EditorialReviews)) {
 			$con['review'] = trim(strip_tags((string)$amaz->Items->Item->EditorialReviews->EditorialReview->Content));
 		}
@@ -592,19 +594,18 @@ class Console
 	}
 
 	/**
-	 * @param array $amaz
+	 * @param \SimpleXMLElement $amaz
 	 *
 	 * @return array
 	 */
-	protected function _matchGenre($amaz = [])
+	protected function matchGenre(\SimpleXMLElement $amaz) : array
 	{
-
 		$genreName = '';
 
 		if (isset($amaz->Items->Item->BrowseNodes)) {
 			//had issues getting this out of the browsenodes obj
 			//workaround is to get the xml and load that into its own obj
-			$amazGenresXml = $amaz->Items->Item->BrowseNodes->asXml();
+			$amazGenresXml = $amaz->Items->Item->BrowseNodes->asXML();
 			$amazGenresObj = simplexml_load_string($amazGenresXml);
 			$amazGenres = $amazGenresObj->xpath("//Name");
 
@@ -620,7 +621,7 @@ class Console
 			}
 		}
 
-		if ($genreName == '' && isset($amaz->Items->Item->ItemAttributes->Genre)) {
+		if ($genreName === '' && isset($amaz->Items->Item->ItemAttributes->Genre)) {
 			$a = (string)$amaz->Items->Item->ItemAttributes->Genre;
 			$b = str_replace('-', ' ', $a);
 			$tmpGenre = explode(' ', $b);

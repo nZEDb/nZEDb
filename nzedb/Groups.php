@@ -385,11 +385,11 @@ class Groups
 	/**
 	 * Delete a group.
 	 *
-	 * @param int|string $id ID of the group.
+	 * @param int $id ID of the group.
 	 *
 	 * @return bool
 	 */
-	public function delete($id)
+	public function delete($id) : bool
 	{
 		$this->purge($id);
 

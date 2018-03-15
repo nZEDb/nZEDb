@@ -184,13 +184,13 @@ abstract class IRCClient
 	 * The default is fine, it will ping the server if the server does not ping us
 	 * within this time to keep the connection alive.
 	 *
-	 * @param int|string $timeout Seconds.
+	 * @param int $timeout Seconds.
 	 *
 	 * @access public
 	 */
-	public function setSocketTimeout($timeout)
+	public function setSocketTimeout(int $timeout)
 	{
-		if (!is_numeric($timeout) || is_double($timeout)) {
+		if (!is_numeric($timeout) || is_float($timeout)) {
 			echo 'ERROR: IRC socket timeout must be a number!' . PHP_EOL;
 		} else {
 			$this->_socket_timeout = $timeout;
@@ -200,13 +200,13 @@ abstract class IRCClient
 	/**
 	 * Amount of time to wait before giving up when connecting.
 	 *
-	 * @param int|string $timeout Seconds.
+	 * @param int $timeout Seconds.
 	 *
 	 * @access public
 	 */
-	public function setConnectionTimeout($timeout)
+	public function setConnectionTimeout(int $timeout)
 	{
-		if (!is_numeric($timeout) || is_double($timeout)) {
+		if (!is_numeric($timeout) || is_float($timeout)) {
 			echo 'ERROR: IRC connection timeout must be a number!' . PHP_EOL;
 		} else {
 			$this->_remote_connection_timeout = $timeout;
@@ -222,7 +222,7 @@ abstract class IRCClient
 	 */
 	public function setConnectionRetries($retries)
 	{
-		if (!is_numeric($retries) || is_double($retries)) {
+		if (!is_numeric($retries) || is_float($retries)) {
 			echo 'ERROR: IRC connection retries must be a number!' . PHP_EOL;
 		} else {
 			$this->_reconnectRetries = $retries;
@@ -238,7 +238,7 @@ abstract class IRCClient
 	 */
 	public function setReConnectDelay($delay)
 	{
-		if (!is_numeric($delay) || is_double($delay)) {
+		if (!is_numeric($delay) || is_float($delay)) {
 			echo 'ERROR: IRC reconnect delay must be a number!' . PHP_EOL;
 		} else {
 			$this->_reconnectDelay = $delay;

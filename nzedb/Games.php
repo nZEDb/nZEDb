@@ -18,6 +18,16 @@ class Games
 	/**
 	 * @var string
 	 */
+	public $catWhere;
+
+	/**
+	 * @var \DBorsatto\GiantBomb\Config
+	 */
+	public $config;
+
+	/**
+	 * @var string
+	 */
 	public $cookie;
 
 	/**
@@ -26,9 +36,14 @@ class Games
 	public $echoOutput;
 
 	/**
-	 * @var array|bool|int|string
+	 * @var int|null
 	 */
 	public $gameQty;
+
+	/**
+	 * @var \DBorsatto\GiantBomb\Client
+	 */
+	public $giantbomb;
 
 	/**
 	 * @var string
@@ -831,9 +846,10 @@ class Games
 				}
 
 				// Sleep to not flood giantbomb.
-				$diff = floor((microtime(true) - $startTime) * 1000000);
-				if ($this->sleepTime * 1000 - $diff > 0 && $usedgb === true) {
-					usleep($this->sleepTime * 1000 - $diff);
+				$diff = (int)floor((microtime(true) - $startTime) * 1000000);
+				$interval = $this->sleepTime * 1000 - $diff;
+				if ($interval > 0 && $usedgb === true) {
+					usleep($interval);
 				}
 			}
 		} else {
