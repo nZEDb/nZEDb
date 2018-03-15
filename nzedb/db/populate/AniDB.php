@@ -42,7 +42,7 @@ class AniDB
 
 	/**
 	 * The last unixtime a full AniDB update was run
-	 * @var string
+	 * @var int
 	 */
 	private $lastUpdate;
 
@@ -383,10 +383,10 @@ class AniDB
 					foreach ($anime->title as $title) {
 						$xmlAttribs = $title->attributes('xml', true);
 						$this->insertAniDb(
-							(string)$anime['aid'],
-							(string)$title['type'],
-							(string)$xmlAttribs->lang,
-							(string)$title[0]
+							$anime['aid'],
+							$title['type'],
+							$xmlAttribs->lang,
+							$title[0]
 						);
 						ColorCLI::primary(
 							sprintf(

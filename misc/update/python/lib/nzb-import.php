@@ -134,7 +134,7 @@ if (!isset($groups) || count($groups) == 0) {
 			$postername[] = $fromname;
 			$unixdate = (string)$file->attributes()->date;
 			$totalFiles++;
-			$date = date("Y-m-d H:i:s", (string)($file->attributes()->date));
+			$date = date('Y-m-d H:i:s', $file->attributes()->date);
 			$postdate[] = $date;
 			//removes everything after yEnc in subject
 			$partless = preg_replace('/(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?$/', 'yEnc', $firstname['0']);
