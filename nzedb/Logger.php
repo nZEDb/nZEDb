@@ -267,7 +267,7 @@ class Logger
 	 *
 	 * @access public
 	 */
-	public function showMemUsage($oldUsage = 0, $realUsage = false, $peak = false)
+	public function showMemUsage($oldUsage = 0, $realUsage = false, $peak = false) : string
 	{
 		$currentUsage = ($peak ? memory_get_peak_usage($realUsage) : memory_get_usage($realUsage));
 		$actualUsage = ($oldUsage > 0 ? $currentUsage - $oldUsage : $currentUsage);
@@ -283,7 +283,7 @@ class Logger
 		return
 			str_pad(
 				number_format(
-					round($actualUsage / pow(1024, ($i = floor(log($actualUsage, 1024)))), 2)),
+					round($actualUsage / (1024 ** ($i = floor(log($actualUsage, 1024)))), 2)),
 					4, '~~~', STR_PAD_LEFT
 			) . $units[(int)$i];
 	}
