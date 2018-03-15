@@ -19,7 +19,9 @@
  * @copyright 2014 nZEDb
  */
 
-if (!isset($argv[1]) || !in_array($argv[1], ['1'])) {
+use nzedb\db\Settings;
+
+if (! isset($argv[1]) || ! $argv[1] !== '1') {
 	exit(
 		'Options: (enter a number, it\'s not recommended to rerun the same fix)' . PHP_EOL .
 		'1: 2014-07-28: Add unique key to binaryhash to be able to do multiple updates in 1 statement.' . PHP_EOL
@@ -28,9 +30,7 @@ if (!isset($argv[1]) || !in_array($argv[1], ['1'])) {
 
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php';
 
-use nzedb\db\Settings;
-
-$pdo = new Settings();
+$pdo = new nzedb\db\Settings();
 
 if (! Settings::value('..tablepergroup')) {
 	exit("Tables per groups is not enabled, quitting!");

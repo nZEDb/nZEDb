@@ -22,7 +22,7 @@ require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstr
 
 use nzedb\db\Settings;
 
-$pdo = new Settings();
+$pdo = new nzedb\db\Settings();
 
 if (!Settings::value('..tablepergroup')) {
 	exit("Tables per groups is not enabled, quitting!");

@@ -274,21 +274,21 @@ class Binaries
 			}
 		}
 
-		$this->messageBuffer = (Settings::value('..maxmssgs') != '') ?
-			(int)Settings::value('..maxmssgs') : 20000;
-		$this->_compressedHeaders = (Settings::value('..compressedheaders') == 1 ? true : false);
-		$this->_partRepair = (Settings::value('..partrepair') == 0 ? false : true);
-		$this->_newGroupScanByDays = (Settings::value('..newgroupscanmethod') == 1 ? true : false);
-		$this->_newGroupMessagesToScan = (Settings::value('..newgroupmsgstoscan') != '') ?
-			(int)Settings::value('..newgroupmsgstoscan') : 50000;
-		$this->_newGroupDaysToScan = (Settings::value('..newgroupdaystoscan') != '') ?
-			(int)Settings::value('..newgroupdaystoscan') : 3;
-		$this->_partRepairLimit = (Settings::value('..maxpartrepair') != '') ?
-			(int)Settings::value('..maxpartrepair') : 15000;
-		$this->_partRepairMaxTries = (Settings::value('..partrepairmaxtries') != '' ?
-			(int)Settings::value('..partrepairmaxtries') : 3);
-		$this->_showDroppedYEncParts = (Settings::value('..showdroppedyencparts') == 1 ? true : false);
-		$this->allAsMgr = Settings::value('indexer.mgr.allasmgr') == 1 ? true : false;
+		$temp = Settings::value('..maxmssgs');
+		$this->messageBuffer = $temp !== '' ? (int)$temp : 20000;
+		$this->_compressedHeaders = (int)Settings::value('..compressedheaders') === 1;
+		$this->_partRepair = (int)Settings::value('..partrepair') !== 0;
+		$this->_newGroupScanByDays = (int)Settings::value('..newgroupscanmethod') === 1;
+		$temp = Settings::value('..newgroupmsgstoscan');
+		$this->_newGroupMessagesToScan = $temp !== '' ? (int)$temp : 50000;
+		$temp = Settings::value('..newgroupdaystoscan');
+		$this->_newGroupDaysToScan = $temp !== '' ? (int)$temp : 3;
+		$temp = Settings::value('..maxpartrepair');
+		$this->_partRepairLimit = $temp !== '' ? (int)$temp : 15000;
+		$temp = Settings::value('..partrepairmaxtries');
+		$this->_partRepairMaxTries = $temp !== '' ? (int)$temp : 3;
+		$this->_showDroppedYEncParts = (int)Settings::value('..showdroppedyencparts') === 1;
+		$this->allAsMgr = (int)Settings::value('indexer.mgr.allasmgr') === 1;
 
 		$this->blackList = $this->whiteList = [];
 	}
@@ -400,7 +400,7 @@ class Binaries
 		}
 
 		// Generate postdate for first record, for those that upgraded.
-		if (is_null($groupMySQL['first_record_postdate']) && $groupMySQL['first_record'] != 0) {
+		if ($groupMySQL['first_record_postdate'] === null && $groupMySQL['first_record'] != 0) {
 
 			$groupMySQL['first_record_postdate'] = $this->postdate($groupMySQL['first_record'], $groupNNTP);
 
@@ -458,9 +458,9 @@ class Binaries
 		}
 
 		// This is how many articles we are going to get.
-		$total = (string)($groupLast - $first);
+		$total = ($groupLast - $first);
 		// This is how many articles are available (without $leaveOver).
-		$realTotal = (string)($groupNNTP['last'] - $first);
+		$realTotal = ($groupNNTP['last'] - $first);
 
 		// Check if we should limit the amount of fetched new headers.
 		if ($maxHeaders > 0) {
@@ -474,8 +474,8 @@ class Binaries
 		if ($total > 0) {
 
 			if ($this->_echoCLI) {
-				$this->_colorCLI->doEcho(
-					$this->_colorCLI->primary(
+				$this->_colorCLI::doEcho(
+					$this->_colorCLI::primary(
 						($groupMySQL['last_record'] == 0
 							? 'New group ' . $groupNNTP['group'] . ' starting with ' .
 								($this->_newGroupScanByDays
@@ -1304,7 +1304,7 @@ class Binaries
 		$groupID = $this->_groups->getIDByName($groupData['group']);
 		$group = [];
 		if ($groupID !== '') {
-			$group = $this->_groups->getCBPTableNames($groupID);
+			$group = $this->_groups->getCBPTableNames((int)$groupID);
 		}
 
 		$currentPost = $post;
@@ -1429,7 +1429,7 @@ class Binaries
 		}
 
 		// Pick the middle to start with
-		$wantedArticle = round(($data['last'] + $data['first']) / 2);
+		$wantedArticle = (int)round(($data['last'] + $data['first']) / 2);
 		$aMax = $data['last'];
 		$aMin = $data['first'];
 		$reallyOldArticle = $oldArticle = $articleTime = null;
