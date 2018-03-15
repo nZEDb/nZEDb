@@ -27,7 +27,7 @@ class DnzbFailures
 		$options += $defaults;
 
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
-		$this->rc = new ReleaseComments(['Settings' => $this->pdo]);
+		$this->rc = new ReleaseComments($this->pdo);
 	}
 
 	/**
