@@ -24,7 +24,7 @@ if (`which tmux`) {
 		sleep(5);
 	}
 } else {
-        exit($pdo->log->error("tmux binary not found. Aborting\n"));
+	exit($pdo->log->error("tmux binary not found. Aborting\n"));
 }
 
 $tmux = new Tmux();
