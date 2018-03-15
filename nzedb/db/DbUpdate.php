@@ -22,7 +22,6 @@ namespace nzedb\db;
 
 use app\models\Settings;
 use nzedb\ColorCLI;
-use nzedb\db\DB;
 use nzedb\utility\Git;
 use nzedb\utility\Misc;
 use nzedb\utility\Text;
@@ -79,7 +78,7 @@ class DbUpdate
 		$this->log    = $options['logger'];
 		// Must be DB not Settings because the Settings table may not exist yet.
 		$this->pdo = (($options['db'] instanceof DB) ? $options['db'] : new DB());
-		$this->_DbSystem = strtolower($this->pdo->dbSystem());
+		$this->_DbSystem = strtolower($this->pdo->DbSystem());
 	}
 
 	public function loadTables(array $options = [])
@@ -224,30 +223,36 @@ class DbUpdate
 			foreach ($files as $file) {
 				$setPatch = false;
 				$fp = fopen($file, 'r');
-				$patch = fread($fp, filesize($file));
+				if ($fp !== false) {
+					$patch = fread($fp, filesize($file));
 
-				if (preg_match($options['regex'], str_replace('\\', '/', $file), $matches)) {
-					$patch = (integer)$matches['patch'];
-					$setPatch = true;
-				} else if (preg_match(
-					'/UPDATE `?site`? SET `?value`? = \'?(?P<patch>\d+)\'? WHERE `?setting`? = \'sqlpatch\'/i',
-					$patch,
-					$matches)
-				) {
-					$patch = (integer)$matches['patch'];
+					if (preg_match($options['regex'], str_replace('\\', '/', $file), $matches)) {
+						$patch = (integer)$matches['patch'];
+						$setPatch = true;
+					} else {
+						if (preg_match(
+							'/UPDATE `?site`? SET `?value`? = \'?(?P<patch>\d+)\'? WHERE `?setting`? = \'sqlpatch\'/i',
+							$patch,
+							$matches)
+						) {
+							$patch = (integer)$matches['patch'];
+						} else {
+							throw new \RuntimeException("No patch information available, stopping!!");
+						}
+					}
+					if ($patch > $currentVersion) {
+						echo $this->log->header('Processing patch file: ' . $file);
+						if ($options['safe'] && !$this->backedUp) {
+							$this->_backupDb();
+						}
+						$this->splitSQL($file, ['local' => $local, 'data' => $data]);
+						if ($setPatch) {
+							$this->pdo->queryExec("UPDATE settings SET value = '$patch' WHERE setting = 'sqlpatch';");
+						}
+						$patched++;
+					}
 				} else {
-					throw new \RuntimeException("No patch information available, stopping!!");
-				}
-				if ($patch > $currentVersion) {
-					echo $this->log->header('Processing patch file: ' . $file);
-					if ($options['safe'] && !$this->backedUp) {
-						$this->_backupDb();
-					}
-					$this->splitSQL($file, ['local' => $local, 'data' => $data]);
-					if ($setPatch) {
-						$this->pdo->queryExec("UPDATE settings SET value = '$patch' WHERE setting = 'sqlpatch';");
-					}
-					$patched++;
+					echo $this->log->error("Failed to open file '$file'");
 				}
 			}
 		} else {
@@ -402,12 +407,13 @@ class DbUpdate
 	{
 		$changed	= false;
 		$default	= [
-			'file'	=> '10-settings.tsv',
-			'path'	=> 'resources' . DS . 'db' . DS . 'schema' . DS . 'data' . DS,
-			'regex'	=> '#^(?P<section>.*)\t(?P<subsection>.*)\t(?P<name>.*)\t(?P<value>.*)\t(?P<hint>.*)\t(?P<setting>.*)$#',
-			'value'	=> function(array $matches) {
+			'file'		=> '10-settings.tsv',
+			'path'		=> 'resources' . DS . 'db' . DS . 'schema' . DS . 'data' . DS,
+			'regex'		=> '#^(?P<section>.*)\t(?P<subsection>.*)\t(?P<name>.*)\t(?P<value>.*)\t(?P<hint>.*)\t(?P<setting>.*)$#',
+			'value'		=> function(array $matches) {
 					return "{$matches['section']}\t{$matches['subsection']}\t{$matches['name']}\t{$matches['value']}\t{$matches['hint']}\t{$matches['setting']}";
-				} // WARNING: leaving this empty will blank not remove lines.
+				}, // WARNING: leaving this empty will blank not remove lines.
+			'verbose'	=> true,
 		];
 		$options += $default;
 
@@ -418,7 +424,7 @@ class DbUpdate
 			$index = 0;
 			while ($index < $count) {
 				if (preg_match($options['regex'], $file[$index], $matches)) {
-					if (VERBOSE) {
+					if ($options['verbose']) {
 						echo $this->log->primary("Matched: " . $file[$index]);
 					}
 					$index++;
