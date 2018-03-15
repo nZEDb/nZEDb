@@ -17,7 +17,7 @@ $maxHeaders = Settings::value('max.headers.iteration') ?: 1000000;
 // Create the connection here and pass
 $nntp = new NNTP(['Settings' => $pdo]);
 if ($nntp->doConnect() !== true) {
-	exit($pdo->log->error("Unable to connect to usenet."));
+	exit($pdo->log->error('Unable to connect to usenet.'));
 }
 $binaries = new Binaries(['NNTP' => $nntp, 'Settings' => $pdo]);
 

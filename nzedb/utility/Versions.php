@@ -144,7 +144,7 @@ class Versions
 	public function checkGitTag($update = true)
 	{
 		trigger_error(
-			"This method is deprecated. Use app/extensions/utils/Versions::checkGitTag() instead.");
+			'This method is deprecated. Use app/extensions/utils/Versions::checkGitTag() instead.');
 
 		$branch = $this->git->getBranch();
 		$this->_gitHighestTag = $latest = trim($this->git->tagLatest());
@@ -161,17 +161,17 @@ class Versions
 		// Check if version file's entry is the same as current branch's tag
 		if (version_compare($this->_vers->git->tag, $latest, '!=')) {
 			if ($update) {
-				echo $this->out->primaryOver("Updating tag version to ") .
+				echo $this->out->primaryOver('Updating tag version to ') .
 					$this->out->header($latest);
 				$this->_vers->git->tag = $ver;
 				$this->_changes |= self::UPDATED_GIT_TAG;
 			} else {
-				echo $this->out->primaryOver("Leaving tag version at ") .
+				echo $this->out->primaryOver('Leaving tag version at ') .
 					 $this->out->headerOver($this->_vers->git->tag);
 			}
 			return $this->_vers->git->tag;
 		} else {
-			echo $this->out->primaryOver("Tag version is ") . $this->out->header($latest);
+			echo $this->out->primaryOver('Tag version is ') . $this->out->header($latest);
 		}
 		return false;
 	}
@@ -191,7 +191,7 @@ class Versions
 
 		if ($this->_vers->sql->db->__toString() != $this->_vers->sql->file->__toString()) {
 			if ($update) {
-				echo $this->out->primaryOver("Updating Db revision to " . $this->_vers->sql->file);
+				echo $this->out->primaryOver('Updating Db revision to ' . $this->_vers->sql->file);
 				$this->_vers->sql->db = $this->_vers->sql->file->__toString();
 				$this->_changes |= self::UPDATED_SQL_DB_PATCH;
 			}
@@ -224,7 +224,7 @@ class Versions
 
 		if ($update) {
 			if ($last !== false && $this->_vers->sql->file->__toString() != $last) {
-				echo $this->out->primary("Updating latest patch file to " . $last);
+				echo $this->out->primary('Updating latest patch file to ' . $last);
 				$this->_vers->sql->file = $last;
 				$this->_changes |= self::UPDATED_SQL_FILE_LAST;
 			}
@@ -284,10 +284,10 @@ class Versions
 			$vers = $this->_xml->xpath('/nzedb/versions');
 
 			if ($vers[0]->count() == 0) {
-				$this->out->error("Your versions XML file ({nZEDb_VERSIONS}) does not contain version info, try updating from git.");
+				$this->out->error('Your versions XML file ({nZEDb_VERSIONS}) does not contain version info, try updating from git.');
 				throw new \Exception("Failed to find versions node in XML file '$filepath'");
 			} else {
-				$this->out->primary("Your versions XML file ({nZEDb_VERSIONS}) looks okay, continuing.");
+				$this->out->primary('Your versions XML file ({nZEDb_VERSIONS}) looks okay, continuing.');
 				$this->_vers = &$this->_xml->versions;
 			}
 		} else {

@@ -10,7 +10,7 @@ $delaytimet = Settings::value('..delaytime');
 $delaytimet = ($delaytimet) ? (int)$delaytimet : 2;
 
 //reset collections past interval of creation to now
-$tables = $pdo->queryDirect("SHOW TABLE STATUS");
+$tables = $pdo->queryDirect('SHOW TABLE STATUS');
 $ran = 0;
 
 foreach ($tables as $row) {
@@ -25,6 +25,6 @@ foreach ($tables as $row) {
 		}
 	}
 }
-echo $pdo->log->primary(number_format($ran) . " collections reset.");
+echo $pdo->log->primary(number_format($ran) . ' collections reset.');
 
 sleep(2);

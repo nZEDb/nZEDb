@@ -139,9 +139,9 @@ class Books
 				}
 			}
 			$searchwords = trim($searchwords);
-			$searchsql .= sprintf(" MATCH(author, title) AGAINST(%s IN BOOLEAN MODE)", $this->pdo->escapeString($searchwords));
+			$searchsql .= sprintf(' MATCH(author, title) AGAINST(%s IN BOOLEAN MODE)', $this->pdo->escapeString($searchwords));
 		}
-		return $this->pdo->queryOneRow(sprintf("SELECT * FROM bookinfo WHERE %s", $searchsql));
+		return $this->pdo->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE %s', $searchsql));
 	}
 
 	/**
@@ -571,7 +571,7 @@ class Books
 		}
 
 		$book['url'] = (string)$amaz->Items->Item->DetailPageURL;
-		$book['url'] = str_replace("%26tag%3Dws", "%26tag%3Dopensourceins%2D21", $book['url']);
+		$book['url'] = str_replace('%26tag%3Dws', '%26tag%3Dopensourceins%2D21', $book['url']);
 
 		$book['salesrank'] = (string)$amaz->Items->Item->SalesRank;
 		if ($book['salesrank'] == '') {
@@ -621,11 +621,11 @@ class Books
 		$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM bookinfo WHERE asin = %s', $this->pdo->escapeString($book['asin'])));
 		if ($check === false) {
 			$bookId = $this->pdo->queryInsert(
-							sprintf("
+							sprintf('
 								INSERT INTO bookinfo
 									(title, author, asin, isbn, ean, url, salesrank, publisher, publishdate, pages,
 									overview, genre, cover, createddate, updateddate)
-								VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now())",
+								VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now())',
 								$this->pdo->escapeString($book['title']), $this->pdo->escapeString($book['author']),
 								$this->pdo->escapeString($book['asin']), $this->pdo->escapeString($book['isbn']),
 								$this->pdo->escapeString($book['ean']), $this->pdo->escapeString($book['url']),
@@ -656,13 +656,13 @@ class Books
 
 		if ($bookId) {
 			if ($this->echooutput) {
-				$this->pdo->log->doEcho($this->pdo->log->header("Added/updated book: "));
+				$this->pdo->log->doEcho($this->pdo->log->header('Added/updated book: '));
 				if ($book['author'] !== '') {
-					$this->pdo->log->doEcho($this->pdo->log->alternateOver("   Author: ") . $this->pdo->log->primary($book['author']));
+					$this->pdo->log->doEcho($this->pdo->log->alternateOver('   Author: ') . $this->pdo->log->primary($book['author']));
 				}
-				echo $this->pdo->log->alternateOver("   Title: ") . $this->pdo->log->primary(" " . $book['title']);
+				echo $this->pdo->log->alternateOver('   Title: ') . $this->pdo->log->primary(' ' . $book['title']);
 				if ($book['genre'] !== 'null') {
-					$this->pdo->log->doEcho($this->pdo->log->alternateOver("   Genre: ") . $this->pdo->log->primary(" " . $book['genre']));
+					$this->pdo->log->doEcho($this->pdo->log->alternateOver('   Genre: ') . $this->pdo->log->primary(' ' . $book['genre']));
 				}
 			}
 

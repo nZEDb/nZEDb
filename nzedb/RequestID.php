@@ -160,8 +160,8 @@ abstract class RequestID
 			$renamed = $this->_processReleases();
 			if ($this->echoOutput) {
 				echo $this->pdo->log->header(
-					"\nRenamed " . number_format($renamed) . " releases in " .
-					$this->consoleTools->convertTime(time() - $startTime) . "."
+					"\nRenamed " . number_format($renamed) . ' releases in ' .
+					$this->consoleTools->convertTime(time() - $startTime) . '.'
 				);
 			}
 		} elseif ($this->echoOutput) {

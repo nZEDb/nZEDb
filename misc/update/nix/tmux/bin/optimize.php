@@ -60,7 +60,7 @@ if (isset($argv[1])) {
 	$pdo->queryDirect('FLUSH TABLES');
 
 	if ($restart == 'true' && $argv[1] == 'true') {
-		echo $pdo->log->info("Starting tmux scripts");
+		echo $pdo->log->info('Starting tmux scripts');
 		$pdo->queryExec('update tmux set value = \'1\' where setting = \'RUNNING\'');
 	}
 } else {

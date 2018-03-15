@@ -9,8 +9,8 @@ if (!$page->users->isLoggedIn()) {
 
 $releases = new Releases(['Settings' => $page->settings]);
 
-if (isset($_GET["id"])) {
-	$rel = $releases->getByGuid($_GET["id"]);
+if (isset($_GET['id'])) {
+	$rel = $releases->getByGuid($_GET['id']);
 
 	if (!$rel) {
 		$page->show404();
@@ -22,10 +22,10 @@ if (isset($_GET["id"])) {
 	$page->smarty->assign('rel', $rel);
 	$page->smarty->assign('nfo', $nfo);
 
-	$page->title = "NFO File";
-	$page->meta_title = "View Nfo";
-	$page->meta_keywords = "view,nzb,nfo,description,details";
-	$page->meta_description = "View Nfo File";
+	$page->title = 'NFO File';
+	$page->meta_title = 'View Nfo';
+	$page->meta_keywords = 'view,nzb,nfo,description,details';
+	$page->meta_description = 'View Nfo File';
 
 	$modal = false;
 	if (isset($_GET['modal'])) {

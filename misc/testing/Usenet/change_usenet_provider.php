@@ -15,13 +15,13 @@ $pdo = new DB();
 if (!isset($argv[1]) || $argv[1] != 'true') {
 	printf($pdo->log->setColor('Yellow') .
 			"This script is used when you have switched UseNet Providers (USP) so you can pickup where you left off, rather than resetting all the groups.\nOnly use this script after you have updated your config.php file with your new USP info!!\nMake sure you " .
-			$pdo->log->setColor('Red', 'Bold') . "DO NOT" . $pdo->log->setcolor('Yellow') . " have any update or postprocess scripts running when running this script!\n\n" .
+			$pdo->log->setColor('Red', 'Bold') . 'DO NOT' . $pdo->log->setcolor('Yellow') . " have any update or postprocess scripts running when running this script!\n\n" .
 			$pdo->log->setColor('Cyan') . "Usage: php change_usenet_provider true\n");
 	exit();
 }
 
 
-$groups = $pdo->query("SELECT id, name, first_record_postdate, last_record_postdate FROM groups WHERE active = 1");
+$groups = $pdo->query('SELECT id, name, first_record_postdate, last_record_postdate FROM groups WHERE active = 1');
 $numofgroups = count($groups);
 $guesstime = $numofgroups * 2;
 $totalstart = microtime(true);
@@ -37,21 +37,21 @@ foreach ($groups as $group) {
 	$bfdays = daysOldstr($group['first_record_postdate']);
 	$currdays = daysOldstr($group['last_record_postdate']);
 	$bfartnum = daytopost($nntp, $group['name'], $bfdays, true, true);
-	echo "Our Current backfill postdate was: " . $pdo->log->setColor('Yellow') . date('r', strtotime($group['first_record_postdate'])) . $pdo->log->rsetcolor() . "\n";
+	echo 'Our Current backfill postdate was: ' . $pdo->log->setColor('Yellow') . date('r', strtotime($group['first_record_postdate'])) . $pdo->log->rsetcolor() . "\n";
 	$currartnum = daytopost($nntp, $group['name'], $currdays, true, false);
-	echo "Our Current current postdate was: " . $pdo->log->setColor('Yellow') . date('r', strtotime($group['last_record_postdate'])) . $pdo->log->rsetcolor() . "\n";
-	$pdo->queryExec(sprintf("UPDATE groups SET first_record = %s, last_record = %s WHERE id = %d", $pdo->escapeString($bfartnum), $pdo->escapeString($currartnum), $group['id']));
+	echo 'Our Current current postdate was: ' . $pdo->log->setColor('Yellow') . date('r', strtotime($group['last_record_postdate'])) . $pdo->log->rsetcolor() . "\n";
+	$pdo->queryExec(sprintf('UPDATE groups SET first_record = %s, last_record = %s WHERE id = %d', $pdo->escapeString($bfartnum), $pdo->escapeString($currartnum), $group['id']));
 	$endtime = microtime(true);
-	echo $pdo->log->setColor('Gray', 'Dim') . "This group took " . gmdate("H:i:s", $endtime - $starttime) . " to process.\n";
+	echo $pdo->log->setColor('Gray', 'Dim') . 'This group took ' . gmdate('H:i:s', $endtime - $starttime) . " to process.\n";
 	$numofgroups--;
-	echo "There are " . $numofgroups . " left to process.\n\n" . $pdo->log->rsetcolor() . "";
+	echo 'There are ' . $numofgroups . " left to process.\n\n" . $pdo->log->rsetcolor() . '';
 }
 
 $totalend = microtime(true);
-echo $pdo->log->header('Total time to update all groups ' . gmdate("H:i:s", $totalend - $totalstart));
+echo $pdo->log->header('Total time to update all groups ' . gmdate('H:i:s', $totalend - $totalstart));
 
 // Truncate tables to complete the change to the new USP.
-$arr = array("parts", "missed_parts", "binaries", "collections");
+$arr = array('parts', 'missed_parts', 'binaries', 'collections');
 foreach ($arr as &$value) {
 	$rel = $pdo->queryExec("TRUNCATE TABLE $value");
 	if ($rel !== false) {
@@ -134,7 +134,7 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 		echo $pdo->log->primary(
 			"Searching for postdates.\nGroup's Firstdate: " . $firstDate . ' (' .
 			date('r', $firstDate) . ").\nGroup's Lastdate: " . $lastDate . ' (' .
-			date('r', $lastDate) . ").");
+			date('r', $lastDate) . ').');
 	}
 
 	$interval = (int)floor(($upperbound - $lowerbound) * 0.5);
@@ -158,10 +158,10 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 		$nntp->doQuit();
 	}
 	if ($bfcheck) {
-		echo $pdo->log->header("\nBackfill article determined to be " . $upperbound . " " . $pdo->log->setColor('Yellow') . "(" . date('r', $dateofnextone) . ")" . $pdo->log->rsetcolor());
+		echo $pdo->log->header("\nBackfill article determined to be " . $upperbound . ' ' . $pdo->log->setColor('Yellow') . '(' . date('r', $dateofnextone) . ')' . $pdo->log->rsetcolor());
 	} // which is '.daysOld($dateofnextone)." days old.\n";
 	else {
-		echo $pdo->log->header('Current article determined to be ' . $upperbound . " " . $pdo->log->setColor('Yellow') . "(" . date('r', $dateofnextone) . ")" . $pdo->log->rsetcolor());
+		echo $pdo->log->header('Current article determined to be ' . $upperbound . ' ' . $pdo->log->setColor('Yellow') . '(' . date('r', $dateofnextone) . ')' . $pdo->log->rsetcolor());
 	} // which is '.daysOld($dateofnextone)." days old.\n";
 	return $upperbound;
 }

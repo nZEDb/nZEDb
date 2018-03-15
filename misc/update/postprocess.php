@@ -66,7 +66,7 @@ if ($args[$argv[1]] === true) {
 	if ((Settings::value('..alternate_nntp') == 1 ? $nntp->doConnect(true, true) :
 			$nntp->doConnect()) !==
 		true) {
-		exit($pdo->log->error("Unable to connect to usenet." . PHP_EOL));
+		exit($pdo->log->error('Unable to connect to usenet.' . PHP_EOL));
 	}
 }
 

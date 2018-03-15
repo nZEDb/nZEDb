@@ -8,11 +8,11 @@ use nzedb\db\DB;
 $pdo = new DB();
 $categorize = new Categorize(['Settings' => $pdo]);
 
-if (isset($argv[1]) && $argv[1] === "true") {
+if (isset($argv[1]) && $argv[1] === 'true') {
 	$results = getForeignMovies();
 	foreach ($results as $result) {
 		$cat = determineMovieCategory($result['searchname']);
-		echo $pdo->log->headerOver("English track found for: ") . $pdo->log->primary($result['searchname'] . ": " . $cat . " moving...");
+		echo $pdo->log->headerOver('English track found for: ') . $pdo->log->primary($result['searchname'] . ': ' . $cat . ' moving...');
 		updaterelease($result['id'], $cat);
 	}
 } else {
@@ -30,7 +30,7 @@ function getForeignMovies()
 function updateRelease($id, $cat)
 {
 	global $pdo;
-	$pdo->queryExec(sprintf("UPDATE releases SET categories_id = %s WHERE id = %d", $cat, $id));
+	$pdo->queryExec(sprintf('UPDATE releases SET categories_id = %s WHERE id = %d', $cat, $id));
 }
 
 function determineMovieCategory($name)

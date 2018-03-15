@@ -43,7 +43,7 @@ foreach ($actgroups as $group) {
 	if ($groups->createNewTPGTables($group['id']) === false) {
 		exit($pdo->log->error("There is a problem creating new parts/files tables for group ${group['name']}."));
 	}
-	$consoletools->overWrite("Tables Created: " . $consoletools->percentString($gdone * 3, $newtables));
+	$consoletools->overWrite('Tables Created: ' . $consoletools->percentString($gdone * 3, $newtables));
 	$gdone++;
 }
 $endtime = time();
@@ -78,7 +78,7 @@ while ($cdone < $clen['total']) {
 			if ($binaries instanceof \Traversable) {
 				foreach ($binaries as $binary) {
 					$binary['name'] = $pdo->escapeString($binary['name']);
-					$binary['binaryhash'] = "UNHEX(" . $pdo->escapeString($binary['binaryhash']) . ")";
+					$binary['binaryhash'] = 'UNHEX(' . $pdo->escapeString($binary['binaryhash']) . ')';
 					$oldbid = array_shift($binary);
 					$binarynew = array_replace($binary, $newcid);
 					if ($debug) {

@@ -107,7 +107,7 @@ class Version extends \app\extensions\console\Command
 		if (in_array($this->request->params['args']['sqlcheck'], ['db', 'both', 'all'])) {
 			try {
 				$dbVersion = $this->versions->getSQLPatchFromDB();
-				$this->out(" DB version: " . $dbVersion);
+				$this->out(' DB version: ' . $dbVersion);
 			} catch (\Exception $e) {
 				$this->error($e->getMessage());
 			}

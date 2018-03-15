@@ -40,22 +40,22 @@ do {
 	$resrel = $pdo->queryDirect($query);
 	if ($resrel instanceof \PDOStatement) {
 		$total = $resrel->rowCount();
-		echo $pdo->log->header(number_format($total) . " Releases have Duplicates");
+		echo $pdo->log->header(number_format($total) . ' Releases have Duplicates');
 		foreach ($resrel as $rowrel) {
 			$nzbpath = $nzb->getNZBPath($rowrel['guid']);
 			if (isset($argv[3]) && is_dir($argv[3])) {
 				$path = $argv[3];
 				if (substr($path, strlen($path) - 1) != '/') {
-					$path = $path . "/";
+					$path = $path . '/';
 				}
-				if (!file_exists($path . $rowrel['guid'] . ".nzb.gz") && file_exists($nzbpath)) {
-					if (@copy($nzbpath, $path . $rowrel['guid'] . ".nzb.gz") !== true) {
-						exit("\n" . $pdo->log->error("\nUnable to write " . $path . $rowrel['guid'] . ".nzb.gz"));
+				if (!file_exists($path . $rowrel['guid'] . '.nzb.gz') && file_exists($nzbpath)) {
+					if (@copy($nzbpath, $path . $rowrel['guid'] . '.nzb.gz') !== true) {
+						exit("\n" . $pdo->log->error("\nUnable to write " . $path . $rowrel['guid'] . '.nzb.gz'));
 					}
 				}
 			}
 			if ($releases->deleteSingle(['g' => $rowrel['guid'], 'i' => $rowrel['idx']], $nzb, $ri) !== false) {
-				$consoleTools->overWritePrimary('Deleted: ' . number_format(++$count) . " Duplicate Releases");
+				$consoleTools->overWritePrimary('Deleted: ' . number_format(++$count) . ' Duplicate Releases');
 			}
 		}
 	}
@@ -63,4 +63,4 @@ do {
 	$count = 0;
 	echo "\n\n";
 } while ($total > 0);
-echo $pdo->log->header("\nDeleted " . number_format($all) . " Duplicate Releases");
+echo $pdo->log->header("\nDeleted " . number_format($all) . ' Duplicate Releases');

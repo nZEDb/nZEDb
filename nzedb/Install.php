@@ -5,12 +5,12 @@ class Install
 {
 	public $DB_SYSTEM;
 	public $DB_TYPE;
-	public $DB_HOST = "127.0.0.1";
+	public $DB_HOST = '127.0.0.1';
 	public $DB_PORT;
 	public $DB_SOCKET;
 	public $DB_USER;
 	public $DB_PASSWORD;
-	public $DB_NAME = "nzedb";
+	public $DB_NAME = 'nzedb';
 	public $NNTP_USERNAME;
 	public $NNTP_PASSWORD;
 	public $NNTP_SERVER;
@@ -158,14 +158,14 @@ class Install
 		$tmpCfg = str_replace('%%NNTP_PASSWORD%%', $this->NNTP_PASSWORD, $tmpCfg);
 		$tmpCfg = str_replace('%%NNTP_SERVER%%', $this->NNTP_SERVER, $tmpCfg);
 		$tmpCfg = str_replace('%%NNTP_PORT%%', $this->NNTP_PORT, $tmpCfg);
-		$tmpCfg = str_replace('%%NNTP_SSLENABLED%%', ($this->NNTP_SSLENABLED ? "true" : "false"), $tmpCfg);
+		$tmpCfg = str_replace('%%NNTP_SSLENABLED%%', ($this->NNTP_SSLENABLED ? 'true' : 'false'), $tmpCfg);
 		$tmpCfg = str_replace('%%NNTP_SOCKET_TIMEOUT%%', $this->NNTP_SOCKET_TIMEOUT, $tmpCfg);
 
 		$tmpCfg = str_replace('%%NNTP_USERNAME_A%%', $this->NNTP_USERNAME_A, $tmpCfg);
 		$tmpCfg = str_replace('%%NNTP_PASSWORD_A%%', $this->NNTP_PASSWORD_A, $tmpCfg);
 		$tmpCfg = str_replace('%%NNTP_SERVER_A%%', $this->NNTP_SERVER_A, $tmpCfg);
 		$tmpCfg = str_replace('%%NNTP_PORT_A%%', $this->NNTP_PORT_A, $tmpCfg);
-		$tmpCfg = str_replace('%%NNTP_SSLENABLED_A%%', ($this->NNTP_SSLENABLED_A ? "true" : "false"), $tmpCfg);
+		$tmpCfg = str_replace('%%NNTP_SSLENABLED_A%%', ($this->NNTP_SSLENABLED_A ? 'true' : 'false'), $tmpCfg);
 		$tmpCfg = str_replace('%%NNTP_SOCKET_TIMEOUT_A%%', $this->NNTP_SOCKET_TIMEOUT_A, $tmpCfg);
 
 		$tmpCfg = str_replace('%%nZEDb_SSL_CAFILE%%', $this->nZEDb_SSL_CAFILE, $tmpCfg);

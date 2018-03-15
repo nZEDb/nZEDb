@@ -163,7 +163,7 @@ class ADE extends AdultMovies
 		if ($ret = $this->_html->find('div[class=spdinfo]', 0)) {
 			$this->_tmpResponse = trim($ret->outertext);
 			$ret                = $this->_html->load($this->_tmpResponse);
-			foreach ($ret->find("text") as $strong) {
+			foreach ($ret->find('text') as $strong) {
 				if (trim($strong->innertext) === 'Features') {
 					$dofeature = true;
 				}

@@ -27,7 +27,7 @@ $catarray[] = $category;
 $page->smarty->assign('catlist', $mtmp);
 $page->smarty->assign('category', $category);
 
-$offset = (isset($_REQUEST['offset']) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
+$offset = (isset($_REQUEST['offset']) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST['offset'] : 0;
 $ordering = $movie->getXXXOrdering();
 $orderby = isset($_REQUEST['ob']) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST['ob'] : '';
 
@@ -59,14 +59,14 @@ $page->smarty->assign('pagertotalitems',
 		isset($results[0]['_totalcount']) ? $results[0]['_totalcount'] : 0);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_COVER_PAGE);
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/xxx?t=" . $category . $browseby_link . "&amp;ob=" . $orderby . "&amp;offset=");
-$page->smarty->assign('pagerquerysuffix', "#results");
+$page->smarty->assign('pagerquerybase', WWW_TOP . '/xxx?t=' . $category . $browseby_link . '&amp;ob=' . $orderby . '&amp;offset=');
+$page->smarty->assign('pagerquerysuffix', '#results');
 
-$pager = $page->smarty->fetch("pager.tpl");
+$pager = $page->smarty->fetch('pager.tpl');
 $page->smarty->assign('pager', $pager);
 
 if ($category == -1) {
-	$page->smarty->assign("catname", "All");
+	$page->smarty->assign('catname', 'All');
 } else {
 	$cdata = $cat->getById($category);
 	if ($cdata) {
@@ -77,14 +77,14 @@ if ($category == -1) {
 }
 
 foreach ($ordering as $ordertype) {
-	$page->smarty->assign('orderby' . $ordertype, WWW_TOP . "/xxx?t=" . $category . $browseby_link . "&amp;ob=" . $ordertype . "&amp;offset=0");
+	$page->smarty->assign('orderby' . $ordertype, WWW_TOP . '/xxx?t=' . $category . $browseby_link . '&amp;ob=' . $ordertype . '&amp;offset=0');
 }
 
 $page->smarty->assign('results', $movies);
 
-$page->meta_title = "Browse XXX";
-$page->meta_keywords = "browse,xxx,nzb,description,details";
-$page->meta_description = "Browse for XXX Movies";
+$page->meta_title = 'Browse XXX';
+$page->meta_keywords = 'browse,xxx,nzb,description,details';
+$page->meta_description = 'Browse for XXX Movies';
 
 $page->content = $page->smarty->fetch('xxx.tpl');
 $page->render();

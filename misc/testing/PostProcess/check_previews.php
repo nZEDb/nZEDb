@@ -22,33 +22,33 @@ if ($row !== false) {
 
 $path2preview = nZEDb_COVERS . 'preview' . DS;
 
-if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "check")) {
+if (isset($argv[1]) && ($argv[1] === 'true' || $argv[1] === 'check')) {
 	$releases = new Releases(['Settings' => $pdo]);
 	$nzb = new NZB($pdo);
 	$releaseImage = new ReleaseImage($pdo);
 	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
-	$couldbe = $argv[1] === "true" ? $couldbe = "were " : "could be ";
+	$couldbe = $argv[1] === 'true' ? $couldbe = 'were ' : 'could be ';
 	$limit = $counterfixed = 0;
 	if (isset($argv[2]) && is_numeric($argv[2])) {
 		$limit = $argv[2];
 	}
-	echo $pdo->log->header("Scanning for releases missing previews");
-	$res = $pdo->queryDirect("SELECT id, guid FROM releases where nzbstatus = 1 AND haspreview = 1");
+	echo $pdo->log->header('Scanning for releases missing previews');
+	$res = $pdo->queryDirect('SELECT id, guid FROM releases where nzbstatus = 1 AND haspreview = 1');
 	if ($res instanceof \PDOStatement) {
 		foreach ($res as $row) {
-			$nzbpath = $path2preview . $row["guid"] . "_thumb.jpg";
+			$nzbpath = $path2preview . $row['guid'] . '_thumb.jpg';
 			if (!file_exists($nzbpath)) {
 				$counterfixed++;
-				echo $pdo->log->warning("Missing preview " . $nzbpath);
-				if ($argv[1] === "true") {
+				echo $pdo->log->warning('Missing preview ' . $nzbpath);
+				if ($argv[1] === 'true') {
 					$pdo->queryExec(
-						sprintf("
+						sprintf('
 							UPDATE releases
 							SET consoleinfo_id = NULL, gamesinfo_id = 0, imdbid = NULL, musicinfo_id = NULL,
 								bookinfo_id = NULL, videos_id = 0, tv_episodes_id = 0, xxxinfo_id = 0,
 								passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0,
 								audiostatus = 0, nfostatus = -1
-							WHERE id = %s",
+							WHERE id = %s',
 							$row['id']
 						)
 					);
@@ -60,7 +60,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "check")) {
 			} // QUAD!
 		}
 	}
-	echo $pdo->log->header("Total releases missing previews that " . $couldbe . "reset for reprocessing= " . number_format($counterfixed));
+	echo $pdo->log->header('Total releases missing previews that ' . $couldbe . 'reset for reprocessing= ' . number_format($counterfixed));
 } else {
 	exit($pdo->log->header("\nThis script checks if release previews actually exist on disk.\n\n"
 			. "Releases without previews may be reset for post-processing, thus regenerating them and related meta data.\n\n"

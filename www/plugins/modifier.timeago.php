@@ -15,8 +15,8 @@
  */
 function smarty_modifier_timeAgo( $date)
 {
-	if ($date == "")
-		return "n/a";
+	if ($date == '')
+		return 'n/a';
 	  $timeStrings = array(   'now',      // 0
 						'Sec', 'Secs',    // 1,1
 						'Min','Mins',     // 3,3
@@ -24,14 +24,14 @@ function smarty_modifier_timeAgo( $date)
 						'Day', 'Days');
 	  $sec = time() - (( !is_numeric($date) && strtotime($date)) ? strtotime($date) : $date);
 	  if ( $sec <= 0) return $timeStrings[0];
-	  if ( $sec < 2) return $sec." ".$timeStrings[1];
-	  if ( $sec < 60) return $sec." ".$timeStrings[2];
+	  if ( $sec < 2) return $sec.' '.$timeStrings[1];
+	  if ( $sec < 60) return $sec.' '.$timeStrings[2];
 	  $min = $sec / 60;
-	  if ( floor($min+0.5) < 2) return floor($min+0.5)." ".$timeStrings[3];
-	  if ( $min < 60) return floor($min+0.5)." ".$timeStrings[4];
+	  if ( floor($min+0.5) < 2) return floor($min+0.5).' '.$timeStrings[3];
+	  if ( $min < 60) return floor($min+0.5).' '.$timeStrings[4];
 	  $hrs = $min / 60;
-	  if ( floor($hrs+0.5) < 2) return floor($hrs+0.5)." ".$timeStrings[5];
-	  if ( $hrs < 24) return floor($hrs+0.5)." ".$timeStrings[6];
+	  if ( floor($hrs+0.5) < 2) return floor($hrs+0.5).' '.$timeStrings[5];
+	  if ( $hrs < 24) return floor($hrs+0.5).' '.$timeStrings[6];
 	  $days = $sec/60/60/24;
 	  if ($days > 365)
 	  {

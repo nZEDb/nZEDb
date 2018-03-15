@@ -312,34 +312,34 @@ class Forking extends \fork_daemon
 		$run = $this->pdo->query("SELECT (SELECT value FROM tmux WHERE setting = 'backfill_qty') AS qty, (SELECT value FROM tmux WHERE setting = 'backfill') AS backfill, (SELECT value FROM tmux WHERE setting = 'backfill_order') AS orderby, (SELECT value FROM tmux WHERE setting = 'backfill_days') AS days, (SELECT value FROM settings WHERE setting = 'maxmssgs') AS maxmsgs");
 		$threads = Settings::value('..backfillthreads');
 
-		$orderby = "ORDER BY a.last_record ASC";
+		$orderby = 'ORDER BY a.last_record ASC';
 		switch ((int)$run[0]['orderby']) {
 			case 1:
-				$orderby = "ORDER BY first_record_postdate DESC";
+				$orderby = 'ORDER BY first_record_postdate DESC';
 				break;
 
 			case 2:
-				$orderby = "ORDER BY first_record_postdate ASC";
+				$orderby = 'ORDER BY first_record_postdate ASC';
 				break;
 
 			case 3:
-				$orderby = "ORDER BY name ASC";
+				$orderby = 'ORDER BY name ASC';
 				break;
 
 			case 4:
-				$orderby = "ORDER BY name DESC";
+				$orderby = 'ORDER BY name DESC';
 				break;
 
 			case 5:
-				$orderby = "ORDER BY a.last_record DESC";
+				$orderby = 'ORDER BY a.last_record DESC';
 				break;
 		}
 
 		$backfilldays = '';
 		if ($run[0]['days'] == 1) {
-			$backfilldays = "backfill_target";
+			$backfilldays = 'backfill_target';
 		} elseif ($run[0]['days'] == 2) {
-			$backfilldays = round(abs(strtotime(date("Y-m-d")) -
+			$backfilldays = round(abs(strtotime(date('Y-m-d')) -
 					strtotime(Settings::value('..safebackfilldate'))
 				) / 86400
 			);
@@ -347,7 +347,7 @@ class Forking extends \fork_daemon
 
 		$data = $this->pdo->queryOneRow(
 			sprintf(
-				"SELECT g.name,
+				'SELECT g.name,
 				g.first_record AS our_first,
 				MAX(a.first_record) AS their_first,
 				MAX(a.last_record) AS their_last
@@ -358,7 +358,7 @@ class Forking extends \fork_daemon
 				AND g.backfill = 1
 				AND (NOW() - INTERVAL %s DAY) < g.first_record_postdate
 				GROUP BY a.name, a.last_record, g.name, g.first_record
-				%s",
+				%s',
 				$backfilldays,
 				$orderby
 			)
@@ -380,7 +380,7 @@ class Forking extends \fork_daemon
 
 			$queue = [];
 			for ($i = 0; $i <= $geteach - 1; $i++) {
-				$queue[$i] = sprintf("get_range  backfill  %s  %s  %s  %s", $data['name'], $data['our_first'] - $i * $run[0]['maxmsgs'] - $run[0]['maxmsgs'], $data['our_first'] - $i * $run[0]['maxmsgs'] - 1, $i + 1);
+				$queue[$i] = sprintf('get_range  backfill  %s  %s  %s  %s', $data['name'], $data['our_first'] - $i * $run[0]['maxmsgs'] - $run[0]['maxmsgs'], $data['our_first'] - $i * $run[0]['maxmsgs'] - 1, $i + 1);
 			}
 			$this->work = $queue;
 		}
@@ -436,12 +436,12 @@ class Forking extends \fork_daemon
 		$maxmssgs = Settings::value('..maxmssgs');
 		$threads = Settings::value('..binarythreads');
 
-		$groups = $this->pdo->query("
+		$groups = $this->pdo->query('
 			SELECT g.name AS groupname, g.last_record AS our_last,
 				a.last_record AS their_last
 			FROM groups g
 			INNER JOIN short_groups a ON g.active = 1 AND g.name = a.name
-			ORDER BY a.last_record DESC"
+			ORDER BY a.last_record DESC'
 		);
 
 		if ($groups) {
@@ -449,27 +449,27 @@ class Forking extends \fork_daemon
 			$queue = [];
 			foreach ($groups as $group) {
 				if ($group['our_last'] == 0) {
-					$queue[$i] = sprintf("update_group_headers  %s", $group['groupname']);
+					$queue[$i] = sprintf('update_group_headers  %s', $group['groupname']);
 					$i++;
 				} else {
 					//only process if more than 20k headers available and skip the first 20k
 					$count = $group['their_last'] - $group['our_last'] - 20000;
 					//echo "count: " . $count . "maxmsgs x2: " . ($maxmssgs * 2) . PHP_EOL;
 					if ($count <= $maxmssgs * 2) {
-						$queue[$i] = sprintf("update_group_headers  %s", $group['groupname']);
+						$queue[$i] = sprintf('update_group_headers  %s', $group['groupname']);
 						$i++;
 					} else {
-						$queue[$i] = sprintf("part_repair  %s", $group['groupname']);
+						$queue[$i] = sprintf('part_repair  %s', $group['groupname']);
 						$i++;
 						$geteach = floor(min($count, $maxheaders) / $maxmssgs);
 						$remaining = min($count, $maxheaders) - $geteach * $maxmssgs;
 						//echo "maxmssgs: " . $maxmssgs . " geteach: " . $geteach . " remaining: " . $remaining . PHP_EOL;
 						for ($j = 0; $j < $geteach; $j++) {
-							$queue[$i] = sprintf("get_range  binaries  %s  %s  %s  %s", $group['groupname'], $group['our_last'] + $j * $maxmssgs + 1, $group['our_last'] + $j * $maxmssgs + $maxmssgs, $i);
+							$queue[$i] = sprintf('get_range  binaries  %s  %s  %s  %s', $group['groupname'], $group['our_last'] + $j * $maxmssgs + 1, $group['our_last'] + $j * $maxmssgs + $maxmssgs, $i);
 							$i++;
 						}
 						//add remainder to queue
-						$queue[$i] = sprintf("get_range  binaries  %s  %s  %s  %s", $group['groupname'], $group['our_last'] + ($j + 1) * $maxmssgs + 1, $group['our_last'] + ($j + 1) * $maxmssgs + $remaining + 1, $i);
+						$queue[$i] = sprintf('get_range  binaries  %s  %s  %s  %s', $group['groupname'], $group['our_last'] + ($j + 1) * $maxmssgs + 1, $group['our_last'] + ($j + 1) * $maxmssgs + $remaining + 1, $i);
 						$i++;
 					}
 				}
@@ -535,7 +535,7 @@ class Forking extends \fork_daemon
 		foreach ($leftguids as $leftguid) {
 			$count++;
 			if ($maxperrun > 0) {
-				$queue[$count] = sprintf("%s %s %s %s", $this->workTypeOptions[0], $leftguid, $maxperrun, $count);
+				$queue[$count] = sprintf('%s %s %s %s', $this->workTypeOptions[0], $leftguid, $maxperrun, $count);
 			}
 		}
 		$this->work = $queue;

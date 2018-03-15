@@ -54,11 +54,11 @@ class Tmux
 			if (is_array($settingV)) {
 				$settingV = implode(', ', $settingV);
 			}
-			$sql[] = sprintf("WHEN %s THEN %s", $this->pdo->escapeString($settingK), $this->pdo->escapeString($settingV));
+			$sql[] = sprintf('WHEN %s THEN %s', $this->pdo->escapeString($settingK), $this->pdo->escapeString($settingV));
 			$sqlKeys[] = $this->pdo->escapeString($settingK);
 		}
 
-		$this->pdo->queryExec(sprintf("UPDATE tmux SET value = CASE setting %s END WHERE setting IN (%s)", implode(' ', $sql), implode(', ', $sqlKeys)));
+		$this->pdo->queryExec(sprintf('UPDATE tmux SET value = CASE setting %s END WHERE setting IN (%s)', implode(' ', $sql), implode(', ', $sqlKeys)));
 
 		return $tmux;
 	}
@@ -72,7 +72,7 @@ class Tmux
 	{
 		$where = ($setting !== '' ? sprintf('WHERE setting = %s', $this->pdo->escapeString($setting)) : '');
 
-		$rows = $this->pdo->query(sprintf("SELECT * FROM tmux %s", $where));
+		$rows = $this->pdo->query(sprintf('SELECT * FROM tmux %s', $where));
 
 		if ($rows === false) {
 			return false;
@@ -123,20 +123,20 @@ class Tmux
 
 		$runVar['conncounts'][$which]['active'] = $runVar['conncounts'][$which]['total'] = 0;
 
-		$runVar['conncounts'][$which]['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $connections[$ip] . ":" . $connections[$port] . " | grep -c ESTAB"));
-		$runVar['conncounts'][$which]['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $connections[$ip] . ":" . $connections[$port]));
+		$runVar['conncounts'][$which]['active'] = str_replace("\n", '', shell_exec('ss -n | grep ' . $connections[$ip] . ':' . $connections[$port] . ' | grep -c ESTAB'));
+		$runVar['conncounts'][$which]['total'] = str_replace("\n", '', shell_exec('ss -n | grep -c ' . $connections[$ip] . ':' . $connections[$port]));
 
 		if ($runVar['conncounts'][$which]['active'] == 0 && $runVar['conncounts'][$which]['total'] == 0) {
-				$runVar['conncounts'][$which]['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $connections[$ip] . ":https | grep -c ESTAB"));
-				$runVar['conncounts'][$which]['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $connections[$ip] . ":https"));
+				$runVar['conncounts'][$which]['active'] = str_replace("\n", '', shell_exec('ss -n | grep ' . $connections[$ip] . ':https | grep -c ESTAB'));
+				$runVar['conncounts'][$which]['total'] = str_replace("\n", '', shell_exec('ss -n | grep -c ' . $connections[$ip] . ':https'));
 		}
 		if ($runVar['conncounts'][$which]['active'] == 0 && $runVar['conncounts'][$which]['total'] == 0) {
-			$runVar['conncounts'][$which]['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $connections[$port] . " | grep -c ESTAB"));
-			$runVar['conncounts'][$which]['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $connections[$port]));
+			$runVar['conncounts'][$which]['active'] = str_replace("\n", '', shell_exec('ss -n | grep ' . $connections[$port] . ' | grep -c ESTAB'));
+			$runVar['conncounts'][$which]['total'] = str_replace("\n", '', shell_exec('ss -n | grep -c ' . $connections[$port]));
 		}
 		if ($runVar['conncounts'][$which]['active'] == 0 && $runVar['conncounts'][$which]['total'] == 0) {
-			$runVar['conncounts'][$which]['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $connections[$ip] . " | grep -c ESTAB"));
-			$runVar['conncounts'][$which]['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $connections[$ip]));
+			$runVar['conncounts'][$which]['active'] = str_replace("\n", '', shell_exec('ss -n | grep ' . $connections[$ip] . ' | grep -c ESTAB'));
+			$runVar['conncounts'][$which]['total'] = str_replace("\n", '', shell_exec('ss -n | grep -c ' . $connections[$ip]));
 		}
 		return ($runVar['conncounts']);
 	}
@@ -152,25 +152,25 @@ class Tmux
 		switch ($constants['sequential']) {
 			case 0:
 				$panes_win_1 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:0 -F '#{pane_title}'`");
-				$panes['zero'] = str_replace("\n", '', explode(" ", $panes_win_1));
+				$panes['zero'] = str_replace("\n", '', explode(' ', $panes_win_1));
 				$panes_win_2 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:1 -F '#{pane_title}'`");
-				$panes['one'] = str_replace("\n", '', explode(" ", $panes_win_2));
+				$panes['one'] = str_replace("\n", '', explode(' ', $panes_win_2));
 				$panes_win_3 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:2 -F '#{pane_title}'`");
-				$panes['two'] = str_replace("\n", '', explode(" ", $panes_win_3));
+				$panes['two'] = str_replace("\n", '', explode(' ', $panes_win_3));
 				break;
 			case 1:
 				$panes_win_1 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:0 -F '#{pane_title}'`");
-				$panes['zero'] = str_replace("\n", '', explode(" ", $panes_win_1));
+				$panes['zero'] = str_replace("\n", '', explode(' ', $panes_win_1));
 				$panes_win_2 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:1 -F '#{pane_title}'`");
-				$panes['one'] = str_replace("\n", '', explode(" ", $panes_win_2));
+				$panes['one'] = str_replace("\n", '', explode(' ', $panes_win_2));
 				$panes_win_3 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:2 -F '#{pane_title}'`");
-				$panes['two'] = str_replace("\n", '', explode(" ", $panes_win_3));
+				$panes['two'] = str_replace("\n", '', explode(' ', $panes_win_3));
 				break;
 			case 2:
 				$panes_win_1 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:0 -F '#{pane_title}'`");
-				$panes['zero'] = str_replace("\n", '', explode(" ", $panes_win_1));
+				$panes['zero'] = str_replace("\n", '', explode(' ', $panes_win_1));
 				$panes_win_2 = shell_exec("echo `tmux list-panes -t {$constants['tmux_session']}:1 -F '#{pane_title}'`");
-				$panes['one'] = str_replace("\n", '', explode(" ", $panes_win_2));
+				$panes['one'] = str_replace("\n", '', explode(' ', $panes_win_2));
 				break;
 		}
 		return $panes;
@@ -312,7 +312,7 @@ class Tmux
 	 */
 	public function updateItem($setting, $value)
 	{
-		$sql = sprintf("UPDATE tmux SET value = %s WHERE setting = %s", $this->pdo->escapeString($value), $this->pdo->escapeString($setting));
+		$sql = sprintf('UPDATE tmux SET value = %s WHERE setting = %s', $this->pdo->escapeString($value), $this->pdo->escapeString($setting));
 		return $this->pdo->queryExec($sql);
 	}
 
@@ -322,7 +322,7 @@ class Tmux
 	 */
 	public function microtime_float()
 	{
-		list($usec, $sec) = explode(" ", microtime());
+		list($usec, $sec) = explode(' ', microtime());
 		return ((float)$usec + (float)$sec);
 	}
 
@@ -348,7 +348,7 @@ class Tmux
 			}
 			$bytes /= 1024;
 		}
-		return (round($bytes, 2) . " " . $suffix);
+		return (round($bytes, 2) . ' ' . $suffix);
 	}
 
 	/**
@@ -359,13 +359,13 @@ class Tmux
 	public function writelog($pane)
 	{
 		$path = nZEDb_LOGS;
-		$getdate = gmdate("Ymd");
+		$getdate = gmdate('Ymd');
 		$tmux = $this->get();
 		$logs = (isset($tmux->write_logs)) ? $tmux->write_logs : 0;
 		if ($logs == 1) {
 			return "2>&1 | tee -a $path/$pane-$getdate.log";
 		} else {
-			return "";
+			return '';
 		}
 	}
 
@@ -378,8 +378,8 @@ class Tmux
 	 */
 	public function get_color($colors_start, $colors_end, $colors_exc)
 	{
-		$exception = str_replace(".", ".", $colors_exc);
-		$exceptions = explode(",", $exception);
+		$exception = str_replace('.', '.', $colors_exc);
+		$exceptions = explode(',', $exception);
 		sort($exceptions);
 		$number = mt_rand($colors_start, $colors_end - count($exceptions));
 		foreach ($exceptions as $exception) {
@@ -418,11 +418,11 @@ class Tmux
 	public function relativeTime($_time)
 	{
 		$d = [];
-		$d[0] = [1, "sec"];
-		$d[1] = [60, "min"];
-		$d[2] = [3600, "hr"];
-		$d[3] = [86400, "day"];
-		$d[4] = [31104000, "yr"];
+		$d[0] = [1, 'sec'];
+		$d[1] = [60, 'min'];
+		$d[2] = [3600, 'hr'];
+		$d[3] = [86400, 'day'];
+		$d[4] = [31104000, 'yr'];
 
 		$w = [];
 
@@ -435,7 +435,7 @@ class Tmux
 			$w[$i] = intval($secondsLeft / $d[$i][0]);
 			$secondsLeft -= ($w[$i] * $d[$i][0]);
 			if ($w[$i] != 0) {
-				$return .= $w[$i] . " " . $d[$i][1] . (($w[$i] > 1) ? 's' : '') . " ";
+				$return .= $w[$i] . ' ' . $d[$i][1] . (($w[$i] > 1) ? 's' : '') . ' ';
 			}
 		}
 		return $return;
@@ -466,27 +466,27 @@ class Tmux
 	{
 		switch ((int)$qry) {
 			case 1:
-				return sprintf("
+				return sprintf('
 					SELECT
 					SUM(IF(nzbstatus = %d AND categories_id BETWEEN %d AND %d AND categories_id != %d AND videos_id = 0 AND tv_episodes_id BETWEEN -3 AND 0 AND size > 1048576,1,0)) AS processtv,
-					SUM(IF(nzbstatus = %1\$d AND categories_id = %d AND anidbid IS NULL,1,0)) AS processanime,
-					SUM(IF(nzbstatus = %1\$d AND categories_id BETWEEN %d AND %d AND imdbid IS NULL,1,0)) AS processmovies,
-					SUM(IF(nzbstatus = %1\$d AND categories_id IN (%d, %d, %d) AND musicinfo_id IS NULL,1,0)) AS processmusic,
-					SUM(IF(nzbstatus = %1\$d AND categories_id BETWEEN %d AND %d AND consoleinfo_id IS NULL,1,0)) AS processconsole,
-					SUM(IF(nzbstatus = %1\$d AND categories_id IN (%s) AND bookinfo_id IS NULL,1,0)) AS processbooks,
-					SUM(IF(nzbstatus = %1\$d AND categories_id = %d AND gamesinfo_id = 0,1,0)) AS processgames,
-					SUM(IF(nzbstatus = %1\$d AND categories_id BETWEEN %d AND %d AND xxxinfo_id = 0,1,0)) AS processxxx,
+					SUM(IF(nzbstatus = %1$d AND categories_id = %d AND anidbid IS NULL,1,0)) AS processanime,
+					SUM(IF(nzbstatus = %1$d AND categories_id BETWEEN %d AND %d AND imdbid IS NULL,1,0)) AS processmovies,
+					SUM(IF(nzbstatus = %1$d AND categories_id IN (%d, %d, %d) AND musicinfo_id IS NULL,1,0)) AS processmusic,
+					SUM(IF(nzbstatus = %1$d AND categories_id BETWEEN %d AND %d AND consoleinfo_id IS NULL,1,0)) AS processconsole,
+					SUM(IF(nzbstatus = %1$d AND categories_id IN (%s) AND bookinfo_id IS NULL,1,0)) AS processbooks,
+					SUM(IF(nzbstatus = %1$d AND categories_id = %d AND gamesinfo_id = 0,1,0)) AS processgames,
+					SUM(IF(nzbstatus = %1$d AND categories_id BETWEEN %d AND %d AND xxxinfo_id = 0,1,0)) AS processxxx,
 					SUM(IF(1=1 %s,1,0)) AS processnfo,
-					SUM(IF(nzbstatus = %1\$d AND isrenamed = %d AND predb_id = 0 AND passwordstatus >= 0 AND nfostatus > %d
-						AND ((nfostatus = %d AND proc_nfo = %d) OR proc_files = %d OR proc_uid = %d OR proc_par2 = %d OR (nfostatus = %20\$d AND proc_sorter = %d)
+					SUM(IF(nzbstatus = %1$d AND isrenamed = %d AND predb_id = 0 AND passwordstatus >= 0 AND nfostatus > %d
+						AND ((nfostatus = %d AND proc_nfo = %d) OR proc_files = %d OR proc_uid = %d OR proc_par2 = %d OR (nfostatus = %20$d AND proc_sorter = %d)
 							OR (ishashed = 1 AND dehashstatus BETWEEN -6 AND 0)) AND categories_id IN (%s),1,0)) AS processrenames,
 					SUM(IF(isrenamed = %d,1,0)) AS renamed,
-					SUM(IF(nzbstatus = %1\$d AND nfostatus = %20\$d,1,0)) AS nfo,
-					SUM(IF(nzbstatus = %1\$d AND isrequestid = %d AND predb_id = 0 AND ((reqidstatus = %d) OR (reqidstatus = %d) OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %s HOUR)),1,0)) AS requestid_inprogress,
-					SUM(IF(predb_id > 0 AND nzbstatus = %1\$d AND isrequestid = %28\$d AND reqidstatus = %d,1,0)) AS requestid_matched,
+					SUM(IF(nzbstatus = %1$d AND nfostatus = %20$d,1,0)) AS nfo,
+					SUM(IF(nzbstatus = %1$d AND isrequestid = %d AND predb_id = 0 AND ((reqidstatus = %d) OR (reqidstatus = %d) OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %s HOUR)),1,0)) AS requestid_inprogress,
+					SUM(IF(predb_id > 0 AND nzbstatus = %1$d AND isrequestid = %28$d AND reqidstatus = %d,1,0)) AS requestid_matched,
 					SUM(IF(predb_id > 0,1,0)) AS predb_matched,
 					COUNT(DISTINCT(predb_id)) AS distinct_predb_matched
-					FROM releases r",
+					FROM releases r',
 					NZB::NZB_ADDED,
 					Category::TV_ROOT,
 					Category::TV_OTHER,
@@ -562,11 +562,11 @@ class Tmux
 					$this->pdo->escapeString($db_name)
 				);
 			case 6:
-				return "SELECT
+				return 'SELECT
 					(SELECT searchname FROM releases ORDER BY id DESC LIMIT 1) AS newestrelname,
 					(SELECT UNIX_TIMESTAMP(MIN(dateadded)) FROM collections) AS oldestcollection,
 					(SELECT UNIX_TIMESTAMP(MAX(created)) FROM predb) AS newestpre,
-					(SELECT UNIX_TIMESTAMP(adddate) FROM releases ORDER BY id DESC LIMIT 1) AS newestrelease";
+					(SELECT UNIX_TIMESTAMP(adddate) FROM releases ORDER BY id DESC LIMIT 1) AS newestrelease';
 			default:
 				return false;
 		}

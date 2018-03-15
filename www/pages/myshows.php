@@ -26,9 +26,9 @@ switch ($action) {
 	case 'delete':
 		$show = $us->getShow($page->users->currentUserId(), $videoId);
 		if (isset($_REQUEST['from'])) {
-			header("Location:" . WWW_TOP . $_REQUEST['from']);
+			header('Location:' . WWW_TOP . $_REQUEST['from']);
 		} else {
-			header("Location:" . WWW_TOP . "/myshows");
+			header('Location:' . WWW_TOP . '/myshows');
 		}
 		if (!$show) {
 			$page->show404('Not subscribed');
@@ -53,9 +53,9 @@ switch ($action) {
 			$category = (isset($_REQUEST['category']) && is_array($_REQUEST['category']) && !empty($_REQUEST['category'])) ? $_REQUEST['category'] : array();
 			$us->addShow($page->users->currentUserId(), $videoId, $category);
 			if (isset($_REQUEST['from'])) {
-				header("Location:" . WWW_TOP . $_REQUEST['from']);
+				header('Location:' . WWW_TOP . $_REQUEST['from']);
 			} else {
-				header("Location:" . WWW_TOP . "/myshows");
+				header('Location:' . WWW_TOP . '/myshows');
 			}
 		} else {
 			$cat = new Category(['Settings' => $page->settings]);
@@ -90,9 +90,9 @@ switch ($action) {
 			$category = (isset($_REQUEST['category']) && is_array($_REQUEST['category']) && !empty($_REQUEST['category'])) ? $_REQUEST['category'] : array();
 			$us->updateShow($page->users->currentUserId(), $videoId, $category);
 			if (isset($_REQUEST['from'])) {
-				header("Location:" . WWW_TOP . $_REQUEST['from']);
+				header('Location:' . WWW_TOP . $_REQUEST['from']);
 			} else {
-				header("Location:" . WWW_TOP . "/myshows");
+				header('Location:' . WWW_TOP . '/myshows');
 			}
 		} else {
 			$cat = new Category(['Settings' => $page->settings]);
@@ -115,35 +115,35 @@ switch ($action) {
 		break;
 	case 'browse':
 
-		$page->title = "Browse My Shows";
-		$page->meta_title = "My Shows";
-		$page->meta_keywords = "search,add,to,cart,nzb,description,details";
-		$page->meta_description = "Browse Your Shows";
+		$page->title = 'Browse My Shows';
+		$page->meta_title = 'My Shows';
+		$page->meta_keywords = 'search,add,to,cart,nzb,description,details';
+		$page->meta_description = 'Browse Your Shows';
 
 		$shows = $us->getShows($page->users->currentUserId());
 
 		$releases = new Releases(['Settings' => $page->settings]);
-		$browsecount = $releases->getShowsCount($shows, -1, $page->userdata["categoryexclusions"]);
+		$browsecount = $releases->getShowsCount($shows, -1, $page->userdata['categoryexclusions']);
 
-		$offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
+		$offset = (isset($_REQUEST['offset']) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST['offset'] : 0;
 		$ordering = $releases->getBrowseOrdering();
-		$orderby = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '';
+		$orderby = isset($_REQUEST['ob']) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST['ob'] : '';
 
 		$results = array();
-		$results = $releases->getShowsRange($shows, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
+		$results = $releases->getShowsRange($shows, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata['categoryexclusions']);
 
 		$page->smarty->assign('pagertotalitems', $browsecount);
 		$page->smarty->assign('pageroffset', $offset);
 		$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
-		$page->smarty->assign('pagerquerybase', WWW_TOP . "/myshows/browse?ob=" . $orderby . "&amp;offset=");
-		$page->smarty->assign('pagerquerysuffix', "#results");
+		$page->smarty->assign('pagerquerybase', WWW_TOP . '/myshows/browse?ob=' . $orderby . '&amp;offset=');
+		$page->smarty->assign('pagerquerysuffix', '#results');
 		$page->smarty->assign('covgroup', '');
 
-		$pager = $page->smarty->fetch("pager.tpl");
+		$pager = $page->smarty->fetch('pager.tpl');
 		$page->smarty->assign('pager', $pager);
 
 		foreach ($ordering as $ordertype) {
-			$page->smarty->assign('orderby' . $ordertype, WWW_TOP . "/myshows/browse?ob=" . $ordertype . "&amp;offset=0");
+			$page->smarty->assign('orderby' . $ordertype, WWW_TOP . '/myshows/browse?ob=' . $ordertype . '&amp;offset=0');
 		}
 
 		$page->smarty->assign('lastvisit', $page->userdata['lastlogin']);
@@ -157,10 +157,10 @@ switch ($action) {
 		break;
 	default:
 
-		$page->title = "My Shows";
-		$page->meta_title = "My Shows";
-		$page->meta_keywords = "search,add,to,cart,nzb,description,details";
-		$page->meta_description = "Manage Your Shows";
+		$page->title = 'My Shows';
+		$page->meta_title = 'My Shows';
+		$page->meta_keywords = 'search,add,to,cart,nzb,description,details';
+		$page->meta_description = 'Manage Your Shows';
 
 		$cat = new Category(['Settings' => $page->settings]);
 		$tmpcats = $cat->getChildren(Category::TV_ROOT);

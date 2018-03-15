@@ -259,9 +259,9 @@ class RequestIDWeb extends RequestID
 
 		if ($dupeCheck === false) {
 			$this->_preDbID = (int)$this->pdo->queryInsert(
-				sprintf("
+				sprintf('
 					INSERT INTO predb (title, source, requestid, groups_id, created)
-					VALUES (%s, %s, %d, %d, NOW())",
+					VALUES (%s, %s, %d, %d, NOW())',
 					$this->pdo->escapeString($this->_newTitle['title']),
 					$this->pdo->escapeString('requestWEB'),
 					$this->_requestID,

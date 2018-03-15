@@ -54,12 +54,12 @@ class Permissions extends \app\extensions\console\Command
 
 	protected function database()
 	{
-		$this->primary("Db permission checking, is not implemented yet!");
+		$this->primary('Db permission checking, is not implemented yet!');
 	}
 
 	protected function dirs()
 	{
-		$this->primary("Checking permissions on directories...");
+		$this->primary('Checking permissions on directories...');
 		$error = false;
 
 		// Check All folders up to nZEDb root folder.
@@ -73,9 +73,9 @@ class Permissions extends \app\extensions\console\Command
 		}
 
 		if ($error !== false) {
-			$this->primary("Fix the above errors and rerun the command.");
+			$this->primary('Fix the above errors and rerun the command.');
 		} else {
-			$this->primary("Congratulations, file permissions look good!");
+			$this->primary('Congratulations, file permissions look good!');
 		}
 
 	}

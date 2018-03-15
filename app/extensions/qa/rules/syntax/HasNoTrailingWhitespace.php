@@ -27,7 +27,7 @@ class HasNoTrailingWhitespace extends \li3_quality\qa\rules\syntax\HasNoTrailing
 {
 	public function apply($testable, array $config = array())
 	{
-		$message = "Trailing whitespace found";
+		$message = 'Trailing whitespace found';
 		$lines = $testable->lines();
 
 		foreach ($lines as $i => $line) {

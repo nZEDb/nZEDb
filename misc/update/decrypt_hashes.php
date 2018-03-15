@@ -8,7 +8,7 @@ use nzedb\db\DB;
 
 $pdo = new DB();
 
-if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1]))) {
+if (!isset($argv[1]) || ($argv[1] != 'all' && $argv[1] != 'full' && !is_numeric($argv[1]))) {
 	exit($pdo->log->error(
 		"\nThis script tries to match hashes of the releases.name or releases.searchname to predb hashes.\n"
 		. "To display the changes, use 'show' as the second argument.\n\n"
@@ -19,7 +19,7 @@ if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && !is_numeric(
 }
 
 echo $pdo->log->header("\nDecrypt Hashes (${argv[1]}) Started at " . date('g:i:s'));
-echo $pdo->log->primary("Matching predb hashes to hash(releases.name or releases.searchname)");
+echo $pdo->log->primary('Matching predb hashes to hash(releases.name or releases.searchname)');
 
 getPreName($argv);
 
@@ -31,9 +31,9 @@ function getPreName($argv)
 	$namefixer = new NameFixer(['Settings' => $pdo, 'ConsoleTools' => $consoletools]);
 
 	$res = false;
-	if (isset($argv[1]) && $argv[1] === "all") {
+	if (isset($argv[1]) && $argv[1] === 'all') {
 		$res = $pdo->queryDirect('SELECT id AS releases_id, name, searchname, groups_id, categories_id, dehashstatus FROM releases WHERE predb_id = 0 AND ishashed = 1');
-	} else if (isset($argv[1]) && $argv[1] === "full") {
+	} else if (isset($argv[1]) && $argv[1] === 'full') {
 		$res = $pdo->queryDirect('SELECT id AS releases_id, name, searchname, groups_id, categories_id, dehashstatus FROM releases WHERE categories_id = ' .
 				Category::OTHER_HASHED . ' AND ishashed = 1 AND dehashstatus BETWEEN -6 AND 0');
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
@@ -64,12 +64,12 @@ function getPreName($argv)
 				$counted++;
 			}
 			if ($show === 0) {
-				$consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $consoletools->percentString(++$counter, $total));
+				$consoletools->overWritePrimary('Renamed Releases: [' . number_format($counted) . '] ' . $consoletools->percentString(++$counter, $total));
 			}
 		}
 	}
 	if ($total > 0) {
-		echo $pdo->log->header("\nRenamed " . $counted . " releases in " . $consoletools->convertTime(TIME() - $timestart) . ".");
+		echo $pdo->log->header("\nRenamed " . $counted . ' releases in ' . $consoletools->convertTime(TIME() - $timestart) . '.');
 	} else {
 		echo $pdo->log->info("\nNothing to do.");
 	}

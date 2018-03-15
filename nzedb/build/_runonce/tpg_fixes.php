@@ -26,7 +26,7 @@ use nzedb\db\DB;
 $pdo = new DB();
 
 if (!Settings::value('..tablepergroup')) {
-	exit("Tables per groups is not enabled, quitting!");
+	exit('Tables per groups is not enabled, quitting!');
 }
 
 $groups = $pdo->queryDirect('SELECT id FROM groups WHERE active = 1 OR backfill = 1');
@@ -39,29 +39,29 @@ if ($groups === false) {
 	// Adds currentparts column to binaries tables
 	$query2 = "ALTER TABLE binaries_%s ADD COLUMN currentparts INT UNSIGNED NOT NULL DEFAULT '0' AFTER totalparts";
 	// Updates binaries tables with parts current count.
-	$query3 = "UPDATE binaries_%s b SET currentparts = (SELECT COUNT(binaryid) FROM parts_%s p WHERE p.binaryid = b.id)";
+	$query3 = 'UPDATE binaries_%s b SET currentparts = (SELECT COUNT(binaryid) FROM parts_%s p WHERE p.binaryid = b.id)';
 
 	// Drops/adds new indexes to parts, adds the collection_id column to parts, used when deleting.
-	$query4[] = "ALTER TABLE parts_%s DROP INDEX ix_parts_messageid";
-	$query4[] = "ALTER TABLE parts_%s DROP INDEX ix_parts_number";
+	$query4[] = 'ALTER TABLE parts_%s DROP INDEX ix_parts_messageid';
+	$query4[] = 'ALTER TABLE parts_%s DROP INDEX ix_parts_number';
 	$query4[] = "ALTER TABLE parts_%s ADD COLUMN collection_id INT(11) UNSIGNED NOT NULL DEFAULT '0'";
-	$query4[] = "ALTER TABLE parts_%s ADD INDEX ix_parts_collection_id(collection_id)";
-	$query4[] = "DROP TRIGGER IF EXISTS delete_collections_%s";
+	$query4[] = 'ALTER TABLE parts_%s ADD INDEX ix_parts_collection_id(collection_id)';
+	$query4[] = 'DROP TRIGGER IF EXISTS delete_collections_%s';
 
-	$query5 = "UPDATE parts_%s p INNER JOIN binaries_%s b ON b.id = p.binaryid SET p.collection_id = b.collection_id";
+	$query5 = 'UPDATE parts_%s p INNER JOIN binaries_%s b ON b.id = p.binaryid SET p.collection_id = b.collection_id';
 
 	// Creates trigger to delete parts / binaries when collections are deleted.
-	$query6 = "CREATE TRIGGER delete_collections_%s BEFORE DELETE ON collections_%s FOR EACH ROW BEGIN DELETE FROM
-	binaries_%s WHERE collection_id = OLD.id; DELETE FROM parts_%s WHERE collection_id = OLD.id; END";
+	$query6 = 'CREATE TRIGGER delete_collections_%s BEFORE DELETE ON collections_%s FOR EACH ROW BEGIN DELETE FROM
+	binaries_%s WHERE collection_id = OLD.id; DELETE FROM parts_%s WHERE collection_id = OLD.id; END';
 
 	// Get size from parts and add it to collections.
-	$query7 = "UPDATE collections_%s c
+	$query7 = 'UPDATE collections_%s c
 				SET c.filesize = (
 					SELECT COALESCE(SUM(p.size), 0)
 					FROM parts_%s p
 					WHERE p.collection_id = c.id
 				)
-				WHERE c.filecheck = 3 AND c.filesize = 0";
+				WHERE c.filecheck = 3 AND c.filesize = 0';
 
 	foreach ($groups as $group) {
 		echo 'Fixing group ' . $group['id'] . PHP_EOL;

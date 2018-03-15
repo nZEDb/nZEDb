@@ -108,7 +108,7 @@ class XXX
 	 */
 	public function getXXXInfo($xxxid)
 	{
-		return $this->pdo->queryOneRow(sprintf("SELECT *, UNCOMPRESS(plot) AS plot FROM xxxinfo WHERE id = %d", $xxxid));
+		return $this->pdo->queryOneRow(sprintf('SELECT *, UNCOMPRESS(plot) AS plot FROM xxxinfo WHERE id = %d', $xxxid));
 	}
 
 	/**
@@ -291,7 +291,7 @@ class XXX
 		foreach ($browseByArr as $bb) {
 			if (isset($_REQUEST[$bb]) && !empty($_REQUEST[$bb])) {
 				$bbv = stripslashes($_REQUEST[$bb]);
-				if ($bb == "genre") {
+				if ($bb == 'genre') {
 					$bbv = $this->getGenreID($bbv);
 				}
 				if ($bb == 'id') {
@@ -325,9 +325,9 @@ class XXX
 			if (trim($ta) == '') {
 				continue;
 			}
-			if ($field == "genre") {
+			if ($field == 'genre') {
 				$ta = $this->getGenres(true, $ta);
-				$ta = $ta["title"];
+				$ta = $ta['title'];
 			}
 			if ($i > 7) {
 				break;
@@ -363,10 +363,10 @@ class XXX
 		if (!empty($id)) {
 
 			$this->pdo->queryExec(
-				sprintf("UPDATE xxxinfo	SET title = %s, tagline = %s, plot = COMPRESS(%s), genre = %s, director = %s,
+				sprintf('UPDATE xxxinfo	SET title = %s, tagline = %s, plot = COMPRESS(%s), genre = %s, director = %s,
 					actors = %s, extras = %s, productinfo = %s, trailers = %s, directurl = %s,
 					classused = %s, cover = %d, backdrop = %d, updateddate = NOW()
-					WHERE id = %d",
+					WHERE id = %d',
 					$this->pdo->escapeString($title),
 					$this->pdo->escapeString($tagLine),
 					$this->pdo->escapeString($plot),
@@ -615,7 +615,7 @@ class XXX
 	 */
 	protected function checkXXXInfoExists($releaseName)
 	{
-		return $this->pdo->queryOneRow(sprintf("SELECT id, title FROM xxxinfo WHERE title LIKE %s", "'" . $releaseName . "%'"));
+		return $this->pdo->queryOneRow(sprintf('SELECT id, title FROM xxxinfo WHERE title LIKE %s', "'" . $releaseName . "%'"));
 	}
 
 	/**
@@ -657,7 +657,7 @@ class XXX
 
 					return true;
 				} else {
-					$this->pdo->log->doEcho(".", false);
+					$this->pdo->log->doEcho('.', false);
 				}
 			}
 
@@ -676,11 +676,11 @@ class XXX
 		$ret = null;
 
 		if ($activeOnly) {
-			$res = $this->pdo->query("SELECT title FROM genres WHERE disabled = 0 AND type = " .
-					Category::XXX_ROOT . " ORDER BY title");
+			$res = $this->pdo->query('SELECT title FROM genres WHERE disabled = 0 AND type = ' .
+					Category::XXX_ROOT . ' ORDER BY title');
 		} else {
-			$res = $this->pdo->query("SELECT title FROM genres WHERE disabled = 1 AND type = " .
-					Category::XXX_ROOT . " ORDER BY title");
+			$res = $this->pdo->query('SELECT title FROM genres WHERE disabled = 1 AND type = ' .
+					Category::XXX_ROOT . ' ORDER BY title');
 		}
 
 		foreach ($res as $arr => $value) {
@@ -700,15 +700,15 @@ class XXX
 	public function getGenres($activeOnly = false, $gid = null)
 	{
 		if (isset($gid)) {
-			$gid = " AND id = " . $this->pdo->escapeString($gid) . " ORDER BY title";
+			$gid = ' AND id = ' . $this->pdo->escapeString($gid) . ' ORDER BY title';
 		} else {
-			$gid = " ORDER BY title";
+			$gid = ' ORDER BY title';
 		}
 
 		if ($activeOnly) {
-			return $this->pdo->queryOneRow("SELECT title FROM genres WHERE disabled = 0 AND type = " . Category::XXX_ROOT . $gid);
+			return $this->pdo->queryOneRow('SELECT title FROM genres WHERE disabled = 0 AND type = ' . Category::XXX_ROOT . $gid);
 		} else {
-			return $this->pdo->queryOneRow("SELECT title FROM genres WHERE disabled = 1 AND type = " . Category::XXX_ROOT . $gid);
+			return $this->pdo->queryOneRow('SELECT title FROM genres WHERE disabled = 1 AND type = ' . Category::XXX_ROOT . $gid);
 		}
 	}
 
@@ -724,22 +724,22 @@ class XXX
 		$ret = null;
 
 		if (!is_array($arr)) {
-			$res = $this->pdo->queryOneRow("SELECT id FROM genres WHERE title = " . $this->pdo->escapeString($arr));
+			$res = $this->pdo->queryOneRow('SELECT id FROM genres WHERE title = ' . $this->pdo->escapeString($arr));
 			if ($res !== false) {
-				return $res["id"];
+				return $res['id'];
 			}
 		}
 
 		foreach ($arr as $key => $value) {
-			$res = $this->pdo->queryOneRow("SELECT id FROM genres WHERE title = " . $this->pdo->escapeString($value));
+			$res = $this->pdo->queryOneRow('SELECT id FROM genres WHERE title = ' . $this->pdo->escapeString($value));
 			if ($res !== false) {
-				$ret .= "," . $res["id"];
+				$ret .= ',' . $res['id'];
 			} else {
-				$ret .= "," . $this->insertGenre($value);
+				$ret .= ',' . $this->insertGenre($value);
 			}
 		}
 
-		$ret = ltrim($ret, ",");
+		$ret = ltrim($ret, ',');
 		return ($ret);
 	}
 
@@ -754,7 +754,7 @@ class XXX
 	{
 		$res = '';
 		if (isset($genre)) {
-			$res = $this->pdo->queryInsert(sprintf("INSERT INTO genres (title, type, disabled) VALUES (%s ,%d ,%d)", $this->pdo->escapeString($genre), 6000, 0));
+			$res = $this->pdo->queryInsert(sprintf('INSERT INTO genres (title, type, disabled) VALUES (%s ,%d ,%d)', $this->pdo->escapeString($genre), 6000, 0));
 		}
 		return $res;
 	}
@@ -770,17 +770,17 @@ class XXX
 	public function insertSwf($whichclass, $res)
 	{
 		$ret = '';
-		if ($whichclass === "ade") {
+		if ($whichclass === 'ade') {
 			if (!empty($res)) {
 				$trailers = unserialize($res);
 				$ret .= "<object width='360' height='240' type='application/x-shockwave-flash' id='EmpireFlashPlayer' name='EmpireFlashPlayer' data='" . $trailers['url'] . "'>";
-				$ret .= "<param name='flashvars' value= 'streamID=" . $trailers['streamid'] . "&amp;autoPlay=false&amp;BaseStreamingUrl=" . $trailers['baseurl'] . "'>";
-				$ret .= "</object>";
+				$ret .= "<param name='flashvars' value= 'streamID=" . $trailers['streamid'] . '&amp;autoPlay=false&amp;BaseStreamingUrl=' . $trailers['baseurl'] . "'>";
+				$ret .= '</object>';
 
 				return ($ret);
 			}
 		}
-		if ($whichclass === "pop") {
+		if ($whichclass === 'pop') {
 			if (!empty($res)) {
 				$trailers = unserialize($res);
 				$ret .= "<embed id='trailer' width='480' height='360'";

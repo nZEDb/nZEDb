@@ -24,11 +24,11 @@ $time = TIME();
 echo "\nReorganizing files to Level $newLevel from: $sourcePath This could take a while...\n";
 //$consoleTools = new \ConsoleTools();
 foreach ($objects as $filestoprocess => $nzbFile) {
-	if ($nzbFile->getExtension() != "gz") {
+	if ($nzbFile->getExtension() != 'gz') {
 		continue;
 	}
 
-	$newFileName = $nzb->getNZBPath(str_replace(".nzb.gz", "", $nzbFile->getBasename()),
+	$newFileName = $nzb->getNZBPath(str_replace('.nzb.gz', '', $nzbFile->getBasename()),
 									$newLevel,
 									true);
 	if ($newFileName != $nzbFile) {
@@ -48,15 +48,15 @@ $consoleTools->overWrite("Processed $iFilesProcessed nzbs in " . relativeTime($t
 function relativeTime($_time)
 {
 	$d = array();
-	$d[0] = array(1, "sec");
-	$d[1] = array(60, "min");
-	$d[2] = array(3600, "hr");
-	$d[3] = array(86400, "day");
-	$d[4] = array(31104000, "yr");
+	$d[0] = array(1, 'sec');
+	$d[1] = array(60, 'min');
+	$d[2] = array(3600, 'hr');
+	$d[3] = array(86400, 'day');
+	$d[4] = array(31104000, 'yr');
 
 	$w = array();
 
-	$return      = "";
+	$return      = '';
 	$now         = TIME();
 	$diff        = ($now - $_time);
 	$secondsLeft = $diff;
@@ -65,7 +65,7 @@ function relativeTime($_time)
 		$w[$i] = intval($secondsLeft / $d[$i][0]);
 		$secondsLeft -= ($w[$i] * $d[$i][0]);
 		if ($w[$i] != 0) {
-			$return .= $w[$i] . " " . $d[$i][1] . (($w[$i] > 1) ? 's' : '') . " ";
+			$return .= $w[$i] . ' ' . $d[$i][1] . (($w[$i] > 1) ? 's' : '') . ' ';
 		}
 	}
 	return $return;

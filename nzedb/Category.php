@@ -121,12 +121,12 @@ class Category
 			INNER JOIN categories cp ON cp.id = c.parentid " .
 			($activeonly ?
 				sprintf(
-					" WHERE c.status = %d %s ",
+					' WHERE c.status = %d %s ',
 					Category::STATUS_ACTIVE,
-					(count($excludedcats) > 0 ? " AND c.id NOT IN (" . implode(",", $excludedcats) . ")" : '')
+					(count($excludedcats) > 0 ? ' AND c.id NOT IN (' . implode(',', $excludedcats) . ')' : '')
 				) : ''
 			) .
-			" ORDER BY c.id"
+			' ORDER BY c.id'
 		);
 	}
 
@@ -175,7 +175,7 @@ class Category
 				break;
 			// Multiple category constraints
 			default:
-				$catsrch = " AND r.categories_id IN (" . implode(", ", $categories) . ") ";
+				$catsrch = ' AND r.categories_id IN (' . implode(', ', $categories) . ') ';
 				break;
 		}
 
@@ -189,7 +189,7 @@ class Category
 	 */
 	public static function getCategoryOthersGroup()
 	{
-		return implode(",",
+		return implode(',',
 			[
 				self::BOOKS_UNKNOWN,
 				self::GAME_OTHER,
@@ -220,7 +220,7 @@ class Category
 	public function isParent($cid)
 	{
 		$ret = $this->pdo->query(
-			sprintf("SELECT id FROM categories WHERE id = %d AND parentid IS NULL", $cid),
+			sprintf('SELECT id FROM categories WHERE id = %d AND parentid IS NULL', $cid),
 			true, nZEDb_CACHE_EXPIRY_LONG
 		);
 		return (isset($ret[0]['id']));
@@ -233,11 +233,11 @@ class Category
 	 */
 	public function getFlat($activeonly = false)
 	{
-		$act = "";
+		$act = '';
 		if ($activeonly) {
-			$act = sprintf(" WHERE c.status = %d ", Category::STATUS_ACTIVE);
+			$act = sprintf(' WHERE c.status = %d ', Category::STATUS_ACTIVE);
 		}
-		return $this->pdo->query("SELECT c.*, (SELECT title FROM categories WHERE id=c.parentid) AS parentName FROM categories c " . $act . " ORDER BY c.id");
+		return $this->pdo->query('SELECT c.*, (SELECT title FROM categories WHERE id=c.parentid) AS parentName FROM categories c ' . $act . ' ORDER BY c.id');
 	}
 
 	/**
@@ -250,7 +250,7 @@ class Category
 	public function getChildren($cid)
 	{
 		return $this->pdo->query(
-			sprintf("SELECT c.* FROM categories c WHERE parentid = %d", $cid),
+			sprintf('SELECT c.* FROM categories c WHERE parentid = %d', $cid),
 			true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
@@ -262,7 +262,7 @@ class Category
 	public function getEnabledParentNames()
 	{
 		return $this->pdo->query(
-			"SELECT title FROM categories WHERE parentid IS NULL AND status = 1",
+			'SELECT title FROM categories WHERE parentid IS NULL AND status = 1',
 			true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
@@ -275,7 +275,7 @@ class Category
 	public function getDisabledIDs()
 	{
 		return $this->pdo->query(
-			"SELECT id FROM categories WHERE status = 2 OR parentid IN (SELECT id FROM categories WHERE status = 2 AND parentid IS NULL)",
+			'SELECT id FROM categories WHERE status = 2 OR parentid IN (SELECT id FROM categories WHERE status = 2 AND parentid IS NULL)',
 			true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
@@ -339,8 +339,8 @@ class Category
 	{
 		return $this->pdo->queryExec(
 			sprintf(
-				"UPDATE categories SET disablepreview = %d, status = %d, description = %s, minsize = %d
-				WHERE id = %d",
+				'UPDATE categories SET disablepreview = %d, status = %d, description = %s, minsize = %d
+				WHERE id = %d',
 				$disablepreview, $status, $this->pdo->escapeString($desc), $minsize, $id
 			)
 		);
@@ -415,11 +415,11 @@ class Category
 		$temp_array = [];
 
 		if ($blnIncludeNoneSelected) {
-			$temp_array[-1] = "--Please Select--";
+			$temp_array[-1] = '--Please Select--';
 		}
 
 		foreach ($categories as $category) {
-			$temp_array[$category["id"]] = $category["title"];
+			$temp_array[$category['id']] = $category['title'];
 		}
 
 		return $temp_array;
@@ -434,14 +434,14 @@ class Category
 	public function getNameByID($ID)
 	{
 		$cat = $this->pdo->queryOneRow(
-			sprintf("
+			sprintf('
 				SELECT c.title AS ctitle, cp.title AS ptitle
 				FROM categories c
 				INNER JOIN categories cp ON c.parentid = cp.id
-				WHERE c.id = %d",
+				WHERE c.id = %d',
 				$ID
 			)
 		);
-		return $cat["ptitle"] . "->" . $cat["ctitle"];
+		return $cat['ptitle'] . '->' . $cat['ctitle'];
 	}
 }

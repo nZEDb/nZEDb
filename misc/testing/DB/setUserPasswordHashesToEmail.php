@@ -41,7 +41,7 @@ if ($argc != 2) {
 
 $pdo = new DB();
 
-$users = $pdo->query("SELECT id, username, email, password FROM users");
+$users = $pdo->query('SELECT id, username, email, password FROM users');
 $update = $pdo->Prepare('UPDATE users SET password = :password WHERE id = :id');
 
 $Users = new Users(['Settings' => $pdo]);

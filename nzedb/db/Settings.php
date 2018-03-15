@@ -46,7 +46,7 @@ class Settings extends DB
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$result = parent::exec("describe site", true);
+		$result = parent::exec('describe site', true);
 		$this->table = ($result === false) ? 'settings' : 'site';
 		$this->setCovers();
 	}
@@ -100,7 +100,7 @@ class Settings extends DB
 	{
 		$where = $excludeUnsectioned ? "WHERE section != ''" : '';
 
-		$sql = sprintf("SELECT section, subsection, name, value, hint FROM settings %s ORDER BY section, subsection, name", $where);
+		$sql = sprintf('SELECT section, subsection, name, value, hint FROM settings %s ORDER BY section, subsection, name', $where);
 		$results = $this->queryArray($sql);
 
 		$tree = [];
@@ -179,7 +179,7 @@ class Settings extends DB
 		if ($error === null) {
 			$sql = $sqlKeys = [];
 			foreach ($form as $settingK => $settingV) {
-				$sql[]     = sprintf("WHEN %s THEN %s",
+				$sql[]     = sprintf('WHEN %s THEN %s',
 									 $this->escapeString($settingK),
 									 $this->escapeString($settingV));
 				$sqlKeys[] = $this->escapeString($settingK);

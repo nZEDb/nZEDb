@@ -105,7 +105,7 @@ class AniDB
 				}
 			}
 		} else {
-			$this->pdo->log->doEcho($this->pdo->log->info("No work to process."), true);
+			$this->pdo->log->doEcho($this->pdo->log->info('No work to process.'), true);
 		}
 	}
 
@@ -191,10 +191,10 @@ class AniDB
 	private function getAnidbByName($searchName = '')
 	{
 		return $this->pdo->queryOneRow(
-			sprintf("
+			sprintf('
 				SELECT at.anidbid, at.title
 				FROM anidb_titles AS at
-				WHERE at.title %s",
+				WHERE at.title %s',
 				$this->pdo->likeString($searchName, true, true)
 			)
 		);
@@ -218,7 +218,7 @@ class AniDB
 
 		if (is_array($cleanArr) && isset($cleanArr['title']) && is_numeric($cleanArr['epno'])) {
 
-			echo $this->pdo->log->header(PHP_EOL . "Looking Up: ") .
+			echo $this->pdo->log->header(PHP_EOL . 'Looking Up: ') .
 				$this->pdo->log->primary("   Title: {$cleanArr['title']}" . PHP_EOL .
 				"   Episode: {$cleanArr['epno']}");
 
@@ -242,7 +242,7 @@ class AniDB
 						$type = 'Remote';
 					} else {
 						echo PHP_EOL .
-							$this->pdo->log->info("This AniDB ID was not found to be accurate locally, but has been updated too recently to check AniDB.") .
+							$this->pdo->log->info('This AniDB ID was not found to be accurate locally, but has been updated too recently to check AniDB.') .
 							PHP_EOL;
 					}
 				}
@@ -252,11 +252,11 @@ class AniDB
 				$this->pdo->log->doEcho(
 					$this->pdo->log->headerOver("Matched {$type} AniDB ID: ") .
 					$this->pdo->log->primary($anidbId['anidbid']) .
-					$this->pdo->log->alternateOver("   Title: ") .
+					$this->pdo->log->alternateOver('   Title: ') .
 					$this->pdo->log->primary($anidbId['title']) .
-					$this->pdo->log->alternateOver("   Episode #: ") .
+					$this->pdo->log->alternateOver('   Episode #: ') .
 					$this->pdo->log->primary($cleanArr['epno']) .
-					$this->pdo->log->alternateOver("   Episode Title: ") .
+					$this->pdo->log->alternateOver('   Episode Title: ') .
 					$this->pdo->log->primary($updatedAni['episode_title'])
 				);
 
@@ -282,10 +282,10 @@ class AniDB
 	private function updateRelease($anidbId, $relId)
 	{
 		$this->pdo->queryExec(
-			sprintf("
+			sprintf('
 				UPDATE releases
 				SET anidbid = %d
-				WHERE id = %d",
+				WHERE id = %d',
 				$anidbId,
 				$relId
 			)
@@ -302,11 +302,11 @@ class AniDB
 	private function updateTimeCheck($anidbId)
 	{
 		return $this->pdo->queryOneRow(
-			sprintf("
+			sprintf('
 				SELECT anidbid
 				FROM anidb_info ai
 				WHERE ai.updated < (NOW() - INTERVAL 7 DAY)
-				AND ai.anidbid = %d",
+				AND ai.anidbid = %d',
 				$anidbId
 			)
 		);

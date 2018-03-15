@@ -33,4 +33,4 @@ print_r($msg);
 // get postdate for an article
 $binaries = new Binaries(['NNTP' => $nntp]);
 $newdate = $binaries->postdate($first, $groupArr);
-echo $cli->primary("The posted date for " . $group . ", article " . $first . " is " . date('Y-m-d H:i:s', $newdate));
+echo $cli->primary('The posted date for ' . $group . ', article ' . $first . ' is ' . date('Y-m-d H:i:s', $newdate));

@@ -26,11 +26,11 @@ $tmux_niceness = (isset($tmux->niceness) ? $tmux->niceness : 2);
 
 $runVar['constants'] = $pdo->queryOneRow($tRun->getConstantSettings());
 
-$PHP = ($tRun->command_exist("php5") ? 'php5' : 'php');
+$PHP = ($tRun->command_exist('php5') ? 'php5' : 'php');
 //$PYTHON = ($tRun->command_exist("python3") ? 'python3 -OOu' : 'python -OOu');
 
 //assign shell commands
-$show_time = (nZEDb_DEBUG ? "/usr/bin/time" : "");
+$show_time = (nZEDb_DEBUG ? '/usr/bin/time' : '');
 $runVar['commands']['_php'] = $show_time . " nice -n{$tmux_niceness} $PHP";
 $runVar['commands']['_phpn'] = "nice -n{$tmux_niceness} $PHP";
 //$runVar['commands']['_python'] = $show_time . " nice -n{$tmux_niceness} $PYTHON";
@@ -43,7 +43,7 @@ $tRun->runPane('scraper', $runVar);
 $runVar['panes'] = $tRun->getListOfPanes($runVar['constants']);
 
 //totals per category in db, results by parentID
-$catcntqry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM categories c, releases r WHERE r.categories_id = c.id GROUP BY c.parentid";
+$catcntqry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM categories c, releases r WHERE r.categories_id = c.id GROUP BY c.parentid';
 
 //create timers and set to now
 $runVar['timers']['timer1'] = $runVar['timers']['timer2'] = $runVar['timers']['timer3'] =
@@ -67,7 +67,7 @@ $runVar['counts']['iterations'] = 1;
 $runVar['modsettings']['fc']['firstrun'] = true;
 $runVar['modsettings']['fc']['num'] = 0;
 
-$tblCount = "SELECT TABLE_ROWS AS count FROM information_schema.TABLES WHERE TABLE_NAME = :table AND TABLE_SCHEMA = " . $pdo->escapeString($db_name);
+$tblCount = 'SELECT TABLE_ROWS AS count FROM information_schema.TABLES WHERE TABLE_NAME = :table AND TABLE_SCHEMA = ' . $pdo->escapeString($db_name);
 $psTableRowCount = $pdo->Prepare($tblCount);
 
 while ($runVar['counts']['iterations'] > 0) {
@@ -202,7 +202,7 @@ while ($runVar['counts']['iterations'] > 0) {
 		$runVar['counts']['now']['parts_table'] = $runVar['counts']['now']['parterpair_table'] = 0;
 
 		if ($psTableRowCount === false) {
-			echo "Unable to prepare statement, skipping monitor updates!";
+			echo 'Unable to prepare statement, skipping monitor updates!';
 		} else {
 			if ($tables instanceof \Traversable) {
 				foreach ($tables as $row) {
@@ -295,7 +295,7 @@ while ($runVar['counts']['iterations'] > 0) {
 
 			//calculate percentages -- if user has no releases, set 0 for each key or this will fail on divide by zero
 			$runVar['counts']['percent'][$key] = ($runVar['counts']['now']['releases'] > 0
-				? sprintf("%02s", floor(($proc / $runVar['counts']['now']['releases']) * 100)) : 0);
+				? sprintf('%02s', floor(($proc / $runVar['counts']['now']['releases']) * 100)) : 0);
 		}
 
 		$runVar['counts']['now']['total_work'] += $runVar['counts']['now']['work'];
@@ -379,7 +379,7 @@ while ($runVar['counts']['iterations'] > 0) {
 
 function errorOnSQL($pdo)
 {
-	echo $pdo->log->error(PHP_EOL . "Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again." . PHP_EOL);
+	echo $pdo->log->error(PHP_EOL . 'Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again.' . PHP_EOL);
 	exit;
 }
 

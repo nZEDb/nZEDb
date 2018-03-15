@@ -187,14 +187,14 @@ class ReleaseRemover
 		$this->deleteReleases();
 
 		if ($this->echoCLI) {
-			echo $this->pdo->log->headerOver(($this->delete ? "Deleted " : "Would have deleted ") . $this->deletedCount . " release(s). This script ran for ");
+			echo $this->pdo->log->headerOver(($this->delete ? 'Deleted ' : 'Would have deleted ') . $this->deletedCount . ' release(s). This script ran for ');
 			echo $this->pdo->log->header($this->consoleTools->convertTime(TIME() - $this->timeStart));
 		}
 
 		return ($this->browser
 			?
 			'Success! ' .
-			($this->delete ? "Deleted " : "Would have deleted ") .
+			($this->delete ? 'Deleted ' : 'Would have deleted ') .
 			$this->deletedCount .
 			' release(s) in ' .
 			$this->consoleTools->convertTime(TIME() - $this->timeStart)
@@ -221,7 +221,7 @@ class ReleaseRemover
 		$this->blacklistID = '';
 
 		if (isset($blacklistID) && is_numeric($blacklistID)) {
-			$this->blacklistID = sprintf("AND id = %d", $blacklistID);
+			$this->blacklistID = sprintf('AND id = %d', $blacklistID);
 		}
 
 		$time = trim($time);
@@ -231,7 +231,7 @@ class ReleaseRemover
 		switch ($time) {
 			case 'full':
 				if ($this->echoCLI) {
-					echo $this->pdo->log->header("Removing " . ($type == '' ? "All crap releases " : $type . " crap releases") . " - no time limit.\n");
+					echo $this->pdo->log->header('Removing ' . ($type == '' ? 'All crap releases ' : $type . ' crap releases') . " - no time limit.\n");
 				}
 				break;
 			default:
@@ -241,7 +241,7 @@ class ReleaseRemover
 					return $this->returnError();
 				}
 				if ($this->echoCLI) {
-					echo $this->pdo->log->header("Removing " . ($type == '' ? "All crap releases " : $type . " crap releases") . " from the past " . $time . " hour(s).\n");
+					echo $this->pdo->log->header('Removing ' . ($type == '' ? 'All crap releases ' : $type . ' crap releases') . ' from the past ' . $time . " hour(s).\n");
 				}
 				$this->crapTime = ' AND r.adddate > (NOW() - INTERVAL ' . $time . ' HOUR)';
 				break;
@@ -317,14 +317,14 @@ class ReleaseRemover
 		}
 
 		if ($this->echoCLI) {
-			echo $this->pdo->log->headerOver(($this->delete ? "Deleted " : "Would have deleted ") . $this->deletedCount . " release(s). This script ran for ");
+			echo $this->pdo->log->headerOver(($this->delete ? 'Deleted ' : 'Would have deleted ') . $this->deletedCount . ' release(s). This script ran for ');
 			echo $this->pdo->log->header($this->consoleTools->convertTime(TIME() - $this->timeStart));
 		}
 
 		return ($this->browser
 			?
 			'Success! ' .
-			($this->delete ? "Deleted " : "Would have deleted ") .
+			($this->delete ? 'Deleted ' : 'Would have deleted ') .
 			$this->deletedCount .
 			' release(s) in ' .
 			$this->consoleTools->convertTime(TIME() - $this->timeStart)
@@ -444,12 +444,12 @@ class ReleaseRemover
 		}
 
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname, r.id
+			'SELECT r.guid, r.searchname, r.id
 			FROM releases r %s
 			STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id
 			WHERE r.searchname NOT REGEXP %s
 			AND rf.name %s
-			AND r.categories_id NOT IN (%d, %d, %d, %d, %d, %d) %s %s",
+			AND r.categories_id NOT IN (%d, %d, %d, %d, %d, %d) %s %s',
 			$ftJoin,
 			$this->pdo->escapeString('\.exe[sc]'),
 			$this->pdo->likeString('.exe', true, false),
@@ -491,10 +491,10 @@ class ReleaseRemover
 		}
 
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname, r.id
+			'SELECT r.guid, r.searchname, r.id
 			FROM releases r %s
 			STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id
-			WHERE rf.name %s %s %s",
+			WHERE rf.name %s %s %s',
 			$ftJoin,
 			$this->pdo->likeString('install.bin', true, true),
 			$instbinFT,
@@ -529,10 +529,10 @@ class ReleaseRemover
 		}
 
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname, r.id
+			'SELECT r.guid, r.searchname, r.id
 			FROM releases r %s
 			STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id
-			WHERE rf.name %s %s %s",
+			WHERE rf.name %s %s %s',
 			$ftJoin,
 			$this->pdo->likeString('password.url', true, true),
 			$passurlFT,
@@ -567,7 +567,7 @@ class ReleaseRemover
 		}
 
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname, r.id
+			'SELECT r.guid, r.searchname, r.id
 			FROM releases r %s
 			WHERE r.searchname %s
 			AND r.searchname NOT %s
@@ -577,7 +577,7 @@ class ReleaseRemover
 			AND r.searchname NOT %s
 			AND r.searchname NOT %s
 			AND r.nzbstatus = 1
-			AND r.categories_id NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d) %s %s",
+			AND r.categories_id NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d) %s %s',
 			// Matches passwort / passworded / etc also.
 			$ftJoin,
 			$this->pdo->likeString('passwor', true, true),
@@ -616,11 +616,11 @@ class ReleaseRemover
 	{
 		$this->method = 'Size';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname, r.id
+			'SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			WHERE r.totalpart = 1
 			AND r.size < 2097152
-			AND r.categories_id NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s",
+			AND r.categories_id NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s',
 			Category::MUSIC_MP3,
 			Category::BOOKS_COMICS,
 			Category::BOOKS_EBOOK,
@@ -651,10 +651,10 @@ class ReleaseRemover
 	{
 		$this->method = 'Huge';
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname, r.id
+			'SELECT r.guid, r.searchname, r.id
 			FROM releases r
 			WHERE r.totalpart = 1
-			AND r.size > 209715200 %s",
+			AND r.size > 209715200 %s',
 			$this->crapTime
 		);
 
@@ -686,12 +686,12 @@ class ReleaseRemover
 		}
 
 		$this->query = sprintf(
-			"SELECT r.guid, r.searchname, r.id
+			'SELECT r.guid, r.searchname, r.id
 			FROM releases r %s
 			WHERE r.totalpart > 1
 			AND r.size < 40000000
 			AND r.name %s
-			AND r.categories_id IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s %s",
+			AND r.categories_id IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s %s',
 			$ftJoin,
 			$this->pdo->likeString('sample', true, true),
 			Category::TV_ANIME,
@@ -809,12 +809,12 @@ class ReleaseRemover
 
 				switch ((int)$regex['msgcol']) {
 					case Binaries::BLACKLIST_FIELD_SUBJECT:
-						$regexSQL = sprintf("WHERE %s (r.name REGEXP %s OR r.searchname REGEXP %2\$s)", $ftMatch, $dbRegex);
-						$opTypeName = "Subject";
+						$regexSQL = sprintf('WHERE %s (r.name REGEXP %s OR r.searchname REGEXP %2$s)', $ftMatch, $dbRegex);
+						$opTypeName = 'Subject';
 						break;
 					case Binaries::BLACKLIST_FIELD_FROM:
-						$regexSQL = "WHERE r.fromname REGEXP " . $dbRegex;
-						$opTypeName = "Poster";
+						$regexSQL = 'WHERE r.fromname REGEXP ' . $dbRegex;
+						$opTypeName = 'Poster';
 						break;
 				}
 
@@ -849,17 +849,17 @@ class ReleaseRemover
 				$this->method = 'Blacklist [' . $regex['id'] . ']';
 
 				// Check if using FT Match and declare for echo
-				if ($ftMatch !== '' && $opTypeName == "Subject") {
-					$blType = "FULLTEXT match with REGEXP";
+				if ($ftMatch !== '' && $opTypeName == 'Subject') {
+					$blType = 'FULLTEXT match with REGEXP';
 					$ftUsing = 'Using (' . $regexMatch . ') as interesting words.' . PHP_EOL;
 				} else {
-					$blType = "only REGEXP";
+					$blType = 'only REGEXP';
 					$ftUsing = PHP_EOL;
 				}
 
 				// Provide useful output of operations
 				echo $this->pdo->log->header(sprintf("Finding crap releases for %s: Using %s method against release %s.\n" .
-						"%s", $this->method, $blType, $opTypeName, $ftUsing
+						'%s', $this->method, $blType, $opTypeName, $ftUsing
 					)
 				);
 
@@ -869,9 +869,9 @@ class ReleaseRemover
 					$join = '';
 				}
 
-				$this->query = sprintf("
+				$this->query = sprintf('
 							SELECT r.guid, r.searchname, r.id
-							FROM releases r %s %s %s %s",
+							FROM releases r %s %s %s %s',
 					$join,
 					$regexSQL,
 					$groupID,
@@ -923,7 +923,7 @@ class ReleaseRemover
 						switch (nZEDb_RELEASE_SEARCH_TYPE) {
 							case ReleaseSearch::SPHINX:
 								$ftMatch = sprintf('AND (rse.query = "@(filename) %s;limit=1000000;maxmatches=1000000;mode=any")', str_replace('|', ' ', str_replace('"', '', $regexMatch)));
-								$ftJoin = "INNER JOIN releases_se rse ON rse.id = r.id";
+								$ftJoin = 'INNER JOIN releases_se rse ON rse.id = r.id';
 								break;
 							default:
 								break;
@@ -931,8 +931,8 @@ class ReleaseRemover
 					}
 				}
 
-				$regexSQL = sprintf("STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id
-				WHERE rf.name REGEXP %s ", $this->pdo->escapeString($regex['regex'])
+				$regexSQL = sprintf('STRAIGHT_JOIN release_files rf ON r.id = rf.releases_id
+				WHERE rf.name REGEXP %s ', $this->pdo->escapeString($regex['regex'])
 				);
 
 				if ($regexSQL === '') {
@@ -966,22 +966,22 @@ class ReleaseRemover
 
 				// Check if using FT Match and declare for echo
 				if ($ftMatch !== '') {
-					$blType = "FULLTEXT match with REGEXP";
+					$blType = 'FULLTEXT match with REGEXP';
 					$ftUsing = 'Using (' . $regexMatch . ') as interesting words.' . PHP_EOL;
 				} else {
-					$blType = "only REGEXP";
+					$blType = 'only REGEXP';
 					$ftUsing = PHP_EOL;
 				}
 
 				// Provide useful output of operations
-				echo $this->pdo->log->header(sprintf("Finding crap releases for %s: Using %s method against release filenames." . PHP_EOL .
-						"%s", $this->method, $blType, $ftUsing
+				echo $this->pdo->log->header(sprintf('Finding crap releases for %s: Using %s method against release filenames.' . PHP_EOL .
+						'%s', $this->method, $blType, $ftUsing
 					)
 				);
 
 				$this->query = sprintf(
-					"SELECT DISTINCT r.id, r.guid, r.searchname
-					FROM releases r %s %s %s %s %s",
+					'SELECT DISTINCT r.id, r.guid, r.searchname
+					FROM releases r %s %s %s %s %s',
 					$ftJoin,
 					$regexSQL,
 					$groupID,
@@ -1033,7 +1033,7 @@ class ReleaseRemover
 	 */
 	protected function removeCodecPoster()
 	{
-		$categories = sprintf("r.categories_id IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
+		$categories = sprintf('r.categories_id IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)',
 			Category::MOVIE_3D,
 			Category::MOVIE_BLURAY,
 			Category::MOVIE_DVD,

@@ -58,10 +58,10 @@ $checks = array(
 
 		if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
 			$solution  = 'To fix this, run the following from the command line: ';
-			$solution .= "<pre><code>";
+			$solution .= '<pre><code>';
 			$solution .= !empty($app) ? "$ cd {$app}\n" : null;
 			$solution .= "$ chmod -R 0777 {$path}";
-			$solution .= "</code></pre>";
+			$solution .= '</code></pre>';
 		} else {
 			$path = realpath($path);
 			$solution  = 'To fix this, give <code>modify</code> rights to the user ';
@@ -102,9 +102,9 @@ $checks = array(
 		return $notify(
 			'error',
 			'Curlwrappers are enabled, some things might not work as expected.',
-			"This is an expiremental and usually broken feature of PHP.
+			'This is an expiremental and usually broken feature of PHP.
 			Please recompile your PHP binary without using the <code>--with-curlwrappers</code>
-			flag or use a precompiled binary that was compiled without the flag."
+			flag or use a precompiled binary that was compiled without the flag.'
 		);
 	},
 	'shortOpenTag' => function() use ($notify, $compiled) {
@@ -114,9 +114,9 @@ $checks = array(
 		return $notify(
 			'warning',
 			'Short open tags are enabled, you may want to disable them.',
-			"It is recommended to not rely on this option being enabled.
+			'It is recommended to not rely on this option being enabled.
 			To increase the portability of your code disable this option by setting
-			<code>short_open_tag = Off</code> in your <code>php.ini</code>."
+			<code>short_open_tag = Off</code> in your <code>php.ini</code>.'
 		);
 	},
 	'database' => function() use ($notify) {

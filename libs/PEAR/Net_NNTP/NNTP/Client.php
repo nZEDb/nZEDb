@@ -1203,7 +1203,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
 		if (is_array($references)) {
 			foreach ($references as $key => $val) {
-				$references[$key] = preg_split("/ +/", trim($val), -1, PREG_SPLIT_NO_EMPTY);
+				$references[$key] = preg_split('/ +/', trim($val), -1, PREG_SPLIT_NO_EMPTY);
 			}
 		}
 

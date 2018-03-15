@@ -4,12 +4,12 @@ require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install.php');
 use nzedb\Install;
 
 $page = new InstallPage();
-$page->title = "OpenSSL Setup";
+$page->title = 'OpenSSL Setup';
 
 $cfg = new Install();
 
 if (!$cfg->isInitialized()) {
-	header("Location: index.php");
+	header('Location: index.php');
 	die();
 }
 
@@ -52,7 +52,7 @@ if ($page->isPostBack()) {
 
 	if (!$cfg->error) {
 		$cfg->setSession();
-		header("Location: ?success");
+		header('Location: ?success');
 		die();
 	}
 }

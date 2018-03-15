@@ -277,12 +277,12 @@ class Sharing
 		if ($found > 0) {
 			foreach ($res as $row) {
 				$this->pdo->queryExec(
-					sprintf("
+					sprintf('
 						UPDATE release_comments rc
 						INNER JOIN releases r USING (nzb_guid)
 						SET rc.releases_id = %d, r.comments = r.comments + 1
 						WHERE r.id = %d
-						AND rc.releases_id = 0",
+						AND rc.releases_id = 0',
 						$row['id'],
 						$row['id']
 					)

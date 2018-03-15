@@ -7,7 +7,7 @@ use nzedb\db\DB;
 
 $pdo = new DB();
 
-if (isset($argv[1]) && $argv[1] === "true") {
+if (isset($argv[1]) && $argv[1] === 'true') {
 	getOddGames();
 } else {
 	exit($pdo->log->error("\nThis script attempts to recategorize 150 games each run in 0day and ISO that have a match on giantbomb.\n"
@@ -27,7 +27,7 @@ function getOddGames()
 	);
 
 	if ($res !== false) {
-				$pdo->log->doEcho($pdo->log->header("Processing... 150 release(s)."));
+				$pdo->log->doEcho($pdo->log->header('Processing... 150 release(s).'));
 			$gen = new Games(['Echo' => true, 'Settings' => $pdo]);
 
 			//Match on 78% title

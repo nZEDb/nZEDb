@@ -6,7 +6,7 @@ if (!$page->users->isLoggedIn()){
 	$page->show403();
 }
 
-if (empty($_GET["id"])) {
+if (empty($_GET['id'])) {
 	$page->show404();
 } else {
 	$cp = new CouchPotato($page);
@@ -18,6 +18,6 @@ if (empty($_GET["id"])) {
 	if (empty($cp->cpapi)) {
 		$page->show404();
 	}
-	$id = $_GET["id"];
+	$id = $_GET['id'];
 	$cp->sendToCouchPotato($id);
 }

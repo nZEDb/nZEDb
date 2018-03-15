@@ -84,7 +84,7 @@ class TVDB extends TV
 		$tvcount = $res->rowCount();
 
 		if ($this->echooutput && $tvcount > 0) {
-			echo $this->pdo->log->header("Processing TVDB lookup for " . number_format($tvcount) . " release(s).");
+			echo $this->pdo->log->header('Processing TVDB lookup for ' . number_format($tvcount) . ' release(s).');
 		}
 
 		if ($res instanceof \PDOStatement) {
@@ -101,9 +101,9 @@ class TVDB extends TV
 
 					if (in_array($release['cleanname'], $this->titleCache)) {
 						if ($this->echooutput) {
-							echo $this->pdo->log->headerOver("Title: ") .
+							echo $this->pdo->log->headerOver('Title: ') .
 									$this->pdo->log->warningOver('"' . $release['cleanname'] . '"') .
-									$this->pdo->log->header(" already failed lookup for this site.  Skipping.");
+									$this->pdo->log->header(' already failed lookup for this site.  Skipping.');
 						}
 						$this->setVideoNotFound(parent::PROCESS_TVMAZE, $row['id']);
 						continue;
@@ -127,9 +127,9 @@ class TVDB extends TV
 
 						// If it doesnt exist locally and lookups are allowed lets try to get it.
 						if ($this->echooutput) {
-							echo $this->pdo->log->primaryOver("Video ID for ") .
+							echo $this->pdo->log->primaryOver('Video ID for ') .
 								$this->pdo->log->headerOver($release['cleanname']) .
-								$this->pdo->log->primary(" not found in local db, checking web.");
+								$this->pdo->log->primary(' not found in local db, checking web.');
 						}
 
 						// Check if we have a valid country and set it in the array
@@ -148,9 +148,9 @@ class TVDB extends TV
 						}
 
 					} else if ($this->echooutput && $tvdbid !== false) {
-						echo $this->pdo->log->primaryOver("Video ID for ") .
+						echo $this->pdo->log->primaryOver('Video ID for ') .
 							$this->pdo->log->headerOver($release['cleanname']) .
-							$this->pdo->log->primary(" found in local db, attempting episode match.");
+							$this->pdo->log->primary(' found in local db, attempting episode match.');
 					}
 
 					if (is_numeric($videoId) && $videoId > 0 && is_numeric($tvdbid) && $tvdbid > 0) {
@@ -163,7 +163,7 @@ class TVDB extends TV
 						if ($episodeNo === 'all') {
 							// Set the video ID and leave episode 0
 							$this->setVideoIdFound($videoId, $row['id'], 0);
-							echo $this->pdo->log->primary("Found TVDB Match for Full Season!");
+							echo $this->pdo->log->primary('Found TVDB Match for Full Season!');
 							continue;
 						}
 
@@ -193,7 +193,7 @@ class TVDB extends TV
 							// Mark the releases video and episode IDs
 							$this->setVideoIdFound($videoId, $row['id'], $episode);
 							if ($this->echooutput) {
-								echo $this->pdo->log->primary("Found TVDB Match!");
+								echo $this->pdo->log->primary('Found TVDB Match!');
 							}
 						} else {
 							//Processing failed, set the episode ID to the next processing group

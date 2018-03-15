@@ -38,16 +38,16 @@ class Genres
 	private function getListQuery($type = '', $activeonly = false)
 	{
 		if (!empty($type)) {
-			$typesql = sprintf(" AND g.type = %d", $type);
+			$typesql = sprintf(' AND g.type = %d', $type);
 		} else {
 			$typesql = '';
 		}
 
 		if ($activeonly) {
-			$sql = sprintf("SELECT g.* FROM genres g WHERE 1 %s AND g.disabled != 1 ORDER BY g.title", $typesql
+			$sql = sprintf('SELECT g.* FROM genres g WHERE 1 %s AND g.disabled != 1 ORDER BY g.title', $typesql
 			);
 		} else {
-			$sql = sprintf("SELECT g.* FROM genres g WHERE 1 %s ORDER BY g.title", $typesql);
+			$sql = sprintf('SELECT g.* FROM genres g WHERE 1 %s ORDER BY g.title', $typesql);
 		}
 
 		return $sql;
@@ -63,34 +63,34 @@ class Genres
 	public function getCount($type = '', $activeonly = false)
 	{
 		if (!empty($type)) {
-			$typesql = sprintf(" AND g.type = %d", $type);
+			$typesql = sprintf(' AND g.type = %d', $type);
 		} else {
 			$typesql = '';
 		}
 
 		if ($activeonly) {
-			$sql = sprintf("SELECT COUNT(id) AS num FROM genres g WHERE 1 %s AND g.disabled != 1", $typesql
+			$sql = sprintf('SELECT COUNT(id) AS num FROM genres g WHERE 1 %s AND g.disabled != 1', $typesql
 			);
 		} else {
-			$sql = sprintf("SELECT COUNT(id) AS num FROM genres g WHERE 1 %s", $typesql);
+			$sql = sprintf('SELECT COUNT(id) AS num FROM genres g WHERE 1 %s', $typesql);
 		}
 
 		$res = $this->pdo->queryOneRow($sql);
-		return $res["num"];
+		return $res['num'];
 	}
 
 	public function getById($id)
 	{
-		return $this->pdo->queryOneRow(sprintf("SELECT * FROM genres WHERE id = %d", $id));
+		return $this->pdo->queryOneRow(sprintf('SELECT * FROM genres WHERE id = %d', $id));
 	}
 
 	public function update($id, $disabled)
 	{
-		return $this->pdo->queryExec(sprintf("UPDATE genres SET disabled = %d WHERE id = %d", $disabled, $id));
+		return $this->pdo->queryExec(sprintf('UPDATE genres SET disabled = %d WHERE id = %d', $disabled, $id));
 	}
 
 	public function getDisabledIDs()
 	{
-		return $this->pdo->query("SELECT id FROM genres WHERE disabled = 1", true, nZEDb_CACHE_EXPIRY_LONG);
+		return $this->pdo->query('SELECT id FROM genres WHERE disabled = 1', true, nZEDb_CACHE_EXPIRY_LONG);
 	}
 }

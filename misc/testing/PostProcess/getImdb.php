@@ -11,9 +11,9 @@ $c = new ColorCLI();
 $movie = new Movie(['Echo' => true, 'Settings' => $pdo]);
 
 
-$movies = $pdo->queryDirect("SELECT imdbid FROM movieinfo WHERE tmdbid = 0 ORDER BY id ASC");
+$movies = $pdo->queryDirect('SELECT imdbid FROM movieinfo WHERE tmdbid = 0 ORDER BY id ASC');
 if ($movies instanceof \PDOStatement) {
-	echo $pdo->log->header("Updating movie info for " . number_format($movies->rowCount()) . " movies.");
+	echo $pdo->log->header('Updating movie info for ' . number_format($movies->rowCount()) . ' movies.');
 
 	foreach ($movies as $mov) {
 		$starttime = (int)microtime(true);

@@ -8,23 +8,23 @@ $cli = new ColorCLI();
 
 $pdo = new DB(['checkVersion' => true]);
 
-if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
+if (isset($argv[1]) && isset($argv[2]) && $argv[2] == 'fmyisam') {
 	$tbl = $argv[1];
 	printf($cli->header("Converting $tbl"));
 	$pdo->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=FIXED");
-} else if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "dmyisam") {
+} else if (isset($argv[1]) && isset($argv[2]) && $argv[2] == 'dmyisam') {
 	$tbl = $argv[1];
 	printf($cli->header("Converting $tbl"));
 	$pdo->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=DYNAMIC");
-} else if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "cinnodb") {
+} else if (isset($argv[1]) && isset($argv[2]) && $argv[2] == 'cinnodb') {
 	$tbl = $argv[1];
 	printf($cli->header("Converting $tbl"));
 	$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
-} else if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "dinnodb") {
+} else if (isset($argv[1]) && isset($argv[2]) && $argv[2] == 'dinnodb') {
 	$tbl = $argv[1];
 	printf($cli->header("Converting $tbl"));
 	$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
-} else if (isset($argv[1]) && $argv[1] == "fmyisam") {
+} else if (isset($argv[1]) && $argv[1] == 'fmyisam') {
 	$sql = 'SHOW TABLE STATUS WHERE (Engine != "MyIsam" OR Row_format != "FIXED") AND Engine != "SPHINX"';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
@@ -32,7 +32,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		printf($cli->header("Converting $tbl"));
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=FIXED");
 	}
-} else if (isset($argv[1]) && $argv[1] == "dmyisam") {
+} else if (isset($argv[1]) && $argv[1] == 'dmyisam') {
 	$sql = 'SHOW TABLE STATUS WHERE (Engine != "MyIsam" OR Row_format != "Dynamic") AND Engine != "SPHINX"';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
@@ -40,7 +40,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		printf($cli->header("Converting $tbl"));
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=DYNAMIC");
 	}
-} else if (isset($argv[1]) && $argv[1] == "dinnodb") {
+} else if (isset($argv[1]) && $argv[1] == 'dinnodb') {
 	$sql = 'SHOW TABLE STATUS WHERE (Engine != "InnoDB" OR Row_format != "Dynamic") AND Engine != "SPHINX"';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
@@ -61,7 +61,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		printf($cli->header("Converting $tbl"));
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 	}
-} else if (isset($argv[1]) && $argv[1] == "cinnodb") {
+} else if (isset($argv[1]) && $argv[1] == 'cinnodb') {
 	$sql = 'SHOW TABLE STATUS WHERE (Engine != "InnoDB" OR Row_format != "Compressed") AND Engine != "SPHINX"';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
@@ -90,7 +90,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		printf($cli->header("Converting $tbl"));
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 	}
-} else if (isset($argv[1]) && $argv[1] == "cinnodb-noparts") {
+} else if (isset($argv[1]) && $argv[1] == 'cinnodb-noparts') {
 	$sql = 'SHOW TABLE STATUS WHERE (Engine != "InnoDB" OR Row_format != "Compressed") AND Engine != "SPHINX"';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
@@ -127,8 +127,8 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		printf($cli->header("Converting $tbl"));
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 	}
-} else if (isset($argv[1]) && $argv[1] == "collections") {
-	$arr = ["parts", "binaries", "collections"];
+} else if (isset($argv[1]) && $argv[1] == 'collections') {
+	$arr = ['parts', 'binaries', 'collections'];
 	foreach ($arr as $row) {
 		$tbl = $row;
 		printf($cli->header("Converting $tbl"));

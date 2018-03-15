@@ -21,7 +21,7 @@ $patch = ($patch != '') ? $patch : 0;
 echo "Starting Tmux...\n";
 // Create a placeholder session so tmux commands do not throw server not found errors.
 exec('tmux new-session -ds placeholder 2>/dev/null');
-exec("tmux list-session", $session);
+exec('tmux list-session', $session);
 
 $t = new Tmux();
 $tmux = $t->get();
@@ -39,15 +39,15 @@ if ($session != 0) {
 }
 
 //reset collections dateadded to now if dateadded > delay time check
-echo $pdo->log->header("Resetting expired collections dateadded to now. This could take a minute or two. Really.");
+echo $pdo->log->header('Resetting expired collections dateadded to now. This could take a minute or two. Really.');
 
 exec("cd {$DIR}/update/nix/tmux/bin/ && php resetdelaytime.php");
 
 //create tmux session
 if ($powerline == 1) {
-	$tmuxconfig = $DIR . "update/nix/tmux/powerline/tmux.conf";
+	$tmuxconfig = $DIR . 'update/nix/tmux/powerline/tmux.conf';
 } else {
-	$tmuxconfig = $DIR . "update/nix/tmux/tmux.conf";
+	$tmuxconfig = $DIR . 'update/nix/tmux/tmux.conf';
 }
 
 if ($seq == 1) {
@@ -104,14 +104,14 @@ if ($seq == 1) {
  */
 function writelog($pane)
 {
-	$path = nZEDb_RES . "logs";
-	$getdate = gmDate("Ymd");
+	$path = nZEDb_RES . 'logs';
+	$getdate = gmDate('Ymd');
 	$tmux = new Tmux();
 	$logs = $tmux->get()->write_logs;
 	if ($logs == 1) {
 		return "2>&1 | tee -a $path/$pane-$getdate.log";
 	} else {
-		return "";
+		return '';
 	}
 }
 
@@ -128,10 +128,10 @@ function command_exist($cmd)
 }
 
 //check for apps
-$apps = ["time", "tmux", "nice", "python", "tee"];
+$apps = ['time', 'tmux', 'nice', 'python', 'tee'];
 foreach ($apps as &$value) {
 	if (!command_exist($value)) {
-		exit($pdo->log->error("Tmux scripts require " . $value . " but it's not installed. Aborting.\n"));
+		exit($pdo->log->error('Tmux scripts require ' . $value . " but it's not installed. Aborting.\n"));
 	}
 }
 
@@ -154,27 +154,27 @@ function start_apps($tmux_session)
 	$processupdate = $tmux->processupdate;
 	$console_bash = $tmux->console;
 
-	if ($htop == 1 && command_exist("htop")) {
+	if ($htop == 1 && command_exist('htop')) {
 		exec("tmux new-window -t $tmux_session -n htop 'printf \"\033]2;htop\033\" && htop'");
 	}
 
-	if ($nmon == 1 && command_exist("nmon")) {
+	if ($nmon == 1 && command_exist('nmon')) {
 		exec("tmux new-window -t $tmux_session -n nmon 'printf \"\033]2;nmon\033\" && nmon -t'");
 	}
 
-	if ($vnstat == 1 && command_exist("vnstat")) {
+	if ($vnstat == 1 && command_exist('vnstat')) {
 		exec("tmux new-window -t $tmux_session -n vnstat 'printf \"\033]2;vnstat\033\" && watch -n10 \"vnstat ${vnstat_args}\"'");
 	}
 
-	if ($tcptrack == 1 && command_exist("tcptrack")) {
+	if ($tcptrack == 1 && command_exist('tcptrack')) {
 		exec("tmux new-window -t $tmux_session -n tcptrack 'printf \"\033]2;tcptrack\033\" && tcptrack ${tcptrack_args}'");
 	}
 
-	if ($bwmng == 1 && command_exist("bwm-ng")) {
+	if ($bwmng == 1 && command_exist('bwm-ng')) {
 		exec("tmux new-window -t $tmux_session -n bwm-ng 'printf \"\033]2;bwm-ng\033\" && bwm-ng'");
 	}
 
-	if ($mytop == 1 && command_exist("mytop")) {
+	if ($mytop == 1 && command_exist('mytop')) {
 		exec("tmux new-window -t $tmux_session -n mytop 'printf \"\033]2;mytop\033\" && mytop -u'");
 	}
 
@@ -257,15 +257,15 @@ function window_sharing($tmux_session)
  */
 function attach($DIR, $tmux_session)
 {
-	if (command_exist("php5")) {
-		$PHP = "php5";
+	if (command_exist('php5')) {
+		$PHP = 'php5';
 	} else {
-		$PHP = "php";
+		$PHP = 'php';
 	}
 
 	//get list of panes by name
 	$panes_win_1 = exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
-	$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
+	$panes0 = str_replace("\n", '', explode(' ', $panes_win_1));
 	$log = writelog($panes0[0]);
 	exec("tmux respawn-pane -t $tmux_session:0.0 '$PHP " . $DIR . "update/nix/tmux/monitor.php $log'");
 	exec("tmux select-window -t $tmux_session:0; tmux attach-session -d -t $tmux_session");

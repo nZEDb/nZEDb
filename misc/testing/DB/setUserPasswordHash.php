@@ -32,7 +32,7 @@ if (is_numeric($password)) {
 $field = (is_numeric($identifier) ? 'id' : 'username');
 $user = $pdo->queryOneRow(
 	sprintf(
-		"SELECT id, username FROM users WHERE %s = %s",
+		'SELECT id, username FROM users WHERE %s = %s',
 		$field,
 		(is_numeric($identifier) ? $identifier : $pdo->escapeString($identifier))
 	)

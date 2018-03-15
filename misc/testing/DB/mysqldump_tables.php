@@ -7,16 +7,16 @@ use nzedb\db\DB;
 
 $pdo = new DB();
 
-$exportopts = "";
+$exportopts = '';
 
 //determine mysql platform Percona or Other
 $mysqlplatform = exec('mysqladmin version | grep "Percona"');
 if (strlen($mysqlplatform) > 0) {
 	//Percona only has --innodb-optimize-keys
-	$exportopts = "--opt --innodb-optimize-keys --complete-insert --skip-quick";
+	$exportopts = '--opt --innodb-optimize-keys --complete-insert --skip-quick';
 } else {
 	//generic (or unknown) instance of MySQL
-	$exportopts = "--opt --complete-insert --skip-quick";
+	$exportopts = '--opt --complete-insert --skip-quick';
 }
 
 
@@ -28,24 +28,24 @@ function newname($filename)
 function builddefaultsfile()
 {
 	//generate file contents
-	$filetext = "[mysqldump]"
+	$filetext = '[mysqldump]'
 				."\n"
-				."user = " . DB_USER
+				.'user = ' . DB_USER
 				."\n"
-				."password = " . DB_PASSWORD
+				.'password = ' . DB_PASSWORD
 				."\n[mysql]"
 				."\n"
-				."user = " . DB_USER
+				.'user = ' . DB_USER
 				."\n"
-				."password = " . DB_PASSWORD;
+				.'password = ' . DB_PASSWORD;
 
-	$filehandle = fopen("mysql-defaults.txt", "w+");
+	$filehandle = fopen('mysql-defaults.txt', 'w+');
 	if (!$filehandle) {
-		exit("Unable to write mysql defaults file! Exiting");
+		exit('Unable to write mysql defaults file! Exiting');
 	} else {
 		fwrite($filehandle, $filetext);
 		fclose($filehandle);
-		chmod("mysql-defaults.txt", 0600);
+		chmod('mysql-defaults.txt', 0600);
 	}
 }
 
@@ -58,7 +58,7 @@ $dbname = DB_NAME;
 
 if (DB_SOCKET != '') {
 	$use = " -S $dbsocket";
-	$host = "";
+	$host = '';
 } else {
 	$use = " -P$dbport";
 	$host = " -h$dbhost";
@@ -67,10 +67,10 @@ if (DB_SOCKET != '') {
 //generate defaults file used to store database login information so it is not in cleartext in ps command for mysqldump
 builddefaultsfile();
 
-if ((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dump") &&
+if ((isset($argv[1]) && $argv[1] == 'db') && (isset($argv[2]) && $argv[2] == 'dump') &&
 	(isset($argv[3]) && file_exists($argv[3]))
 ) {
-	$filename = $argv[3] . "/" . $dbname . ".gz";
+	$filename = $argv[3] . '/' . $dbname . '.gz';
 	echo $pdo->log->header("Dumping $dbname.");
 	if (file_exists($filename)) {
 		newname($filename);
@@ -79,26 +79,26 @@ if ((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "du
 			   "$dbname | gzip -9 > $filename";
 	system($command);
 } else {
-	if ((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "restore") &&
+	if ((isset($argv[1]) && $argv[1] == 'db') && (isset($argv[2]) && $argv[2] == 'restore') &&
 		(isset($argv[3]) && file_exists($argv[3]))
 	) {
-		$filename = $argv[3] . "/" . $dbname . ".gz";
+		$filename = $argv[3] . '/' . $dbname . '.gz';
 		if (file_exists($filename)) {
 			echo $pdo->log->header("Restoring $dbname.");
 			$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt $host $use $dbname";
-			$pdo->queryExec("SET FOREIGN_KEY_CHECKS=0");
+			$pdo->queryExec('SET FOREIGN_KEY_CHECKS=0');
 			system($command);
-			$pdo->queryExec("SET FOREIGN_KEY_CHECKS=1");
+			$pdo->queryExec('SET FOREIGN_KEY_CHECKS=1');
 		}
 	} else {
-		if ((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "dump") &&
+		if ((isset($argv[1]) && $argv[1] == 'all') && (isset($argv[2]) && $argv[2] == 'dump') &&
 			(isset($argv[3]) && file_exists($argv[3]))
 		) {
-			$sql    = "SHOW tables";
+			$sql    = 'SHOW tables';
 			$tables = $pdo->query($sql);
 			foreach ($tables as $row) {
 				$tbl      = $row['tables_in_' . DB_NAME];
-				$filename = $argv[3] . "/" . $tbl . ".gz";
+				$filename = $argv[3] . '/' . $tbl . '.gz';
 				echo $pdo->log->header("Dumping $tbl.");
 				if (file_exists($filename)) {
 					newname($filename);
@@ -108,31 +108,31 @@ if ((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "du
 				system($command);
 			}
 		} else {
-			if ((isset($argv[1]) && $argv[1] == "all") &&
-				(isset($argv[2]) && $argv[2] == "restore") &&
+			if ((isset($argv[1]) && $argv[1] == 'all') &&
+				(isset($argv[2]) && $argv[2] == 'restore') &&
 				(isset($argv[3]) && file_exists($argv[3]))
 			) {
-				$sql    = "SHOW tables";
+				$sql    = 'SHOW tables';
 				$tables = $pdo->query($sql);
-				$pdo->queryExec("SET FOREIGN_KEY_CHECKS=0");
+				$pdo->queryExec('SET FOREIGN_KEY_CHECKS=0');
 				foreach ($tables as $row) {
 					$tbl      = $row['tables_in_' . DB_NAME];
-					$filename = $argv[3] . "/" . $tbl . ".gz";
+					$filename = $argv[3] . '/' . $tbl . '.gz';
 					if (file_exists($filename)) {
 						echo $pdo->log->header("Restoring $tbl.");
 						$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt $host $use $dbname";
 						system($command);
 					}
 				}
-				$pdo->queryExec("SET FOREIGN_KEY_CHECKS=1");
+				$pdo->queryExec('SET FOREIGN_KEY_CHECKS=1');
 			} else {
-				if ((isset($argv[1]) && $argv[1] == "test") &&
-					(isset($argv[2]) && $argv[2] == "dump") &&
+				if ((isset($argv[1]) && $argv[1] == 'test') &&
+					(isset($argv[2]) && $argv[2] == 'dump') &&
 					(isset($argv[3]) && file_exists($argv[3]))
 				) {
-					$arr = ["parts", "binaries", "collections", "missed_parts", "groups"];
+					$arr = ['parts', 'binaries', 'collections', 'missed_parts', 'groups'];
 					foreach ($arr as &$tbl) {
-						$filename = $argv[3] . "/" . $tbl . ".gz";
+						$filename = $argv[3] . '/' . $tbl . '.gz';
 						echo $pdo->log->header("Dumping $tbl..");
 						if (file_exists($filename)) {
 							newname($filename);
@@ -143,60 +143,60 @@ if ((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "du
 						system($command);
 					}
 				} else {
-					if ((isset($argv[1]) && $argv[1] == "test") &&
-						(isset($argv[2]) && $argv[2] == "restore") &&
+					if ((isset($argv[1]) && $argv[1] == 'test') &&
+						(isset($argv[2]) && $argv[2] == 'restore') &&
 						(isset($argv[3]) && file_exists($argv[3]))
 					) {
-						$arr = ["parts", "binaries", "collections", "missed_parts", "groups"];
-						$pdo->queryExec("SET FOREIGN_KEY_CHECKS=0");
+						$arr = ['parts', 'binaries', 'collections', 'missed_parts', 'groups'];
+						$pdo->queryExec('SET FOREIGN_KEY_CHECKS=0');
 						foreach ($arr as &$tbl) {
-							$filename = $argv[3] . "/" . $tbl . ".gz";
+							$filename = $argv[3] . '/' . $tbl . '.gz';
 							if (file_exists($filename)) {
 								echo $pdo->log->header("Restoring $tbl.");
 								$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt $host $use $dbname";
 								system($command);
 							}
 						}
-						$pdo->queryExec("SET FOREIGN_KEY_CHECKS=1");
+						$pdo->queryExec('SET FOREIGN_KEY_CHECKS=1');
 					} else {
-						if ((isset($argv[1]) && $argv[1] == "all") &&
-							(isset($argv[2]) && $argv[2] == "outfile") &&
+						if ((isset($argv[1]) && $argv[1] == 'all') &&
+							(isset($argv[2]) && $argv[2] == 'outfile') &&
 							(isset($argv[3]) && file_exists($argv[3]))
 						) {
-							$sql    = "SHOW tables";
+							$sql    = 'SHOW tables';
 							$tables = $pdo->query($sql);
 							foreach ($tables as $row) {
 								$tbl      = $row['tables_in_' . DB_NAME];
-								$filename = $argv[3] . $tbl . ".csv";
+								$filename = $argv[3] . $tbl . '.csv';
 								echo $pdo->log->header("Dumping $tbl.");
 								if (file_exists($filename)) {
 									newname($filename);
 								}
-								$pdo->queryDirect(sprintf("SELECT * INTO OUTFILE %s FROM %s",
+								$pdo->queryDirect(sprintf('SELECT * INTO OUTFILE %s FROM %s',
 														  $pdo->escapeString($filename),
 														  $tbl));
 							}
 						} else {
-							if ((isset($argv[1]) && $argv[1] == "all") &&
-								(isset($argv[2]) && $argv[2] == "infile") &&
+							if ((isset($argv[1]) && $argv[1] == 'all') &&
+								(isset($argv[2]) && $argv[2] == 'infile') &&
 								(isset($argv[3]) && is_dir($argv[3]))
 							) {
-								$sql    = "SHOW tables";
+								$sql    = 'SHOW tables';
 								$tables = $pdo->query($sql);
-								$pdo->queryExec("SET FOREIGN_KEY_CHECKS=0");
+								$pdo->queryExec('SET FOREIGN_KEY_CHECKS=0');
 								foreach ($tables as $row) {
 									$tbl      = $row['tables_in_' . DB_NAME];
-									$filename = $argv[3] . $tbl . ".csv";
+									$filename = $argv[3] . $tbl . '.csv';
 									if (file_exists($filename)) {
 										echo $pdo->log->header("Restoring $tbl.");
-										$pdo->queryExec(sprintf("LOAD DATA INFILE %s INTO TABLE %s",
+										$pdo->queryExec(sprintf('LOAD DATA INFILE %s INTO TABLE %s',
 																$pdo->escapeString($filename),
 																$tbl));
 									}
 								}
-								$pdo->queryExec("SET FOREIGN_KEY_CHECKS=1");
+								$pdo->queryExec('SET FOREIGN_KEY_CHECKS=1');
 							} else {
-								passthru("clear");
+								passthru('clear');
 								echo $pdo->log->error("\nThis script can dump/restore all tables, compressed or OUTFILE/INFILE, or just collections/binaries/parts.\n\n"
 													  . "**Single File\n" .
 													  "php $argv[0] db dump /path/to/save/to              ...: To dump the database.\n" .
@@ -220,7 +220,7 @@ if ((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "du
 	}
 }
 
-if (file_exists("mysql-defaults.txt")) {
+if (file_exists('mysql-defaults.txt')) {
 	/** @scrutinizer ignore-unhandled */
-	@unlink("mysql-defaults.txt");
+	@unlink('mysql-defaults.txt');
 }

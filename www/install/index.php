@@ -8,7 +8,7 @@ require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'smarty.php');
 
 use nzedb\Install;
 
-$page_title = "Welcome";
+$page_title = 'Welcome';
 
 $cfg = new Install();
 if ($cfg->isLocked()) {

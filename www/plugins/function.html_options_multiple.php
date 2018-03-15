@@ -67,7 +67,7 @@ function smarty_function_html_options_multiple($params, $template)
 					$selected = array();
 					foreach ($_val as $_sel) {
 						if (is_object($_sel)) {
-							if (method_exists($_sel, "__toString")) {
+							if (method_exists($_sel, '__toString')) {
 								$_sel = smarty_function_escape_special_chars((string) $_sel->__toString());
 							} else {
 								trigger_error("html_options_multiple: selected attribute contains an object of class '". get_class($_sel) ."' without __toString() method", E_USER_NOTICE);
@@ -79,7 +79,7 @@ function smarty_function_html_options_multiple($params, $template)
 						$selected[$_sel] = true;
 					}
 				} elseif (is_object($_val)) {
-					if (method_exists($_val, "__toString")) {
+					if (method_exists($_val, '__toString')) {
 						$selected = smarty_function_escape_special_chars((string) $_val->__toString());
 					} else {
 						trigger_error("html_options_multiple: selected attribute is an object of class '". get_class($_val) ."' without __toString() method", E_USER_NOTICE);
@@ -149,7 +149,7 @@ function smarty_function_html_options_multiple_optoutput($key, $value, $selected
 		$_html_class = !empty($class) ? ' class="'.$class.' option"' : '';
 		$_html_id = !empty($id) ? ' id="'.$id.'-'.$idx.'"' : '';
 		if (is_object($value)) {
-			if (method_exists($value, "__toString")) {
+			if (method_exists($value, '__toString')) {
 				$value = smarty_function_escape_special_chars((string) $value->__toString());
 			} else {
 				trigger_error("html_options_multiple: value is an object of class '". get_class($value) ."' without __toString() method", E_USER_NOTICE);

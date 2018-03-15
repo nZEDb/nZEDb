@@ -181,9 +181,9 @@ class PreDb
 			if ($time == 1) {
 				$te = ' in the past 3 hours';
 			}
-			echo $this->pdo->log->header('Fixing search names' . $te . " using the predb hash.");
+			echo $this->pdo->log->header('Fixing search names' . $te . ' using the predb hash.');
 		}
-		$regex = "AND (r.ishashed = 1 OR rf.ishashed = 1)";
+		$regex = 'AND (r.ishashed = 1 OR rf.ishashed = 1)';
 
 		if ($cats === 3) {
 			$query = sprintf('SELECT r.id AS releases_id, r.name, r.searchname, r.categories_id, r.groups_id, '
@@ -199,7 +199,7 @@ class PreDb
 
 		$res = $this->pdo->queryDirect($query);
 		$total = $res->rowCount();
-		echo $this->pdo->log->primary(number_format($total) . " releases to process.");
+		echo $this->pdo->log->primary(number_format($total) . ' releases to process.');
 		if ($res instanceof \PDOStatement) {
 			foreach ($res as $row) {
 				if (preg_match('/[a-fA-F0-9]{32,40}/i', $row['name'], $matches)) {
@@ -208,14 +208,14 @@ class PreDb
 					$updated = $updated + $namefixer->matchPredbHash($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
 				}
 				if ($show === 2) {
-					$consoletools->overWritePrimary("Renamed Releases: [" . number_format($updated) . "] " . $consoletools->percentString(++$checked, $total));
+					$consoletools->overWritePrimary('Renamed Releases: [' . number_format($updated) . '] ' . $consoletools->percentString(++$checked, $total));
 				}
 			}
 		}
 		if ($echo === true) {
-			echo $this->pdo->log->header("\n" . $updated . " releases have had their names changed out of: " . number_format($checked) . " files.");
+			echo $this->pdo->log->header("\n" . $updated . ' releases have had their names changed out of: ' . number_format($checked) . ' files.');
 		} else {
-			echo $this->pdo->log->header("\n" . $updated . " releases could have their names changed. " . number_format($checked) . " files were checked.");
+			echo $this->pdo->log->header("\n" . $updated . ' releases could have their names changed. ' . number_format($checked) . ' files were checked.');
 		}
 
 		return $updated;

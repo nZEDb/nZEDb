@@ -5,12 +5,12 @@ use nzedb\Install;
 use nzedb\Users;
 
 $page = new InstallPage();
-$page->title = "Setup Admin User";
+$page->title = 'Setup Admin User';
 
 $cfg = new Install();
 
 if (!$cfg->isInitialized()) {
-	header("Location: index.php");
+	header('Location: index.php');
 	die();
 }
 
@@ -29,7 +29,7 @@ if ($page->isPostBack()) {
 
 	if ($cfg->ADMIN_USER == '' || $cfg->ADMIN_PASS == '' || $cfg->ADMIN_EMAIL == '') {
 		$cfg->error = true;
-		$cfg->errMessage = "One or more of User, Password, and Email are empty!";
+		$cfg->errMessage = 'One or more of User, Password, and Email are empty!';
 	} else {
 		switch (DB_SYSTEM) {
 			case 'mysql':
@@ -89,14 +89,14 @@ if ($page->isPostBack()) {
 				$cfg->error = true;
 				$cfg->errMessage = "Failed to add user '{$cfg->ADMIN_USER}', reason unknown!";
 			} else {
-				$user->login($cfg->adminCheck, "", 1);
+				$user->login($cfg->adminCheck, '', 1);
 			}
 		}
 	}
 
 	if (!$cfg->error) {
 		$cfg->setSession();
-		header("Location: ?success");
+		header('Location: ?success');
 		die();
 	}
 }

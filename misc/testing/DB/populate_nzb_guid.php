@@ -31,16 +31,16 @@ function create_guids($live, $delete = false)
 	$relcount = $deleted = $total = 0;
 
 	$relrecs = false;
-	if ($live == "true") {
-		$relrecs = $pdo->queryDirect(sprintf("SELECT id, guid FROM releases WHERE nzbstatus = 1 AND nzb_guid IS NULL ORDER BY id DESC"));
-	} else if ($live == "limited") {
-		$relrecs = $pdo->queryDirect(sprintf("SELECT id, guid FROM releases WHERE nzbstatus = 1 AND nzb_guid IS NULL ORDER BY id DESC LIMIT 10000"));
+	if ($live == 'true') {
+		$relrecs = $pdo->queryDirect(sprintf('SELECT id, guid FROM releases WHERE nzbstatus = 1 AND nzb_guid IS NULL ORDER BY id DESC'));
+	} else if ($live == 'limited') {
+		$relrecs = $pdo->queryDirect(sprintf('SELECT id, guid FROM releases WHERE nzbstatus = 1 AND nzb_guid IS NULL ORDER BY id DESC LIMIT 10000'));
 	}
 	if ($relrecs) {
 		$total = $relrecs->rowCount();
 	}
 	if ($total > 0) {
-		echo $pdo->log->header("Creating nzb_guids for " . number_format($total) . " releases.");
+		echo $pdo->log->header('Creating nzb_guids for ' . number_format($total) . ' releases.');
 		$releases = new Releases(['Settings' => $pdo]);
 		$nzb = new NZB($pdo);
 		$releaseImage = new ReleaseImage($pdo);
@@ -64,7 +64,7 @@ function create_guids($live, $delete = false)
 					}
 					$binary_names = array();
 					foreach ($nzbfile->file as $file) {
-						$binary_names[] = $file["subject"];
+						$binary_names[] = $file['subject'];
 					}
 					if (count($binary_names) == 0) {
 						if (isset($delete) && $delete == 'delete') {
@@ -77,13 +77,13 @@ function create_guids($live, $delete = false)
 
 					asort($binary_names);
 					foreach ($nzbfile->file as $file) {
-						if ($file["subject"] == $binary_names[0]) {
+						if ($file['subject'] == $binary_names[0]) {
 							$segment = $file->segments->segment;
 							$nzb_guid = md5($segment);
 
-							$pdo->queryExec("UPDATE releases set nzb_guid = UNHEX(" . $pdo->escapestring($nzb_guid) . ") WHERE id = " . $relrec["id"]);
+							$pdo->queryExec('UPDATE releases set nzb_guid = UNHEX(' . $pdo->escapestring($nzb_guid) . ') WHERE id = ' . $relrec['id']);
 							$relcount++;
-							$consoletools->overWritePrimary("Created: [" . $deleted . "] " . $consoletools->percentString($reccnt, $total) . " Time:" . $consoletools->convertTimer(TIME() - $timestart));
+							$consoletools->overWritePrimary('Created: [' . $deleted . '] ' . $consoletools->percentString($reccnt, $total) . ' Time:' . $consoletools->convertTimer(TIME() - $timestart));
 							break;
 						}
 					}
@@ -99,9 +99,9 @@ function create_guids($live, $delete = false)
 		if ($relcount > 0) {
 			echo "\n";
 		}
-		echo $pdo->log->header("Updated " . $relcount . " release(s). This script ran for " . $consoletools->convertTime(TIME() - $timestart));
+		echo $pdo->log->header('Updated ' . $relcount . ' release(s). This script ran for ' . $consoletools->convertTime(TIME() - $timestart));
 	} else {
 		echo $pdo->log->info('Query time: ' . $consoletools->convertTime(TIME() - $timestart));
-		exit($pdo->log->info("No releases are missing the guid."));
+		exit($pdo->log->info('No releases are missing the guid.'));
 	}
 }

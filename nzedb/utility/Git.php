@@ -117,7 +117,7 @@ class Git extends \GitRepo
 
 	public function tagLatest()
 	{
-		return $this->describe("--tags --abbrev=0 HEAD");
+		return $this->describe('--tags --abbrev=0 HEAD');
 	}
 }
 

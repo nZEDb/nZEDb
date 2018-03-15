@@ -26,7 +26,7 @@ use nzedb\db\DB;
 $pdo = new DB();
 
 if (!Settings::value('..tablepergroup')) {
-	exit("Tables per groups is not enabled, quitting!");
+	exit('Tables per groups is not enabled, quitting!');
 }
 
 // Doing it this way in case there are tables existing not related to the active/backfill list (i.e. I don't have a clue when these tables get deleted so I'm doing any that are there).

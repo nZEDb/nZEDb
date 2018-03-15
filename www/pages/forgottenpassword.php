@@ -11,22 +11,22 @@ if ($page->users->isLoggedIn()) {
 $captcha = new Captcha($page);
 $email = $sent = $confirmed = '';
 switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
-	case "reset":
+	case 'reset':
 		if (!isset($_REQUEST['guid'])) {
-			$page->smarty->assign('error', "No reset code provided.");
+			$page->smarty->assign('error', 'No reset code provided.');
 			break;
 		}
 
 		$ret = $page->users->getByPassResetGuid($_REQUEST['guid']);
 		if (!$ret) {
-			$page->smarty->assign('error', "Bad reset code provided.");
+			$page->smarty->assign('error', 'Bad reset code provided.');
 			break;
 		} else {
 			// Reset the password, inform the user, send out the email.
-			$page->users->updatePassResetGuid($ret["id"], '');
+			$page->users->updatePassResetGuid($ret['id'], '');
 			$newPassword = $page->users->generatePassword();
-			$page->users->updatePassword($ret["id"], $newPassword);
-			Misc::sendEmail($ret["email"], (Settings::value('site.main.title') . " Password Reset"),
+			$page->users->updatePassword($ret['id'], $newPassword);
+			Misc::sendEmail($ret['email'], (Settings::value('site.main.title') . ' Password Reset'),
 				"Your password has been reset to $newPassword", Settings::value('site.main.email')
 			);
 
@@ -38,10 +38,10 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 			 *
 			 * We do not include it in the supplied themes, as this is a potential security problem.
 			 */
-			$onscreen = "Your password has been reset to <strong>" . $newPassword .
-				"</strong> and sent to your e-mail address.";
+			$onscreen = 'Your password has been reset to <strong>' . $newPassword .
+				'</strong> and sent to your e-mail address.';
 			$page->smarty->assign('notice', $onscreen);
-			$confirmed = "true";
+			$confirmed = 'true';
 			break;
 		}
 
@@ -50,27 +50,27 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 		if ($captcha->getError() === false) {
 			$email = empty($_POST['email']) ? '' : $_POST['email'];
 			if (empty($email)) {
-				$page->smarty->assign('error', "Missing Email");
+				$page->smarty->assign('error', 'Missing Email');
 			} else {
 				// Check users exists and send an email.
 				$ret = $page->users->getByEmail($email);
 				if (!$ret) {
-					$sent = "true";
+					$sent = 'true';
 					break;
 				} else {
 					// Generate a forgottenpassword guid, store it in the user table.
 					$guid = md5(uniqid());
-					$page->users->updatePassResetGuid($ret["id"], $guid);
+					$page->users->updatePassResetGuid($ret['id'], $guid);
 
 					// Send the email
 					Misc::sendEmail(
-						$ret["email"],
-						(Settings::value('site.main.title') . " Forgotten Password Request"),
-						("Someone has requested a password reset for this email address.<br>To reset the password use <a href=\"" .
+						$ret['email'],
+						(Settings::value('site.main.title') . ' Forgotten Password Request'),
+						('Someone has requested a password reset for this email address.<br>To reset the password use <a href="' .
 							$page->serverurl . "forgottenpassword?action=reset&guid=$guid\">this link</a>\n"),
 						Settings::value('site.main.email')
 					);
-					$sent = "true";
+					$sent = 'true';
 					break;
 				}
 			}
@@ -83,10 +83,10 @@ $page->smarty->assign([
 		'sent'      => $sent
 	]
 );
-$page->title = "Forgotten Password";
-$page->meta_title = "Forgotten Password";
-$page->meta_keywords = "forgotten,password,signup,registration";
-$page->meta_description = "Forgotten Password";
+$page->title = 'Forgotten Password';
+$page->meta_title = 'Forgotten Password';
+$page->meta_keywords = 'forgotten,password,signup,registration';
+$page->meta_description = 'Forgotten Password';
 
 $page->content = $page->smarty->fetch('forgottenpassword.tpl');
 $page->render();

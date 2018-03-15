@@ -20,7 +20,7 @@ if (!isset($argv[1])) {
 		. "php $argv[0] nZEDb-username speedlimit 50    ...: To set the speed limit to 50%\n"));
 }
 
-$usersettings = $pdo->queryOneRow(sprintf("SELECT * FROM users WHERE username = %s ", $pdo->escapeString($argv[1])));
+$usersettings = $pdo->queryOneRow(sprintf('SELECT * FROM users WHERE username = %s ', $pdo->escapeString($argv[1])));
 $saburl = $usersettings['saburl'];
 $sabapikey = $usersettings['sabapikey'];
 $sabapikeytype = $usersettings['sabapikeytype'];
@@ -29,27 +29,27 @@ if ($sabapikeytype != 2) {
 }
 
 // --- Pause ---
-if ($argv[2] === "pause") {
+if ($argv[2] === 'pause') {
 	if (isset($argv[3])) {
-		echo $pdo->log->header("Pausing sabnzbd for " . $argv[3] . " minutes");
+		echo $pdo->log->header('Pausing sabnzbd for ' . $argv[3] . ' minutes');
 		$response = file_get_contents($saburl . 'api?mode=config&name=set_pause&value=' . $argv[3] . '&apikey=' . $sabapikey);
 	} else {
-	echo $pdo->log->header("Pausing sabnzbd");
+	echo $pdo->log->header('Pausing sabnzbd');
 		$response = file_get_contents($saburl . 'api?mode=pause&apikey=' . $sabapikey);
 	}
 	echo $pdo->log->header($response);
 }
 
 // --- Resume ---
-if ($argv[2] === "resume") {
-	echo $pdo->log->header("Resuming sabnzbd");
+if ($argv[2] === 'resume') {
+	echo $pdo->log->header('Resuming sabnzbd');
 	$response = file_get_contents($saburl . 'api?mode=resume&apikey=' . $sabapikey);
 	echo $pdo->log->header($response);
 }
 
 // --- Speed Limit ---
-if ($argv[2] === "speedlimit" && isset($argv[3]) && is_numeric($argv[3])) {
-	echo $pdo->log->header("Speed limiting sabnzbd to " . $argv[3] . "%");
+if ($argv[2] === 'speedlimit' && isset($argv[3]) && is_numeric($argv[3])) {
+	echo $pdo->log->header('Speed limiting sabnzbd to ' . $argv[3] . '%');
 	$response = file_get_contents($saburl . "api?mode=config&name=speedlimit&value={$argv[3]}&apikey=$sabapikey");
 	echo $pdo->log->header($response);
 }

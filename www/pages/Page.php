@@ -12,7 +12,7 @@ class Page extends BasePage
 	{
 		parent::__construct();
 
-		$this->page_template = "basepage.tpl";
+		$this->page_template = 'basepage.tpl';
 
 		define('WWW_THEMES', WWW_TOP . '/themes');
 
@@ -27,7 +27,7 @@ class Page extends BasePage
 
 		$role = Users::ROLE_GUEST;
 		if ($this->userdata != null) {
-			$role = $this->userdata["role"];
+			$role = $this->userdata['role'];
 		}
 
 		$content = new Contents(['Settings' => $this->settings]);
@@ -42,7 +42,7 @@ class Page extends BasePage
 
 		$category = new Category(['Settings' => $content->pdo]);
 		if ($this->userdata != null) {
-			$parentcatlist = $category->getForMenu($this->userdata["categoryexclusions"], $this->userdata['rolecategoryexclusions']);
+			$parentcatlist = $category->getForMenu($this->userdata['categoryexclusions'], $this->userdata['rolecategoryexclusions']);
 		} else {
 			$parentcatlist = $category->getForMenu();
 		}
@@ -71,13 +71,13 @@ class Page extends BasePage
 		$this->smarty->assign('catClass', $category);
 
 		$searchStr = '';
-		if ($this->page == 'search' && isset($_REQUEST["id"])) {
-			$searchStr = (string)$_REQUEST["id"];
+		if ($this->page == 'search' && isset($_REQUEST['id'])) {
+			$searchStr = (string)$_REQUEST['id'];
 		}
 		$this->smarty->assign('header_menu_search', $searchStr);
 
-		if (isset($_REQUEST["t"])) {
-			$this->smarty->assign('header_menu_cat', $_REQUEST["t"]);
+		if (isset($_REQUEST['t'])) {
+			$this->smarty->assign('header_menu_cat', $_REQUEST['t']);
 		} else {
 			$this->smarty->assign('header_menu_cat', '');
 		}

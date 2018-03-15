@@ -14,10 +14,10 @@ $showRegister = 1;
 
 $value = Settings::value('..registerstatus');
 if ($value == Settings::REGISTER_STATUS_CLOSED || $value == Settings::REGISTER_STATUS_API_ONLY) {
-	$error = "Registrations are currently disabled.";
+	$error = 'Registrations are currently disabled.';
 	$showRegister = 0;
-} elseif ($value == Settings::REGISTER_STATUS_INVITE && (!isset($_REQUEST["invitecode"]) || empty($_REQUEST['invitecode']))) {
-	$error = "Registrations are currently invite only.";
+} elseif ($value == Settings::REGISTER_STATUS_INVITE && (!isset($_REQUEST['invitecode']) || empty($_REQUEST['invitecode']))) {
+	$error = 'Registrations are currently invite only.';
 	$showRegister = 0;
 }
 
@@ -26,7 +26,7 @@ if ($showRegister == 1) {
 
 	//Be sure to persist the invite code in the event of multiple form submissions. (errors)
 	if (isset($_REQUEST['invitecode'])) {
-		$inviteCodeQuery = '&invitecode=' . htmlspecialchars($_REQUEST["invitecode"]);
+		$inviteCodeQuery = '&invitecode=' . htmlspecialchars($_REQUEST['invitecode']);
 	}
 
 	$captcha = new Captcha($page);
@@ -40,11 +40,11 @@ if ($showRegister == 1) {
 				$password = htmlspecialchars($_POST['password']);
 				$confirmPassword = htmlspecialchars($_POST['confirmpassword']);
 				$email = htmlspecialchars($_POST['email']);
-				$inviteCode = htmlspecialchars($_POST["invitecode"]);
+				$inviteCode = htmlspecialchars($_POST['invitecode']);
 
 				// Check uname/email isn't in use, password valid. If all good create new user account and redirect back to home page.
 				if ($password != $confirmPassword) {
-					$error = "Password Mismatch";
+					$error = 'Password Mismatch';
 				} else {
 					// Get the default user role.
 					$userDefault = $page->users->getDefaultRole();
@@ -54,45 +54,45 @@ if ($showRegister == 1) {
 					);
 					if ($ret > 0) {
 						$page->users->login($ret, $_SERVER['REMOTE_ADDR']);
-						header("Location: " . WWW_TOP . "/");
+						header('Location: ' . WWW_TOP . '/');
 					} else {
 						switch ($ret) {
 							case Users::ERR_SIGNUP_BADUNAME:
-								$error = "Your username must be at least five characters.";
+								$error = 'Your username must be at least five characters.';
 								break;
 							case Users::ERR_SIGNUP_BADPASS:
-								$error = "Your password must be longer than eight characters.";
+								$error = 'Your password must be longer than eight characters.';
 								break;
 							case Users::ERR_SIGNUP_BADEMAIL:
-								$error = "Your email is not a valid format.";
+								$error = 'Your email is not a valid format.';
 								break;
 							case Users::ERR_SIGNUP_UNAMEINUSE:
-								$error = "Sorry, the username is already taken.";
+								$error = 'Sorry, the username is already taken.';
 								break;
 							case Users::ERR_SIGNUP_EMAILINUSE:
-								$error = "Sorry, the email is already in use.";
+								$error = 'Sorry, the email is already in use.';
 								break;
 							case Users::ERR_SIGNUP_BADINVITECODE:
-								$error = "Sorry, the invite code is old or has been used.";
+								$error = 'Sorry, the invite code is old or has been used.';
 								break;
 							default:
-								$error = "Failed to register.";
+								$error = 'Failed to register.';
 								break;
 						}
 					}
 				}
 			}
 			break;
-		case "view": {
-				$inviteCode = isset($_GET["invitecode"]) ? htmlspecialchars($_GET["invitecode"]) : null;
+		case 'view': {
+				$inviteCode = isset($_GET['invitecode']) ? htmlspecialchars($_GET['invitecode']) : null;
 				if (isset($inviteCode)) {
 					// See if it is a valid invite.
 					$invite = $page->users->getInvite($inviteCode);
 					if (!$invite) {
-						$error = sprintf("Bad or invite code older than %d days.", Users::DEFAULT_INVITE_EXPIRY_DAYS);
+						$error = sprintf('Bad or invite code older than %d days.', Users::DEFAULT_INVITE_EXPIRY_DAYS);
 						$showRegister = 0;
 					} else {
-						$inviteCode = $invite["guid"];
+						$inviteCode = $invite['guid'];
 					}
 				}
 				break;
@@ -112,9 +112,9 @@ $page->smarty->assign([
 		'error'             => $error
 	]
 );
-$page->meta_title = "Register";
-$page->meta_keywords = "register,signup,registration";
-$page->meta_description = "Register";
+$page->meta_title = 'Register';
+$page->meta_keywords = 'register,signup,registration';
+$page->meta_description = 'Register';
 
 $page->content = $page->smarty->fetch('register.tpl');
 $page->render();

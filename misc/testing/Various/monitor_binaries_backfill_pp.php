@@ -7,7 +7,7 @@ $pdo = new DB();
 
 if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 	exit($pdo->log->error("\nThis script monirtors both the threaded and unthreaded update_binaries and backfill scripts.\n"
-		. "This will also kill any medianinfo/ffmpeg process running longer than 60 seconds."
+		. 'This will also kill any medianinfo/ffmpeg process running longer than 60 seconds.'
 		. "The first argument is the time in minutes to allow before killing.\n"
 		. "The second argument is the time in seconds to sleep between each check.\n"
 		. "Compression will be enabled at the beginning of this script and will be (re-)enabled if disabled if\n"
@@ -25,8 +25,8 @@ if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 
 	while (1 === 1) {
 		//kill mediainfo and ffmpeg if exceeds 60 sec
-		shell_exec("killall -o 60s -9 mediainfo 2>&1 1> /dev/null");
-		shell_exec("killall -o 60s -9 ffmpeg 2>&1 1> /dev/null");
+		shell_exec('killall -o 60s -9 mediainfo 2>&1 1> /dev/null');
+		shell_exec('killall -o 60s -9 ffmpeg 2>&1 1> /dev/null');
 
 		$counted = $threads = 0;
 		passthru('clear');
@@ -43,7 +43,7 @@ if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 					// kill pid
 					echo $pdo->log->alternate("PID: $line1[0] USER: $line1[1] TIME: $time[0] CMD: $line");
 					usleep(10000);
-					exec("kill " . $line1[0] . " 2>&1 1> /dev/null");
+					exec('kill ' . $line1[0] . ' 2>&1 1> /dev/null');
 					// reset good timer
 					$time1 = TIME();
 				} else {
@@ -51,7 +51,7 @@ if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 				}
 			}
 		} else {
-			echo $pdo->log->header("update_binaries or backfill does not appear to be running");
+			echo $pdo->log->header('update_binaries or backfill does not appear to be running');
 			$time1 = TIME();
 		}
 

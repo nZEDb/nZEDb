@@ -78,7 +78,7 @@ class PopulateTitles
 			$this->checkForDuplicate->execute($parameters);
 			return $this->checkForDuplicate->fetchAll();
 		} else {
-			throw new \RuntimeException("Duplicate check query not yet prepared!");
+			throw new \RuntimeException('Duplicate check query not yet prepared!');
 		}
 	}
 
@@ -101,7 +101,7 @@ class PopulateTitles
 			$this->insertEntry->execute($parameters);
 			return $this->insertEntry->fetchAll();
 		} else {
-			throw new \RuntimeException("Insertion query not yet prepared!");
+			throw new \RuntimeException('Insertion query not yet prepared!');
 		}
 	}
 

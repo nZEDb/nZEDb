@@ -25,16 +25,16 @@ use nzedb\db\Settings;
 $pdo = new nzedb\db\Settings();
 
 if (!Settings::value('..tablepergroup')) {
-	exit("Tables per groups is not enabled, quitting!");
+	exit('Tables per groups is not enabled, quitting!');
 }
 
 // Doing it this way in case there are tables existing not related to the active/backfill list (i.e. I don't have a clue when these tables get deleted so I'm doing any that are there).
 $tables = $pdo->queryDirect("SELECT SUBSTR(TABLE_NAME, 9) AS suffix FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE()) AND TABLE_NAME LIKE 'binaries%' ORDER BY TABLE_NAME");
 
-$query1 = "ALTER TABLE binaries%s DROP INDEX ix_binary_collection";
-$query2 = "DROP TRIGGER IF EXISTS delete_collections%s";
-$query3 = "CREATE TRIGGER delete_collections%s BEFORE DELETE ON collections%s FOR EACH ROW BEGIN DELETE FROM binaries%s WHERE collection_id = OLD.id; DELETE FROM parts%s WHERE collection_id = OLD.id; END";
-$query4 = "ALTER TABLE binaries%s ADD INDEX ix_parts_collection_id(collection_id)";
+$query1 = 'ALTER TABLE binaries%s DROP INDEX ix_binary_collection';
+$query2 = 'DROP TRIGGER IF EXISTS delete_collections%s';
+$query3 = 'CREATE TRIGGER delete_collections%s BEFORE DELETE ON collections%s FOR EACH ROW BEGIN DELETE FROM binaries%s WHERE collection_id = OLD.id; DELETE FROM parts%s WHERE collection_id = OLD.id; END';
+$query4 = 'ALTER TABLE binaries%s ADD INDEX ix_parts_collection_id(collection_id)';
 
 if ($tables instanceof \PDOStatement) {
 	foreach ($tables as $table) {

@@ -44,7 +44,7 @@ class ReleaseSearch
 				break;
 		}
 
-		$this->sphinxQueryOpt = ";limit=10000;maxmatches=10000;sort=relevance;mode=extended";
+		$this->sphinxQueryOpt = ';limit=10000;maxmatches=10000;sort=relevance;mode=extended';
 		$this->pdo = ($pdo instanceof DB ? $pdo : new DB());
 	}
 
@@ -170,7 +170,7 @@ class ReleaseSearch
 			}
 			$searchWords = rtrim($searchWords, "\n\t\r\0\x0B ");
 			if ($searchWords !== '') {
-				$searchQuery .= sprintf("@%s %s ",
+				$searchQuery .= sprintf('@%s %s ',
 							$columnName,
 							$searchWords
 				);

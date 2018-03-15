@@ -12,20 +12,20 @@ if (!$page->users->isLoggedIn()) {
 $groups   = new Groups(['Settings' => $page->settings]);
 $releases = new Releases(['Groups' => $groups, 'Settings' => $page->settings]);
 
-$page->meta_title       = "Search Nzbs";
-$page->meta_keywords    = "search,nzb,description,details";
-$page->meta_description = "Search for Nzbs";
+$page->meta_title       = 'Search Nzbs';
+$page->meta_keywords    = 'search,nzb,description,details';
+$page->meta_description = 'Search for Nzbs';
 
 $results = [];
 
-$searchType = "basic";
-if (isset($_REQUEST["search_type"]) && $_REQUEST["search_type"] == "adv") {
-	$searchType = "advanced";
+$searchType = 'basic';
+if (isset($_REQUEST['search_type']) && $_REQUEST['search_type'] == 'adv') {
+	$searchType = 'advanced';
 }
 
 $ordering = $releases->getBrowseOrdering();
-$orderBy  = (isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST["ob"] : '');
-$offset   = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
+$orderBy  = (isset($_REQUEST['ob']) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST['ob'] : '');
+$offset   = (isset($_REQUEST['offset']) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST['offset'] : 0;
 
 $page->smarty->assign(
 	[
@@ -34,16 +34,16 @@ $page->smarty->assign(
 	]
 );
 
-if ((isset($_REQUEST["id"]) || isset($_REQUEST["subject"])) && !isset($_REQUEST["searchadvr"]) && $searchType == "basic") {
+if ((isset($_REQUEST['id']) || isset($_REQUEST['subject'])) && !isset($_REQUEST['searchadvr']) && $searchType == 'basic') {
 
 	$searchString = '';
 	switch (true) {
-		case isset($_REQUEST["subject"]):
-			$searchString = (string)$_REQUEST["subject"];
+		case isset($_REQUEST['subject']):
+			$searchString = (string)$_REQUEST['subject'];
 			$page->smarty->assign('subject', $searchString);
 			break;
-		case isset($_REQUEST["id"]):
-			$searchString =(string)$_REQUEST["id"];
+		case isset($_REQUEST['id']):
+			$searchString =(string)$_REQUEST['id'];
 			$page->smarty->assign('search', $searchString);
 			break;
 	}
@@ -61,7 +61,7 @@ if ((isset($_REQUEST["id"]) || isset($_REQUEST["subject"])) && !isset($_REQUEST[
 
 	$results = $releases->search(
 		$searchString, -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, $offset, ITEMS_PER_PAGE,
-		$orderBy, -1, $page->userdata["categoryexclusions"], "basic", $categoryID
+		$orderBy, -1, $page->userdata['categoryexclusions'], 'basic', $categoryID
 	);
 
 	$page->smarty->assign(
@@ -70,9 +70,9 @@ if ((isset($_REQUEST["id"]) || isset($_REQUEST["subject"])) && !isset($_REQUEST[
 			'pagertotalitems' => (count($results) > 0 ? $results[0]['_totalrows'] : 0),
 			'pageroffset' => $offset,
 			'pageritemsperpage' => ITEMS_PER_PAGE,
-			'pagerquerysuffix' => "#results",
+			'pagerquerysuffix' => '#results',
 			'pagerquerybase' =>
-				WWW_TOP . "/search/" . htmlentities($searchString) . "?t=" .
+				WWW_TOP . '/search/' . htmlentities($searchString) . '?t=' .
 				(implode(',', $categoryID)) . "&amp;ob=$orderBy&amp;offset=",
 			'category' => $categoryID
 		]
@@ -99,7 +99,7 @@ foreach ($searchVars as $searchVarKey => $searchVar) {
 	$page->smarty->assign($searchVarKey, $searchVars[$searchVarKey]);
 }
 
-if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUEST["subject"]) && $searchType != "basic") {
+if (isset($_REQUEST['searchadvr']) && !isset($_REQUEST['id']) && !isset($_REQUEST['subject']) && $searchType != 'basic') {
 
 	$orderByString = '';
 	foreach ($searchVars as $searchVarKey => $searchVar) {
@@ -130,8 +130,8 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUES
 		ITEMS_PER_PAGE,
 		$orderBy,
 		-1,
-		$page->userdata["categoryexclusions"],
-		"advanced",
+		$page->userdata['categoryexclusions'],
+		'advanced',
 		[($searchVars['searchadvcat'] == '' ? -1 : $searchVars['searchadvcat'])]
 	);
 
@@ -141,7 +141,7 @@ if (isset($_REQUEST["searchadvr"]) && !isset($_REQUEST["id"]) && !isset($_REQUES
 			'pagertotalitems' => (count($results) > 0 ? $results[0]['_totalrows'] : 0),
 			'pageroffset' => $offset,
 			'pageritemsperpage' => ITEMS_PER_PAGE,
-			'pagerquerysuffix' => "#results",
+			'pagerquerysuffix' => '#results',
 			'pagerquerybase' => WWW_TOP . "/search?$orderByString&search_type=adv&amp;ob=$orderBy&amp;offset="
 		]
 	);
@@ -188,11 +188,11 @@ $page->smarty->assign(
 			-1 => '--Select--', 1  => '100MB', 2  => '250MB', 3  => '500MB', 4  => '1GB', 5  => '2GB',
 			6  => '3GB', 7  => '4GB', 8  => '8GB', 9  => '16GB', 10 => '32GB', 11 => '64GB'
 		],
-		'results' => $results, 'sadvanced' => ($searchType != "basic"),
+		'results' => $results, 'sadvanced' => ($searchType != 'basic'),
 		'grouplist' => $groups->getGroupsForSelect(),
 		'catlist' => (new Category(['Settings' => $page->settings]))->getForSelect(),
 		'search_description' => $search_description,
-		'pager' => $page->smarty->fetch("pager.tpl")
+		'pager' => $page->smarty->fetch('pager.tpl')
 	]
 );
 

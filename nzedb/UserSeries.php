@@ -41,10 +41,10 @@ class UserSeries
 	{
 		return $this->pdo->queryInsert(
 			sprintf(
-				"INSERT INTO user_series (user_id, videos_id, categories, createddate) VALUES (%d, %d, %s, NOW())",
+				'INSERT INTO user_series (user_id, videos_id, categories, createddate) VALUES (%d, %d, %s, NOW())',
 				$uID,
 				$videoId,
-				(!empty($catID) ? $this->pdo->escapeString(implode('|', $catID)) : "NULL")
+				(!empty($catID) ? $this->pdo->escapeString(implode('|', $catID)) : 'NULL')
 			)
 		);
 	}
@@ -59,12 +59,12 @@ class UserSeries
 	public function getShows($uID)
 	{
 		return $this->pdo->query(
-			sprintf("
+			sprintf('
 				SELECT us.*, v.title
 				FROM user_series us
 				INNER JOIN videos v ON v.id = us.videos_id
 				WHERE user_id = %d
-				ORDER BY v.title ASC",
+				ORDER BY v.title ASC',
 				$uID
 			)
 		);
@@ -80,7 +80,7 @@ class UserSeries
 	{
 		$this->pdo->queryExec(
 			sprintf(
-				"DELETE FROM user_series WHERE user_id = %d AND videos_id = %d",
+				'DELETE FROM user_series WHERE user_id = %d AND videos_id = %d',
 				$uID,
 				$videoId
 			)
@@ -98,12 +98,12 @@ class UserSeries
 	public function getShow($uID, $videoId)
 	{
 		return $this->pdo->queryOneRow(
-			sprintf("
+			sprintf('
 				SELECT us.*, v.title
 				FROM user_series us
 				LEFT OUTER JOIN videos v ON v.id = us.videos_id
 				WHERE us.user_id = %d
-				AND us.videos_id = %d",
+				AND us.videos_id = %d',
 				$uID,
 				$videoId
 			)
@@ -119,7 +119,7 @@ class UserSeries
 	{
 		$this->pdo->queryExec(
 			sprintf(
-				"DELETE FROM user_series WHERE user_id = %d",
+				'DELETE FROM user_series WHERE user_id = %d',
 				$uID
 			)
 		);
@@ -134,7 +134,7 @@ class UserSeries
 	{
 		$this->pdo->queryExec(
 			sprintf(
-				"DELETE FROM user_series WHERE videos_id = %d",
+				'DELETE FROM user_series WHERE videos_id = %d',
 				$videoId
 			)
 		);
@@ -151,8 +151,8 @@ class UserSeries
 	{
 		$this->pdo->queryExec(
 			sprintf(
-				"UPDATE user_series SET categories = %s WHERE user_id = %d AND videos_id = %d",
-				(!empty($catID) ? $this->pdo->escapeString(implode('|', $catID)) : "NULL"),
+				'UPDATE user_series SET categories = %s WHERE user_id = %d AND videos_id = %d',
+				(!empty($catID) ? $this->pdo->escapeString(implode('|', $catID)) : 'NULL'),
 				$uID,
 				$videoId
 			)

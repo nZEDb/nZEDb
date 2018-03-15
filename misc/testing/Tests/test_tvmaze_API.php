@@ -40,15 +40,15 @@ if (isset($argv[1]) && !empty($argv[1]) && isset($argv[2]) && is_numeric($argv[2
 				print_r($episodeObj);
 			}
 		} else {
-			exit($c->error("Invalid episode data returned from TVMaze API."));
+			exit($c->error('Invalid episode data returned from TVMaze API.'));
 		}
 
 	} else {
-		exit($c->error("Invalid show data returned from TVMaze API."));
+		exit($c->error('Invalid show data returned from TVMaze API.'));
 	}
 
 } else {
-	exit($c->error("Invalid arguments. This script requires a text string (show name) followed by a season and episode number." . PHP_EOL .
+	exit($c->error('Invalid arguments. This script requires a text string (show name) followed by a season and episode number.' . PHP_EOL .
 		"You can also optionally supply 'YYYY' 'MM' 'DD' arguments instead of season/episode for an airdate lookup.")
 	);
 }

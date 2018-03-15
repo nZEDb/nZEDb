@@ -9,11 +9,11 @@ $pdo = new DB();
 $game = new Games(['Echo' => true, 'Settings' => $pdo]);
 
 $res = $pdo->query(
-	sprintf("SELECT id, title FROM gamesinfo WHERE cover = 0 ORDER BY id DESC LIMIT 100")
+	sprintf('SELECT id, title FROM gamesinfo WHERE cover = 0 ORDER BY id DESC LIMIT 100')
 );
 $total = count($res);
 if ($total > 0) {
-	echo $pdo->log->header("Updating game covers for " . number_format($total) . " releases.");
+	echo $pdo->log->header('Updating game covers for ' . number_format($total) . ' releases.');
 
 	foreach ($res as $arr) {
 		$starttime = microtime(true);
@@ -33,7 +33,7 @@ if ($total > 0) {
 		// amazon limits are 1 per 1 sec
 		$diff = (int)floor((microtime(true) - $starttime) * 1000000);
 		if (1000000 - $diff > 0) {
-			echo $pdo->log->alternate("Sleeping");
+			echo $pdo->log->alternate('Sleeping');
 			usleep(1000000 - $diff);
 		}
 	}

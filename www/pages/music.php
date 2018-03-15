@@ -50,14 +50,14 @@ foreach ($genres as $gn) {
 }
 
 foreach ($results as $result) {
-	$result['genre'] = $tmpgnr[$result["genre_id"]];
+	$result['genre'] = $tmpgnr[$result['genre_id']];
 	$musics[] = $result;
 }
 $genre = (isset($_REQUEST['genre']) && array_key_exists($_REQUEST['genre'], $tmpgnr)) ? $_REQUEST['genre'] : '';
 $page->smarty->assign('genres', $genres);
 $page->smarty->assign('genre', $genre);
 
-$years = range(1950, (date("Y") + 1));
+$years = range(1950, (date('Y') + 1));
 rsort($years);
 $year = (isset($_REQUEST['year']) && in_array($_REQUEST['year'], $years)) ? $_REQUEST['year'] : '';
 $page->smarty->assign('years', $years);
@@ -69,14 +69,14 @@ $page->smarty->assign('pagertotalitems',
 		isset($results[0]['_totalcount']) ? $results[0]['_totalcount'] : 0);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_COVER_PAGE);
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/music?t=" . $category . $browseby_link . "&amp;ob=" . $orderby . "&amp;offset=");
-$page->smarty->assign('pagerquerysuffix', "#results");
+$page->smarty->assign('pagerquerybase', WWW_TOP . '/music?t=' . $category . $browseby_link . '&amp;ob=' . $orderby . '&amp;offset=');
+$page->smarty->assign('pagerquerysuffix', '#results');
 
-$pager = $page->smarty->fetch("pager.tpl");
+$pager = $page->smarty->fetch('pager.tpl');
 $page->smarty->assign('pager', $pager);
 
 if ($category == -1) {
-	$page->smarty->assign("catname", "All");
+	$page->smarty->assign('catname', 'All');
 } else {
 	$cdata = $cat->getById($category);
 	if ($cdata) {
@@ -87,14 +87,14 @@ if ($category == -1) {
 }
 
 foreach ($ordering as $ordertype) {
-	$page->smarty->assign('orderby' . $ordertype, WWW_TOP . "/music?t=" . $category . $browseby_link . "&amp;ob=" . $ordertype . "&amp;offset=0");
+	$page->smarty->assign('orderby' . $ordertype, WWW_TOP . '/music?t=' . $category . $browseby_link . '&amp;ob=' . $ordertype . '&amp;offset=0');
 }
 
 $page->smarty->assign('results', $musics);
 
-$page->meta_title = "Browse Albums";
-$page->meta_keywords = "browse,nzb,albums,description,details";
-$page->meta_description = "Browse for Albums";
+$page->meta_title = 'Browse Albums';
+$page->meta_keywords = 'browse,nzb,albums,description,details';
+$page->meta_description = 'Browse for Albums';
 
 $page->content = $page->smarty->fetch('music.tpl');
 $page->render();

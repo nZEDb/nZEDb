@@ -341,8 +341,8 @@ class Response extends \lithium\console\Response
 	public function getColourCode($fgColour, $bgColour = null)
 	{
 		$bgColour = isset(self::$coloursBackground[$bgColour]) ?
-			";48;5;" . self::$colours256[$bgColour] : '';
-		return "\033[38;5;" . self::$colours256[$fgColour] . $bgColour . "m";
+			';48;5;' . self::$colours256[$bgColour] : '';
+		return "\033[38;5;" . self::$colours256[$fgColour] . $bgColour . 'm';
 	}
 
 	public function getStyle($style)
@@ -363,6 +363,6 @@ class Response extends \lithium\console\Response
 
 	protected function _encode($code)
 	{
-		return "\033[" . $code . "m";
+		return "\033[" . $code . 'm';
 	}
 }

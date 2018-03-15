@@ -100,7 +100,7 @@ class Text
 
 	public static function stripBOM(&$text)
 	{
-		$bom = pack("CCC", 0xef, 0xbb, 0xbf);
+		$bom = pack('CCC', 0xef, 0xbb, 0xbf);
 		if (0 == strncmp($text, $bom, 3)) {
 			$text = substr($text, 3);
 		}

@@ -12,13 +12,13 @@ $console = new Console(['Echo' => true, 'Settings' => $pdo]);
 
 $res = $pdo->queryDirect(
 		sprintf(
-				"SELECT searchname, id FROM releases WHERE consoleinfo_id IS NULL AND categories_id
-				BETWEEN %s AND %s ORDER BY id DESC",
+				'SELECT searchname, id FROM releases WHERE consoleinfo_id IS NULL AND categories_id
+				BETWEEN %s AND %s ORDER BY id DESC',
 				Category::GAME_ROOT,
 				Category::GAME_OTHER
 				));
 if ($res instanceof \PDOStatement) {
-	echo $pdo->log->header("Updating console info for " . number_format($res->rowCount()) . " releases.");
+	echo $pdo->log->header('Updating console info for ' . number_format($res->rowCount()) . ' releases.');
 
 	foreach ($res as $arr) {
 		$starttime = (int)microtime(true);
@@ -33,7 +33,7 @@ if ($res instanceof \PDOStatement) {
 		// amazon limits are 1 per 1 sec
 		$diff = (int)floor((microtime(true) - $starttime) * 1000000);
 		if (1000000 - $diff > 0) {
-			echo $pdo->log->alternate("Sleeping");
+			echo $pdo->log->alternate('Sleeping');
 			usleep(1000000 - $diff);
 		}
 	}

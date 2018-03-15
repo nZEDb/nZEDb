@@ -160,29 +160,29 @@ class ColorCLI
 		echo str_repeat("\007", $count);
 	}
 
-	public static function setColor($fg, $opt = "None", $bg = "None")
+	public static function setColor($fg, $opt = 'None', $bg = 'None')
 	{
 		$colored_string = "\033[" . self::$foreground_colors[$fg];
 		if (isset(self::$options[$opt])) {
-			$colored_string .= ";" . self::$options[$opt];
+			$colored_string .= ';' . self::$options[$opt];
 		}
 		if (isset(self::$background_colors[$bg])) {
-			$colored_string .= ";" . self::$background_colors[$bg];
+			$colored_string .= ';' . self::$background_colors[$bg];
 		}
-		$colored_string .= "m";
+		$colored_string .= 'm';
 		return $colored_string;
 	}
 
-	public static function set256($fg, $opt = "None", $bg = "None")
+	public static function set256($fg, $opt = 'None', $bg = 'None')
 	{
 		$colored_string = "\033[38;5;" . self::$colors256[$fg];
 		if (isset(self::$options[$opt]) && $opt != 'Norm') {
-			$colored_string .= ";" . self::$options[$opt];
+			$colored_string .= ';' . self::$options[$opt];
 		}
 		if (isset(self::$background_colors[$bg])) {
-			$colored_string .= ";48;5;" . self::$colors256[$bg];
+			$colored_string .= ';48;5;' . self::$colors256[$bg];
 		}
-		$colored_string .= "m";
+		$colored_string .= 'm';
 		return $colored_string;
 	}
 

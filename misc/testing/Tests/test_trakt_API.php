@@ -25,8 +25,8 @@ if (!empty($argv[1]) && is_numeric($argv[2]) && is_numeric($argv[3])) {
 		print_r($episode);
 
 	} else {
-		exit($c->error("Error retrieving Trakt data."));
+		exit($c->error('Error retrieving Trakt data.'));
 	}
 } else {
-	exit($c->error("Invalid arguments.  This script requires a text string (show name) followed by a season and episode number."));
+	exit($c->error('Invalid arguments.  This script requires a text string (show name) followed by a season and episode number.'));
 }

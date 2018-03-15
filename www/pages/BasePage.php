@@ -281,7 +281,7 @@ class BasePage
 	{
 		header('HTTP/1.1 404 Not Found');
 		exit(
-			sprintf("
+			sprintf('
 				<html>
 					<head>
 						<title>404 - File not found.</title>
@@ -292,7 +292,7 @@ class BasePage
 						<p>%s</p>
 						<p>We could not find the above page on our servers.</p>
 					</body>
-				</html>",
+				</html>',
 				$this->serverurl,
 				htmlspecialchars($this->page),
 				(!empty($reason) ? 'Reason: ' . $reason : '')
@@ -309,7 +309,7 @@ class BasePage
 	{
 		header('HTTP/1.1 503 Service Temporarily Unavailable');
 		exit(
-		sprintf("
+		sprintf('
 				<html>
 					<head>
 						<title>Service Unavailable.</title>
@@ -318,7 +318,7 @@ class BasePage
 						<h1>Service Unavailable.</h1>
 						<p>%s</p>
 					</body>
-				</html>",
+				</html>',
 			$message
 		)
 		);

@@ -111,7 +111,7 @@ class DbUpdate
 				if (preg_match($options['regex'], $file, $matches)) {
 					$table = $matches['table'];
 					// Get the first line of the file which holds the columns used.
-					$handle = @fopen($file, "r");
+					$handle = @fopen($file, 'r');
 					if (is_resource($handle)) {
 						$line = fgets($handle);
 						fclose($handle);
@@ -125,7 +125,7 @@ class DbUpdate
 							echo "Inserting data into table: '$table'\n";
 						}
 						if (Misc::isWin()) {
-							$file = str_replace("\\", '\/', $file);
+							$file = str_replace('\\', '\/', $file);
 						}
 						$this->pdo->exec(sprintf($sql, $file, $table, $fields));
 					} else {
@@ -237,7 +237,7 @@ class DbUpdate
 						) {
 							$patch = (integer)$matches['patch'];
 						} else {
-							throw new \RuntimeException("No patch information available, stopping!!");
+							throw new \RuntimeException('No patch information available, stopping!!');
 						}
 					}
 					if ($patch > $currentVersion) {
@@ -308,7 +308,7 @@ class DbUpdate
 
 					// Skip comments.
 					if (preg_match('!^\s*(#|--|//)\s*(.+?)\s*$!', $line, $matches)) {
-						echo $this->pdo->log->info("COMMENT: " . $matches[2]);
+						echo $this->pdo->log->info('COMMENT: ' . $matches[2]);
 						continue;
 					}
 
@@ -376,7 +376,7 @@ class DbUpdate
 								}
 							} else {
 								if (preg_match('/ALTER IGNORE/i', $query)) {
-									$this->pdo->queryExec("SET SESSION old_alter_table = 1");
+									$this->pdo->queryExec('SET SESSION old_alter_table = 1');
 									try {
 										$this->pdo->exec($query);
 										echo $this->log->alternateOver('SUCCESS: ') . $this->log->primary($query);
@@ -425,7 +425,7 @@ class DbUpdate
 			while ($index < $count) {
 				if (preg_match($options['regex'], $file[$index], $matches)) {
 					if ($options['verbose']) {
-						echo $this->log->primary("Matched: " . $file[$index]);
+						echo $this->log->primary('Matched: ' . $file[$index]);
 					}
 					$index++;
 
@@ -441,17 +441,17 @@ class DbUpdate
 
 		if ($changed) {
 			if (file_put_contents($filespec, implode("\n", $file)) === false) {
-				echo $this->log->error("Error writing file to disc!!");
+				echo $this->log->error('Error writing file to disc!!');
 			}
 		}
 	}
 
 	protected function _backupDb()
 	{
-		if (Misc::hasCommand("php5")) {
-			$PHP = "php5";
+		if (Misc::hasCommand('php5')) {
+			$PHP = 'php5';
 		} else {
-			$PHP = "php";
+			$PHP = 'php';
 		}
 
 		system("$PHP " . nZEDb_MISC . 'testing' . DS . 'DB' . DS . $this->_DbSystem .

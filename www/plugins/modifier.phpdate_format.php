@@ -53,7 +53,7 @@ require_once ($plugins_dir . 'shared.make_timestamp.php');
  * @return string|null
  * @uses smarty_make_timestamp()
  */
-function smarty_modifier_phpdate_format($string, $format="Y/m/d H:i:s", $default_date=null)
+function smarty_modifier_phpdate_format($string, $format='Y/m/d H:i:s', $default_date=null)
 {
   /*  if (substr(PHP_OS,0,3) == 'WIN') {
 		   $_win_from = array ('%e',  '%T',       '%D');
@@ -72,7 +72,7 @@ function smarty_modifier_phpdate_format($string, $format="Y/m/d H:i:s", $default
 				$nformat=DATE_ISO8601;
 				break;
 			case 'DATE_RFC822':
-				$nformat="D, d M y H:i:s O";
+				$nformat='D, d M y H:i:s O';
 				break; //The php constant is not quite right - as the time-zone comes out with invalid values like "UTC"...
 			case 'DATE_RFC850':
 				$nformat=DATE_RFC850;
@@ -90,7 +90,7 @@ function smarty_modifier_phpdate_format($string, $format="Y/m/d H:i:s", $default
 				$nformat=DATE_RFC3339;
 				break;
 			case 'DATE_RSS':
-				$nformat="D, d M Y H:i:s O";
+				$nformat='D, d M Y H:i:s O';
 				break; //as rfc822 ...
 			case 'DATE_W3C':
 				$nformat=DATE_W3C;

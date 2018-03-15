@@ -156,7 +156,7 @@ class Popporn extends AdultMovies
 	{
 		$country = false;
 		if ($ret = $this->_html->find('div#lside', 0)) {
-			foreach ($ret->find("text") as $e) {
+			foreach ($ret->find('text') as $e) {
 				$e = trim($e->innertext);
 				$e = str_replace([', ', '...', '&nbsp;'], '', $e);
 				if (stripos($e, 'Country:') !== false) {

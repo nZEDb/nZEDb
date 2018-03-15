@@ -24,12 +24,12 @@ class EndsWithCloseTag extends \li3_quality\qa\rules\syntax\EndsWithCloseTag
 {
 	public function apply($testable, array $config = [])
 	{
-		$message = "File does not end with ?>";
+		$message = 'File does not end with ?>';
 		$lines = $testable->lines();
 
 		$cnt = count($lines);
 		if ($cnt > 1) {
-			if (!((empty($lines[$cnt - 1]) && $lines[($cnt - 2)] === "?>") || ($lines[($cnt - 1)] === "?>"))) {
+			if (!((empty($lines[$cnt - 1]) && $lines[($cnt - 2)] === '?>') || ($lines[($cnt - 1)] === '?>'))) {
 				$this->addViolation(
 					[
 						'message' => $message,

@@ -152,11 +152,11 @@ class Games
 	public function getGamesInfo($id)
 	{
 		return $this->pdo->queryOneRow(
-			sprintf("
+			sprintf('
 				SELECT gamesinfo.*, genres.title AS genres
 				FROM gamesinfo
 				LEFT OUTER JOIN genres ON genres.id = gamesinfo.genre_id
-				WHERE gamesinfo.id = %d",
+				WHERE gamesinfo.id = %d',
 				$id
 			)
 		);
@@ -216,7 +216,7 @@ class Games
 	{
 		return $this->pdo->query(
 			sprintf(
-				"SELECT gi.*, g.title AS genretitle FROM gamesinfo gi INNER JOIN genres g ON gi.genre_id = g.id ORDER BY createddate DESC %s",
+				'SELECT gi.*, g.title AS genretitle FROM gamesinfo gi INNER JOIN genres g ON gi.genre_id = g.id ORDER BY createddate DESC %s',
 				($start === false ? '' : 'LIMIT ' . $num . ' OFFSET ' . $start)
 			)
 		);
@@ -227,8 +227,8 @@ class Games
 	 */
 	public function getCount()
 	{
-		$res = $this->pdo->queryOneRow("SELECT COUNT(id) AS num FROM gamesinfo");
-		return ($res === false ? 0 : $res["num"]);
+		$res = $this->pdo->queryOneRow('SELECT COUNT(id) AS num FROM gamesinfo');
+		return ($res === false ? 0 : $res['num']);
 	}
 
 	/**
@@ -256,9 +256,9 @@ class Games
 			$maxage = '';
 		}
 
-		$exccatlist = "";
+		$exccatlist = '';
 		if (count($excludedcats) > 0) {
-			$exccatlist = " AND r.categories_id NOT IN (" . implode(",", $excludedcats) . ")";
+			$exccatlist = ' AND r.categories_id NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
 		$order = $this->getGamesOrder($orderby);
@@ -346,7 +346,7 @@ class Games
 	public function getGamesOrder($orderby)
 	{
 		$order = ($orderby == '') ? 'r.postdate' : $orderby;
-		$orderArr = explode("_", $order);
+		$orderArr = explode('_', $order);
 		switch ($orderArr[0]) {
 			case 'title':
 				$orderfield = 'gi.title';
@@ -474,11 +474,11 @@ class Games
 	{
 
 		$this->pdo->queryExec(
-			sprintf("
+			sprintf('
 				UPDATE gamesinfo
 				SET title = %s, asin = %s, url = %s, publisher = %s,
 					releasedate = %s, esrb = %s, cover = %d, trailer = %s, genre_id = %d, updateddate = NOW()
-				WHERE id = %d",
+				WHERE id = %d',
 				$this->pdo->escapeString($title),
 				$this->pdo->escapeString($asin),
 				$this->pdo->escapeString($url),
@@ -798,7 +798,7 @@ class Games
 
 		if ($res instanceof \PDOStatement && $res->rowCount() > 0) {
 			if ($this->echoOutput) {
-				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $res->rowCount() . ' games release(s).'));
+				$this->pdo->log->doEcho($this->pdo->log->header('Processing ' . $res->rowCount() . ' games release(s).'));
 			}
 
 			foreach ($res as $arr) {

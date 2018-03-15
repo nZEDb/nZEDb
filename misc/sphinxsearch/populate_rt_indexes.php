@@ -38,12 +38,12 @@ function populate_rt($table, $max)
 				LIMIT %d'
 			);
 			$rtvalues = '(id, name, searchname, fromname, filename)';
-			$totals = $pdo->queryOneRow("SELECT COUNT(id) AS c, MIN(id) AS min FROM releases");
+			$totals = $pdo->queryOneRow('SELECT COUNT(id) AS c, MIN(id) AS min FROM releases');
 			if (!$totals) {
 				exit("Could not get database information for releases table.\n");
 			}
-			$total = $totals["c"];
-			$minId = $totals["min"];
+			$total = $totals['c'];
+			$minId = $totals['min'];
 			break;
 		default:
 			exit();
@@ -63,8 +63,8 @@ function populate_rt($table, $max)
 
 		$tempString = '';
 		foreach ($rows as $row) {
-			if ($row["id"] > $lastId) {
-				$lastId = $row["id"];
+			if ($row['id'] > $lastId) {
+				$lastId = $row['id'];
 			}
 			switch ($table) {
 				case 'releases_rt':
@@ -83,7 +83,7 @@ function populate_rt($table, $max)
 			continue;
 		}
 		$sphinx->sphinxQL->queryExec($string . rtrim($tempString, ','));
-		echo ".";
+		echo '.';
 	}
 	echo "\n[Done]\n";
 }

@@ -4,12 +4,12 @@ require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install.php');
 use nzedb\Install;
 
 $page = new InstallPage();
-$page->title = "Save Settings";
+$page->title = 'Save Settings';
 
 $cfg = new Install();
 
 if (!$cfg->isInitialized()) {
-	header("Location: index.php");
+	header('Location: index.php');
 	die();
 }
 

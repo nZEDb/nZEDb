@@ -21,17 +21,17 @@ $table_data = "SELECT TABLE_NAME AS 'Table', TABLE_ROWS AS 'Rows', "
 	. "((DATA_FREE) / POWER(1024,2)) AS 'free', "
 	. "((DATA_LENGTH + INDEX_LENGTH) / POWER(1024,2)) AS 'total' "
 	. "FROM information_schema.TABLES WHERE information_schema.TABLES.table_schema = '" . DB_NAME . "' "
-	. "ORDER BY (DATA_LENGTH + INDEX_LENGTH) DESC";
+	. 'ORDER BY (DATA_LENGTH + INDEX_LENGTH) DESC';
 
 $run = $pdo->queryDirect($table_data);
 
-$mask = $pdo->log->headerOver("%-25.25s ") . $pdo->log->primaryOver("%7.7s %10.10s %15.15s %15.15s %15.15s %15.15s\n");
+$mask = $pdo->log->headerOver('%-25.25s ') . $pdo->log->primaryOver("%7.7s %10.10s %15.15s %15.15s %15.15s %15.15s\n");
 printf($mask, 'Table Name', 'Engine', 'Row_Format', 'Data Size', 'Index Size', 'Free Space', 'Total Size');
 printf($mask, '=========================', '=======', '==========', '===============', '===============', '===============', '===============');
 if ($run instanceof \Traversable) {
 	foreach ($run as $table) {
 		if ($table['total'] > $argv[1] || $table['free'] > $argv[1]) {
-			printf($mask, $table['table'], $table['engine'], str_replace('row_format=', '', $table['format']), number_format($table['data'], 2) . " MB", number_format($table['index'], 2) . " MB", number_format($table['free'], 2) . " MB", number_format($table['total'], 2) . " MB");
+			printf($mask, $table['table'], $table['engine'], str_replace('row_format=', '', $table['format']), number_format($table['data'], 2) . ' MB', number_format($table['index'], 2) . ' MB', number_format($table['free'], 2) . ' MB', number_format($table['total'], 2) . ' MB');
 		}
 		$data += $table['data'];
 		$index += $table['index'];
@@ -41,18 +41,18 @@ if ($run instanceof \Traversable) {
 }
 printf($mask, '=========================', '=======', '==========', '===============', '===============', '===============', '===============');
 printf($mask, 'Table Name', 'Engine', 'Row_Format', 'Data Size', 'Index Size', 'Free Space', 'Total Size');
-printf($mask, '', '', '', number_format($data, 2) . " MB", number_format($index, 2) . " MB", number_format($free, 2) . " MB", number_format($total, 2) . " MB");
+printf($mask, '', '', '', number_format($data, 2) . ' MB', number_format($index, 2) . ' MB', number_format($free, 2) . ' MB', number_format($total, 2) . ' MB');
 
-$myisam = $pdo->queryOneRow("SELECT CONCAT(ROUND(KBS/POWER(1024,IF(pw<0,0,IF(pw>3,0,pw)))+0.49999), "
+$myisam = $pdo->queryOneRow('SELECT CONCAT(ROUND(KBS/POWER(1024,IF(pw<0,0,IF(pw>3,0,pw)))+0.49999), '
 	. "SUBSTR(' KMG',IF(pw<0,0,IF(pw>3,0,pw))+1,1)) recommended_key_buffer_size "
-	. "FROM (SELECT SUM(index_length) KBS "
-	. "FROM information_schema.tables "
+	. 'FROM (SELECT SUM(index_length) KBS '
+	. 'FROM information_schema.tables '
 	. "WHERE engine='MyISAM' AND table_schema NOT IN ('information_schema','mysql')) A, (SELECT 3 pw) B;", false);
 
-$innodb = $pdo->queryOneRow("SELECT CONCAT(ROUND(KBS/POWER(1024,IF(pw<0,0,IF(pw>3,0,pw)))+0.49999), "
+$innodb = $pdo->queryOneRow('SELECT CONCAT(ROUND(KBS/POWER(1024,IF(pw<0,0,IF(pw>3,0,pw)))+0.49999), '
 	. "SUBSTR(' KMG',IF(pw<0,0,IF(pw>3,0,pw))+1,1)) recommended_innodb_buffer_pool_size "
-	. "FROM (SELECT SUM(index_length) KBS "
-	. "FROM information_schema.tables "
+	. 'FROM (SELECT SUM(index_length) KBS '
+	. 'FROM information_schema.tables '
 	. "WHERE engine='InnoDB') A,(SELECT 3 pw) B;", false);
 
 $a = $myisam['recommended_key_buffer_size'];
@@ -70,23 +70,23 @@ $bb = $pdo->queryOneRow("SHOW VARIABLES WHERE Variable_name = 'innodb_buffer_poo
 
 if ($aa['value'] >= 1073741824) {
 	$current_a = $aa['value'] / 1024 / 1024 / 1024;
-	$current_a .= "G";
+	$current_a .= 'G';
 } else {
 	$current_a = $aa['value'] / 1024 / 1024;
-	$current_a .= "M";
+	$current_a .= 'M';
 }
 if ($bb['value'] >= 1073741824) {
 	$current_b = $bb['value'] / 1024 / 1024 / 1024;
-	$current_b .= "G";
+	$current_b .= 'G';
 } else {
 	$current_b = $bb['value'] / 1024 / 1024;
-	$current_b .= "M";
+	$current_b .= 'M';
 }
 
 echo $pdo->log->headerOver("\n\nThe recommended minimums are:\n");
-echo $pdo->log->primaryOver("MyISAM: key-buffer-size           = ") . $pdo->log->alternate($a);
-echo $pdo->log->primaryOver("InnoDB: innodb_buffer_pool_size   = ") . $pdo->log->alternate($b);
+echo $pdo->log->primaryOver('MyISAM: key-buffer-size           = ') . $pdo->log->alternate($a);
+echo $pdo->log->primaryOver('InnoDB: innodb_buffer_pool_size   = ') . $pdo->log->alternate($b);
 
 echo $pdo->log->headerOver("\nYour current setting are:\n");
-echo $pdo->log->primaryOver("MyISAM: key-buffer-size           = ") . $pdo->log->alternate($current_a);
-echo $pdo->log->primaryOver("InnoDB: innodb_buffer_pool_size   = ") . $pdo->log->alternate($current_b);
+echo $pdo->log->primaryOver('MyISAM: key-buffer-size           = ') . $pdo->log->alternate($current_a);
+echo $pdo->log->primaryOver('InnoDB: innodb_buffer_pool_size   = ') . $pdo->log->alternate($current_b);

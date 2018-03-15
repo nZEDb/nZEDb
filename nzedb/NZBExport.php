@@ -162,7 +162,7 @@ class NZBExport
 			foreach ($releases as $release) {
 
 				// Get path to the NZB file.
-				$nzbFile = $this->nzb->NZBPath($release["guid"]);
+				$nzbFile = $this->nzb->NZBPath($release['guid']);
 				// Check if it exists.
 				if ($nzbFile === false) {
 					if ($this->echoCLI) {
@@ -253,7 +253,7 @@ class NZBExport
 	protected function echoOut($message)
 	{
 		if ($this->browser) {
-			$this->retVal .= $message . "<br />";
+			$this->retVal .= $message . '<br />';
 		} elseif ($this->echoCLI) {
 			echo $message . PHP_EOL;
 		}

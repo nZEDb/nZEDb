@@ -10,12 +10,12 @@ use nzedb\Install;
 use nzedb\utility\Misc;
 
 $page = new InstallPage();
-$page->title = "Preflight Checklist";
+$page->title = 'Preflight Checklist';
 
 $cfg = new Install();
 
 if (!$cfg->isInitialized()) {
-	header("Location: index.php");
+	header('Location: index.php');
 	die();
 }
 
@@ -172,12 +172,12 @@ $unlimitedRAM = ini_get('memory_limit') == -1 ? true : false;
 $cfg->memlimitCheck = $unlimitedRAM || $enoughRAM;
 $cfg->phpCheck = (version_compare(PHP_VERSION, nZEDb_MINIMUM_PHP_VERSION, '>=')) ? true : false;
 $cfg->timelimitCheck = (ini_get('max_execution_time') >= 120) ? true : false;
-$cfg->opensslCheck = extension_loaded("openssl");
-$cfg->exifCheck = extension_loaded("exif");
-$cfg->timezoneCheck = (ini_get('date.timezone') != "");
+$cfg->opensslCheck = extension_loaded('openssl');
+$cfg->exifCheck = extension_loaded('exif');
+$cfg->timezoneCheck = (ini_get('date.timezone') != '');
 
 if (preg_match('/apache/i', $_SERVER['SERVER_SOFTWARE'])) {
-	$cfg->rewriteCheck = (function_exists("apache_get_modules") && in_array("mod_rewrite", apache_get_modules())) ? true : false;
+	$cfg->rewriteCheck = (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) ? true : false;
 } else {
 	$cfg->rewriteCheck = true;
 }

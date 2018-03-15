@@ -34,11 +34,11 @@ Class Videos
 	public function getByVideoID($id)
 	{
 		return $this->pdo->queryOneRow(
-			sprintf("
+			sprintf('
 					SELECT v.*, tvi.summary, tvi.publisher, tvi.image
 					FROM videos v
 					INNER JOIN tv_info tvi ON v.id = tvi.videos_id
-					WHERE id = %d",
+					WHERE id = %d',
 					$id
 			)
 		);
@@ -53,27 +53,27 @@ Class Videos
 	 *
 	 * @return array
 	 */
-	public function getRange($start, $num, $showname = "")
+	public function getRange($start, $num, $showname = '')
 	{
 		if ($start === false) {
-			$limit = "";
+			$limit = '';
 		} else {
-			$limit = "LIMIT " . $num . " OFFSET " . $start;
+			$limit = 'LIMIT ' . $num . ' OFFSET ' . $start;
 		}
 
 		$rsql = '';
-		if ($showname != "") {
-			$rsql .= sprintf("AND v.title LIKE %s ", $this->pdo->escapeString("%" . $showname . "%"));
+		if ($showname != '') {
+			$rsql .= sprintf('AND v.title LIKE %s ', $this->pdo->escapeString('%' . $showname . '%'));
 		}
 
 		return $this->pdo->query(
-			sprintf("
+			sprintf('
 						SELECT v.*,
 							tvi.summary, tvi.publisher, tvi.image
 						FROM videos v
 						INNER JOIN tv_info tvi ON v.id = tvi.videos_id
 						WHERE 1=1 %s
-						ORDER BY v.id ASC %s",
+						ORDER BY v.id ASC %s',
 				$rsql,
 				$limit
 			)
@@ -87,22 +87,22 @@ Class Videos
 	 *
 	 * @return mixed
 	 */
-	public function getCount($showname = "")
+	public function getCount($showname = '')
 	{
 		$rsql = '';
-		if ($showname != "") {
-			$rsql .= sprintf("AND v.title LIKE %s ", $this->pdo->escapeString("%" . $showname . "%"));
+		if ($showname != '') {
+			$rsql .= sprintf('AND v.title LIKE %s ', $this->pdo->escapeString('%' . $showname . '%'));
 		}
 		$res = $this->pdo->queryOneRow(
-			sprintf("
+			sprintf('
 						SELECT COUNT(v.id) AS num
 						FROM videos v
 						INNER JOIN tv_info tvi ON v.id = tvi.videos_id
-						WHERE 1=1 %s",
+						WHERE 1=1 %s',
 				$rsql
 			)
 		);
-		return $res["num"];
+		return $res['num'];
 	}
 
 	/**
@@ -114,22 +114,22 @@ Class Videos
 	 *
 	 * @return array
 	 */
-	public function getSeriesList($uid, $letter = "", $showname = "")
+	public function getSeriesList($uid, $letter = '', $showname = '')
 	{
 		$rsql = '';
-		if ($letter != "") {
+		if ($letter != '') {
 			if ($letter == '0-9') {
 				$letter = '[0-9]';
 			}
 
-			$rsql .= sprintf("AND v.title REGEXP %s", $this->pdo->escapeString('^' . $letter));
+			$rsql .= sprintf('AND v.title REGEXP %s', $this->pdo->escapeString('^' . $letter));
 		}
 		$tsql = '';
 		if ($showname != '') {
-			$tsql .= sprintf("AND v.title LIKE %s", $this->pdo->escapeString("%" . $showname . "%"));
+			$tsql .= sprintf('AND v.title LIKE %s', $this->pdo->escapeString('%' . $showname . '%'));
 		}
 
-		$qry = sprintf("
+		$qry = sprintf('
 			SELECT v.*,
 				us.id AS userseriesid
 			FROM
@@ -144,7 +144,7 @@ Class Videos
 				ORDER BY tve.firstaired DESC) v
 			LEFT OUTER JOIN user_series us ON v.id = us.videos_id AND us.user_id = %d
 			GROUP BY v.id
-			ORDER BY v.title ASC",
+			ORDER BY v.title ASC',
 			$rsql,
 			$tsql,
 			$uid

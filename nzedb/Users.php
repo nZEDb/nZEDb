@@ -70,7 +70,7 @@ class Users
 	 */
 	public function get()
 	{
-		return $this->pdo->query("SELECT * FROM users");
+		return $this->pdo->query('SELECT * FROM users');
 	}
 
 	/**
@@ -82,7 +82,7 @@ class Users
 	 */
 	public function getStyle($userID)
 	{
-		$row = $this->pdo->queryOneRow(sprintf("SELECT style FROM users WHERE id = %d", $userID));
+		$row = $this->pdo->queryOneRow(sprintf('SELECT style FROM users WHERE id = %d', $userID));
 		return ($row === false ? 'None' : $row['style']);
 	}
 
@@ -100,7 +100,7 @@ class Users
 		(new UserSeries(['Settings' => $this->pdo]))->delShowForUser($userID);
 		(new Forum(['Settings' => $this->pdo]))->deleteUser($userID);
 
-		$this->pdo->queryExec(sprintf("DELETE FROM users WHERE id = %d", $userID));
+		$this->pdo->queryExec(sprintf('DELETE FROM users WHERE id = %d', $userID));
 	}
 
 	/**
@@ -132,12 +132,12 @@ class Users
 				ORDER BY %s %s %s"
 			);
 		} else {
-			$query = ("
+			$query = ('
 				SELECT users.*, user_roles.name AS rolename
 				FROM users
 				INNER JOIN user_roles ON user_roles.id = users.role
 				WHERE 1=1 %s %s %s %s
-				ORDER BY %s %s %s"
+				ORDER BY %s %s %s'
 			);
 		}
 
@@ -167,7 +167,7 @@ class Users
 	public function getBrowseOrder($orderBy)
 	{
 		$order = ($orderBy == '' ? 'username_desc' : $orderBy);
-		$orderArr = explode("_", $order);
+		$orderArr = explode('_', $order);
 		switch ($orderArr[0]) {
 			case 'username':
 				$orderField = 'username';
@@ -234,10 +234,10 @@ class Users
 			return false;
 		}
 		return $this->pdo->queryInsert(
-			sprintf("
+			sprintf('
 				INSERT INTO users (username, password, email, role, createddate, host, rsstoken,
 					invites, invitedby, userseed, firstname, lastname)
-				VALUES (%s, %s, %s, %d, NOW(), %s, MD5(%s), %d, %s, MD5(%s), %s, %s)",
+				VALUES (%s, %s, %s, %d, NOW(), %s, MD5(%s), %d, %s, MD5(%s), %s, %s)',
 				$this->pdo->escapeString($userName),
 				$this->pdo->escapeString((string)$password),
 				$this->pdo->escapeString(strtolower($email)),
@@ -366,7 +366,7 @@ class Users
 		if ($cp_api !== false) {
 			$sql[] = sprintf('cp_api = %s', $this->pdo->escapeString($cp_api));
 		}
-		$this->pdo->queryExec(sprintf("UPDATE users SET %s WHERE id = %d", implode(', ', $sql), $id));
+		$this->pdo->queryExec(sprintf('UPDATE users SET %s WHERE id = %d', implode(', ', $sql), $id));
 
 		return self::SUCCESS;
 	}
@@ -381,7 +381,7 @@ class Users
 	public function updateRssKey($userID)
 	{
 		return $this->pdo->queryExec(
-			sprintf("UPDATE users SET rsstoken = MD5(%s) WHERE id = %d", $this->pdo->escapeString(uniqid()), $userID)
+			sprintf('UPDATE users SET rsstoken = MD5(%s) WHERE id = %d', $this->pdo->escapeString(uniqid()), $userID)
 		);
 	}
 
@@ -393,7 +393,7 @@ class Users
 	 */
 	public function updatePassResetGuid($userID, $GUID)
 	{
-		$this->pdo->queryExec(sprintf("UPDATE users SET resetguid = %s WHERE id = %d", $this->pdo->escapeString($GUID), $userID));
+		$this->pdo->queryExec(sprintf('UPDATE users SET resetguid = %s WHERE id = %d', $this->pdo->escapeString($GUID), $userID));
 		return self::SUCCESS;
 	}
 
@@ -413,7 +413,7 @@ class Users
 		}
 		$this->pdo->queryExec(
 			sprintf(
-				"UPDATE users SET password = %s, userseed = MD5(%s) WHERE id = %d",
+				'UPDATE users SET password = %s, userseed = MD5(%s) WHERE id = %d',
 				$this->pdo->escapeString((string)$password),
 				$this->pdo->escapeString($this->pdo->uuid()),
 				$userID
@@ -432,7 +432,7 @@ class Users
 	public function getByEmail($email)
 	{
 		return $this->pdo->queryOneRow(
-			sprintf("SELECT * FROM users WHERE LOWER(email) = LOWER(%s) ", $this->pdo->escapeString($email))
+			sprintf('SELECT * FROM users WHERE LOWER(email) = LOWER(%s) ', $this->pdo->escapeString($email))
 		);
 	}
 
@@ -445,7 +445,7 @@ class Users
 	{
 		return $this->pdo->queryOneRow(
 			sprintf(
-				"SELECT * FROM users WHERE LOWER(resetguid) = LOWER(%s) ",
+				'SELECT * FROM users WHERE LOWER(resetguid) = LOWER(%s) ',
 				$this->pdo->escapeString($GUID)
 			)
 		);
@@ -462,7 +462,7 @@ class Users
 	{
 		return $this->pdo->queryOneRow(
 			sprintf(
-				"SELECT * FROM users WHERE username = %s",
+				'SELECT * FROM users WHERE username = %s',
 				$this->pdo->escapeString($userName)
 			)
 		);
@@ -478,7 +478,7 @@ class Users
 	{
 		$this->pdo->queryExec(
 			sprintf(
-				"UPDATE users SET grabs = grabs + %d WHERE id = %d ",
+				'UPDATE users SET grabs = grabs + %d WHERE id = %d ',
 				$increment,
 				$userID
 			)
@@ -495,12 +495,12 @@ class Users
 	public function getById($userID)
 	{
 		return $this->pdo->queryOneRow(
-			sprintf("
+			sprintf('
 				SELECT users.*, user_roles.name AS rolename, user_roles.canpreview,
 					user_roles.apirequests, user_roles.downloadrequests, NOW() AS now
 				FROM users
 				INNER JOIN user_roles ON user_roles.id = users.role
-				WHERE users.id = %d",
+				WHERE users.id = %d',
 				$userID
 			)
 		);
@@ -533,11 +533,11 @@ class Users
 	public function getByRssToken($rssToken)
 	{
 		return $this->pdo->queryOneRow(
-			sprintf("
+			sprintf('
 				SELECT users.*, user_roles.apirequests, user_roles.downloadrequests, NOW() AS now
 				FROM users
 				INNER JOIN user_roles ON user_roles.id = users.role
-				WHERE users.rsstoken = %s",
+				WHERE users.rsstoken = %s',
 				$this->pdo->escapeString(strtolower($rssToken))
 			)
 		);
@@ -647,7 +647,7 @@ class Users
 			$string = $matches[0];
 		}
 
-		return "u" . substr(md5(uniqid()), 0, 7) . $string;
+		return 'u' . substr(md5(uniqid()), 0, 7) . $string;
 	}
 
 	/**
@@ -809,7 +809,7 @@ class Users
 		} else if (isset($_COOKIE['uid']) && isset($_COOKIE['idh'])) {
 			$u = $this->getById($_COOKIE['uid']);
 
-			if (($_COOKIE['idh'] == $this->hashSHA1($u["userseed"] . $_COOKIE['uid'])) && ($u["role"] != self::ROLE_DISABLED)) {
+			if (($_COOKIE['idh'] == $this->hashSHA1($u['userseed'] . $_COOKIE['uid'])) && ($u['role'] != self::ROLE_DISABLED)) {
 				$this->login($_COOKIE['uid'], $_SERVER['REMOTE_ADDR']);
 			}
 		}
@@ -870,7 +870,7 @@ class Users
 	{
 		$this->pdo->queryExec(
 			sprintf(
-				"UPDATE users SET lastlogin = NOW() %s WHERE id = %d",
+				'UPDATE users SET lastlogin = NOW() %s WHERE id = %d',
 				($host == '' ? '' : (', host = ' . $this->pdo->escapeString($host))),
 				$userID
 			)
@@ -884,7 +884,7 @@ class Users
 	 */
 	public function updateApiAccessed($userID)
 	{
-		$this->pdo->queryExec(sprintf("UPDATE users SET apiaccess = NOW() WHERE id = %d", $userID));
+		$this->pdo->queryExec(sprintf('UPDATE users SET apiaccess = NOW() WHERE id = %d', $userID));
 	}
 
 	/**
@@ -911,7 +911,7 @@ class Users
 	{
 		return $this->pdo->queryInsert(
 			sprintf(
-				"INSERT INTO users_releases (user_id, releases_id, createddate) VALUES (%d, %d, NOW())",
+				'INSERT INTO users_releases (user_id, releases_id, createddate) VALUES (%d, %d, NOW())',
 				$userID,
 				$releaseID
 			)
@@ -928,11 +928,11 @@ class Users
 	public function getCart($userID)
 	{
 		return $this->pdo->query(
-			sprintf("
+			sprintf('
 				SELECT users_releases.*, releases.searchname, releases.guid
 				FROM users_releases
 				INNER JOIN releases ON releases.id = users_releases.releases_id
-				WHERE user_id = %d",
+				WHERE user_id = %d',
 				$userID
 			)
 		);
@@ -954,7 +954,7 @@ class Users
 
 		$del = [];
 		foreach ($guids as $guid) {
-			$rel = $this->pdo->queryOneRow(sprintf("SELECT id FROM releases WHERE guid = %s", $this->pdo->escapeString($guid)));
+			$rel = $this->pdo->queryOneRow(sprintf('SELECT id FROM releases WHERE guid = %s', $this->pdo->escapeString($guid)));
 			if ($rel) {
 				$del[] = $rel['id'];
 			}
@@ -962,7 +962,7 @@ class Users
 
 		return (bool)$this->pdo->queryExec(
 			sprintf(
-				"DELETE FROM users_releases WHERE releases_id IN (%s) AND user_id = %d", implode(',', $del), $userID
+				'DELETE FROM users_releases WHERE releases_id IN (%s) AND user_id = %d', implode(',', $del), $userID
 			)
 		);
 	}
@@ -975,13 +975,13 @@ class Users
 	 */
 	public function delCartByUserAndRelease($GUID, $userID)
 	{
-		$rel = $this->pdo->queryOneRow(sprintf("SELECT id FROM releases WHERE guid = %s", $this->pdo->escapeString($GUID)));
+		$rel = $this->pdo->queryOneRow(sprintf('SELECT id FROM releases WHERE guid = %s', $this->pdo->escapeString($GUID)));
 		if ($rel) {
 			$this->pdo->queryExec(
 				sprintf(
-					"DELETE FROM users_releases WHERE user_id = %d AND releases_id = %d",
+					'DELETE FROM users_releases WHERE user_id = %d AND releases_id = %d',
 					$userID,
-					$rel["id"]
+					$rel['id']
 				)
 			);
 		}
@@ -994,7 +994,7 @@ class Users
 	 */
 	public function delCartForUser($userID)
 	{
-		$this->pdo->queryExec(sprintf("DELETE FROM users_releases WHERE user_id = %d", $userID));
+		$this->pdo->queryExec(sprintf('DELETE FROM users_releases WHERE user_id = %d', $userID));
 	}
 
 	/**
@@ -1004,17 +1004,17 @@ class Users
 	 */
 	public function delCartForRelease($releaseID)
 	{
-		$this->pdo->queryExec(sprintf("DELETE FROM users_releases WHERE releases_id = %d", $releaseID));
+		$this->pdo->queryExec(sprintf('DELETE FROM users_releases WHERE releases_id = %d', $releaseID));
 	}
 
 	public function delDownloadRequests($userID)
 	{
-		return $this->pdo->queryExec(sprintf("DELETE FROM user_downloads WHERE user_id = %d", $userID));
+		return $this->pdo->queryExec(sprintf('DELETE FROM user_downloads WHERE user_id = %d', $userID));
 	}
 
 	public function delApiRequests($userID)
 	{
-		return $this->pdo->queryExec(sprintf("DELETE FROM user_requests WHERE user_id = %d", $userID));
+		return $this->pdo->queryExec(sprintf('DELETE FROM user_requests WHERE user_id = %d', $userID));
 	}
 
 	/**
@@ -1030,7 +1030,7 @@ class Users
 			foreach ($categoryIDs as $categoryID) {
 				$this->pdo->queryInsert(
 					sprintf(
-						"INSERT INTO user_excluded_categories (user_id, categories_id, createddate) VALUES (%d, %d, NOW())",
+						'INSERT INTO user_excluded_categories (user_id, categories_id, createddate) VALUES (%d, %d, NOW())',
 						$userID,
 						$categoryID
 					)
@@ -1049,9 +1049,9 @@ class Users
 	public function getRoleCategoryExclusion($role)
 	{
 		$ret = [];
-		$data = $this->pdo->query(sprintf("SELECT categories_id FROM role_excluded_categories WHERE role = %d", $role));
+		$data = $this->pdo->query(sprintf('SELECT categories_id FROM role_excluded_categories WHERE role = %d', $role));
 		foreach ($data as $d)
-			$ret[] = $d["categories_id"];
+			$ret[] = $d['categories_id'];
 
 		return $ret;
 	}
@@ -1068,7 +1068,7 @@ class Users
 		$this->delRoleCategoryExclusions($role);
 		if (count($categoryIDs) > 0) {
 			foreach ($categoryIDs as $categoryID) {
-				$this->pdo->queryInsert(sprintf("INSERT INTO role_excluded_categories (role, categories_id, createddate) VALUES (%d, %d, now())", $role, $categoryID));
+				$this->pdo->queryInsert(sprintf('INSERT INTO role_excluded_categories (role, categories_id, createddate) VALUES (%d, %d, now())', $role, $categoryID));
 			}
 		}
 	}
@@ -1080,7 +1080,7 @@ class Users
 	 */
 	public function delRoleCategoryExclusions($role)
 	{
-		$this->pdo->queryExec(sprintf("DELETE FROM role_excluded_categories WHERE role = %d", $role));
+		$this->pdo->queryExec(sprintf('DELETE FROM role_excluded_categories WHERE role = %d', $role));
 	}
 
 	/**
@@ -1093,9 +1093,9 @@ class Users
 	public function getCategoryExclusion($userID)
 	{
 		$ret = [];
-		$categories = $this->pdo->query(sprintf("SELECT categories_id FROM user_excluded_categories WHERE user_id = %d", $userID));
+		$categories = $this->pdo->query(sprintf('SELECT categories_id FROM user_excluded_categories WHERE user_id = %d', $userID));
 		foreach ($categories as $category) {
-			$ret[] = $category["categories_id"];
+			$ret[] = $category['categories_id'];
 		}
 
 		return $ret;
@@ -1116,7 +1116,7 @@ class Users
 		$ret = [];
 		if ($categories !== false) {
 			foreach ($categories as $cat) {
-				$ret[] = $cat["title"];
+				$ret[] = $cat['title'];
 			}
 		}
 		return $ret;
@@ -1130,7 +1130,7 @@ class Users
 	 */
 	public function delCategoryExclusion($userID, $categoryID)
 	{
-		$this->pdo->queryExec(sprintf("DELETE user_excluded_categories WHERE user_id = %d AND categories_id = %d", $userID, $categoryID));
+		$this->pdo->queryExec(sprintf('DELETE user_excluded_categories WHERE user_id = %d AND categories_id = %d', $userID, $categoryID));
 	}
 
 	/**
@@ -1140,7 +1140,7 @@ class Users
 	 */
 	public function delUserCategoryExclusions($userID)
 	{
-		$this->pdo->queryExec(sprintf("DELETE FROM user_excluded_categories WHERE user_id = %d", $userID));
+		$this->pdo->queryExec(sprintf('DELETE FROM user_excluded_categories WHERE user_id = %d', $userID));
 	}
 
 	/**
@@ -1158,17 +1158,17 @@ class Users
 	{
 		$sender = $this->getById($userID);
 		$token = $this->hashSHA1(uniqid());
-		$subject = $siteTitle . " Invitation";
-		$url = $serverURL . "register?invitecode=" . $token;
+		$subject = $siteTitle . ' Invitation';
+		$url = $serverURL . 'register?invitecode=' . $token;
 		if (!is_null($sender['firstname']) || $sender['firstname'] != '') {
 			$contents =
-				$sender["firstname"] . " " . $sender["lastname"] .
-				" has sent an invite to join " . $siteTitle .
+				$sender['firstname'] . ' ' . $sender['lastname'] .
+				' has sent an invite to join ' . $siteTitle .
 				" to this email address.<br>To accept the invitation click <a href=\"$url\">this link</a>\n";
 		} else {
 			$contents =
-				$sender["username"] .
-				" has sent an invite to join " . $siteTitle .
+				$sender['username'] .
+				' has sent an invite to join ' . $siteTitle .
 				" to this email address.<br>To accept the invitation click <a href=\"$url\">this link</a>\n";
 		}
 
@@ -1190,7 +1190,7 @@ class Users
 		// Tidy any old invites sent greater than DEFAULT_INVITE_EXPIRY_DAYS days ago.
 		$this->pdo->queryExec(
 			sprintf(
-				"DELETE FROM invitations WHERE createddate < NOW() - INTERVAL %d DAY",
+				'DELETE FROM invitations WHERE createddate < NOW() - INTERVAL %d DAY',
 				self::DEFAULT_INVITE_EXPIRY_DAYS
 			)
 		);
@@ -1198,7 +1198,7 @@ class Users
 
 		return $this->pdo->queryOneRow(
 			sprintf(
-				"SELECT * FROM invitations WHERE guid = %s",
+				'SELECT * FROM invitations WHERE guid = %s',
 				$this->pdo->escapeString($inviteToken)
 			)
 		);
@@ -1214,7 +1214,7 @@ class Users
 	{
 		$this->pdo->queryInsert(
 			sprintf(
-				"INSERT INTO invitations (guid, user_id, createddate) VALUES (%s, %d, NOW())",
+				'INSERT INTO invitations (guid, user_id, createddate) VALUES (%s, %d, NOW())',
 				$this->pdo->escapeString($inviteToken),
 				$userID
 			)
@@ -1228,7 +1228,7 @@ class Users
 	 */
 	public function deleteInvite($inviteToken)
 	{
-		$this->pdo->queryExec(sprintf("DELETE FROM invitations WHERE guid = %s ", $this->pdo->escapeString($inviteToken)));
+		$this->pdo->queryExec(sprintf('DELETE FROM invitations WHERE guid = %s ', $this->pdo->escapeString($inviteToken)));
 	}
 
 	/**
@@ -1245,9 +1245,9 @@ class Users
 			return -1;
 		}
 
-		$this->pdo->queryExec(sprintf("UPDATE users SET invites = invites-1 WHERE id = %d ", $invite["user_id"]));
+		$this->pdo->queryExec(sprintf('UPDATE users SET invites = invites-1 WHERE id = %d ', $invite['user_id']));
 		$this->deleteInvite($inviteCode);
-		return $invite["user_id"];
+		return $invite['user_id'];
 	}
 
 	/**
@@ -1257,12 +1257,12 @@ class Users
 	 */
 	public function getTopGrabbers()
 	{
-		return $this->pdo->query("
+		return $this->pdo->query('
 			SELECT id, username, SUM(grabs) AS grabs
 			FROM users
 			GROUP BY id, username HAVING SUM(grabs) > 0
 			ORDER BY grabs DESC
-			LIMIT 10"
+			LIMIT 10'
 		);
 	}
 
@@ -1290,7 +1290,7 @@ class Users
 	 */
 	public function getRoles()
 	{
-		return $this->pdo->query("SELECT * FROM user_roles");
+		return $this->pdo->query('SELECT * FROM user_roles');
 	}
 
 	/**
@@ -1302,7 +1302,7 @@ class Users
 	 */
 	public function getRoleById($roleID)
 	{
-		return $this->pdo->queryOneRow(sprintf("SELECT * FROM user_roles WHERE id = %d", $roleID));
+		return $this->pdo->queryOneRow(sprintf('SELECT * FROM user_roles WHERE id = %d', $roleID));
 	}
 
 	/**
@@ -1312,7 +1312,7 @@ class Users
 	 */
 	public function getDefaultRole()
 	{
-		return $this->pdo->queryOneRow("SELECT * FROM user_roles WHERE isdefault = 1");
+		return $this->pdo->queryOneRow('SELECT * FROM user_roles WHERE isdefault = 1');
 	}
 
 	/**
@@ -1329,7 +1329,7 @@ class Users
 	public function addRole($name, $apiRequests, $downloadRequests, $defaultInvites, $canPreview)
 	{
 		return $this->pdo->queryInsert(
-			sprintf("INSERT INTO user_roles (name, apirequests, downloadrequests, defaultinvites, canpreview) VALUES (%s, %d, %d, %d, %d)",
+			sprintf('INSERT INTO user_roles (name, apirequests, downloadrequests, defaultinvites, canpreview) VALUES (%s, %d, %d, %d, %d)',
 				$this->pdo->escapeString($name), $apiRequests, $downloadRequests, $defaultInvites, $canPreview
 			)
 		);
@@ -1351,14 +1351,14 @@ class Users
 	public function updateRole($id, $name, $apiRequests, $downloadRequests, $defaultInvites, $isDefault, $canPreview)
 	{
 		if ($isDefault == 1) {
-			$this->pdo->queryExec("UPDATE user_roles SET isdefault = 0");
+			$this->pdo->queryExec('UPDATE user_roles SET isdefault = 0');
 		}
 
 		return $this->pdo->queryExec(
-			sprintf("
+			sprintf('
 				UPDATE user_roles
 				SET name = %s, apirequests = %d, downloadrequests = %d, defaultinvites = %d, isdefault = %d, canpreview = %d
-				WHERE id = %d",
+				WHERE id = %d',
 				$this->pdo->escapeString($name),
 				$apiRequests,
 				$downloadRequests,
@@ -1379,7 +1379,7 @@ class Users
 	 */
 	public function deleteRole($id)
 	{
-		$res = $this->pdo->query(sprintf("SELECT id FROM users WHERE role = %d", $id));
+		$res = $this->pdo->query(sprintf('SELECT id FROM users WHERE role = %d', $id));
 		if (sizeof($res) > 0) {
 			$userids = [];
 			foreach ($res as $user) {
@@ -1387,9 +1387,9 @@ class Users
 			}
 
 			$defaultrole = $this->getDefaultRole();
-			$this->pdo->queryExec(sprintf("UPDATE users SET role = %d WHERE id IN (%s)", $defaultrole['id'], implode(',', $userids)));
+			$this->pdo->queryExec(sprintf('UPDATE users SET role = %d WHERE id IN (%s)', $defaultrole['id'], implode(',', $userids)));
 		}
-		return $this->pdo->queryExec(sprintf("DELETE FROM user_roles WHERE id = %d", $id));
+		return $this->pdo->queryExec(sprintf('DELETE FROM user_roles WHERE id = %d', $id));
 	}
 
 	/**
@@ -1444,7 +1444,7 @@ class Users
 	{
 		return $this->pdo->queryInsert(
 			sprintf(
-				"INSERT INTO user_requests (user_id, request, timestamp) VALUES (%d, %s, NOW())",
+				'INSERT INTO user_requests (user_id, request, timestamp) VALUES (%d, %s, NOW())',
 				$userID,
 				$this->pdo->escapeString($request)
 			)
@@ -1487,7 +1487,7 @@ class Users
 	{
 		return $this->pdo->queryInsert(
 			sprintf(
-				"INSERT INTO user_downloads (user_id, timestamp) VALUES (%d, NOW())",
+				'INSERT INTO user_downloads (user_id, timestamp) VALUES (%d, NOW())',
 				$userID
 			)
 		);
@@ -1514,7 +1514,7 @@ class Users
 
 		$result = $this->pdo->queryOneRow(
 			sprintf(
-				"SELECT role FROM users WHERE %s",
+				'SELECT role FROM users WHERE %s',
 				$querySuffix
 			)
 		);

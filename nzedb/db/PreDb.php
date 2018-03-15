@@ -307,7 +307,7 @@ SQL_LOAD_DATA;
 
 	protected function prepareSQLUpdateGroupIDs()
 	{
-		$sql = "UPDATE predb_imports AS pi SET groups_id = (SELECT id FROM groups WHERE name = pi.groupname) WHERE groupname IS NOT NULL";
+		$sql = 'UPDATE predb_imports AS pi SET groups_id = (SELECT id FROM groups WHERE name = pi.groupname) WHERE groupname IS NOT NULL';
 		$this->prepareSQLStatement($sql, 'UpdateGroupID');
 	}
 }

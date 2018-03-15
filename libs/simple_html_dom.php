@@ -62,7 +62,7 @@ define('HDOM_INFO_OUTER', 6);
 define('HDOM_INFO_ENDSPACE', 7);
 define('DEFAULT_TARGET_CHARSET', 'UTF-8');
 define('DEFAULT_BR_TEXT', "\r\n");
-define('DEFAULT_SPAN_TEXT', " ");
+define('DEFAULT_SPAN_TEXT', ' ');
 define('MAX_FILE_SIZE', 600000);
 // helper functions
 // -----------------------------------------------------------------------------
@@ -193,16 +193,16 @@ class simple_html_dom_node
 					foreach ($v as $k2 => $v2) {
 						$string .= "[$k2]=>\"" . $v2 . '", ';
 					}
-					$string .= ")";
+					$string .= ')';
 				} else {
 					$string .= "[$k]=>\"" . $v . '", ';
 				}
 			}
-			$string .= ")";
+			$string .= ')';
 		}
 
 		if (isset($this->text)) {
-			$string .= " text: (" . $this->text . ")";
+			$string .= ' text: (' . $this->text . ')';
 		}
 
 		$string .= " HDOM_INNER_INFO: '";
@@ -212,9 +212,9 @@ class simple_html_dom_node
 			$string .= ' NULL ';
 		}
 
-		$string .= " children: " . count($this->children);
-		$string .= " nodes: " . count($this->nodes);
-		$string .= " tag_start: " . $this->tag_start;
+		$string .= ' children: ' . count($this->children);
+		$string .= ' nodes: ' . count($this->nodes);
+		$string .= ' tag_start: ' . $this->tag_start;
 		$string .= "\n";
 
 		if ($echo) {
@@ -319,7 +319,7 @@ class simple_html_dom_node
 
 		while (!is_null($returnDom)) {
 			if (is_object($debug_object)) {
-				$debug_object->debug_log(2, "Current tag is: " . $returnDom->tag);
+				$debug_object->debug_log(2, 'Current tag is: ' . $returnDom->tag);
 			}
 
 			if ($returnDom->tag == $tag) {
@@ -350,7 +350,7 @@ class simple_html_dom_node
 			$text = '';
 			if ($this->tag == 'text') {
 				if (!empty($this->text)) {
-					$text = " with text: " . $this->text;
+					$text = ' with text: ' . $this->text;
 				}
 			}
 			$debug_object->debug_log(1, 'Innertext of tag: ' . $this->tag . $text);
@@ -370,13 +370,13 @@ class simple_html_dom_node
 		if ($this->dom && $this->dom->nodes[$this->_[HDOM_INFO_BEGIN]]) {
 			$ret = $this->dom->nodes[$this->_[HDOM_INFO_BEGIN]]->makeup();
 		} else {
-			$ret = "";
+			$ret = '';
 		}
 
 		// render inner text
 		if (isset($this->_[HDOM_INFO_INNER])) {
 			// If it's a br tag...  don't return the HDOM_INNER_INFO that we may or may not have added.
-			if ($this->tag != "br") {
+			if ($this->tag != 'br') {
 				$ret .= $this->_[HDOM_INFO_INNER];
 			}
 		} else {
@@ -418,7 +418,7 @@ class simple_html_dom_node
 			}
 
 			// If this node is a span... add a space at the end of it so multiple spans don't run into each other.  This is plaintext after all.
-			if ($this->tag == "span") {
+			if ($this->tag == 'span') {
 				$ret .= $this->dom->default_span_text;
 			}
 		}
@@ -575,13 +575,13 @@ class simple_html_dom_node
 				if ($no_key) {
 					if (isset($node->attr[$key])) $pass = false;
 				} else {
-					if (($key != "plaintext") && !isset($node->attr[$key])) $pass = false;
+					if (($key != 'plaintext') && !isset($node->attr[$key])) $pass = false;
 				}
 			}
 			// compare value
 			if ($pass && $key && $val && $val !== '*') {
 				// If they have told us that this is a "plaintext" search then we want the plaintext of the node - right?
-				if ($key == "plaintext") {
+				if ($key == 'plaintext') {
 					// $node->plaintext actually returns $node->text();
 					$nodeKeyValue = $node->text();
 				} else {
@@ -590,8 +590,8 @@ class simple_html_dom_node
 				}
 				if (is_object($debug_object)) {
 					$debug_object->debug_log(2,
-											 "testing node: " . $node->tag . " for attribute: " .
-											 $key . $exp . $val . " where nodes value is: " .
+											 'testing node: ' . $node->tag . ' for attribute: ' .
+											 $key . $exp . $val . ' where nodes value is: ' .
 											 $nodeKeyValue);
 				}
 
@@ -602,7 +602,7 @@ class simple_html_dom_node
 					$check = $this->match($exp, $val, $nodeKeyValue);
 				}
 				if (is_object($debug_object)) {
-					$debug_object->debug_log(2, "after match: " . ($check ? "true" : "false"));
+					$debug_object->debug_log(2, 'after match: ' . ($check ? 'true' : 'false'));
 				}
 
 				// handle multiple class
@@ -626,7 +626,7 @@ class simple_html_dom_node
 		}
 		// It's passed by reference so this is actually what this function returns.
 		if (is_object($debug_object)) {
-			$debug_object->debug_log(1, "EXIT - ret: ", $ret);
+			$debug_object->debug_log(1, 'EXIT - ret: ', $ret);
 		}
 	}
 
@@ -643,14 +643,14 @@ class simple_html_dom_node
 			case '!=':
 				return ($value !== $pattern);
 			case '^=':
-				return preg_match("/^" . preg_quote($pattern, '/') . "/", $value);
+				return preg_match('/^' . preg_quote($pattern, '/') . '/', $value);
 			case '$=':
-				return preg_match("/" . preg_quote($pattern, '/') . "$/", $value);
+				return preg_match('/' . preg_quote($pattern, '/') . '$/', $value);
 			case '*=':
 				if ($pattern[0] == '/') {
 					return preg_match($pattern, $value);
 				}
-				return preg_match("/" . $pattern . "/i", $value);
+				return preg_match('/' . $pattern . '/i', $value);
 		}
 		return false;
 	}
@@ -672,7 +672,7 @@ class simple_html_dom_node
 		$pattern = "/([\w-:\*]*)(?:\#([\w-]+)|\.([\w-]+))?(?:\[@?(!?[\w-:]+)(?:([!*^$]?=)[\"']?(.*?)[\"']?)?\])?([\/, ]+)/is";
 		preg_match_all($pattern, trim($selector_string) . ' ', $matches, PREG_SET_ORDER);
 		if (is_object($debug_object)) {
-			$debug_object->debug_log(2, "Matches Array: ", $matches);
+			$debug_object->debug_log(2, 'Matches Array: ', $matches);
 		}
 
 		$selectors = array();
@@ -796,8 +796,8 @@ class simple_html_dom_node
 
 		$converted_text = $text;
 
-		$sourceCharset = "";
-		$targetCharset = "";
+		$sourceCharset = '';
+		$targetCharset = '';
 
 		if ($this->dom) {
 			$sourceCharset = strtoupper($this->dom->_charset);
@@ -805,7 +805,7 @@ class simple_html_dom_node
 		}
 		if (is_object($debug_object)) {
 			$debug_object->debug_log(3,
-									 "source charset: " . $sourceCharset . " target charaset: " .
+									 'source charset: ' . $sourceCharset . ' target charaset: ' .
 									 $targetCharset);
 		}
 
@@ -1080,8 +1080,8 @@ class simple_html_dom
 	// Note that this is referenced by a child node, and so it needs to be public for that node to see this information.
 	public $_charset = '';
 	public $_target_charset = '';
-	protected $default_br_text = "";
-	public $default_span_text = "";
+	protected $default_br_text = '';
+	public $default_span_text = '';
 
 	// use isset instead of in_array, performance boost about 30%...
 	protected $self_closing_tags = array(
@@ -1249,8 +1249,8 @@ class simple_html_dom
 
 		//before we save the string as the doc...  strip out the \r \n's if we are told to.
 		if ($stripRN) {
-			$str = str_replace("\r", " ", $str);
-			$str = str_replace("\n", " ", $str);
+			$str = str_replace("\r", ' ', $str);
+			$str = str_replace("\n", ' ', $str);
 
 			// set the length of content since we have changed it.
 			$this->size = strlen($str);
@@ -1338,8 +1338,8 @@ class simple_html_dom
 			$charset = false;
 			if (function_exists('mb_detect_encoding')) {
 				// Have php try to detect the encoding from the text given to us.
-				$charset = mb_detect_encoding($this->root->plaintext . "ascii",
-											  $encoding_list = array("UTF-8", "CP1252"));
+				$charset = mb_detect_encoding($this->root->plaintext . 'ascii',
+											  $encoding_list = array('UTF-8', 'CP1252'));
 				if (is_object($debug_object)) {
 					$debug_object->debug_log(2, 'mb_detect found: ' . $charset);
 				}
@@ -1578,7 +1578,7 @@ class simple_html_dom
 		// If it's a BR tag, we need to set it's text to the default text.
 		// This way when we see it in plaintext, we can generate formatting that the user wants.
 		// since a br tag never has sub nodes, this works well.
-		if ($node->tag == "br") {
+		if ($node->tag == 'br') {
 			$node->_[HDOM_INFO_INNER] = $this->default_br_text;
 		}
 
@@ -1617,10 +1617,10 @@ class simple_html_dom
 				$node->attr[$name]          = $this->restore_noise($this->copy_until($this->token_attr));
 		}
 		// PaperG: Attributes should not have \r or \n in them, that counts as html whitespace.
-		$node->attr[$name] = str_replace("\r", "", $node->attr[$name]);
-		$node->attr[$name] = str_replace("\n", "", $node->attr[$name]);
+		$node->attr[$name] = str_replace("\r", '', $node->attr[$name]);
+		$node->attr[$name] = str_replace("\n", '', $node->attr[$name]);
 		// PaperG: If this is a "class" selector, lets get rid of the preceeding and trailing space since some people leave it in the multi class case.
-		if ($name == "class") {
+		if ($name == 'class') {
 			$node->attr[$name] = trim($node->attr[$name]);
 		}
 	}

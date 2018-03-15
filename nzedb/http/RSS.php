@@ -58,7 +58,7 @@ Class RSS extends Capabilities
 	{
 		$catSearch = $cartSearch = '';
 
-		$catLimit = "AND r.categories_id BETWEEN " . Category::TV_ROOT . " AND " . Category::TV_OTHER;
+		$catLimit = 'AND r.categories_id BETWEEN ' . Category::TV_ROOT . ' AND ' . Category::TV_OTHER;
 
 		if (count($cat)) {
 			if ($cat[0] == -2) {
@@ -231,11 +231,11 @@ Class RSS extends Capabilities
 	public function getFirstInstance($column, $table, $order)
 	{
 		return $this->pdo->queryOneRow(
-			sprintf("
-				SELECT %1\$s
-				FROM %2\$s
-				WHERE %1\$s > 0
-				ORDER BY %3\$s ASC",
+			sprintf('
+				SELECT %1$s
+				FROM %2$s
+				WHERE %1$s > 0
+				ORDER BY %3$s ASC',
 				$column,
 				$table,
 				$order

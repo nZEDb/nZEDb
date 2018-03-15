@@ -122,7 +122,7 @@ class Cache
 					$this->server->flush();
 					break;
 				case self::TYPE_APC:
-					apc_clear_cache("user");
+					apc_clear_cache('user');
 					apc_clear_cache();
 					break;
 			}
@@ -308,7 +308,7 @@ class Cache
 				$versions = $this->server->getVersion();
 				if ($versions) {
 					foreach ($versions as $version) {
-						if ($version != "255.255.255") {
+						if ($version != '255.255.255') {
 							return true;
 						}
 					}

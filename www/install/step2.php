@@ -7,12 +7,12 @@ use nzedb\db\DB;
 use nzedb\Install;
 
 $page = new InstallPage();
-$page->title = "Database Setup";
+$page->title = 'Database Setup';
 
 $cfg = new Install();
 
 if (!$cfg->isInitialized()) {
-	header("Location: index.php");
+	header('Location: index.php');
 	die();
 }
 
@@ -31,7 +31,7 @@ function databaseCheck($dbName, $dbType, $pdo)
 	$retVal = false;
 
 	// Prepare queries.
-	$stmt = ($dbType === "mysql" ? 'SHOW DATABASES' : 'SELECT datname AS Database FROM pg_database');
+	$stmt = ($dbType === 'mysql' ? 'SHOW DATABASES' : 'SELECT datname AS Database FROM pg_database');
 	$stmt = $pdo->prepare($stmt);
 	$stmt->setFetchMode(PDO::FETCH_ASSOC);
 
@@ -49,15 +49,15 @@ function databaseCheck($dbName, $dbType, $pdo)
 	foreach ($tablearr as $tab) {
 
 		// Check if the database is found.
-		if (isset($tab["Database"])) {
-			if ($tab["Database"] == $dbName) {
+		if (isset($tab['Database'])) {
+			if ($tab['Database'] == $dbName) {
 				$retVal = true;
 				break;
 			}
 		}
 
-		if (isset($tab["database"])) {
-			if ($tab["database"] == $dbName) {
+		if (isset($tab['database'])) {
+			if ($tab['database'] == $dbName) {
 				$retVal = true;
 				break;
 			}
@@ -174,13 +174,13 @@ if ($page->isPostBack()) {
 			$DbSetup->loadTables(); // Load default data files
 		} catch (\PDOException $err) {
 			$cfg->error = true;
-			$cfg->emessage = "Error inserting: (" . $err->getMessage() . ")";
+			$cfg->emessage = 'Error inserting: (' . $err->getMessage() . ')';
 		}
 
 		if (!$cfg->error) {
 			// Check one of the standard tables was created and has data.
 			$dbInstallWorked = false;
-			$reschk = $pdo->query("SELECT COUNT(id) AS num FROM tmux");
+			$reschk = $pdo->query('SELECT COUNT(id) AS num FROM tmux');
 			if ($reschk === false) {
 				$cfg->dbCreateCheck = false;
 				$cfg->error = true;
@@ -208,9 +208,9 @@ if ($page->isPostBack()) {
 
 				// If it all worked, move to the next page.
 				if ($updateSettings) {
-					header("Location: ?success");
+					header('Location: ?success');
 					if (file_exists($cfg->DB_DIR . '/post_install.php')) {
-						exec("php " . $cfg->DB_DIR . "/post_install.php ${pdo}");
+						exec('php ' . $cfg->DB_DIR . "/post_install.php ${pdo}");
 					}
 					exit();
 				} else {

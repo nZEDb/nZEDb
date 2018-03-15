@@ -40,7 +40,7 @@ if (!defined('SCRAPE_IRC_NICKNAME')) {
 }
 
 if (SCRAPE_IRC_NICKNAME == '') {
-	exit("ERROR! You must put a username in settings.php" . PHP_EOL);
+	exit('ERROR! You must put a username in settings.php' . PHP_EOL);
 }
 
 $silent = ((isset($argv[2]) && $argv[2] === 'true') ? true : false);

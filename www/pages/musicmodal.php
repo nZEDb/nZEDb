@@ -8,7 +8,7 @@ if (!$page->users->isLoggedIn()) {
 
 $music = new Music(['Settings' => $page->settings]);
 
-if (isset($_GET["id"]) && ctype_digit($_GET["id"])) {
+if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 	$mus = $music->getMusicInfo($_GET['id']);
 
 	if (!$mus) {
@@ -17,10 +17,10 @@ if (isset($_GET["id"]) && ctype_digit($_GET["id"])) {
 
 	$page->smarty->assign('music', $mus);
 
-	$page->title = "Info for " . $mus['title'];
-	$page->meta_title = "";
-	$page->meta_keywords = "";
-	$page->meta_description = "";
+	$page->title = 'Info for ' . $mus['title'];
+	$page->meta_title = '';
+	$page->meta_keywords = '';
+	$page->meta_description = '';
 	$page->smarty->registerPlugin('modifier', 'ss', 'stripslashes');
 
 	$modal = false;

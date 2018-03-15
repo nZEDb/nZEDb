@@ -168,7 +168,7 @@ class Backfill
 			// Loop through groups.
 			foreach ($res as $groupArr) {
 				if ($groupName === '') {
-					$dMessage = "Starting group " . $counter . ' of ' . $groupCount;
+					$dMessage = 'Starting group ' . $counter . ' of ' . $groupCount;
 					if ($this->_debug) {
 						$this->_debugging->log(get_class(), __FUNCTION__, $dMessage, Logger::LOG_INFO);
 					}
@@ -181,7 +181,7 @@ class Backfill
 				$counter++;
 			}
 
-			$dMessage = 'Backfilling completed in ' . number_format(microtime(true) - $allTime, 2) . " seconds.";
+			$dMessage = 'Backfilling completed in ' . number_format(microtime(true) - $allTime, 2) . ' seconds.';
 			if ($this->_debug) {
 				$this->_debugging->log(get_class(), __FUNCTION__, $dMessage, Logger::LOG_INFO);
 			}
@@ -222,9 +222,9 @@ class Backfill
 		// If our local oldest article 0, it means we never ran update_binaries on the group.
 		if ($groupArr['first_record'] <= 0) {
 			$dMessage =
-				"You need to run update_binaries on " .
+				'You need to run update_binaries on ' .
 				$groupName .
-				". Otherwise the group is dead, you must disable it.";
+				'. Otherwise the group is dead, you must disable it.';
 			if ($this->_debug) {
 				$this->_debugging->log(get_class(), __FUNCTION__, $dMessage, Logger::LOG_ERROR);
 			}
@@ -267,10 +267,10 @@ class Backfill
 		// Check if our target post is newer than our oldest post or if our local oldest article is older than the servers oldest.
 		if ($targetpost >= $groupArr['first_record'] || $groupArr['first_record'] <= $data['first']) {
 			$dMessage =
-				"We have hit the maximum we can backfill for " .
+				'We have hit the maximum we can backfill for ' .
 				$groupName .
-				($this->_disableBackfillGroup ? ", disabling backfill on it." :
-				", skipping it, consider disabling backfill on it.");
+				($this->_disableBackfillGroup ? ', disabling backfill on it.' :
+				', skipping it, consider disabling backfill on it.');
 			if ($this->_debug) {
 				$this->_debugging->log(get_class(), __FUNCTION__, $dMessage, Logger::LOG_NOTICE);
 			}
@@ -321,13 +321,13 @@ class Backfill
 					$this->pdo->log->set256('Yellow') .
 					"\nGetting " .
 					(number_format($last - $first + 1)) .
-					" articles from " .
+					' articles from ' .
 					$groupName .
-					", " .
+					', ' .
 					$left .
-					" group(s) left. (" .
+					' group(s) left. (' .
 					(number_format($first - $targetpost)) .
-					" articles in queue)." .
+					' articles in queue).' .
 					$this->pdo->log->rsetColor(), true
 				);
 			}
@@ -373,7 +373,7 @@ class Backfill
 					$groupName .
 					' processed in ' .
 					number_format(microtime(true) - $startGroup, 2) .
-					" seconds."
+					' seconds.'
 				), true
 			);
 		}

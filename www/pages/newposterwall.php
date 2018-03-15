@@ -30,7 +30,7 @@ if (count($categories) > 0) {
 		}
 	}
 } else {
-	$error = "No categories are enabled!";
+	$error = 'No categories are enabled!';
 }
 
 if (count($types) === 0) {
@@ -113,13 +113,13 @@ if (!$error) {
 			break;
 
 		default:
-			$error = "ERROR: Invalid ?t parameter (" . $_REQUEST['t'] . ").";
+			$error = 'ERROR: Invalid ?t parameter (' . $_REQUEST['t'] . ').';
 	}
 }
 $page->title            = 'New ' . $_REQUEST['t'] . ' Releases';
 $page->meta_title       = $_REQUEST['t'] . ' Poster Wall';
-$page->meta_keywords    = "view,new,releases,posters,wall";
-$page->meta_description = "The newest " . $_REQUEST['t'] . ' releases';
+$page->meta_keywords    = 'view,new,releases,posters,wall';
+$page->meta_description = 'The newest ' . $_REQUEST['t'] . ' releases';
 $page->smarty->assign('error', $error);
 $page->content = $page->smarty->fetch('newposterwall.tpl');
 $page->render();

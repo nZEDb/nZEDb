@@ -58,11 +58,11 @@ class DnzbFailures
 	 */
 	public function getCount()
 	{
-		$res = $this->pdo->queryOneRow("
+		$res = $this->pdo->queryOneRow('
 			SELECT COUNT(release_id) AS num
-			FROM dnzb_failures"
+			FROM dnzb_failures'
 		);
-		return $res["num"];
+		return $res['num'];
 	}
 
 	/**

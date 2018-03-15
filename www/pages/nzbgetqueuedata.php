@@ -10,7 +10,7 @@ if (!$page->users->isLoggedIn()) {
 
 $nzbget = new NZBGet($page);
 
-$output = "";
+$output = '';
 $data = $nzbget->getQueue();
 
 if ($data !== false) {
@@ -26,8 +26,8 @@ if ($data !== false) {
 				<div style='width:16.666666667%;float:left;'><b>Limit:</b><br /> " . Misc::bytesToSizeString($status['DownloadLimit'], 2) . "/s </div>
 				<div style='width:16.666666667%;float:left;'><b>Queue Left(no pars):</b><br /> " . Misc::bytesToSizeString($status['RemainingSizeLo'], 2) . " </div>
 				<div style='width:16.666666667%;float:left;'><b>Free Space:</b><br /> " . Misc::bytesToSizeString($status['FreeDiskSpaceMB'] * 1024000, 2) . " </div>
-				<div style='width:16.666666667%;float:left;'><b>Status:</b><br /> " . ($status['Download2Paused'] == 1 ? 'Paused' : 'Downloading') . " </div>
-			</div>";
+				<div style='width:16.666666667%;float:left;'><b>Status:</b><br /> " . ($status['Download2Paused'] == 1 ? 'Paused' : 'Downloading') . ' </div>
+			</div>';
 		}
 
 		$count = 1;
@@ -50,22 +50,22 @@ if ($data !== false) {
 
 		foreach ($data as $item) {
 			$output .=
-				"<tr>" .
-				"<td style='text-align:center;width:10px'>" . $count . "</td>" .
-				"<td style='text-align:left;'>" . $item['NZBName'] . "</td>" .
-				"<td style='text-align:center;'>" . $item['FileSizeMB'] . " MB</td>" .
-				"<td style='text-align:center;'>" . $item['RemainingSizeMB'] . " MB</td>" .
-				"<td style='text-align:center;'>" . ($item['FileSizeMB'] == 0 ? 0 : round(100 - ($item['RemainingSizeMB'] / $item['FileSizeMB']) * 100)) . "%</td>" .
-				"<td style='text-align:center;'>" . ($item['ActiveDownloads'] > 0 ? 'Downloading' : 'Paused') . "</td>" .
+				'<tr>' .
+				"<td style='text-align:center;width:10px'>" . $count . '</td>' .
+				"<td style='text-align:left;'>" . $item['NZBName'] . '</td>' .
+				"<td style='text-align:center;'>" . $item['FileSizeMB'] . ' MB</td>' .
+				"<td style='text-align:center;'>" . $item['RemainingSizeMB'] . ' MB</td>' .
+				"<td style='text-align:center;'>" . ($item['FileSizeMB'] == 0 ? 0 : round(100 - ($item['RemainingSizeMB'] / $item['FileSizeMB']) * 100)) . '%</td>' .
+				"<td style='text-align:center;'>" . ($item['ActiveDownloads'] > 0 ? 'Downloading' : 'Paused') . '</td>' .
 				"<td style='text-align:center;'><a  onclick=\"return confirm('Are you sure?');\" href='?del=" . $item['LastID'] . "'>Delete</a></td>" .
 				"<td style='text-align:center;'><a href='?pause=" . $item['LastID'] . "'>Pause</a></td>" .
 				"<td style='text-align:center;'><a href='?resume=" . $item['LastID'] . "'>Resume</a></td>" .
-				"</tr>";
+				'</tr>';
 			$count++;
 		}
 		$output .=
-			"</tbody>
-		</table>";
+			'</tbody>
+		</table>';
 	} else {
 		$output .= "<br /><br /><p style='text-align:center;'>The queue is currently empty.</p>";
 	}

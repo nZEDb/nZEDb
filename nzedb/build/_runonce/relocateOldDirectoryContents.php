@@ -5,7 +5,7 @@ require_once dirname(dirname(dirname(__DIR__))) . '/www/config.php';
 use nzedb\ColorCLI;
 
 $output = new ColorCLI();
-echo $output->primary("Checking for files in the renamed directories.");
+echo $output->primary('Checking for files in the renamed directories.');
 $status = 0;
 
 $dirs = [
@@ -85,7 +85,7 @@ foreach ($dirs as $dir) {
 				}
 				echo $output->info("  Moving {$item->getPathname()}");
 				if (rename($item->getPathname(), $pathNew . DIRECTORY_SEPARATOR . $item->getFilename()) === false) {
-					echo $output->error("   FAILED!");
+					echo $output->error('   FAILED!');
 					$status = 1;
 				}
 			}
@@ -93,7 +93,7 @@ foreach ($dirs as $dir) {
 			if ($d->read() === false) {
 				@unlink($pathOld);
 			} else {
-				echo $output->error("Could not move all files. Check your permissions!");
+				echo $output->error('Could not move all files. Check your permissions!');
 			}
 		}
 	}

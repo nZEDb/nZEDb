@@ -28,35 +28,35 @@ switch ($action) {
 
 	case 'newapikey':
 		$page->users->updateRssKey($userid);
-		header("Location: profileedit");
+		header('Location: profileedit');
 		break;
 
 	case 'clearcookies':
 		$sab->unsetCookie();
-		header("Location: profileedit");
+		header('Location: profileedit');
 		break;
 
 	case 'submit':
-		$data["email"] = $_POST['email'];
-		$data["firstname"] = $_POST['firstname'];
-		$data["lastname"] = $_POST['lastname'];
+		$data['email'] = $_POST['email'];
+		$data['firstname'] = $_POST['firstname'];
+		$data['lastname'] = $_POST['lastname'];
 
-		if (!$page->users->isValidUsername($data["username"])) {
-			$errorStr = "Your username must be at least 3 characters. Contact an administrator to get it changed.";
-		} else if ($_POST['password'] != "" && $_POST['password'] != $_POST['confirmpassword']) {
-			$errorStr = "Password Mismatch";
-		} else if ($_POST['password'] != "" && !$page->users->isValidPassword($_POST['password'])) {
-			$errorStr = "Your password must be at least 6 characters.";
+		if (!$page->users->isValidUsername($data['username'])) {
+			$errorStr = 'Your username must be at least 3 characters. Contact an administrator to get it changed.';
+		} else if ($_POST['password'] != '' && $_POST['password'] != $_POST['confirmpassword']) {
+			$errorStr = 'Password Mismatch';
+		} else if ($_POST['password'] != '' && !$page->users->isValidPassword($_POST['password'])) {
+			$errorStr = 'Your password must be at least 6 characters.';
 		} else if (!empty($_POST['nzbgeturl']) && $nzbGet->verifyURL($_POST['nzbgeturl']) === false) {
-			$errorStr = "The NZBGet URL you entered is invalid!";
+			$errorStr = 'The NZBGet URL you entered is invalid!';
 		} else if (!$page->users->isValidEmail($_POST['email'])) {
-			$errorStr = "Your email is not a valid format.";
+			$errorStr = 'Your email is not a valid format.';
 		} else {
 			$res = $page->users->getByEmail($_POST['email']);
-			if ($res && $res["id"] != $userid) {
-				$errorStr = "Sorry, the email is already in use.";
+			if ($res && $res['id'] != $userid) {
+				$errorStr = 'Sorry, the email is already in use.';
 			} elseif ((empty($_POST['saburl']) && !empty($_POST['sabapikey'])) || (!empty($_POST['saburl']) && empty($_POST['sabapikey']))) {
-				$errorStr = "Insert a SABnzdb URL and API key.";
+				$errorStr = 'Insert a SABnzdb URL and API key.';
 			} else {
 				if (isset($_POST['sabsetting']) && $_POST['sabsetting'] == 2) {
 					$sab->setCookie($_POST['saburl'], $_POST['sabapikey'], $_POST['sabpriority'], $_POST['sabapikeytype']);
@@ -65,19 +65,19 @@ switch ($action) {
 
 				$page->users->update(
 					$userid,
-					$data["username"],
+					$data['username'],
 					$_POST['firstname'],
 					$_POST['lastname'],
 					$_POST['email'],
-					$data["grabs"],
-					$data["role"],
-					$data["invites"],
-					(isset($_POST['movieview']) ? "1" : "0"),
-					(isset($_POST['xxxview']) ? "1" : "0"),
-					(isset($_POST['musicview']) ? "1" : "0"),
-					(isset($_POST['consoleview']) ? "1" : "0"),
-					(isset($_POST['gameview']) ? "1" : "0"),
-					(isset($_POST['bookview']) ? "1" : "0"),
+					$data['grabs'],
+					$data['role'],
+					$data['invites'],
+					(isset($_POST['movieview']) ? '1' : '0'),
+					(isset($_POST['xxxview']) ? '1' : '0'),
+					(isset($_POST['musicview']) ? '1' : '0'),
+					(isset($_POST['consoleview']) ? '1' : '0'),
+					(isset($_POST['gameview']) ? '1' : '0'),
+					(isset($_POST['bookview']) ? '1' : '0'),
 					$_POST['cp_url'],
 					$_POST['cp_api'],
 					$_POST['style'],
@@ -94,11 +94,11 @@ switch ($action) {
 				$_POST['exccat'] = (!isset($_POST['exccat']) || !is_array($_POST['exccat'])) ? array() : $_POST['exccat'];
 				$page->users->addCategoryExclusions($userid, $_POST['exccat']);
 
-				if ($_POST['password'] != "") {
+				if ($_POST['password'] != '') {
 					$page->users->updatePassword($userid, $_POST['password']);
 				}
 
-				header("Location:" . WWW_TOP . "/profileedit");
+				header('Location:' . WWW_TOP . '/profileedit');
 				die();
 			}
 		}
@@ -149,9 +149,9 @@ $page->smarty->assign(array(
 	)
 );
 
-$page->meta_title = "Edit User Profile";
-$page->meta_keywords = "edit,profile,user,details";
-$page->meta_description = "Edit User Profile for " . $data["username"];
+$page->meta_title = 'Edit User Profile';
+$page->meta_keywords = 'edit,profile,user,details';
+$page->meta_description = 'Edit User Profile for ' . $data['username'];
 
 $page->smarty->assign('cp_url_selected', $data['cp_url']);
 $page->smarty->assign('cp_api_selected', $data['cp_api']);

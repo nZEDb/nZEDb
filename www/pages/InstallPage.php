@@ -34,13 +34,13 @@ class InstallPage
 
 	public function render()
 	{
-		$this->page_template = "installpage.tpl";
+		$this->page_template = 'installpage.tpl';
 		$this->smarty->display($this->page_template);
 	}
 
 	public function isPostBack()
 	{
-		return (strtoupper($_SERVER["REQUEST_METHOD"]) === "POST");
+		return (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST');
 	}
 
 	public function isSuccess()

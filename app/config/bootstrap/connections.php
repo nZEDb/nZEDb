@@ -171,7 +171,7 @@ if (file_exists($installed)) {
 			$adapter = 'PostgreSql';
 			break;
 		default:
-			throw new \RuntimeException("Invalid database system in dev-config file!");
+			throw new \RuntimeException('Invalid database system in dev-config file!');
 			break;
 	}
 

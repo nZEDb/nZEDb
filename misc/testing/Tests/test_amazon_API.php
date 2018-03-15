@@ -16,7 +16,7 @@ $obj = new AmazonProductAPI($pubkey, $privkey, $asstag);
 $e = null;
 
 try {
-	$result = $obj->searchProducts("Adriana Koulias The Seal", AmazonProductAPI::BOOKS, "TITLE");
+	$result = $obj->searchProducts('Adriana Koulias The Seal', AmazonProductAPI::BOOKS, 'TITLE');
 } catch (Exception $e) {
 	$result = false;
 }

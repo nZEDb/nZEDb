@@ -8,8 +8,8 @@ if (!$page->users->isLoggedIn()) {
 }
 
 $um = new UserMovies(['Settings' => $page->settings]);
-if (isset($_REQUEST["del"])) {
-	$um->delMovie($page->users->currentUserId(), $_REQUEST["del"]);
+if (isset($_REQUEST['del'])) {
+	$um->delMovie($page->users->currentUserId(), $_REQUEST['del']);
 }
 
 $cat = new Category(['Settings' => $page->settings]);
@@ -39,10 +39,10 @@ foreach ($movies as $mov => $m) {
 }
 $page->smarty->assign('movies', $results);
 
-$page->title = "Edit My Movies";
-$page->meta_title = "Edit My Movies";
-$page->meta_keywords = "couch,potato,movie,add";
-$page->meta_description = "Manage Your Movies";
+$page->title = 'Edit My Movies';
+$page->meta_title = 'Edit My Movies';
+$page->meta_keywords = 'couch,potato,movie,add';
+$page->meta_description = 'Manage Your Movies';
 
 $page->content = $page->smarty->fetch('mymoviesedit.tpl');
 $page->render();

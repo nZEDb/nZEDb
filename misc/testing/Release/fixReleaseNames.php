@@ -21,14 +21,14 @@ $namefixer = new NameFixer(['Settings' => $pdo]);
 $predb = new PreDb(['Echo' => true, 'Settings' => $pdo]);
 
 if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
-	$update = ($argv[2] == "true") ? true : false;
+	$update = ($argv[2] == 'true') ? true : false;
 	$other = 1;
 	if ($argv[3] === 'all') {
 		$other = 2;
 	} else if ($argv[3] === 'preid') {
 		$other = 3;
 	}
-	$setStatus = ($argv[4] == "yes") ? 1 : 2;
+	$setStatus = ($argv[4] == 'yes') ? 1 : 2;
 
 	$show = 2;
 	if (isset($argv[5]) && $argv[5] === 'show') {

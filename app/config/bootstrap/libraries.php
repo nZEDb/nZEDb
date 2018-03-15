@@ -70,9 +70,9 @@ define('LITHIUM_LIBRARY_PATH', nZEDb_ROOT . 'libraries');
  * If your Lithium core directory is named something other than `lithium`, change the string below.
  */
 if (!include LITHIUM_LIBRARY_PATH . DS . 'lithium' . DS . 'core' . DS . 'Libraries.php') {
-	$message  = "Lithium core could not be found.  Check the value of LITHIUM_LIBRARY_PATH in ";
-	$message .= __FILE__ . ".  It should point to the directory containing your ";
-	$message .= "/libraries directory.";
+	$message  = 'Lithium core could not be found.  Check the value of LITHIUM_LIBRARY_PATH in ';
+	$message .= __FILE__ . '.  It should point to the directory containing your ';
+	$message .= '/libraries directory.';
 	throw new ErrorException($message);
 }
 

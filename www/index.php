@@ -71,7 +71,7 @@ switch ($page->page) {
 		// Don't show these pages if it's an API-only site.
 		if (!$page->users->isLoggedIn()) {
 			if (Settings::value('..registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
-				header("Location: " . Settings::value('site.main.code'));
+				header('Location: ' . Settings::value('site.main.code'));
 				break;
 			} else if (
 				!in_array($page->page, ['register', 'forgottenpassword']) &&

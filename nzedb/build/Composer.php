@@ -32,13 +32,13 @@ class Composer
 		}
 
 		if (getenv('COMPOSER_DEV_MODE') == 1) {
-			echo "Updating git hooks... ";
+			echo 'Updating git hooks... ';
 			$last = exec('build/git-hooks/addHooks.sh', $output, $return);
 			if ($return > 0) {
 				echo PHP_EOL;
 				exit($last);
 			}
-			echo "done" . PHP_EOL;
+			echo 'done' . PHP_EOL;
 		}
 	}
 }

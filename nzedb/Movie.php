@@ -211,7 +211,7 @@ class Movie
 	 */
 	public function getMovieInfo($imdbId)
 	{
-		return $this->pdo->queryOneRow(sprintf("SELECT * FROM movieinfo WHERE imdbid = %d", $imdbId));
+		return $this->pdo->queryOneRow(sprintf('SELECT * FROM movieinfo WHERE imdbid = %d', $imdbId));
 	}
 
 	/**
@@ -224,11 +224,11 @@ class Movie
 	public function getMovieInfoMultiImdb($imdbIDs)
 	{
 		return $this->pdo->query(
-			sprintf("
+			sprintf('
 				SELECT DISTINCT movieinfo.*, releases.imdbid AS relimdb
 				FROM movieinfo
 				LEFT OUTER JOIN releases ON releases.imdbid = movieinfo.imdbid
-				WHERE movieinfo.imdbid IN (%s)",
+				WHERE movieinfo.imdbid IN (%s)',
 				str_replace(
 					',,',
 					',',
@@ -251,25 +251,25 @@ class Movie
      *
      * @return array
      */
-    public function getRange($start, $num, $movietitle = "")
+    public function getRange($start, $num, $movietitle = '')
     {
         if ($start === false) {
-            $limit = "";
+            $limit = '';
         } else {
-            $limit = "LIMIT " . $num . " OFFSET " . $start;
+            $limit = 'LIMIT ' . $num . ' OFFSET ' . $start;
         }
 
         $rsql = '';
-        if ($movietitle != "") {
-            $rsql .= sprintf("AND movieinfo.title LIKE %s ", $this->pdo->escapeString("%" . $movietitle . "%"));
+        if ($movietitle != '') {
+            $rsql .= sprintf('AND movieinfo.title LIKE %s ', $this->pdo->escapeString('%' . $movietitle . '%'));
         }
 
         return $this->pdo->query(
-            sprintf("
+            sprintf('
                         SELECT *
                         FROM movieinfo
                         WHERE 1=1 %s
-                        ORDER BY createddate DESC %s",
+                        ORDER BY createddate DESC %s',
                 $rsql,
                 $limit
             )
@@ -684,7 +684,7 @@ class Movie
 	public function updateMovieInfo($imdbId)
 	{
 		if ($this->echooutput && $this->service !== '') {
-			$this->pdo->log->doEcho($this->pdo->log->primary("Fetching IMDB info from TMDB using IMDB ID: " . $imdbId));
+			$this->pdo->log->doEcho($this->pdo->log->primary('Fetching IMDB info from TMDB using IMDB ID: ' . $imdbId));
 		}
 
 		// Check TMDB for IMDB info.
@@ -823,7 +823,7 @@ class Movie
 						$ret['title'] = $art['name'];
 					}
 					if ($this->echooutput) {
-						$this->pdo->log->doEcho($this->pdo->log->alternateOver("Fanart Found ") .
+						$this->pdo->log->doEcho($this->pdo->log->alternateOver('Fanart Found ') .
 							$this->pdo->log->headerOver($ret['title']));
 					}
 
@@ -1015,7 +1015,7 @@ class Movie
 				}
 			}
 			if ($this->echooutput && isset($ret['title'])) {
-				$this->pdo->log->doEcho($this->pdo->log->headerOver("IMDb Found ") . $this->pdo->log->primaryOver($ret['title']), true);
+				$this->pdo->log->doEcho($this->pdo->log->headerOver('IMDb Found ') . $this->pdo->log->primaryOver($ret['title']), true);
 			}
 			return $ret;
 		}
@@ -1044,7 +1044,7 @@ class Movie
 				return false;
 			}
 			if ($this->echooutput) {
-				$this->pdo->log->doEcho($this->pdo->log->alternateOver("Trakt Found ") . $this->pdo->log->headerOver($ret['title']), true);
+				$this->pdo->log->doEcho($this->pdo->log->alternateOver('Trakt Found ') . $this->pdo->log->headerOver($ret['title']), true);
 			}
 			return $ret;
 		}
@@ -1103,13 +1103,13 @@ class Movie
 
 		// Get all releases without an IMDB id.
 		$res = $this->pdo->query(
-			sprintf("
+			sprintf('
 			SELECT r.searchname, r.id
 			FROM releases r
 			WHERE r.imdbid IS NULL
 			AND r.nzbstatus = 1
 			%s %s %s %s
-			LIMIT %d",
+			LIMIT %d',
 			$this->catWhere,
 			($groupID === '' ? '' : ('AND r.groups_id = ' . $groupID)),
 			($guidChar === '' ? '' : 'AND r.leftguid = ' . $this->pdo->escapeString($guidChar)),
@@ -1124,7 +1124,7 @@ class Movie
 				$this->traktTv = new TraktTv(['Settings' => $this->pdo]);
 			}
 			if ($this->echooutput && $movieCount > 1) {
-				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $movieCount . " movie releases."));
+				$this->pdo->log->doEcho($this->pdo->log->header('Processing ' . $movieCount . ' movie releases.'));
 			}
 
 			// Loop over releases.
@@ -1132,7 +1132,7 @@ class Movie
 				// Try to get a name/year.
 				if ($this->parseMovieSearchName($arr['searchname']) === false) {
 					//We didn't find a name, so set to all 0's so we don't parse again.
-					$this->pdo->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d %s", $arr["id"], $this->catWhere));
+					$this->pdo->queryExec(sprintf('UPDATE releases SET imdbid = 0000000 WHERE id = %d %s', $arr['id'], $this->catWhere));
 					continue;
 
 				} else {
@@ -1144,7 +1144,7 @@ class Movie
 					}
 
 					if ($this->echooutput) {
-						$this->pdo->log->doEcho($this->pdo->log->primaryOver("Looking up: ") . $this->pdo->log->headerOver($movieName), true);
+						$this->pdo->log->doEcho($this->pdo->log->primaryOver('Looking up: ') . $this->pdo->log->headerOver($movieName), true);
 					}
 
 					// Check local DB.
@@ -1198,7 +1198,7 @@ class Movie
 					}
 
 					// We failed to get an IMDB id from all sources.
-					$this->pdo->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d %s", $arr["id"], $this->catWhere));
+					$this->pdo->queryExec(sprintf('UPDATE releases SET imdbid = 0000000 WHERE id = %d %s', $arr['id'], $this->catWhere));
 				}
 			}
 		}
@@ -1233,7 +1233,7 @@ class Movie
 			$pieces = explode(' ', $this->currentTitle);
 			$tempTitle = '%';
 			foreach ($pieces as $piece) {
-				$tempTitle .= str_replace(["'", "!", '"'], '', $piece) . '%';
+				$tempTitle .= str_replace(["'", '!', '"'], '', $piece) . '%';
 			}
 			$IMDBCheck = $this->pdo->queryOneRow(
 				sprintf("%s WHERE replace(replace(title, \"'\", ''), '!', '') %s %s",
@@ -1257,7 +1257,7 @@ class Movie
 					$pieces = explode(' ', $tempTitle);
 					$tempTitle = '%';
 					foreach ($pieces as $piece) {
-						$tempTitle .= str_replace(["'", "!", '"'], "", $piece) . '%';
+						$tempTitle .= str_replace(["'", '!', '"'], '', $piece) . '%';
 					}
 					$IMDBCheck = $this->pdo->queryOneRow(
 						sprintf("%s WHERE replace(replace(replace(title, \"'\", ''), '!', ''), '\"', '') %s %s",
@@ -1354,7 +1354,7 @@ class Movie
 		$buffer = Misc::getUrl(
 			[
 				'url' =>
-						"http://www.bing.com/search?q=" .
+						'http://www.bing.com/search?q=' .
 						urlencode(
 							'("' .
 							$this->currentTitle .
@@ -1386,7 +1386,7 @@ class Movie
 		$buffer = Misc::getUrl(
 			[
 				'url' =>
-					"http://search.yahoo.com/search?n=10&ei=UTF-8&va_vt=title&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=fp-top&p=" .
+					'http://search.yahoo.com/search?n=10&ei=UTF-8&va_vt=title&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=fp-top&p=' .
 					urlencode(
 						'' .
 						implode('+',
@@ -1513,11 +1513,11 @@ class Movie
 			$this->_getRTData($rt, 'dvd');
 
 			if ($this->echooutput) {
-				$this->pdo->log->doEcho($this->pdo->log->header("Updated successfully."));
+				$this->pdo->log->doEcho($this->pdo->log->header('Updated successfully.'));
 			}
 
 		} else if ($this->echooutput) {
-			$this->pdo->log->doEcho($this->pdo->log->header("Error retrieving your RottenTomato API Key. Exiting..." . PHP_EOL));
+			$this->pdo->log->doEcho($this->pdo->log->header('Error retrieving your RottenTomato API Key. Exiting...' . PHP_EOL));
 		}
 	}
 
@@ -1575,14 +1575,14 @@ class Movie
 
 			if ($this->echooutput) {
 				if ($success !== false) {
-					$this->pdo->log->doEcho($this->pdo->log->header(sprintf("Added/updated movies to the %s list.", $operation)));
+					$this->pdo->log->doEcho($this->pdo->log->header(sprintf('Added/updated movies to the %s list.', $operation)));
 				} else {
-					$this->pdo->log->doEcho($this->pdo->log->primary(sprintf("No new updates for %s list.", $operation)));
+					$this->pdo->log->doEcho($this->pdo->log->primary(sprintf('No new updates for %s list.', $operation)));
 				}
 			}
 
 		} else {
-			exit(PHP_EOL . $this->pdo->log->error("Unable to fetch from Rotten Tomatoes, verify your API Key." . PHP_EOL));
+			exit(PHP_EOL . $this->pdo->log->error('Unable to fetch from Rotten Tomatoes, verify your API Key.' . PHP_EOL));
 		}
 	}
 
@@ -1598,10 +1598,10 @@ class Movie
 	protected function updateInsUpcoming($source, $type, $info)
 	{
 		return $this->pdo->queryExec(
-				sprintf("
+				sprintf('
 				INSERT INTO upcoming_releases (source, typeid, info, updateddate)
 				VALUES (%s, %d, %s, NOW())
-				ON DUPLICATE KEY UPDATE info = %s",
+				ON DUPLICATE KEY UPDATE info = %s',
 				$this->pdo->escapeString($source),
 				$type,
 				$this->pdo->escapeString($info),

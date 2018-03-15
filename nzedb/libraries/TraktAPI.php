@@ -137,7 +137,7 @@ class TraktAPI
 		if ($extended === '') {
 			$extendedString = '';
 		} else {
-			$extendedString = "?extended=" . $extended;
+			$extendedString = '?extended=' . $extended;
 		}
 
 		if (!empty($this->requestHeaders)) {

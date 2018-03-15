@@ -348,7 +348,7 @@ class XML_Response
 	 */
 	public function includeTotalRows()
 	{
-		$this->xml->startElement($this->namespace.":response");
+		$this->xml->startElement($this->namespace.':response');
 		$this->xml->writeAttribute('offset', $this->offset);
 		$this->xml->writeAttribute('total', isset($this->releases[0]['_totalrows']) ? $this->releases[0]['_totalrows'] : 0);
 		$this->xml->endElement();
@@ -383,7 +383,7 @@ class XML_Response
 			'link',
 			"{$this->server['server']['url']}getnzb/{$this->release['guid']}.nzb" .
 			"&i={$this->parameters['uid']}" . "&r={$this->parameters['token']}" .
-			($this->parameters['del'] == '1' ? "&del=1" : '')
+			($this->parameters['del'] == '1' ? '&del=1' : '')
 		);
 		$this->xml->writeElement('comments', "{$this->server['server']['url']}details/{$this->release['guid']}#comments");
 		$this->xml->writeElement('pubDate', date(DATE_RSS, strtotime($this->release['adddate'])));
@@ -399,7 +399,7 @@ class XML_Response
 				'url',
 				"{$this->server['server']['url']}getnzb/{$this->release['guid']}.nzb" .
 				"&i={$this->parameters['uid']}" . "&r={$this->parameters['token']}" .
-				($this->parameters['del'] == '1' ? "&del=1" : '')
+				($this->parameters['del'] == '1' ? '&del=1' : '')
 			);
 			$this->xml->writeAttribute('length', $this->release['size']);
 			$this->xml->writeAttribute('type', 'application/x-nzb');
@@ -499,7 +499,7 @@ class XML_Response
 	 */
 	protected function writeZedAttr($name, $value)
 	{
-		$this->xml->startElement($this->namespace . ":attr");
+		$this->xml->startElement($this->namespace . ':attr');
 		$this->xml->writeAttribute('name', $name);
 		$this->xml->writeAttribute('value', $value);
 		$this->xml->endElement();

@@ -28,12 +28,12 @@ switch ($action) {
 		$success = false;
 		if ($action == 'doedit') {
 			$success = $releases->updateMulti(
-						$_POST["id"],
-						$_POST["category"],
-						$_POST["grabs"],
-						$_POST["videosid"],
-						$_POST["episodesid"],
-						$_POST["anidbid"],
+						$_POST['id'],
+						$_POST['category'],
+						$_POST['grabs'],
+						$_POST['videosid'],
+						$_POST['episodesid'],
+						$_POST['anidbid'],
 						$_POST['imdbid']);
 		}
 		$page->smarty->assign('release', $rel);

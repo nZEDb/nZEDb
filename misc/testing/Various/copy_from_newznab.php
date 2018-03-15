@@ -17,7 +17,7 @@ if (!isset($argv[1])) {
 } else {
 	$source = realpath($argv[1] . DS . 'nzbfiles');
 	$files = new \nzedb\utility\CopyFileTree($argv[1], $nzbpath);
-	echo "Copying nzbs from " . $argv[1] . "\n";
+	echo 'Copying nzbs from ' . $argv[1] . "\n";
 	$files->copy('*');
 
 	$source = realpath($argv[1] . DS . 'www' . DS . 'covers'); // NN+ path, do not change.
@@ -26,7 +26,7 @@ if (!isset($argv[1])) {
 	$files->copy('*');
 
 	echo "Setting nzbstatus for all releases\n";
-	$pdo->queryExec("UPDATE releases SET nzbstatus = 1");
+	$pdo->queryExec('UPDATE releases SET nzbstatus = 1');
 
 	system("php $reorg $level $nzbpath");
 }

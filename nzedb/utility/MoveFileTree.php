@@ -91,14 +91,14 @@ class MoveFileTree
 			echo "Checking '$dir' ";
 			$contents = scandir($dir);
 			if (count($contents) == 2) {
-				echo "is empty - ";
+				echo 'is empty - ';
 				if (rmdir($dir)) {
 					echo "deleting!\n";
 				} else {
 					echo "failed!\n";
 				}
 			} else {
-				echo "has " . (count($contents) - 2) . " files in it\n";
+				echo 'has ' . (count($contents) - 2) . " files in it\n";
 			}
 		}
 	}

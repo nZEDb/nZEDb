@@ -4,12 +4,12 @@ require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install.php');
 use nzedb\Install;
 
 $page = new InstallPage();
-$page->title = "News Server Setup";
+$page->title = 'News Server Setup';
 
 $cfg = new Install();
 
 if (!$cfg->isInitialized()) {
-	header("Location: index.php");
+	header('Location: index.php');
 	die();
 }
 
@@ -37,7 +37,7 @@ if ($page->isPostBack()) {
 
 	$enc = false;
 	if ($cfg->NNTP_SSLENABLED) {
-		$enc = "tls";
+		$enc = 'tls';
 	}
 
 	// test connection
@@ -56,7 +56,7 @@ if ($page->isPostBack()) {
 
 	if (!$cfg->error) {
 		$cfg->setSession();
-		header("Location: ?success");
+		header('Location: ?success');
 		die();
 	}
 }

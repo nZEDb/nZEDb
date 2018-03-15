@@ -215,7 +215,7 @@ class NNTP extends \Net_NNTP_Client
 			// If we have no more retries and could not connect, return an error.
 			if ($retries === 0 && !$connected) {
 				$message =
-					"Cannot connect to server " .
+					'Cannot connect to server ' .
 					$this->_currentServer .
 					$enc .
 					': ' .
@@ -255,7 +255,7 @@ class NNTP extends \Net_NNTP_Client
 					// If we ran out of retries, return an error.
 					if ($retries === 0 && $authenticated === false) {
 						$message =
-							"Cannot authenticate to server " .
+							'Cannot authenticate to server ' .
 							$this->_currentServer .
 							$enc .
 							' - ' .
@@ -276,7 +276,7 @@ class NNTP extends \Net_NNTP_Client
 					$this->_compressionSupported = false;
 				}
 				if ($this->_debugBool) {
-					$this->_debugging->log(get_class(), __FUNCTION__, "Connected to " . $this->_currentServer . '.', Logger::LOG_INFO);
+					$this->_debugging->log(get_class(), __FUNCTION__, 'Connected to ' . $this->_currentServer . '.', Logger::LOG_INFO);
 				}
 				return true;
 			}
@@ -313,7 +313,7 @@ class NNTP extends \Net_NNTP_Client
 		// Check if we are connected to usenet.
 		if ($force === true || parent::_isConnected(false)) {
 			if ($this->_debugBool) {
-				$this->_debugging->log(get_class(), __FUNCTION__, "Disconnecting from " . $this->_currentServer, Logger::LOG_INFO);
+				$this->_debugging->log(get_class(), __FUNCTION__, 'Disconnecting from ' . $this->_currentServer, Logger::LOG_INFO);
 			}
 			// Disconnect from usenet.
 			return parent::disconnect();
@@ -974,7 +974,7 @@ class NNTP extends \Net_NNTP_Client
 
 		// Add a CRC32 checksum if desired.
 		if ($crc32 === true) {
-			$encoded .= ' crc32=' . strtolower(sprintf("%04X", crc32($string)));
+			$encoded .= ' crc32=' . strtolower(sprintf('%04X', crc32($string)));
 		}
 
 		return $encoded . "\r\n";
@@ -996,7 +996,7 @@ class NNTP extends \Net_NNTP_Client
 		trigger_error('Deprecated. Use app\extensions\util\Yenc::decode instead.' . PHP_EOL);
 		$crc = '';
 		// Extract the yEnc string itself.
-		if (preg_match("/=ybegin.*size=([^ $]+).*\\r\\n(.*)\\r\\n=yend.*size=([^ $\\r\\n]+)(.*)/ims", $string, $encoded)) {
+		if (preg_match('/=ybegin.*size=([^ $]+).*\\r\\n(.*)\\r\\n=yend.*size=([^ $\\r\\n]+)(.*)/ims', $string, $encoded)) {
 			if (preg_match('/crc32=([^ $\\r\\n]+)/ims', $encoded[4], $trailer)) {
 				$crc = trim($trailer[1]);
 			}
@@ -1037,7 +1037,7 @@ class NNTP extends \Net_NNTP_Client
 		}
 
 		// Check the CRC value
-		if ($crc !== '' && (strtolower($crc) !== strtolower(sprintf("%04X", crc32($decoded))))) {
+		if ($crc !== '' && (strtolower($crc) !== strtolower(sprintf('%04X', crc32($decoded))))) {
 			$message = 'CRC32 checksums do not match. The file is probably corrupt.';
 			if ($this->_debugBool) {
 				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);

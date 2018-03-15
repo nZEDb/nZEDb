@@ -66,7 +66,7 @@ class Time
 		if (array_key_exists($month, $months)) {
 			$digit = $months[$month];
 		} else {
-			echo "Array key missing: " . $month . PHP_EOL;
+			echo 'Array key missing: ' . $month . PHP_EOL;
 		}
 		return $digit;
 	}

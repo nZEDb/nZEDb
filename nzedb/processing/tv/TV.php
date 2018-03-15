@@ -148,7 +148,7 @@ abstract class TV extends Videos
 		}
 
 		$res = $this->pdo->queryDirect(
-			sprintf("
+			sprintf('
 				SELECT SQL_NO_CACHE r.searchname, r.id
 				FROM releases r
 				WHERE r.nzbstatus = 1
@@ -158,7 +158,7 @@ abstract class TV extends Videos
 				AND %s
 				%s %s %s
 				ORDER BY r.postdate DESC
-				LIMIT %d",
+				LIMIT %d',
 				$status,
 				$this->catWhere,
 				($groupID === '' ? '' : 'AND r.groups_id = ' . $groupID),
@@ -264,9 +264,9 @@ abstract class TV extends Videos
 			);
 			// Insert the supplementary show info
 			$this->pdo->queryInsert(
-				sprintf("
+				sprintf('
 					INSERT INTO tv_info (videos_id, summary, publisher, localzone)
-					VALUES (%d, %s, %s, %s)",
+					VALUES (%d, %s, %s, %s)',
 					$videoId,
 					$this->pdo->escapeString($show['summary']),
 					$this->pdo->escapeString($show['publisher']),
@@ -307,7 +307,7 @@ abstract class TV extends Videos
 					$episode['episode'],
 					$this->pdo->escapeString($episode['se_complete']),
 					$this->pdo->escapeString($episode['title']),
-					($episode['firstaired'] != "" ? $this->pdo->escapeString($episode['firstaired']) : "null"),
+					($episode['firstaired'] != '' ? $this->pdo->escapeString($episode['firstaired']) : 'null'),
 					$this->pdo->escapeString($episode['summary']),
 					$this->pdo->escapeString($episode['se_complete'])
 				)
@@ -368,13 +368,13 @@ abstract class TV extends Videos
 	public function delete($id)
 	{
 		return $this->pdo->queryExec(
-			sprintf("
+			sprintf('
 				DELETE v, tvi, tve, va
 				FROM videos v
 				LEFT JOIN tv_info tvi ON v.id = tvi.videos_id
 				LEFT JOIN tv_episodes tve ON v.id = tve.videos_id
 				LEFT JOIN videos_aliases va ON v.id = va.videos_id
-				WHERE v.id = %d",
+				WHERE v.id = %d',
 				$id
 			)
 		);
@@ -388,10 +388,10 @@ abstract class TV extends Videos
 	public function setCoverFound($videoId)
 	{
 		$this->pdo->queryExec(
-			sprintf("
+			sprintf('
 				UPDATE tv_info
 				SET image = 1
-				WHERE videos_id = %d",
+				WHERE videos_id = %d',
 				$videoId
 			)
 		);
@@ -410,10 +410,10 @@ abstract class TV extends Videos
 	{
 		$return = false;
 		$video = $this->pdo->queryOneRow(
-			sprintf("
+			sprintf('
 				SELECT %s
 				FROM videos
-				WHERE id = %d",
+				WHERE id = %d',
 				$column,
 				$id
 			)
@@ -450,11 +450,11 @@ abstract class TV extends Videos
 		}
 
 		$episodeArr = $this->pdo->queryOneRow(
-			sprintf("
+			sprintf('
 				SELECT tve.id
 				FROM tv_episodes tve
 				WHERE tve.videos_id = %d
-				AND %s",
+				AND %s',
 				$id,
 				$queryString
 			)
@@ -754,10 +754,10 @@ abstract class TV extends Videos
 	public function checkDate($date)
 	{
 		if (!empty($date)) {
-			$chk = explode(" ", $date);
-			$chkd = explode("-", $chk[0]);
+			$chk = explode(' ', $date);
+			$chkd = explode('-', $chk[0]);
 			if ($chkd[1] > 12) {
-				$date = date('Y-m-d H:i:s', strtotime($chkd[1] . " " . $chkd[2] . " " . $chkd[0]));
+				$date = date('Y-m-d H:i:s', strtotime($chkd[1] . ' ' . $chkd[2] . ' ' . $chkd[0]));
 			}
 		} else {
 			$date = null;

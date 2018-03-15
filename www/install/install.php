@@ -37,9 +37,9 @@ $config = new Configure('install');
 // Path to smarty files. (not prefixed with nZEDb as the name is needed in smarty files).
 define('SMARTY_DIR', nZEDb_ROOT . 'app' . DS . 'libraries' . DS . 'smarty' . DS . 'smarty' . DS . 'libs' . DS);
 
-$www_top = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']));
+$www_top = str_replace('\\', '/', dirname($_SERVER['PHP_SELF']));
 if (strlen($www_top) == 1) {
-	$www_top = "";
+	$www_top = '';
 }
 
 // Used everywhere an href is output, includes the full path to the nZEDb install.

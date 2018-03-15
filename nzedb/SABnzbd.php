@@ -182,7 +182,7 @@ class SABnzbd
 		return Misc::getUrl([
 				'url' =>
 					$this->url .
-					"api?mode=qstatus&output=json&apikey=" .
+					'api?mode=qstatus&output=json&apikey=' .
 					$this->apikey,
 				'verifycert' => false,
 			]
@@ -199,7 +199,7 @@ class SABnzbd
 		return Misc::getUrl([
 				'url' =>
 					$this->url .
-					"api?mode=queue&start=START&limit=LIMIT&output=json&apikey=" .
+					'api?mode=queue&start=START&limit=LIMIT&output=json&apikey=' .
 					$this->apikey,
 				'verifycert' => false,
 			]
@@ -218,9 +218,9 @@ class SABnzbd
 		return Misc::getUrl([
 				'url' =>
 					$this->url .
-					"api?mode=queue&name=delete&value=" .
+					'api?mode=queue&name=delete&value=' .
 					$id .
-					"&apikey=" .
+					'&apikey=' .
 					$this->apikey,
 				'verifycert' => false,
 			]
@@ -239,9 +239,9 @@ class SABnzbd
 		return Misc::getUrl([
 				'url' =>
 					$this->url .
-					"api?mode=queue&name=pause&value=" .
+					'api?mode=queue&name=pause&value=' .
 					$id .
-					"&apikey=" .
+					'&apikey=' .
 					$this->apikey,
 				'verifycert' => false,
 			]
@@ -260,9 +260,9 @@ class SABnzbd
 		return Misc::getUrl([
 				'url' =>
 					$this->url .
-					"api?mode=queue&name=resume&value=" .
+					'api?mode=queue&name=resume&value=' .
 					$id .
-					"&apikey=" .
+					'&apikey=' .
 					$this->apikey,
 				'verifycert' => false,
 			]
@@ -279,8 +279,8 @@ class SABnzbd
 		return Misc::getUrl([
 				'url' =>
 					$this->url .
-					"api?mode=pause" .
-					"&apikey=" .
+					'api?mode=pause' .
+					'&apikey=' .
 					$this->apikey,
 				'verifycert' => false,
 			]
@@ -297,8 +297,8 @@ class SABnzbd
 		return Misc::getUrl([
 				'url' =>
 					$this->url .
-					"api?mode=resume" .
-					"&apikey=" .
+					'api?mode=resume' .
+					'&apikey=' .
 					$this->apikey,
 				'verifycert' => false,
 			]

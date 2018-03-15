@@ -53,7 +53,7 @@ class Group extends \lithium\data\Model
 		$data += $defaults;
 
 		if (!isset($data['name'])) {
-			throw new \InvalidArgumentException("");
+			throw new \InvalidArgumentException('');
 		}
 
 		$group = static::create($data);

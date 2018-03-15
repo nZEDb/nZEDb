@@ -174,7 +174,7 @@ class Misc
 		$themes = scandir(nZEDb_THEMES);
 		$themelist = ['None'];
 		foreach ($themes as $theme) {
-			if (strpos($theme, ".") === false &&
+			if (strpos($theme, '.') === false &&
 				is_dir(nZEDb_THEMES . $theme) &&
 				ucfirst($theme) === $theme
 			) {
@@ -222,24 +222,24 @@ class Misc
 		switch ($options['language']) {
 			case 'fr':
 			case 'fr-fr':
-				$options['language'] = "fr-fr";
+				$options['language'] = 'fr-fr';
 				break;
 			case 'de':
 			case 'de-de':
-				$options['language'] = "de-de";
+				$options['language'] = 'de-de';
 				break;
 			case 'en-us':
-				$options['language'] = "en-us";
+				$options['language'] = 'en-us';
 				break;
 			case 'en-gb':
-				$options['language'] = "en-gb";
+				$options['language'] = 'en-gb';
 				break;
 			case '':
 			case 'en':
 			default:
 				$options['language'] = 'en';
 		}
-		$header = ["Accept-Language: " . $options['language']];
+		$header = ['Accept-Language: ' . $options['language']];
 		if (is_array($options['requestheaders'])) {
 			$header += $options['requestheaders'];
 		}

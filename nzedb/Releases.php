@@ -77,12 +77,12 @@ class Releases
 	public function insertRelease(array $parameters = [])
 	{
 		$parameters['id'] = $this->pdo->queryInsert(
-			sprintf("
+			sprintf('
 				INSERT INTO releases
 					(name, searchname, totalpart, groups_id, adddate, guid, leftguid, postdate, fromname,
 					size, passwordstatus, haspreview, categories_id, nfostatus, nzbstatus,
 					isrenamed, iscategorized, reqidstatus, predb_id)
-				VALUES (%s, %s, %d, %d, NOW(), %s, LEFT(%s, 1), %s, %s, %s, %d, -1, %d, -1, %d, %d, 1, %d, %d)",
+				VALUES (%s, %s, %d, %d, NOW(), %s, LEFT(%s, 1), %s, %s, %s, %d, -1, %d, -1, %d, %d, 1, %d, %d)',
 				$parameters['name'],
 				$parameters['searchname'],
 				$parameters['totalpart'],
@@ -234,7 +234,7 @@ class Releases
 			NZB::NZB_ADDED,
 			$this->showPasswords,
 			$this->category->getCategorySearch($cat),
-			($maxAge > 0 ? (" AND postdate > NOW() - INTERVAL " . $maxAge . ' DAY ') : ''),
+			($maxAge > 0 ? (' AND postdate > NOW() - INTERVAL ' . $maxAge . ' DAY ') : ''),
 			(count($excludedCats) ? (' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')') : ''),
 			($groupName != -1 ? sprintf(' AND g.name = %s ', $this->pdo->escapeString($groupName)) : ''),
 			($minSize > 0 ? sprintf('AND r.size >= %d', $minSize) : ''),
@@ -846,7 +846,7 @@ class Releases
 		}
 
 		$whereSql = sprintf(
-			"%s WHERE r.passwordstatus %s AND r.nzbstatus = %d %s %s %s %s %s %s %s %s %s %s %s %s",
+			'%s WHERE r.passwordstatus %s AND r.nzbstatus = %d %s %s %s %s %s %s %s %s %s %s %s %s',
 			$this->releaseSearch->getFullTextJoinString(),
 			$this->showPasswords,
 			NZB::NZB_ADDED,
@@ -890,11 +890,11 @@ class Releases
 		);
 
 		$sql = sprintf(
-			"SELECT * FROM (
+			'SELECT * FROM (
 				%s
 			) r
 			ORDER BY r.%s %s
-			LIMIT %d OFFSET %d",
+			LIMIT %d OFFSET %d',
 			$baseSql,
 			$orderBy[0],
 			$orderBy[1],
@@ -988,11 +988,11 @@ class Releases
 		}
 
 		$whereSql = sprintf(
-			"%s
+			'%s
 			WHERE r.categories_id BETWEEN %d AND %d
 			AND r.nzbstatus = %d
 			AND r.passwordstatus %s
-			%s %s %s %s %s",
+			%s %s %s %s %s',
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			Category::TV_ROOT,
 			Category::TV_OTHER,
@@ -1031,9 +1031,9 @@ class Releases
 		);
 
 		$sql = sprintf(
-			"%s
+			'%s
 			ORDER BY postdate DESC
-			LIMIT %d OFFSET %d",
+			LIMIT %d OFFSET %d',
 			$baseSql,
 			$limit,
 			$offset
@@ -1062,10 +1062,10 @@ class Releases
 	public function searchbyAnidbId($aniDbID, $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1)
 	{
 		$whereSql = sprintf(
-			"%s
+			'%s
 			WHERE r.passwordstatus %s
 			AND r.nzbstatus = %d
-			%s %s %s %s",
+			%s %s %s %s',
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			$this->showPasswords,
 			NZB::NZB_ADDED,
@@ -1094,9 +1094,9 @@ class Releases
 		);
 
 		$sql = sprintf(
-			"%s
+			'%s
 			ORDER BY postdate DESC
-			LIMIT %d OFFSET %d",
+			LIMIT %d OFFSET %d',
 			$baseSql,
 			$limit,
 			$offset
@@ -1122,11 +1122,11 @@ class Releases
 	public function searchbyImdbId($imDbId, $offset = 0, $limit = 100, $name = '', $cat = [-1], $maxAge = -1, $minSize = 0)
 	{
 		$whereSql = sprintf(
-			"%s
-			WHERE r.categories_id BETWEEN " . Category::MOVIE_ROOT . " AND " . Category::MOVIE_OTHER . "
+			'%s
+			WHERE r.categories_id BETWEEN ' . Category::MOVIE_ROOT . ' AND ' . Category::MOVIE_OTHER . '
 			AND r.nzbstatus = %d
 			AND r.passwordstatus %s
-			%s %s %s %s %s",
+			%s %s %s %s %s',
 			($name !== '' ? $this->releaseSearch->getFullTextJoinString() : ''),
 			NZB::NZB_ADDED,
 			$this->showPasswords,
@@ -1154,9 +1154,9 @@ class Releases
 		);
 
 		$sql = sprintf(
-			"%s
+			'%s
 			ORDER BY postdate DESC
-			LIMIT %d OFFSET %d",
+			LIMIT %d OFFSET %d',
 			$baseSql,
 			$limit,
 			$offset
@@ -1410,7 +1410,7 @@ class Releases
 		return $this->pdo->queryOneRow(
 			sprintf(
 				'SELECT releases_id %s FROM release_nfos WHERE releases_id = %d AND nfo IS NOT NULL',
-				($getNfoString ? ", UNCOMPRESS(nfo) AS nfo" : ''),
+				($getNfoString ? ', UNCOMPRESS(nfo) AS nfo' : ''),
 				$id
 			)
 		);
@@ -1484,17 +1484,17 @@ class Releases
 	public function getNewestMovies()
 	{
 		return $this->pdo->query(
-			"SELECT r.imdbid, r.guid, r.name, r.searchname, r.size, r.completion,
+			'SELECT r.imdbid, r.guid, r.name, r.searchname, r.size, r.completion,
 				postdate, categories_id, comments, grabs,
 				m.cover, m.title
 			FROM releases r
 			INNER JOIN movieinfo m USING (imdbid)
-			WHERE r.categories_id BETWEEN " . Category::MOVIE_ROOT . " AND " . Category::MOVIE_OTHER . "
+			WHERE r.categories_id BETWEEN ' . Category::MOVIE_ROOT . ' AND ' . Category::MOVIE_OTHER . '
 			AND m.imdbid > 0
 			AND m.cover = 1
 			AND r.id in (select max(id) from releases where imdbid > 0 group by imdbid)
 			ORDER BY r.postdate DESC
-			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 24', true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
@@ -1506,16 +1506,16 @@ class Releases
 	public function getNewestXXX()
 	{
 		return $this->pdo->query(
-			"SELECT r.xxxinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
+			'SELECT r.xxxinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categories_id, r.comments, r.grabs,
 				xxx.cover, xxx.title
 			FROM releases r
 			INNER JOIN xxxinfo xxx ON r.xxxinfo_id = xxx.id
-			WHERE r.categories_id BETWEEN " . Category::XXX_ROOT . " AND " . Category::XXX_OTHER . "
+			WHERE r.categories_id BETWEEN ' . Category::XXX_ROOT . ' AND ' . Category::XXX_OTHER . '
 			AND xxx.id > 0
 			AND xxx.cover = 1
 			AND r.id in (select max(id) from releases where xxxinfo_id > 0 group by xxxinfo_id)
-			ORDER BY r.postdate DESC LIMIT 20",
+			ORDER BY r.postdate DESC LIMIT 20',
 				true,
 				nZEDb_CACHE_EXPIRY_LONG
 		);
@@ -1529,17 +1529,17 @@ class Releases
 	public function getNewestConsole()
 	{
 		return $this->pdo->query(
-			"SELECT r.consoleinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
+			'SELECT r.consoleinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categories_id, r.comments, r.grabs,
 				con.cover, con.title
 			FROM releases r
 			INNER JOIN consoleinfo con ON r.consoleinfo_id = con.id
-			WHERE r.categories_id BETWEEN " . Category::GAME_ROOT . " AND " . Category::GAME_OTHER . "
+			WHERE r.categories_id BETWEEN ' . Category::GAME_ROOT . ' AND ' . Category::GAME_OTHER . '
 			AND con.id > 0
 			AND con.cover > 0
 			AND r.id in (select max(id) from releases where consoleinfo_id > 0 group by consoleinfo_id)
 			ORDER BY r.postdate DESC
-			LIMIT 35"
+			LIMIT 35'
 		);
 	}
 
@@ -1551,17 +1551,17 @@ class Releases
 	public function getNewestGames()
 	{
 		return $this->pdo->query(
-			"SELECT r.gamesinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
+			'SELECT r.gamesinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categories_id, r.comments, r.grabs,
 				gi.cover, gi.title
 			FROM releases r
 			INNER JOIN gamesinfo gi ON r.gamesinfo_id = gi.id
-			WHERE r.categories_id = " . Category::PC_GAMES . "
+			WHERE r.categories_id = ' . Category::PC_GAMES . '
 			AND gi.id > 0
 			AND gi.cover > 0
 			AND r.id in (select max(id) from releases where gamesinfo_id > 0 group by gamesinfo_id)
 			ORDER BY r.postdate DESC
-			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 24', true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
@@ -1573,18 +1573,18 @@ class Releases
 	public function getNewestMP3s()
 	{
 		return $this->pdo->query(
-			"SELECT r.musicinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
+			'SELECT r.musicinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categories_id, r.comments, r.grabs,
 				m.cover, m.title
 			FROM releases r
 			INNER JOIN musicinfo m ON r.musicinfo_id = m.id
-			WHERE r.categories_id BETWEEN " . Category::MUSIC_ROOT . " AND " . Category::MUSIC_OTHER . "
-			AND r.categories_id != " . Category::MUSIC_AUDIOBOOK . "
+			WHERE r.categories_id BETWEEN ' . Category::MUSIC_ROOT . ' AND ' . Category::MUSIC_OTHER . '
+			AND r.categories_id != ' . Category::MUSIC_AUDIOBOOK . '
 			AND m.id > 0
 			AND m.cover > 0
 			AND r.id in (select max(id) from releases where musicinfo_id > 0 group by musicinfo_id)
 			ORDER BY r.postdate DESC
-			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 24', true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
@@ -1596,18 +1596,18 @@ class Releases
 	public function getNewestBooks()
 	{
 		return $this->pdo->query(
-			"SELECT r.bookinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
+			'SELECT r.bookinfo_id, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categories_id, r.comments, r.grabs,
 				b.url,	b.cover, b.title as booktitle, b.author
 			FROM releases r
 			INNER JOIN bookinfo b ON r.bookinfo_id = b.id
-			WHERE r.categories_id BETWEEN " . Category::BOOKS_ROOT . " AND " . Category::BOOKS_UNKNOWN . "
-			OR r.categories_id = " . Category::MUSIC_AUDIOBOOK . "
+			WHERE r.categories_id BETWEEN ' . Category::BOOKS_ROOT . ' AND ' . Category::BOOKS_UNKNOWN . '
+			OR r.categories_id = ' . Category::MUSIC_AUDIOBOOK . '
 			AND b.id > 0
 			AND b.cover > 0
 			AND r.id in (select max(id) from releases where bookinfo_id > 0 group by bookinfo_id)
 			ORDER BY r.postdate DESC
-			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 24', true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
@@ -1619,20 +1619,20 @@ class Releases
 	public function getNewestTV()
 	{
 		return $this->pdo->query(
-			"SELECT r.videos_id, r.guid, r.name, r.searchname, r.size, r.completion,
+			'SELECT r.videos_id, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categories_id, r.comments, r.grabs,
 				v.id AS tvid, v.title AS tvtitle, v.tvdb, v.trakt, v.tvrage, v.tvmaze, v.imdb, v.tmdb,
 				tvi.image
 			FROM releases r
 			INNER JOIN videos v ON r.videos_id = v.id
 			INNER JOIN tv_info tvi ON r.videos_id = tvi.videos_id
-			WHERE r.categories_id BETWEEN " . Category::TV_ROOT . " AND "	. Category::TV_OTHER .
-			" AND v.id > 0
+			WHERE r.categories_id BETWEEN ' . Category::TV_ROOT . ' AND '	. Category::TV_OTHER .
+			' AND v.id > 0
 			AND v.type = 0
 			AND tvi.image = 1
 			AND r.id in (select max(id) from releases where videos_id > 0 group by videos_id)
 			ORDER BY r.postdate DESC
-			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 24', true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
@@ -1644,12 +1644,12 @@ class Releases
 	public function getNewestAnime()
 	{
 		return $this->pdo->query(
-			"SELECT r.anidbid, r.guid, r.name, r.searchname, r.size, r.completion,
+			'SELECT r.anidbid, r.guid, r.name, r.searchname, r.size, r.completion,
 				r.postdate, r.categories_id, r.comments, r.grabs, at.title
 			FROM releases r
 			INNER JOIN anidb_titles at USING (anidbid)
 			INNER JOIN anidb_info ai USING (anidbid)
-			WHERE r.categories_id = " . Category::TV_ANIME . "
+			WHERE r.categories_id = ' . Category::TV_ANIME . "
 			AND at.anidbid > 0
 			AND at.lang = 'en'
 			AND ai.picture != ''

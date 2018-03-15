@@ -131,7 +131,7 @@ class Configure
 				$this->loadSettings($config, $throwException);
 			}
 		} else {
-			throw new \RuntimeException("Unknown environment passed to Configure class!");
+			throw new \RuntimeException('Unknown environment passed to Configure class!');
 		}
 	}
 }

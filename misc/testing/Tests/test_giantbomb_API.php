@@ -8,16 +8,16 @@ use nzedb\ColorCLI;
 
 $giantbombkey = Settings::value('APIs..giantbombkey');
 $cli = new ColorCLI();
-$obj = new GiantBomb($giantbombkey, $resp = "json");
+$obj = new GiantBomb($giantbombkey, $resp = 'json');
 
-$searchgame = "South Park The Stick of Truth";
+$searchgame = 'South Park The Stick of Truth';
 $resultsfound = 0;
 
 $e = null;
 try {
 	$fields = array(
-		"deck", "description", "original_game_rating", "api_detail_url", "image", "genres", "name",
-		"platforms", "publishers", "original_release_date", "reviews", "site_detail_url"
+		'deck', 'description', 'original_game_rating', 'api_detail_url', 'image', 'genres', 'name',
+		'platforms', 'publishers', 'original_release_date', 'reviews', 'site_detail_url'
 	);
 	$result = $obj->search($searchgame, $fields, 1);
 	$result = json_decode(json_encode($result), true);

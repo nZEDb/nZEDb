@@ -7,14 +7,14 @@ use nzedb\db\Settings;
 
 $page = new InstallPage();
 
-if (!isset($_REQUEST["success"])) {
-	$page->title = "File Paths";
+if (!isset($_REQUEST['success'])) {
+	$page->title = 'File Paths';
 }
 
 $cfg = new Install();
 
 if (!$cfg->isInitialized()) {
-	header("Location: index.php");
+	header('Location: index.php');
 	die();
 }
 
@@ -44,8 +44,8 @@ if ($page->isPostBack()) {
 		}
 
 		$lastchar = substr($cfg->NZB_PATH, strlen($cfg->NZB_PATH) - 1);
-		if ($lastchar != "/") {
-			$cfg->NZB_PATH = $cfg->NZB_PATH . "/";
+		if ($lastchar != '/') {
+			$cfg->NZB_PATH = $cfg->NZB_PATH . '/';
 		}
 	}
 
@@ -58,8 +58,8 @@ if ($page->isPostBack()) {
 		}
 
 		$lastchar = substr($cfg->UNRAR_PATH, strlen($cfg->UNRAR_PATH) - 1);
-		if ($lastchar != "/") {
-			$cfg->UNRAR_PATH = $cfg->UNRAR_PATH . "/";
+		if ($lastchar != '/') {
+			$cfg->UNRAR_PATH = $cfg->UNRAR_PATH . '/';
 		}
 	}
 	/*
@@ -101,7 +101,7 @@ if ($page->isPostBack()) {
 
 	if (!$cfg->error) {
 		$cfg->setSession();
-		header("Location: ?success");
+		header('Location: ?success');
 		die();
 	}
 }

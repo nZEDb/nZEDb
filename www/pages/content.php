@@ -6,7 +6,7 @@ $contents = new Contents(['Settings' => $page->settings]);
 
 $role = 0;
 if ($page->userdata != null) {
-	$role = $page->userdata["role"];
+	$role = $page->userdata['role'];
 }
 
 /* The role column in the content table values are :
@@ -26,8 +26,8 @@ if ($page->userdata != null) {
 $page->smarty->assign('admin', (($role == 2 || $role == 4) ? 'true' : 'false'));
 
 $contentid = 0;
-if (isset($_GET["id"])) {
-	$contentid = $_GET["id"];
+if (isset($_GET['id'])) {
+	$contentid = $_GET['id'];
 }
 
 $request = false;

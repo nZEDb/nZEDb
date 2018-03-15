@@ -84,19 +84,19 @@ class ControlStructuresHaveCorrectFormat extends \li3_quality\qa\rules\syntax\Co
 		T_SWITCH => [
 			'message' => 'Unexpected T_SWITCH format. Should be: "switch (...)"',
 			'patterns' => [
-				"/^{:whitespace}switch {:bracket}/",
+				'/^{:whitespace}switch {:bracket}/',
 			],
 		],
 		T_CASE => [
 			'message' => 'Unexpected T_CASE format. Should be: "case ...:"',
 			'patterns' => [
-				"/^{:whitespace}case [^\\n]*:/",
+				'/^{:whitespace}case [^\\n]*:/',
 			],
 		],
 		T_DEFAULT => [
 			'message' => 'Unexpected T_SWITCH format. Should be: "default:"',
 			'patterns' => [
-				"/^{:whitespace}default:/",
+				'/^{:whitespace}default:/',
 			],
 		],
 	];

@@ -33,8 +33,8 @@ try {
 				echo "Move: .../www/settings.php to  .../nzedb/config/settings.php<br />\n";
 			}
 			exit();
-		} else if (is_dir("install")) {
-			header("location: install");
+		} else if (is_dir('install')) {
+			header('location: install');
 			exit();
 		}
 	}
@@ -47,9 +47,9 @@ if (function_exists('ini_set') && function_exists('ini_get')) {
 // Path to smarty files. (not prefixed with nZEDb as the name is needed in smarty files).
 //define('SMARTY_DIR', nZEDb_LIBS . 'smarty' . DS);
 
-$www_top = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']));
+$www_top = str_replace('\\', '/', dirname($_SERVER['PHP_SELF']));
 if (strlen($www_top) == 1) {
-	$www_top = "";
+	$www_top = '';
 }
 
 // Used everywhere an href is output.

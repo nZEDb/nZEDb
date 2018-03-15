@@ -114,7 +114,7 @@ switch ($function) {
 		if (isset($_GET['q'])) {
 			$relData = $releases->search(
 				$_GET['q'], -1, -1, -1, $groupName, -1, -1, 0, 0, -1, -1, $offset, $limit, '', $maxAge, $catExclusions,
-				"basic", $categoryID, $minSize
+				'basic', $categoryID, $minSize
 			);
 		} else {
 			$relData = $releases->getBrowseRange(
@@ -254,13 +254,13 @@ switch ($function) {
 		}
 
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
-		$rel = $releases->getByGuid($_GET["id"]);
+		$rel = $releases->getByGuid($_GET['id']);
 		$data = $releases->getReleaseNfo($rel['id']);
 
 		if ($rel !== false && !empty($rel)) {
 			if ($data !== false) {
 				if (isset($_GET['o']) && $_GET['o'] == 'file') {
-					header("Content-type: application/octet-stream");
+					header('Content-type: application/octet-stream');
 					header("Content-disposition: attachment; filename={$rel['searchname']}.nfo");
 					exit($data['nfo']);
 				} else {

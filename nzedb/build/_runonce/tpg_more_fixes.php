@@ -33,7 +33,7 @@ require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstr
 $pdo = new nzedb\db\Settings();
 
 if (! Settings::value('..tablepergroup')) {
-	exit("Tables per groups is not enabled, quitting!");
+	exit('Tables per groups is not enabled, quitting!');
 }
 
 $groups = $pdo->queryDirect('SELECT id FROM groups WHERE active = 1 OR backfill = 1');

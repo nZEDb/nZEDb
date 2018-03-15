@@ -42,13 +42,13 @@ if (!empty($argv[1]) && is_numeric($argv[2]) && is_numeric($argv[3])) {
 				}
 			}
 		} else {
-			exit($c->error("Invalid episode data returned from TMDB API."));
+			exit($c->error('Invalid episode data returned from TMDB API.'));
 		}
 
 	} else {
-		exit($c->error("Invalid show data returned from TMDB API."));
+		exit($c->error('Invalid show data returned from TMDB API.'));
 	}
 
 } else {
-	exit($c->error("Invalid arguments.  This script requires a text string (show name) followed by a season and episode number."));
+	exit($c->error('Invalid arguments.  This script requires a text string (show name) followed by a season and episode number.'));
 }

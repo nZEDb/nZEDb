@@ -83,7 +83,7 @@ class Update extends \app\extensions\console\Command
 	{
 		// TODO Add check to determine if the indexer or other scripts are running. Hopefully
 		// also prevent web access.
-		$this->out("Checking database version...", 'primary');
+		$this->out('Checking database version...', 'primary');
 
 		$versions = new Versions(['git' => ($this->git instanceof Git) ? $this->git : null]);
 
@@ -101,7 +101,7 @@ class Update extends \app\extensions\console\Command
 			$db = new DbUpdate(['backup' => false]);
 			$db->processPatches(['safe' => false]);
 		} else {
-			$this->out("Up to date.", 'info');
+			$this->out('Up to date.', 'info');
 		}
 
 		return null;
@@ -113,7 +113,7 @@ class Update extends \app\extensions\console\Command
 		// also prevent web access.
 		$this->initialiseGit();
 		if (!in_array($this->git->getBranch(), $this->git->getBranchesMain())) {
-			$this->out("Not on the stable or dev branch! Refusing to update repository", 'error');
+			$this->out('Not on the stable or dev branch! Refusing to update repository', 'error');
 			return;
 		}
 

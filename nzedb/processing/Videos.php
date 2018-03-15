@@ -159,7 +159,7 @@ abstract class Videos
 			$pieces = explode(' ', $title2);
 			$title2 = '%';
 			foreach ($pieces as $piece) {
-				$title2 .= str_replace(["'", "!"], "", $piece) . '%';
+				$title2 .= str_replace(["'", '!'], '', $piece) . '%';
 			}
 			$res = $this->getTitleLoose($title2, $type, $source);
 			if (isset($res['id'])) {
@@ -178,7 +178,7 @@ abstract class Videos
 			$pieces = explode(' ', $title2);
 			$title2 = '%';
 			foreach ($pieces as $piece) {
-				$title2 .= str_replace(["'", "!"], "", $piece) . '%';
+				$title2 .= str_replace(["'", '!'], '', $piece) . '%';
 			}
 			$res = $this->getTitleLoose($title2, $type, $source);
 			if (isset($res['id'])) {
@@ -193,7 +193,7 @@ abstract class Videos
 		if (count($pieces) > 1) {
 			$title2 = '%';
 			foreach ($pieces as $piece) {
-				$title2 .= str_replace(["'", "!"], "", $piece) . '%';
+				$title2 .= str_replace(["'", '!'], '', $piece) . '%';
 			}
 			$res = $this->getTitleLoose($title2, $type, $source);
 			if (isset($res['id'])) {
@@ -217,11 +217,11 @@ abstract class Videos
 		$return = false;
 		if (!empty($title)) {
 			$return = $this->pdo->queryOneRow(
-				sprintf("
+				sprintf('
 					SELECT v.id
 					FROM videos v
-					WHERE v.title = %1\$s
-					AND v.type = %2\$d %3\$s",
+					WHERE v.title = %1$s
+					AND v.type = %2$d %3$s',
 					$this->pdo->escapeString($title),
 					$type,
 					($source > 0 ? 'AND v.source = ' . $source : '')
@@ -230,12 +230,12 @@ abstract class Videos
 			// Try for an alias
 			if ($return === false) {
 				$return = $this->pdo->queryOneRow(
-					sprintf("
+					sprintf('
 						SELECT v.id
 						FROM videos v
 						INNER JOIN videos_aliases va ON v.id = va.videos_id
-						WHERE va.title = %1\$s
-						AND v.type = %2\$d %3\$s",
+						WHERE va.title = %1$s
+						AND v.type = %2$d %3$s',
 						$this->pdo->escapeString($title),
 						$type,
 						($source > 0 ? 'AND v.source = ' . $source : '')
@@ -262,11 +262,11 @@ abstract class Videos
 
 		if (!empty($title)) {
 			$return = $this->pdo->queryOneRow(
-				sprintf("
+				sprintf('
 					SELECT v.id
 					FROM videos v
 					WHERE v.title %s
-					AND type = %d %s",
+					AND type = %d %s',
 					$this->pdo->likeString(rtrim($title, '%'), false, false),
 					$type,
 					($source > 0 ? 'AND v.source = ' . $source : '')
@@ -275,12 +275,12 @@ abstract class Videos
 			// Try for an alias
 			if ($return === false) {
 				$return = $this->pdo->queryOneRow(
-					sprintf("
+					sprintf('
 						SELECT v.id
 						FROM videos v
 						INNER JOIN videos_aliases va ON v.id = va.videos_id
 						WHERE va.title %s
-						AND type = %d %s",
+						AND type = %d %s',
 						$this->pdo->likeString(rtrim($title, '%'), false, false),
 						$type,
 						($source > 0 ? 'AND v.source = ' . $source : '')

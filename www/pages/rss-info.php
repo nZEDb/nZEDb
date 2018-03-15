@@ -4,10 +4,10 @@ use nzedb\http\RSS;
 
 $rss = new RSS(['Settings' => $page->settings]);
 
-$page->title = "RSS Info";
-$page->meta_title = "RSS Help Topics";
-$page->meta_keywords = "view,nzb,api,details,help,json,rss,atom";
-$page->meta_description = "View description of the site Nzb RSS.";
+$page->title = 'RSS Info';
+$page->meta_title = 'RSS Help Topics';
+$page->meta_keywords = 'view,nzb,api,details,help,json,rss,atom';
+$page->meta_description = 'View description of the site Nzb RSS.';
 
 $firstShow = $rss->getFirstInstance('videos_id', 'releases', 'id');
 $firstAni = $rss->getFirstInstance('anidbid', 'releases', 'id');

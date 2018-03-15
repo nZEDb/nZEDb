@@ -6,7 +6,7 @@ if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-if (isset($_GET['modal']) && isset($_GET["id"]) && ctype_digit($_GET["id"])) {
+if (isset($_GET['modal']) && isset($_GET['id']) && ctype_digit($_GET['id'])) {
 	$movie = new Movie(['Settings' => $page->settings]);
 	$mov = $movie->getMovieInfo($_GET['id']);
 
@@ -20,10 +20,10 @@ if (isset($_GET['modal']) && isset($_GET["id"]) && ctype_digit($_GET["id"])) {
 
 	$page->smarty->assign(['movie' => $mov, 'modal' => true]);
 
-	$page->title = "Info for " . $mov['title'];
-	$page->meta_title = "";
-	$page->meta_keywords = "";
-	$page->meta_description = "";
+	$page->title = 'Info for ' . $mov['title'];
+	$page->meta_title = '';
+	$page->meta_keywords = '';
+	$page->meta_description = '';
 	$page->smarty->registerPlugin('modifier', 'ss', 'stripslashes');
 
 	if (isset($_GET['modal']))

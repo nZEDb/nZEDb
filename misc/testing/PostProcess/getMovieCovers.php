@@ -9,9 +9,9 @@ $pdo = new DB();
 
 $movie = new Movie(array('Echo' => true, 'Settings' => $pdo));
 
-$movies = $pdo->queryDirect("SELECT imdbid FROM movieinfo WHERE cover = 0 ORDER BY year ASC, id DESC");
+$movies = $pdo->queryDirect('SELECT imdbid FROM movieinfo WHERE cover = 0 ORDER BY year ASC, id DESC');
 if ($movies instanceof \PDOStatement) {
-	echo $pdo->log->primary("Updating " . number_format($movies->rowCount()) . " movie covers.");
+	echo $pdo->log->primary('Updating ' . number_format($movies->rowCount()) . ' movie covers.');
 	foreach ($movies as $mov) {
 		$starttime = (int)microtime(true);
 		$mov = $movie->updateMovieInfo($mov['imdbid']);

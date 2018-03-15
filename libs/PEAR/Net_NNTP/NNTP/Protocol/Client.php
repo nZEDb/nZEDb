@@ -248,12 +248,12 @@ class Net_NNTP_Protocol_Client extends PEAR
 			if ($this->_logger) {
 				foreach ($matches[0] as $match) {
 					$this->_logger->debug(
-						"Illegal character in command: " . htmlentities(str_replace(array("\r","\n"),
+						'Illegal character in command: ' . htmlentities(str_replace(array("\r","\n"),
 						array("'Carriage Return'", "'New Line'"), $match))
 					);
 				}
 			}
-			return $this->throwError("Illegal character(s) in NNTP command!");
+			return $this->throwError('Illegal character(s) in NNTP command!');
 		}
 
 		// Check if connected.

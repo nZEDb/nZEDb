@@ -68,7 +68,7 @@ class TVMaze extends TV
 		$tvcount = $res->rowCount();
 
 		if ($this->echooutput && $tvcount > 0) {
-			echo $this->pdo->log->header("Processing TVMaze lookup for " . number_format($tvcount) . " release(s).");
+			echo $this->pdo->log->header('Processing TVMaze lookup for ' . number_format($tvcount) . ' release(s).');
 		}
 
 		if ($res instanceof \PDOStatement) {
@@ -86,9 +86,9 @@ class TVMaze extends TV
 
 					if (in_array($release['cleanname'], $this->titleCache)) {
 						if ($this->echooutput) {
-							echo $this->pdo->log->headerOver("Title: ") .
+							echo $this->pdo->log->headerOver('Title: ') .
 									$this->pdo->log->warningOver('"' . $release['cleanname'] . '"') .
-									$this->pdo->log->header(" already failed lookup for this site.  Skipping.");
+									$this->pdo->log->header(' already failed lookup for this site.  Skipping.');
 						}
 						$this->setVideoNotFound(parent::PROCESS_TMDB, $row['id']);
 						continue;
@@ -107,9 +107,9 @@ class TVMaze extends TV
 					if ($videoId === false && $lookupSetting) {
 						// If lookups are allowed lets try to get it.
 						if ($this->echooutput) {
-							echo $this->pdo->log->primaryOver("Checking TVMaze for previously failed title: ") .
+							echo $this->pdo->log->primaryOver('Checking TVMaze for previously failed title: ') .
 									$this->pdo->log->headerOver($release['cleanname']) .
-									$this->pdo->log->primary(".");
+									$this->pdo->log->primary('.');
 						}
 
 						// Get the show from TVMaze
@@ -133,9 +133,9 @@ class TVMaze extends TV
 						}
 					} else {
 						if ($this->echooutput) {
-							echo $this->pdo->log->primaryOver("Found local TVMaze match for: ") .
+							echo $this->pdo->log->primaryOver('Found local TVMaze match for: ') .
 									$this->pdo->log->headerOver($release['cleanname']) .
-									$this->pdo->log->primary(".  Attempting episode lookup!");
+									$this->pdo->log->primary('.  Attempting episode lookup!');
 						}
 						$tvmazeid = $this->getSiteIDFromVideoID('tvmaze', $videoId);
 					}
@@ -150,7 +150,7 @@ class TVMaze extends TV
 						if ($episodeNo === 'all') {
 							// Set the video ID and leave episode 0
 							$this->setVideoIdFound($videoId, $row['id'], 0);
-							echo $this->pdo->log->primary("Found TVDB Match for Full Season!");
+							echo $this->pdo->log->primary('Found TVDB Match for Full Season!');
 							continue;
 						}
 
@@ -180,7 +180,7 @@ class TVMaze extends TV
 							// Mark the releases video and episode IDs
 							$this->setVideoIdFound($videoId, $row['id'], $episode);
 							if ($this->echooutput) {
-								echo $this->pdo->log->primary("Found TVMaze Match!");
+								echo $this->pdo->log->primary('Found TVMaze Match!');
 							}
 							continue;
 						} else {

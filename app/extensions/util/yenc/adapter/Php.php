@@ -31,7 +31,7 @@ class Php extends \lithium\core\Object
 	{
 		$crc = '';
 		// Extract the yEnc string itself.
-		if (preg_match("/=ybegin.*size=([^ $]+).*\\r\\n(.*)\\r\\n=yend.*size=([^ $\\r\\n]+)(.*)/ims",
+		if (preg_match('/=ybegin.*size=([^ $]+).*\\r\\n(.*)\\r\\n=yend.*size=([^ $\\r\\n]+)(.*)/ims',
 			$text,
 			$encoded)) {
 			if (preg_match('/crc32=([^ $\\r\\n]+)/ims', $encoded[4], $trailer)) {
@@ -73,7 +73,7 @@ class Php extends \lithium\core\Object
 		// Make sure the decoded file size is the same as the size specified in the header.
 		if (strlen($decoded) != $headerSize) {
 			$message = "Header file size ($headerSize) and actual file size (" . strlen($decoded) .
-			") do not match. The file is probably corrupt.";
+			') do not match. The file is probably corrupt.';
 			if (nZEDb_LOGGING || nZEDb_DEBUG) {
 				//TODO replace with lithium logger.
 //				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
@@ -83,7 +83,7 @@ class Php extends \lithium\core\Object
 		}
 
 		// Check the CRC value
-		if ($crc !== '' && (strtolower($crc) !== strtolower(sprintf("%04X", crc32($decoded))))) {
+		if ($crc !== '' && (strtolower($crc) !== strtolower(sprintf('%04X', crc32($decoded))))) {
 			$message = 'CRC32 checksums do not match. The file is probably corrupt.';
 			if (nZEDb_LOGGING || nZEDb_DEBUG) {
 				//TODO replace with lithium logger.
@@ -194,7 +194,7 @@ class Php extends \lithium\core\Object
 
 		// Add a CRC32 checksum if desired.
 		if ($crc32 === true) {
-			$encoded .= ' crc32=' . strtolower(sprintf("%X", crc32($data)));
+			$encoded .= ' crc32=' . strtolower(sprintf('%X', crc32($data)));
 		}
 
 		return $encoded;

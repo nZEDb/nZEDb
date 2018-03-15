@@ -16,7 +16,7 @@ if (!isset($argv[1])) {
 
 // Set for Session
 if (isset($argv[1]) && $argv[1] === 'alter') {
-	$pdo->queryExec("SET SESSION old_alter_table = 1");
+	$pdo->queryExec('SET SESSION old_alter_table = 1');
 }
 
 function run_query($query, $test)
@@ -42,7 +42,7 @@ function run_query($query, $test)
 }
 
 $path = nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-ddl.sql';
-$handle = fopen($path, "r");
+$handle = fopen($path, 'r');
 if ($handle !== false) {
 	while (($line = fgets($handle)) !== false) {
 		if (preg_match('/(?P<statement>CREATE UNIQUE INDEX)\s+(?P<index>[\w-]+)\s+ON\s+(?P<table>[\w-]+)\s*\((?P<column>[\w-]+(?:\s*\((?P<size>\d+)\))?)\);/i', $line, $match)) {
@@ -51,7 +51,7 @@ if ($handle !== false) {
 				$check = $pdo->checkColumnIndex($match['table'], $column);
 				if (!isset($check['key_name'])) {
 					if (trim($match['table']) === 'collections') {
-						$tables = $pdo->query("SHOW TABLES");
+						$tables = $pdo->query('SHOW TABLES');
 						foreach ($tables as $row) {
 							$tbl = $row['tables_in_' . DB_NAME];
 							if (preg_match('/collections_\d+/', $tbl)) {
@@ -62,10 +62,10 @@ if ($handle !== false) {
 								}
 							}
 						}
-						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) . " UNIQUE (${match['column']})";
+						$qry = 'ALTER IGNORE TABLE ' . trim($match['table']) . ' ADD CONSTRAINT ' . trim($match['index']) . " UNIQUE (${match['column']})";
 						run_query($qry, $argv[1]);
 					} else if (trim($match['table']) === 'binaries') {
-						$tables = $pdo->query("SHOW TABLES");
+						$tables = $pdo->query('SHOW TABLES');
 						foreach ($tables as $row) {
 							$tbl = $row['tables_in_' . DB_NAME];
 							if (preg_match('/binaries_\d+/', $tbl)) {
@@ -76,10 +76,10 @@ if ($handle !== false) {
 								}
 							}
 						}
-						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) . " UNIQUE (${match['column']})";
+						$qry = 'ALTER IGNORE TABLE ' . trim($match['table']) . ' ADD CONSTRAINT ' . trim($match['index']) . " UNIQUE (${match['column']})";
 						run_query($qry, $argv[1]);
 					} else if (trim($match['table']) === 'parts') {
-						$tables = $pdo->query("SHOW TABLES");
+						$tables = $pdo->query('SHOW TABLES');
 						foreach ($tables as $row) {
 							$tbl = $row['tables_in_' . DB_NAME];
 							if (preg_match('/parts_\d+/', $tbl)) {
@@ -90,10 +90,10 @@ if ($handle !== false) {
 								}
 							}
 						}
-						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) . " UNIQUE (${match['column']})";
+						$qry = 'ALTER IGNORE TABLE ' . trim($match['table']) . ' ADD CONSTRAINT ' . trim($match['index']) . " UNIQUE (${match['column']})";
 						run_query($qry, $argv[1]);
 					} else if (trim($match['table']) === 'missed_parts') {
-						$tables = $pdo->query("SHOW TABLES");
+						$tables = $pdo->query('SHOW TABLES');
 						foreach ($tables as $row) {
 							$tbl = $row['tables_in_' . DB_NAME];
 							if (preg_match('/missed_parts_\d+/', $tbl)) {
@@ -104,14 +104,14 @@ if ($handle !== false) {
 								}
 							}
 						}
-						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) . " UNIQUE (${match['column']})";
+						$qry = 'ALTER IGNORE TABLE ' . trim($match['table']) . ' ADD CONSTRAINT ' . trim($match['index']) . " UNIQUE (${match['column']})";
 						run_query($qry, $argv[1]);
 					} else {
-						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) . " UNIQUE (${match['column']})";
+						$qry = 'ALTER IGNORE TABLE ' . trim($match['table']) . ' ADD CONSTRAINT ' . trim($match['index']) . " UNIQUE (${match['column']})";
 						run_query($qry, $argv[1]);
 					}
 				} else {
-					echo $pdo->log->primary("A Unique Index exists for " . trim($match['table']) . " on " . trim($match['column']));
+					echo $pdo->log->primary('A Unique Index exists for ' . trim($match['table']) . ' on ' . trim($match['column']));
 				}
 			}
 		}

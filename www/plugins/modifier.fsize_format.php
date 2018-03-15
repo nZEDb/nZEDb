@@ -29,28 +29,28 @@
 *            2003-02-21    Version 0.1    - initial release
 * -------------------------------------------------------------
 */
-function smarty_modifier_fsize_format($size,$format = '',$precision = 2, $dec_point = ".", $thousands_sep = ",")
+function smarty_modifier_fsize_format($size,$format = '',$precision = 2, $dec_point = '.', $thousands_sep = ',')
 {
 	$format = strtoupper($format);
 	static $sizes = array();
 	if(!count($sizes)) {
 		$b = 1024;
-		$sizes["B"]        =    1;
-		$sizes["KB"]    =    $sizes["B"]  * $b;
-		$sizes["MB"]    =    $sizes["KB"] * $b;
-		$sizes["GB"]    =    $sizes["MB"] * $b;
-		$sizes["TB"]    =    $sizes["GB"] * $b;
-		$sizes["PB"]    =    $sizes["TB"] * $b;
-		$sizes["EB"]    =    $sizes["PB"] * $b;
-		$sizes["ZB"]    =    $sizes["EB"] * $b;
-		$sizes["YB"]    =    $sizes["ZB"] * $b;
+		$sizes['B']        =    1;
+		$sizes['KB']    =    $sizes['B']  * $b;
+		$sizes['MB']    =    $sizes['KB'] * $b;
+		$sizes['GB']    =    $sizes['MB'] * $b;
+		$sizes['TB']    =    $sizes['GB'] * $b;
+		$sizes['PB']    =    $sizes['TB'] * $b;
+		$sizes['EB']    =    $sizes['PB'] * $b;
+		$sizes['ZB']    =    $sizes['EB'] * $b;
+		$sizes['YB']    =    $sizes['ZB'] * $b;
 		$sizes = array_reverse($sizes,true);
 	}
 	//~ get "human" filesize
 	foreach($sizes    AS    $unit => $bytes) {
 		if($size > $bytes || $unit == $format) {
 			//~ return formatted size
-			return    number_format($size / $bytes,$precision,$dec_point,$thousands_sep)." ".$unit;
+			return    number_format($size / $bytes,$precision,$dec_point,$thousands_sep).' '.$unit;
 		} //~ end if
 	} //~ end foreach
 } //~ end function

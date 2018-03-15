@@ -10,7 +10,7 @@ use nzedb\db\DB;
 
 $pdo = new DB();
 
-if (isset($argv[1]) && $argv[1] == "true") {
+if (isset($argv[1]) && $argv[1] == 'true') {
 
 	$timestart = TIME();
 	$releases = new Releases(['Settings' => $pdo]);
@@ -21,7 +21,7 @@ if (isset($argv[1]) && $argv[1] == "true") {
 	$relsdeleted = 0;
 	if (count($catlist) > 0) {
 		foreach ($catlist as $cat) {
-			$rels = $pdo->query(sprintf("SELECT id, guid FROM releases WHERE categories_id = %d", $cat['id']));
+			$rels = $pdo->query(sprintf('SELECT id, guid FROM releases WHERE categories_id = %d', $cat['id']));
 			if (count($rels)) {
 				foreach ($rels as $rel) {
 					$relsdeleted++;
@@ -32,9 +32,9 @@ if (isset($argv[1]) && $argv[1] == "true") {
 	}
 	$time = TIME() - $timestart;
 	if ($relsdeleted > 0) {
-		echo $pdo->log->header($relsdeleted . " releases deleted in " . $time . " seconds.");
+		echo $pdo->log->header($relsdeleted . ' releases deleted in ' . $time . ' seconds.');
 	} else {
-		exit($pdo->log->info("No releases to delete."));
+		exit($pdo->log->info('No releases to delete.'));
 	}
 } else {
 	exit($pdo->log->error("\nDeletes releases in categories you have disabled here : http://localhost/admin/category-list.php\n"

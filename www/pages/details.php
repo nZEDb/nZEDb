@@ -51,7 +51,7 @@ if (isset($_GET['id'])) {
 				$trailer = (!isset($mov['trailer']) || empty($mov['trailer']) || $mov['trailer'] == '' ? $movie->getTrailer($data['imdbid']) : $mov['trailer']);
 				if ($trailer) {
 					$mov['trailer'] = sprintf(
-						"<iframe width=\"%d\" height=\"%d\" src=\"%s\"></iframe>",
+						'<iframe width="%d" height="%d" src="%s"></iframe>',
 						Settings::value('site.trailers.trailers_size_x'),
 						Settings::value('site.trailers.trailers_size_y'),
 						$trailer

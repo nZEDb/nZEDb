@@ -26,13 +26,13 @@ use nzedb\db\DB;
 $pdo = new DB();
 
 if (!Settings::value('..tablepergroup')) {
-	exit("Tables per groups is not enabled, quitting!");
+	exit('Tables per groups is not enabled, quitting!');
 }
 
 // Doing it this way in case there are tables existing not related to the active/backfill list (i.e. I don't have a clue when these tables get deleted so I'm doing any that are there).
 $tables = $pdo->queryDirect("SELECT SUBSTR(TABLE_NAME, 12) AS suffix FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE()) AND TABLE_NAME LIKE 'collections_%' ORDER BY TABLE_NAME");
 
-$query1 = "DROP TRIGGER IF EXISTS delete_collections%s";
+$query1 = 'DROP TRIGGER IF EXISTS delete_collections%s';
 
 if ($tables instanceof \PDOStatement) {
 	foreach ($tables as $table) {

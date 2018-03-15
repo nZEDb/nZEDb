@@ -12,16 +12,16 @@ $consoleTools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 // Create the connection here and pass
 $nntp = new NNTP(['Settings' => $pdo]);
 if ($nntp->doConnect() !== true) {
-	exit($pdo->log->error("Unable to connect to usenet."));
+	exit($pdo->log->error('Unable to connect to usenet.'));
 }
 
-echo $pdo->log->header("Getting first/last for all your active groups.");
+echo $pdo->log->header('Getting first/last for all your active groups.');
 $data = $nntp->getGroups();
 if ($nntp->isError($data)) {
-	exit($pdo->log->error("Failed to getGroups() from nntp server."));
+	exit($pdo->log->error('Failed to getGroups() from nntp server.'));
 }
 
-echo $pdo->log->header("Inserting new values into short_groups table.");
+echo $pdo->log->header('Inserting new values into short_groups table.');
 
 $pdo->queryExec('TRUNCATE TABLE short_groups');
 

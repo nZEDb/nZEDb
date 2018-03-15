@@ -16,7 +16,7 @@ class Desura
 	 */
 	public $searchTerm;
 
-	const DESURAURL = "http://www.desura.com";
+	const DESURAURL = 'http://www.desura.com';
 
 	/**
 	 * @var
@@ -89,7 +89,7 @@ class Desura
 	 */
 	public function gameDescription()
 	{
-			if ($this->_ret = $this->_html->find("div.headernormalbox, div.inner, div.body", 4)) {
+			if ($this->_ret = $this->_html->find('div.headernormalbox, div.inner, div.body', 4)) {
 				$this->_res['description'] = trim($this->_ret->plaintext);
 			}
 		return $this->_res;
@@ -103,7 +103,7 @@ class Desura
 	public function rating()
 	{
 		if (isset($this->_response) && isset($this->_title)) {
-			if ($this->_ret = $this->_html->find("div.score", 0)) {
+			if ($this->_ret = $this->_html->find('div.score', 0)) {
 				$this->_res['rating'] = $this->_ret->plaintext;
 			}
 		}
@@ -118,7 +118,7 @@ class Desura
 	 */
 	public function images()
 	{
-			if ($this->_ret = $this->_html->find("img[alt=Boxshot]", 0)) {
+			if ($this->_ret = $this->_html->find('img[alt=Boxshot]', 0)) {
 				$this->_ret->src = preg_replace('#cache/#', '', $this->_ret->src);
 				$this->_ret->src = preg_replace('#thumb_150x150/#', '', $this->_ret->src);
 				$this->_res['cover'] = $this->_ret->src;
@@ -135,15 +135,15 @@ class Desura
 	 */
 	public function details()
 	{
-		if ($this->_ret = $this->_html->find("div.info", 0)) {
-			foreach ($this->_ret->find("div.row") as $row) {
-				if ($this->_ret = $row->find("h5", 0)) {
+		if ($this->_ret = $this->_html->find('div.info', 0)) {
+			foreach ($this->_ret->find('div.row') as $row) {
+				if ($this->_ret = $row->find('h5', 0)) {
 					switch (trim($this->_ret->plaintext)) {
-						case "Genre" :
-						case "Platform" :
-						case "Platforms" :
-						case "Developer" :
-						case "Publisher" :
+						case 'Genre' :
+						case 'Platform' :
+						case 'Platforms' :
+						case 'Developer' :
+						case 'Publisher' :
 							$this->_res['gamedetails'][$this->_ret->plaintext] = trim($this->_ret->next_sibling()->plaintext);
 							break;
 					}
@@ -168,8 +168,8 @@ class Desura
 		}
 
 		if ($this->getUrl(self::DESURAURL . '/games/' . $this->searchTerm . '/images') !== false) {
-			if ($this->_ret = $this->_html->find("div.holder", 0)) {
-				if ($this->_ret = $this->_ret->find("img", 0)) {
+			if ($this->_ret = $this->_html->find('div.holder', 0)) {
+				if ($this->_ret = $this->_ret->find('img', 0)) {
 					$this->_res['backdrop'] = trim($this->_ret->src);
 				}
 			}
@@ -196,7 +196,7 @@ class Desura
 			$this->searchTerm = preg_replace('#\s#', '-', strtolower($this->searchTerm));
 			if ($this->getUrl(self::DESURAURL . '/games/' . $this->searchTerm) !== false) {
 				if (!preg_match('#(Games system error)#i', $this->_response)) {
-					if ($this->_ret = $this->_html->find("a#watchtoggle", 0)) {
+					if ($this->_ret = $this->_html->find('a#watchtoggle', 0)) {
 						if (preg_match('#siteareaid=(?<gameid>\d+)#',
 									   $this->_ret->href,
 									   $matches)) {
@@ -264,7 +264,7 @@ class Desura
 			curl_setopt($this->_ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($this->_ch, CURLOPT_HEADER, 0);
 			curl_setopt($this->_ch, CURLOPT_VERBOSE, 0);
-			curl_setopt($this->_ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
+			curl_setopt($this->_ch, CURLOPT_USERAGENT, 'Firefox/2.0.0.1');
 			curl_setopt($this->_ch, CURLOPT_FAILONERROR, 0);
 		if (isset($this->cookie)) {
 			curl_setopt($this->_ch, CURLOPT_COOKIEJAR, $this->cookie);

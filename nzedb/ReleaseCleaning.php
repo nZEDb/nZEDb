@@ -81,7 +81,7 @@ class ReleaseCleaning
 						   $matches)) {
 			foreach ($matches as $match) {
 				foreach ($match as $val) {
-					$title = $this->pdo->queryOneRow("SELECT title, id from predb WHERE title = " .
+					$title = $this->pdo->queryOneRow('SELECT title, id from predb WHERE title = ' .
 													 $this->pdo->escapeString(trim($val)));
 					// don't match against ab.teevee if title is for just the season
 					if ($this->groupName == 'alt.binaries.teevee' &&
@@ -90,11 +90,11 @@ class ReleaseCleaning
 					}
 					if ($title !== false) {
 						return [
-							"cleansubject"  => $title['title'],
-							"properlynamed" => true,
-							"increment"     => false,
-							"predb"         => $title['id'],
-							"requestid"     => false
+							'cleansubject'  => $title['title'],
+							'properlynamed' => true,
+							'increment'     => false,
+							'predb'         => $title['id'],
+							'requestid'     => false
 						];
 					}
 				}
@@ -138,8 +138,8 @@ class ReleaseCleaning
 			if ($title === false && !empty($reqGname)) {
 				$title = $this->pdo->queryOneRow(
 					sprintf(
-					   "SELECT p.title as title, p.id as id from predb p INNER JOIN groups g on g.id = p.groups_id
-								WHERE p.requestid = %d and g.name = %s",
+					   'SELECT p.title as title, p.id as id from predb p INNER JOIN groups g on g.id = p.groups_id
+								WHERE p.requestid = %d and g.name = %s',
 					   $match[1],
 					   $this->pdo->escapeString($reqGname)
 					)
@@ -151,11 +151,11 @@ class ReleaseCleaning
 			}
 			if ($title !== false) {
 				return [
-					"cleansubject"  => $title['title'],
-					"properlynamed" => true,
-					"increment"     => false,
-					"predb"         => $title['id'],
-					"requestid"     => true
+					'cleansubject'  => $title['title'],
+					'properlynamed' => true,
+					'increment'     => false,
+					'predb'         => $title['id'],
+					'requestid'     => true
 				];
 			}
 		}
@@ -187,11 +187,11 @@ class ReleaseCleaning
 		//[140022]-[04] - [01/40] - "140022-04.nfo" yEnc
 		if (preg_match('/\[\d+\]-\[.+\] - \[\d+\/\d+\] - "\d+-.+" yEnc/', $this->subject)) {
 			return [
-				"cleansubject" => $this->subject, "properlynamed" => false, "ignore" => true
+				'cleansubject' => $this->subject, 'properlynamed' => false, 'ignore' => true
 			];
 		}
 		return [
-			"cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false
+			'cleansubject' => $this->releaseCleanerHelper($this->subject), 'properlynamed' => false
 		];
 	}
 
@@ -330,7 +330,7 @@ class ReleaseCleaning
 			return $match[1];
 		}
 		return [
-			"cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false
+			'cleansubject' => $this->releaseCleanerHelper($this->subject), 'properlynamed' => false
 		];
 	}
 
@@ -345,7 +345,7 @@ class ReleaseCleaning
 			return $match['title'];
 		}
 		return [
-			"cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false
+			'cleansubject' => $this->releaseCleanerHelper($this->subject), 'properlynamed' => false
 		];
 	}
 

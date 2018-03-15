@@ -6,7 +6,7 @@ if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-if (isset($_GET["id"]) && ctype_digit($_GET["id"])) {
+if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 	$console = new Console(['Settings' => $page->settings]);
 	$con = $console->getConsoleInfo($_GET['id']);
 	if (!$con) {
@@ -15,10 +15,10 @@ if (isset($_GET["id"]) && ctype_digit($_GET["id"])) {
 
 	$page->smarty->assign('console', $con);
 
-	$page->title = "Info for " . $con['title'];
-	$page->meta_title = "";
-	$page->meta_keywords = "";
-	$page->meta_description = "";
+	$page->title = 'Info for ' . $con['title'];
+	$page->meta_title = '';
+	$page->meta_keywords = '';
+	$page->meta_description = '';
 	$page->smarty->registerPlugin('modifier', 'ss', 'stripslashes');
 
 	$modal = false;

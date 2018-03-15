@@ -22,8 +22,8 @@ $cost = 7;
 do {
 	$cost++;
 	$start = microtime(true);
-	password_hash("test", PASSWORD_DEFAULT, ["cost" => $cost]);
+	password_hash('test', PASSWORD_DEFAULT, ['cost' => $cost]);
 	$end = microtime(true);
 } while (($end - $start) < $timeTarget);
 
-echo "Appropriate Cost Found: " . $cost . PHP_EOL;
+echo 'Appropriate Cost Found: ' . $cost . PHP_EOL;

@@ -209,7 +209,7 @@ class NZBImport
 
 						// Remove the release.
 						$this->pdo->queryExec(
-							sprintf("DELETE FROM releases WHERE guid = %s", $this->pdo->escapeString($this->relGuid))
+							sprintf('DELETE FROM releases WHERE guid = %s', $this->pdo->escapeString($this->relGuid))
 						);
 
 						if ($deleteFailed) {
@@ -286,11 +286,11 @@ class NZBImport
 				$posterName = (string)$file->attributes()->poster;
 			}
 			if ($postDate === false) {
-				$postDate = date("Y-m-d H:i:s", (int)$file->attributes()->date);
+				$postDate = date('Y-m-d H:i:s', (int)$file->attributes()->date);
 			}
 
 			// Make a fake message array to use to check the blacklist.
-			$msg = ["Subject" => (string)$file->attributes()->subject, "From" => (string)$file->attributes()->poster, "Message-ID" => ""];
+			$msg = ['Subject' => (string)$file->attributes()->subject, 'From' => (string)$file->attributes()->poster, 'Message-ID' => ''];
 
 			// Get the group names, groups_id, check if it's blacklisted.
 			$groupArr = [];
@@ -344,9 +344,9 @@ class NZBImport
 
 			} else {
 				if ($isBlackListed) {
-					$errorMessage = "Subject is blacklisted: " . utf8_encode(trim($firstName));
+					$errorMessage = 'Subject is blacklisted: ' . utf8_encode(trim($firstName));
 				} else {
-					$errorMessage = "No group found for " . $firstName . " (one of " . implode(', ', $groupArr) . " are missing";
+					$errorMessage = 'No group found for ' . $firstName . ' (one of ' . implode(', ', $groupArr) . ' are missing';
 				}
 				$this->echoOut($errorMessage);
 
@@ -359,7 +359,7 @@ class NZBImport
 			[
 				'subject'    => $firstName,
 				'useFName'   => $useNzbName,
-				'postDate'   => (empty($postDate) ? date("Y-m-d H:i:s") : $postDate),
+				'postDate'   => (empty($postDate) ? date('Y-m-d H:i:s') : $postDate),
 				'from'       => (empty($posterName) ? '' : $posterName),
 				'groups_id'  => $groupID,
 				'groupName'  => $groupName,
@@ -457,9 +457,9 @@ class NZBImport
 	protected function getAllGroups()
 	{
 		$this->allGroups = [];
-		$groups = $this->pdo->query("SELECT id, name FROM groups");
+		$groups = $this->pdo->query('SELECT id, name FROM groups');
 		foreach ($groups as $group) {
-			$this->allGroups[$group["name"]] = $group["id"];
+			$this->allGroups[$group['name']] = $group['id'];
 		}
 
 		if (count($this->allGroups) === 0) {
@@ -479,7 +479,7 @@ class NZBImport
 	protected function echoOut($message)
 	{
 		if ($this->browser) {
-			$this->retVal .= $message . "<br />";
+			$this->retVal .= $message . '<br />';
 		} elseif ($this->echoCLI) {
 			echo $message . PHP_EOL;
 		}

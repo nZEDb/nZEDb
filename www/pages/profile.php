@@ -43,7 +43,7 @@ if (!isset($data['style']) || $data['style'] == 'None') {
 	$data['style'] = 'Using the admin selected theme.';
 }
 
-$offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
+$offset = isset($_REQUEST['offset']) ? $_REQUEST['offset'] : 0;
 $page->smarty->assign([
 		'apirequests'       => $page->users->getApiRequests($userID),
 		'grabstoday'        => $page->users->getDownloadRequests($userID),
@@ -56,7 +56,7 @@ $page->smarty->assign([
 		'pageroffset'       => $offset,
 		'pageritemsperpage' => ITEMS_PER_PAGE,
 		'pagerquerybase'    => "/profile?id=$userID&offset=",
-		'pagerquerysuffix'  => "#comments"
+		'pagerquerysuffix'  => '#comments'
 	]
 );
 
@@ -72,9 +72,9 @@ $sabSettings = [1 => 'Site', 2 => 'Cookie'];
 
 // Pager must be fetched after the variables are assigned to smarty.
 $page->smarty->assign([
-		'pager'         => $page->smarty->fetch("pager.tpl"),
+		'pager'         => $page->smarty->fetch('pager.tpl'),
 		'commentslist'  => $rc->getCommentsForUserRange($userID, $offset, ITEMS_PER_PAGE),
-		'exccats'       => implode(",", $page->users->getCategoryExclusionNames($userID)),
+		'exccats'       => implode(',', $page->users->getCategoryExclusionNames($userID)),
 		'saburl'        => $sab->url,
 		'sabapikey'     => $sab->apikey,
 		'sabapikeytype' => ($sab->apikeytype != '' ? $sabApiKeyTypes[$sab->apikeytype] : ''),
@@ -83,9 +83,9 @@ $page->smarty->assign([
 	]
 );
 
-$page->meta_title       = "View User Profile";
-$page->meta_keywords    = "view,profile,user,details";
-$page->meta_description = "View User Profile for " . $data["username"];
+$page->meta_title       = 'View User Profile';
+$page->meta_keywords    = 'view,profile,user,details';
+$page->meta_description = 'View User Profile for ' . $data['username'];
 
 $page->content = $page->smarty->fetch('profile.tpl');
 $page->render();

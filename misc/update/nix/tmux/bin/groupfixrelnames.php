@@ -15,7 +15,7 @@ use nzedb\processing\PostProcess;
 $pdo = new DB();
 
 if (!isset($argv[1])) {
-	exit($pdo->log->error("This script is not intended to be run manually, it is called from Multiprocessing."));
+	exit($pdo->log->error('This script is not intended to be run manually, it is called from Multiprocessing.'));
 } else if (isset($argv[1])) {
 	$namefixer = new NameFixer(['Settings' => $pdo]);
 	$sorter = new MiscSorter(true, $pdo);
@@ -181,7 +181,7 @@ if (!isset($argv[1])) {
 							}
 
 							if ($connected !== true) {
-								$pdo->log->error("Unable to connect to usenet.");
+								$pdo->log->error('Unable to connect to usenet.');
 							}
 
 							$Nfo = new Nfo(['Settings' => $pdo, 'Echo' => true]);
@@ -236,16 +236,16 @@ if (!isset($argv[1])) {
 						$searched = 1;
 					} elseif ($ftmatched < 0) {
 						$searched = -6;
-						echo "*";
+						echo '*';
 					} else {
 						$searched = $pre['searched'] - 1;
-						echo ".";
+						echo '.';
 					}
 					$pdo->queryExec(
-						sprintf("
+						sprintf('
 							UPDATE predb
 							SET searched = %d
-							WHERE id = %d",
+							WHERE id = %d',
 							$searched,
 							$pre['predb_id']
 						)

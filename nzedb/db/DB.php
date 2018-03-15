@@ -203,7 +203,7 @@ class DB extends \PDO
 		$options += $defaults;
 
 		if (empty($options['dbtype'])) {
-			throw new \RuntimeException("No Database system supplied. Currently this must be one of: " .
+			throw new \RuntimeException('No Database system supplied. Currently this must be one of: ' .
 				implode(',', $this->validTypes), 1);
 		} else {
 			$this->dbSystem = $options['dbtype'];
@@ -558,7 +558,7 @@ class DB extends \PDO
 	{
 		$where = $excludeUnsectioned ? "WHERE section != ''" : '';
 
-		$sql = sprintf("SELECT section, subsection, name, value, hint FROM settings %s ORDER BY section, subsection, name",
+		$sql = sprintf('SELECT section, subsection, name, value, hint FROM settings %s ORDER BY section, subsection, name',
 			$where);
 		$results = $this->queryArray($sql);
 
@@ -1029,9 +1029,9 @@ class DB extends \PDO
 			if (is_array($result) && isset($result['deadlock'])) {
 				$error = $result['message'];
 				if ($result['deadlock'] === true) {
-					$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping. (" .
+					$this->echoError('A Deadlock or lock wait timeout has occurred, sleeping. (' .
 						($i - 1) .
-						")",
+						')',
 						'queryExec',
 						4);
 					$this->consoleTools->showsleep($i * ($i / 2));
@@ -1074,8 +1074,8 @@ class DB extends \PDO
 			if (is_array($result) && isset($result['deadlock'])) {
 				$error = $result['message'];
 				if ($result['deadlock'] === true) {
-					$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping. (" .
-						($i - 1) . ")",
+					$this->echoError('A Deadlock or lock wait timeout has occurred, sleeping. (' .
+						($i - 1) . ')',
 						'queryInsert',
 						4);
 					$this->consoleTools->showsleep($i * ($i / 2));
@@ -1205,14 +1205,14 @@ class DB extends \PDO
 		if ($error === null) {
 			$sql = $sqlKeys = [];
 			foreach ($form as $settingK => $settingV) {
-				$sql[] = sprintf("WHEN %s THEN %s",
+				$sql[] = sprintf('WHEN %s THEN %s',
 					$this->escapeString($settingK),
 					$this->escapeString($settingV));
 				$sqlKeys[] = $this->escapeString($settingK);
 			}
 
 			$this->queryExec(
-				sprintf("UPDATE settings SET value = CASE setting %s END WHERE setting IN (%s)",
+				sprintf('UPDATE settings SET value = CASE setting %s END WHERE setting IN (%s)',
 					implode(' ', $sql),
 					implode(', ', $sqlKeys)
 				)
@@ -1344,7 +1344,7 @@ class DB extends \PDO
 
 		// In case PDO is not set to produce exceptions (PHP's default behaviour).
 		if ($this->pdo === false) {
-			$message = "Unable to create connection to the Database!";
+			$message = 'Unable to create connection to the Database!';
 			$this->echoError(
 				$message,
 				'connect',
@@ -1563,10 +1563,10 @@ class DB extends \PDO
 	private function fetchServerInfo()
 	{
 		$info = [];
-		$result = $this->queryOneRow("SELECT VERSION() as version");
+		$result = $this->queryOneRow('SELECT VERSION() as version');
 
 		if ($result === null) {
-			throw new \RuntimeException("Could not fetch database server info!", 5);
+			throw new \RuntimeException('Could not fetch database server info!', 5);
 		} else {
 			$this->dbInfo = $result['version'];
 			$result = explode('-', $result['version']);
@@ -1596,7 +1596,7 @@ class DB extends \PDO
 	private function initialiseDatabase($name)
 	{
 		if (empty($name)) {
-			throw new \RuntimeException("No database name passed to " . __METHOD__, 1);
+			throw new \RuntimeException('No database name passed to ' . __METHOD__, 1);
 		}
 
 		$found = $this->checkDbExists($name);

@@ -44,35 +44,35 @@ class AmazonProductAPI
 	 *
 	 * @var string
 	 */
-	const BOOKS      = "Books";
-	const DIGITALMUS = "DigitalMusic";
-	const DVD        = "DVD";
+	const BOOKS      = 'Books';
+	const DIGITALMUS = 'DigitalMusic';
+	const DVD        = 'DVD';
 	// This can be DigitalDownloads as well.
-	const GAMES       = "VideoGames";
-	const MP3         = "MP3Downloads";
-	const MUSICTRACKS = "MusicTracks";
-	const MUSIC       = "Music";
+	const GAMES       = 'VideoGames';
+	const MP3         = 'MP3Downloads';
+	const MUSICTRACKS = 'MusicTracks';
+	const MUSIC       = 'Music';
 
 	/**
 	 * Your Amazon Access Key Id
 	 * @access private
 	 * @var string
 	 */
-	private $public_key = "";
+	private $public_key = '';
 
 	/**
 	 * Your Amazon Secret Access Key
 	 * @access private
 	 * @var string
 	 */
-	private $private_key = "";
+	private $private_key = '';
 
 	 /**
 	 * Your Amazon Secret Associate Tag
 	 * @access private
 	 * @var string
 	 */
-	private $associate_tag = "";
+	private $associate_tag = '';
 
 	/**
 	 * The current search string.
@@ -159,7 +159,7 @@ class AmazonProductAPI
 	 *
 	 * @return bool|mixed
 	 */
-	public function searchProducts($search, $category, $searchType = "UPC", $searchNode="")
+	public function searchProducts($search, $category, $searchType = 'UPC', $searchNode='')
 	{
 		// Set class vars.
 		$this->searchString = $search;
@@ -170,77 +170,77 @@ class AmazonProductAPI
 
 		switch($searchType)
 		{
-			case "UPC" :
+			case 'UPC' :
 				$parameters =
 					array(
-						"Operation"     => "ItemLookup",
-						"ItemId"        => $search,
-						"SearchIndex"   => $category,
-						"IdType"        => "UPC",
-						"ResponseGroup" => "Medium");
+						'Operation'     => 'ItemLookup',
+						'ItemId'        => $search,
+						'SearchIndex'   => $category,
+						'IdType'        => 'UPC',
+						'ResponseGroup' => 'Medium');
 				break;
 
-			case "ISBN" :
+			case 'ISBN' :
 				$parameters =
 					array(
-						"Operation" => "ItemLookup",
-						"ItemId"        => $search,
-						"SearchIndex"   => self::BOOKS,
-						"IdType"        => "ISBN",
-						"ResponseGroup" => "Medium"
+						'Operation' => 'ItemLookup',
+						'ItemId'        => $search,
+						'SearchIndex'   => self::BOOKS,
+						'IdType'        => 'ISBN',
+						'ResponseGroup' => 'Medium'
 					);
 				break;
 
-			case "TITLE" :
+			case 'TITLE' :
 				switch($category)
 				{
-					case "MUSICTRACKS" :
+					case 'MUSICTRACKS' :
 						$parameters =
 							array(
-								"Operation"     => "ItemSearch",
+								'Operation'     => 'ItemSearch',
 								//"Title"       => $search,
-								"Keywords"      => $search,
-								"Sort"          => "titlerank",
-								"SearchIndex"   => $category,
-								"ResponseGroup" => "Large"
+								'Keywords'      => $search,
+								'Sort'          => 'titlerank',
+								'SearchIndex'   => $category,
+								'ResponseGroup' => 'Large'
 							);
 						break;
 					default :
 						$parameters =
 							array(
-								"Operation"     => "ItemSearch",
+								'Operation'     => 'ItemSearch',
 								//"Title"       => $search,
-								"Keywords"      => $search,
-								"Sort"          => "relevancerank",
-								"SearchIndex"   => $category,
-								"ResponseGroup" => "Large"
+								'Keywords'      => $search,
+								'Sort'          => 'relevancerank',
+								'SearchIndex'   => $category,
+								'ResponseGroup' => 'Large'
 							);
 						break;
 				}
 				break;
 
-			case "TITLE2" :
+			case 'TITLE2' :
 				$parameters =
 					array(
-						"Operation"      => "ItemSearch",
-						"Title"          => $search,
+						'Operation'      => 'ItemSearch',
+						'Title'          => $search,
 						//"Keywords"     => $search,
-						"Sort"           => "relevancerank",
-						"SearchIndex"    => $category,
-						"ResponseGroup"  => "Large"
+						'Sort'           => 'relevancerank',
+						'SearchIndex'    => $category,
+						'ResponseGroup'  => 'Large'
 					);
 				break;
 
 			// Same as TITLE but add BrowseNodeID param.
-			case "NODE" :
+			case 'NODE' :
 				$parameters =
 					array(
-						"Operation"     => "ItemSearch",
+						'Operation'     => 'ItemSearch',
 						//"Title"       => $search,
-						"Keywords"      => $search,
-						"SearchIndex"   => $category,
-						"BrowseNode"    => $searchNode,
-						"ResponseGroup" => "Large"
+						'Keywords'      => $search,
+						'SearchIndex'   => $category,
+						'BrowseNode'    => $searchNode,
+						'ResponseGroup' => 'Large'
 					);
 				break;
 		}
@@ -258,11 +258,11 @@ class AmazonProductAPI
 	{
 		$parameters =
 			array(
-				"Operation"     => "ItemLookup",
-				"ItemId"        => $upc_code,
-				"SearchIndex"   => $product_type,
-				"IdType"        => "UPC",
-				"ResponseGroup" => "Medium"
+				'Operation'     => 'ItemLookup',
+				'ItemId'        => $upc_code,
+				'SearchIndex'   => $product_type,
+				'IdType'        => 'UPC',
+				'ResponseGroup' => 'Medium'
 			);
 
 		$xml_response = $this->queryAmazon($parameters);
@@ -277,13 +277,13 @@ class AmazonProductAPI
 	 *
 	 * @return bool|mixed
 	 */
-	public function getItemByAsin($asin_code, $region = "com")
+	public function getItemByAsin($asin_code, $region = 'com')
 	{
 		$parameters =
 			array(
-				"Operation"      => "ItemLookup",
-				"ItemId"         => $asin_code,
-				"ResponseGroup"  => "Medium"
+				'Operation'      => 'ItemLookup',
+				'ItemId'         => $asin_code,
+				'ResponseGroup'  => 'Medium'
 			);
 
 		$xml_response = $this->queryAmazon($parameters, $region);
@@ -301,9 +301,9 @@ class AmazonProductAPI
 	{
 		$parameters =
 			array(
-				"Operation"    => "ItemSearch",
-				"Keywords"     => $keyword,
-				"SearchIndex"  => $product_type
+				'Operation'    => 'ItemSearch',
+				'Keywords'     => $keyword,
+				'SearchIndex'  => $product_type
 			);
 
 		$xml_response = $this->queryAmazon($parameters);
@@ -354,17 +354,17 @@ class AmazonProductAPI
 			throw new \Exception($response->Error->Message);
 		} else if ($response === False) {
 			$this->resetVars();
-			throw new \Exception("Could not connect to Amazon.");
-		} else if ($response == "missingkey") {
+			throw new \Exception('Could not connect to Amazon.');
+		} else if ($response == 'missingkey') {
 			$this->resetVars();
-			throw new \Exception("Missing Amazon API key or associate tag.");
+			throw new \Exception('Missing Amazon API key or associate tag.');
 		} else {
 			if (isset($response->Items->Item->ItemAttributes->Title)) {
 				$this->resetVars();
 				return $response;
 			} else {
 				$this->resetVars();
-				throw new \Exception("Invalid xml response.");
+				throw new \Exception('Invalid xml response.');
 			}
 		}
 	}
@@ -377,7 +377,7 @@ class AmazonProductAPI
 	 *
 	 * @return bool|SimpleXMLElement|string xml query response
 	 */
-	private function queryAmazon($parameters, $region = "com")
+	private function queryAmazon($parameters, $region = 'com')
 	{
 		return $this->aws_signed_request($region, $parameters, $this->public_key, $this->private_key, $this->associate_tag);
 	}
@@ -391,21 +391,21 @@ class AmazonProductAPI
 	 *
 	 * @return SimpleXMLElement|false|string
 	 */
-	private function aws_signed_request($region, $params, $public_key, $private_key, $associate_tag = "")
+	private function aws_signed_request($region, $params, $public_key, $private_key, $associate_tag = '')
 	{
 
-		if ($public_key !== "" && $private_key !== "" && $associate_tag !== "")
+		if ($public_key !== '' && $private_key !== '' && $associate_tag !== '')
 		{
-			$method = "GET";
+			$method = 'GET';
 			// Must be in small case.
-			$host = "ecs.amazonaws.".$region;
-			$uri = "/onca/xml";
+			$host = 'ecs.amazonaws.'.$region;
+			$uri = '/onca/xml';
 
-			$params["Service"]        = "AWSECommerceService";
-			$params["AWSAccessKeyId"] = $public_key;
-			$params["AssociateTag"]   = $associate_tag;
-			$params["Timestamp"]      = gmdate("Y-m-d\TH:i:s\Z");
-			$params["Version"]        = "2009-03-31";
+			$params['Service']        = 'AWSECommerceService';
+			$params['AWSAccessKeyId'] = $public_key;
+			$params['AssociateTag']   = $associate_tag;
+			$params['Timestamp']      = gmdate("Y-m-d\TH:i:s\Z");
+			$params['Version']        = '2009-03-31';
 
 			/* The params need to be sorted by the key, as Amazon does this at
 			their end and then generates the hash of the same. If the params
@@ -418,25 +418,25 @@ class AmazonProductAPI
 
 			foreach ($params as $param=>$value)
 			{
-				$param = str_replace("%7E", "~", rawurlencode($param));
-				$value = str_replace("%7E", "~", rawurlencode($value));
-				$canonicalized_query[] = $param."=".$value;
+				$param = str_replace('%7E', '~', rawurlencode($param));
+				$value = str_replace('%7E', '~', rawurlencode($value));
+				$canonicalized_query[] = $param.'='.$value;
 			}
 
-			$canonicalized_query = implode("&", $canonicalized_query);
+			$canonicalized_query = implode('&', $canonicalized_query);
 
 			$string_to_sign = $method."\n".$host."\n".$uri."\n".$canonicalized_query;
 
 			/* Calculate the signature using HMAC with SHA256 and base64-encoding.
 			* The 'hash_hmac' function is only available from PHP 5 >= 5.1.2.
 			*/
-			$signature = base64_encode(hash_hmac("sha256", $string_to_sign, $private_key, True));
+			$signature = base64_encode(hash_hmac('sha256', $string_to_sign, $private_key, True));
 
 			// Encode the signature for the request.
-			$signature = str_replace("%7E", "~", rawurlencode($signature));
+			$signature = str_replace('%7E', '~', rawurlencode($signature));
 
 			// Create request.
-			$request = "http://".$host.$uri."?".$canonicalized_query."&Signature=".$signature;
+			$request = 'http://'.$host.$uri.'?'.$canonicalized_query.'&Signature='.$signature;
 
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL,$request);
@@ -453,7 +453,7 @@ class AmazonProductAPI
 				return ($parsed_xml === False) ? False : $parsed_xml;
 			}
 		} else {
-			return "missingkey";
+			return 'missingkey';
 		}
 	}
 }

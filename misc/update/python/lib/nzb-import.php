@@ -33,7 +33,7 @@ if (isset($argv[2]) && is_numeric($argv[2])) {
 	exit($pdo->log->error("\nTo use a max number to process, it must be the third argument. \nTo run:\nphp nzb-import.php /path [true, false] 1000\n"));
 }
 if (!isset($argv[2])) {
-	$pieces = explode("   ", $argv[1]);
+	$pieces = explode('   ', $argv[1]);
 	$usenzbname = (isset($pieces[1]) && $pieces[1] == 'true') ? true : false;
 	$path = $pieces[0];
 } else {
@@ -47,21 +47,21 @@ if (isset($argv[3]) && is_numeric($argv[3])) {
 $filestoprocess = [];
 
 if (substr($path, strlen($path) - 1) != '/') {
-	$path = $path . "/";
+	$path = $path . '/';
 }
 
 function relativeTime($_time)
 {
 	$d = [];
-	$d[0] = [1, "sec"];
-	$d[1] = [60, "min"];
-	$d[2] = [3600, "hr"];
-	$d[3] = [86400, "day"];
-	$d[4] = [31104000, "yr"];
+	$d[0] = [1, 'sec'];
+	$d[1] = [60, 'min'];
+	$d[2] = [3600, 'hr'];
+	$d[3] = [86400, 'day'];
+	$d[4] = [31104000, 'yr'];
 
 	$w = [];
 
-	$return = "";
+	$return = '';
 	$now = time();
 	$diff = ($now - $_time);
 	$secondsLeft = $diff;
@@ -70,15 +70,15 @@ function relativeTime($_time)
 		$w[$i] = intval($secondsLeft / $d[$i][0]);
 		$secondsLeft -= ($w[$i] * $d[$i][0]);
 		if ($w[$i] != 0) {
-			$return .= $w[$i] . " " . $d[$i][1] . (($w[$i] > 1) ? 's' : '') . " ";
+			$return .= $w[$i] . ' ' . $d[$i][1] . (($w[$i] > 1) ? 's' : '') . ' ';
 		}
 	}
 	return $return;
 }
 
-$groups = $pdo->query("SELECT id, name FROM groups");
+$groups = $pdo->query('SELECT id, name FROM groups');
 foreach ($groups as $group) {
-	$siteGroups[$group["name"]] = $group["id"];
+	$siteGroups[$group['name']] = $group['id'];
 }
 
 $data = [];
@@ -96,16 +96,16 @@ if (!isset($groups) || count($groups) == 0) {
 	}
 	$objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
 	foreach ($objects as $filestoprocess => $nzbFile) {
-		if (!$nzbFile->getExtension() == "nzb" || !$nzbFile->getExtension() == "gz") {
+		if (!$nzbFile->getExtension() == 'nzb' || !$nzbFile->getExtension() == 'gz') {
 			continue;
 		}
 
 		$compressed = $isBlackListed = $importfailed = $skipCheck = false;
 
-		if ($nzbFile->getExtension() == "nzb") {
+		if ($nzbFile->getExtension() == 'nzb') {
 			$nzba = file_get_contents($nzbFile);
 			$compressed = false;
-		} else if ($nzbFile->getExtension() == "gz") {
+		} else if ($nzbFile->getExtension() == 'gz') {
 			$nzbc = 'compress.zlib://' . $nzbFile;
 			$nzba = @file_get_contents($nzbc);
 			$compressed = true;
@@ -142,7 +142,7 @@ if (!isset($groups) || count($groups) == 0) {
 			$subject = utf8_encode(trim($partless));
 
 			// Make a fake message object to use to check the blacklist.
-			$msg = ["Subject" => $subject, "From" => $fromname, "Message-ID" => ""];
+			$msg = ['Subject' => $subject, 'From' => $fromname, 'Message-ID' => ''];
 
 			// Groups.
 			$groupArr = [];
@@ -201,7 +201,7 @@ if (!isset($groups) || count($groups) == 0) {
 				$poster = $postername[0];
 			}
 			if (empty($postdate[0])) {
-				$posteddate = $date = date("Y-m-d H:i:s");
+				$posteddate = $date = date('Y-m-d H:i:s');
 			} else {
 				$posteddate = $postdate[0];
 			}
@@ -248,25 +248,25 @@ if (!isset($groups) || count($groups) == 0) {
 				}
 				if (($nzbCount >= $maxtoprocess) && ($maxtoprocess != 0)) {
 					$nzbsperhour = number_format(round($nzbCount / $seconds * 3600), 0);
-					exit($pdo->log->header("\nProcessed " . number_format($nzbCount) . " nzbs in " . relativeTime($time) . "\nAveraged " . $nzbsperhour . " imports per hour from " . $path));
+					exit($pdo->log->header("\nProcessed " . number_format($nzbCount) . ' nzbs in ' . relativeTime($time) . "\nAveraged " . $nzbsperhour . ' imports per hour from ' . $path));
 				}
 				@unlink($nzbFile);
 			} else {
-				$pdo->queryExec(sprintf("DELETE FROM releases WHERE guid = %s AND postdate = %s AND size = %d", $pdo->escapeString($relguid), $pdo->escapeString($totalsize)));
+				$pdo->queryExec(sprintf('DELETE FROM releases WHERE guid = %s AND postdate = %s AND size = %d', $pdo->escapeString($relguid), $pdo->escapeString($totalsize)));
 				echo $pdo->log->error("\nFailed copying NZB, deleting release from DB.\n");
 				@unlink($nzbFile);
 				flush();
 				$importfailed = true;
 			}
-			$consoleTools->overWritePrimary('Imported ' . "[" . number_format($nzbSkipped) . "] " . number_format($nzbCount) . " NZBs (" . $nzbsperhour . "iph) in " . relativeTime($time));
+			$consoleTools->overWritePrimary('Imported ' . '[' . number_format($nzbSkipped) . '] ' . number_format($nzbCount) . ' NZBs (' . $nzbsperhour . 'iph) in ' . relativeTime($time));
 		}
 	}
 }
 
 exit($pdo->log->header("\nRunning Time: " . relativeTime($time) . "\n"
-		. "Processed:    " . number_format($nzbCount + $nzbSkipped) . "\n"
-		. "Imported:     " . number_format($nzbCount) . "\n"
-		. "Duplicates:   " . number_format($nzbSkipped)));
+		. 'Processed:    ' . number_format($nzbCount + $nzbSkipped) . "\n"
+		. 'Imported:     ' . number_format($nzbCount) . "\n"
+		. 'Duplicates:   ' . number_format($nzbSkipped)));
 
 /**
  * Compress an imported NZB and store it inside the nzbfiles folder.

@@ -511,8 +511,8 @@ class Binaries
 					$this->_colorCLI->doEcho(
 						$this->_colorCLI->header(
 							"\nGetting " . number_format($last - $first + 1) . ' articles (' . number_format($first) .
-							' to ' . number_format($last) . ') from ' . $groupMySQL['name'] . " - (" .
-							number_format($groupLast - $last) . " articles in queue)."
+							' to ' . number_format($last) . ') from ' . $groupMySQL['name'] . ' - (' .
+							number_format($groupLast - $last) . ' articles in queue).'
 						)
 					);
 				}
@@ -1363,7 +1363,7 @@ class Binaries
 			$currentPost = $tempPost;
 
 			if ($this->_debug) {
-				$this->_colorCLI->doEcho($this->_colorCLI->debug('Postdate retried ' . $attempts . " time(s)."));
+				$this->_colorCLI->doEcho($this->_colorCLI->debug('Postdate retried ' . $attempts . ' time(s).'));
 			}
 		} while ($attempts++ <= 20);
 
@@ -1384,7 +1384,7 @@ class Binaries
 				$date .
 				') (' .
 				$this->daysOld($date) .
-				" days old)",
+				' days old)',
 				Logger::LOG_INFO
 			);
 		}
@@ -1812,9 +1812,9 @@ class Binaries
 	 */
 	protected function getMultiGroupPosters()
 	{
-		return $this->_pdo->query("
+		return $this->_pdo->query('
 			SELECT poster
-			FROM multigroup_posters",
+			FROM multigroup_posters',
 			true,
 			nZEDb_CACHE_EXPIRY_SHORT
 		);
