@@ -80,8 +80,8 @@ class Configure
 						unset($current_settings_file_version);
 					}
 				} elseif (!defined('ITEMS_PER_PAGE')) {
-					define('ITEMS_PER_PAGE', '50');
-					define('ITEMS_PER_COVER_PAGE', '20');
+					define('ITEMS_PER_PAGE', 50);
+					define('ITEMS_PER_COVER_PAGE', 20);
 					define('nZEDb_ECHOCLI', true);
 					define('nZEDb_DEBUG', false);
 					define('nZEDb_LOGGING', false);
@@ -104,7 +104,7 @@ class Configure
 					define('nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND', 5);
 					define('nZEDb_USE_SQL_TRANSACTIONS', true);
 					define('nZEDb_RELEASE_SEARCH_TYPE', 0);
-					define('nZEDb_MAX_PAGER_RESULTS', '125000');
+					define('nZEDb_MAX_PAGER_RESULTS', 125000);
 				}
 				unset($settings_file);
 				break;

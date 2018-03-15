@@ -28,14 +28,14 @@ define('nZEDb_SETTINGS_FILE_VERSION', 5);
  *
  * @default '50'
  */
-define('ITEMS_PER_PAGE', '50');
+define('ITEMS_PER_PAGE', 50);
 
 /**
  * How many releases to show per page in cover view.
  *
  * @default '20'
  */
-define('ITEMS_PER_COVER_PAGE', '20');
+define('ITEMS_PER_COVER_PAGE', 20);
 
 /**
  * How many releases maximum to display in total on browse/search/etc.
@@ -46,7 +46,7 @@ define('ITEMS_PER_COVER_PAGE', '20');
  * a relatively low value.
  * @default '125000'
  */
-define('nZEDb_MAX_PAGER_RESULTS', '125000');
+define('nZEDb_MAX_PAGER_RESULTS', 125000);
 
 /**
  * If the PRE API page (preinfo) is open to the public or only accessible by registered / api users.
@@ -109,7 +109,7 @@ define('nZEDb_RELEASE_SEARCH_TYPE', 0);
  * @note    See misc/sphinxsearch/README.md for installation details.
  * @default '0'
  */
-define('nZEDb_SPHINXQL_HOST_NAME', '0');
+define('nZEDb_SPHINXQL_HOST_NAME', 0);
 
 /**
  * This is the port to the SphinxQL server (mysql41 protocol).
