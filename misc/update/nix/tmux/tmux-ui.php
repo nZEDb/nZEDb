@@ -15,10 +15,10 @@
  * not, see:
  *
  * @link <http://www.gnu.org/licenses/>.
+ *
  * @author niel
  * @copyright 2014 nZEDb
  */
-
 $start = ['start', 'run', 'resume', 'continue'];
 $stop  = ['stop', 'end', 'finish', 'halt'];
 
@@ -36,7 +36,7 @@ if ($argc == 1) {
 
 if (in_array($argv[1], $start)) {
 	passthru('php start.php');
-} else if (in_array($argv[1], $stop)) {
+} elseif (in_array($argv[1], $stop)) {
 	passthru('php stop.php');
 } else {
 	echo "Unrecognised command '{$argv[1]}''\n";

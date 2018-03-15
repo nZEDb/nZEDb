@@ -2,26 +2,32 @@
 namespace nzedb;
 
 use app\models\Settings;
-use nzedb\db\DB;
 use libs\AmazonProductAPI;
+use nzedb\db\DB;
 
 /**
- * Class MiscSorter
+ * Class MiscSorter.
  */
 class MiscSorter
 {
 	const PROC_SORTER_NONE = 0; //Release has not been run through MiscSorter before
+
 	const PROC_SORTER_DONE = 1; //Release has been processed by MiscSorter
 
 	private $qty;
+
 	private $echooutput;
+
 	private $DEBUGGING;
+
 	private $pdo;
+
 	private $category;
+
 	private $movie;
 
 	/**
-	 * @param bool $echooutput
+	 * @param bool   $echooutput
 	 * @param object $pdo
 	 */
 	public function __construct($echooutput = false, &$pdo = null)
@@ -43,7 +49,8 @@ class MiscSorter
 		$cat = ($category = 0 ? sprintf('AND r.categories_id = %d', Category::OTHER_MISC) : sprintf('AND r.categories_id = %d', $category));
 
 		$res = $this->pdo->queryDirect(
-			sprintf('
+			sprintf(
+				'
 				SELECT UNCOMPRESS(rn.nfo) AS nfo,
 					r.id, r.name, r.searchname
 				FROM release_nfos rn
@@ -58,11 +65,8 @@ class MiscSorter
 		);
 
 		if ($res !== false && $res instanceof \PDOStatement) {
-
 			foreach ($res as $row) {
-
 				if (strlen($row['nfo']) > 100) {
-
 					$nfo = utf8_decode($row['nfo']);
 
 					unset($row['nfo']);
@@ -72,14 +76,13 @@ class MiscSorter
 					$matches = $this->doarray($matches);
 
 					foreach ($matches as $m) {
-
 						$case = (isset($m) ? str_replace(' ', '', $m) : '');
 
 						if (in_array($m, ['os', 'platform', 'console']) && preg_match('/(?:\bos\b(?: type)??|platform|console)[ \.\:\}]+(\w+?).??(\w*?)/iU', $nfo, $set)) {
 							if (is_array($set)) {
 								if (isset($set[1])) {
 									$case = strtolower($set[1]);
-								} else	if (isset($set[2]) && strlen($set[2]) > 0 && (stripos($set[2], 'mac') !== false || stripos($set[2], 'osx') !== false)) {
+								} elseif (isset($set[2]) && strlen($set[2]) > 0 && (stripos($set[2], 'mac') !== false || stripos($set[2], 'osx') !== false)) {
 									$case = strtolower($set[2]);
 								} else {
 									$case = str_replace(' ', '', $m);
@@ -90,7 +93,7 @@ class MiscSorter
 						$pos = $this->nfopos($this->_cleanStrForPos($nfo), $this->_cleanStrForPos($m));
 						if ($pos !== false && $pos > 0.55 && $case !== 'imdb') {
 							break;
-						} else if ($ret = $this->matchnfo($case, $nfo, $row)) {
+						} elseif ($ret = $this->matchnfo($case, $nfo, $row)) {
 							return $ret;
 						}
 					}
@@ -138,33 +141,33 @@ class MiscSorter
 
 				if ($m == 'imdb') {
 					$x = -11;
-				} else if ($m == 'anidb.net') {
+				} elseif ($m == 'anidb.net') {
 					$x = -10;
-				} else if ($m == 'upc') {
+				} elseif ($m == 'upc') {
 					$x = -9;
-				} else if ($m == 'amazon.') {
+				} elseif ($m == 'amazon.') {
 					$x = -8;
-				} else if ($m == 'asin' || $m == 'isbn') {
+				} elseif ($m == 'asin' || $m == 'isbn') {
 					$x = -7;
-				} else if ($m == 'tvrage') {
+				} elseif ($m == 'tvrage') {
 					$x = -6;
-				} else if ($m == 'audiobook') {
+				} elseif ($m == 'audiobook') {
 					$x = -5;
-				} else if ($m == 'os') {
+				} elseif ($m == 'os') {
 					$x = -4;
-				} else if (in_array($m, ['mac', 'macintosh', 'dmg', 'macos', 'macosx', 'osx'])) {
+				} elseif (in_array($m, ['mac', 'macintosh', 'dmg', 'macos', 'macosx', 'osx'])) {
 					$x = -3;
-				} else if ($m == 'itunes.apple.com/') {
+				} elseif ($m == 'itunes.apple.com/') {
 					$x = -2;
-				} else if (in_array($m, ['documentaries', 'documentary', 'doku'])) {
+				} elseif (in_array($m, ['documentaries', 'documentary', 'doku'])) {
 					$x = -1;
-				} else if (preg_match('/sport|deportes|nhl|nfl|\bnba/i', $m)) {
+				} elseif (preg_match('/sport|deportes|nhl|nfl|\bnba/i', $m)) {
 					$x = 1000;
-				} else if (preg_match('/avi|xvid|divx|mkv/i', $m)) {
+				} elseif (preg_match('/avi|xvid|divx|mkv/i', $m)) {
 					$x = 1001;
-				} else if (preg_match('/\.(?:rar|001)/i', $m)) {
+				} elseif (preg_match('/\.(?:rar|001)/i', $m)) {
 					$x = 1002;
-				} else if (preg_match('/pdf/i', $m)) {
+				} elseif (preg_match('/pdf/i', $m)) {
 					$x = 1003;
 				}
 			}
@@ -172,7 +175,7 @@ class MiscSorter
 			if ($x != -1) {
 				if ($x == 0) {
 					$r[$i++] = $m;
-				} else if (isset($r[$x])) {
+				} elseif (isset($r[$x])) {
 					$r[$x + mt_rand(0, 100) / 100] = $m;
 				} else {
 					$r[$x] = $m;
@@ -185,9 +188,10 @@ class MiscSorter
 	}
 
 	/**
-	 * This function cleans the release name before updating
+	 * This function cleans the release name before updating.
 	 *
 	 * @param string $name
+	 *
 	 * @return string $name
 	 */
 	private function cleanname($name)
@@ -211,7 +215,8 @@ class MiscSorter
 		$nameChanged = false;
 
 		$release = $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT r.id AS releases_id, r.searchname AS searchname,
 					r.name AS name, r.categories_id, r.groups_id
 				FROM releases r
@@ -229,7 +234,8 @@ class MiscSorter
 
 		if ($type !== '' && in_array($type, ['bookinfo_id', 'consoleinfo_id', 'imdbid', 'musicinfo_id'])) {
 			$this->pdo->queryExec(
-				sprintf('
+				sprintf(
+					'
 					UPDATE releases
 					SET %s = %d
 					WHERE id = %d',
@@ -314,7 +320,7 @@ class MiscSorter
 			'bdmv', 'blu ?ray', 'br[\- ]?disk', 'br[\- ]?rip', 'cam', 'cam[\- ]?rip', 'dc', 'directors.?cut', 'divx\d?', 'dts', 'dvd', 'dvd[\- ]?r',
 			'dvd[\- ]?rip', 'dvd[\- ]?scr', 'extended', 'hd', 'hd[\- ]?tv', 'h264', 'hd[\- ]?cam', 'hd[\- ]?ts', 'iso', 'm2ts', 'mkv', 'mpeg(:?\-\d)?',
 			'mpg', 'ntsc', 'pal', 'proper', 'ppv', 'ppv[\- ]?rip', 'r\d{1}', 'repack', 'repacked', 'scr', 'screener', 'tc', 'telecine', 'telesync', 'ts',
-			'tv[\- ]?rip', 'unrated', 'vhs( ?rip)?', 'video_ts', 'video ts', 'x264', 'xvid', 'web[\- ]?rip'];
+			'tv[\- ]?rip', 'unrated', 'vhs( ?rip)?', 'video_ts', 'video ts', 'x264', 'xvid', 'web[\- ]?rip', ];
 
 		foreach ($qualities as $quality) {
 			if (stripos($nfo, $quality) !== false) {
@@ -347,7 +353,6 @@ class MiscSorter
 				default:
 					$amaz = false;
 			}
-
 		} catch (\Exception $e) {
 			echo 'Caught exception: ', $e->getMessage() . PHP_EOL;
 			unset($amaz, $amazon);
@@ -435,7 +440,7 @@ class MiscSorter
 	 * @param array  $amaz
 	 * @param int    $id
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	private function _doAmazonMovies($nfo, $amaz = [], $id = 0)
 	{
@@ -461,7 +466,7 @@ class MiscSorter
 					[
 						'title'    => (string)$amaz->Items->Item->Title,
 						'node'     => (int)$amaz->Items->Item->BrowseNodes->BrowseNodeId,
-						'platform' => (string)$amaz->Items->Item->ItemAttributes->Platform
+						'platform' => (string)$amaz->Items->Item->ItemAttributes->Platform,
 					]
 				);
 			$ok = $this->dodbupdate($id, $name, $consoleId, 'consoleinfo_id');
@@ -473,7 +478,8 @@ class MiscSorter
 	private function _doAmazonLocal($table = '', $asin = '')
 	{
 		return $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT id
 				FROM %s
 				WHERE asin = %s',
@@ -484,6 +490,7 @@ class MiscSorter
 	}
 
 	// Main switch for determining operation type after parsing the NFO file
+
 	/**
 	 * @param $case
 	 * @param string $nfo
@@ -583,7 +590,7 @@ class MiscSorter
 	}
 
 	/**
-	 * Tries to derive artist and title of album/song from release NFO
+	 * Tries to derive artist and title of album/song from release NFO.
 	 *
 	 * @param string $nfo
 	 * @param $row
@@ -595,7 +602,7 @@ class MiscSorter
 		if (preg_match('/(a\s?r\s?t\s?i\s?s\s?t|l\s?a\s?b\s?e\s?l|mp3|e\s?n\s?c\s?o\s?d\s?e\s?r|rip|stereo|mono|single charts)/i', $nfo)
 			&& !preg_match('/(\bavi\b|x\.?264|divx|mvk|xvid|install(?!ation)|Setup\.exe|unzip|unrar)/i', $nfo)) {
 			$artist = preg_split('/(?:a\s?r\s?t\s?i\s?s\s?t\s?s?\b[^ \.\:]*|a\s?u\s?t\s?h\s?o\s?r\s?s?\b[^ \.\:]*) *?(?!(?:[^\s\.\:\}\]\*\x{2500}-\x{3000}\?] ?){2,}?\b)(?:[\*\?\-\=\|\;\:\.\[\}\]\(\s\x{2500}-\x{3000}\?]+?)[\s\.\>\:\(\)\x{2500}-\x{3000}\?]((?!\:) ?\w.+)(?:\n|$|\s{3}|\.{3})/Uuim', $nfo, 0, PREG_SPLIT_DELIM_CAPTURE);
-			if(isset($artist[1])) {
+			if (isset($artist[1])) {
 				$title = preg_split('/(?:t+\s?i+\s?t+\s?l+\s?e+\b|a\s?l\s?b\s?u\s?m\b|r\s?e\s?l\s?e\s?a\s?s\s?e\b) *?(?!(?:[^\s\.\:\}\]\*\x{2500}-\x{3000}\?] ?){2,}?\b)(?:[\*\?\-\=\|\;\:\.\[\}\]\(\s\x{2500}-\x{3000}\?]+?)[\s\.\>\:\(\)\x{2500}-\x{3000}\?]((?!\:) ?\w.+)(?:\n|$|\s{3}|\.{3})/Uuim', $nfo, 0, PREG_SPLIT_DELIM_CAPTURE);
 			}
 
@@ -624,7 +631,7 @@ class MiscSorter
 	}
 
 	/**
-	 * Tries to derive the IMDB ID from release
+	 * Tries to derive the IMDB ID from release.
 	 *
 	 * @param string $nfo
 	 * @param $row
@@ -641,7 +648,7 @@ class MiscSorter
 	}
 
 	/**
-	 * Tries to derive author and title of book from release NFO
+	 * Tries to derive author and title of book from release NFO.
 	 *
 	 * @param string $nfo
 	 * @param $row
@@ -655,7 +662,7 @@ class MiscSorter
 
 		if (isset($author[1]) && isset($title[1])) {
 			return $this->dodbupdate($row['id'], Category::MUSIC_AUDIOBOOK, $this->cleanname($author[1] . ' - ' . $title[1]));
-		} else if (preg_match('/[\h\_\.\:\xb0-\x{3000}]{2,}?([a-z].+) \- (.+)(?:[\s\_\.\:\xb0-\x{3000}]{2,}|$)/iu', $nfo, $matches)) {
+		} elseif (preg_match('/[\h\_\.\:\xb0-\x{3000}]{2,}?([a-z].+) \- (.+)(?:[\s\_\.\:\xb0-\x{3000}]{2,}|$)/iu', $nfo, $matches)) {
 			$pos = $this->nfopos($this->_cleanStrForPos($nfo), $this->_cleanStrForPos($matches[1] . ' - ' . $matches[2]));
 			if ($pos !== false && $pos < 0.4 && !preg_match('/\:\d\d$/', $matches[2]) && strlen($matches[1]) < 48 && strlen($matches[2]) < 48
 				&& strpos('title', $matches[1]) === false && strpos('title', $matches[2]) === false) {
@@ -666,7 +673,7 @@ class MiscSorter
 	}
 
 	/**
-	 * Sets the release to its proper status in the database
+	 * Sets the release to its proper status in the database.
 	 *
 	 * @param int $status
 	 * @param int $id
@@ -674,7 +681,8 @@ class MiscSorter
 	private function _setProcSorter($status = 0, $id = 0)
 	{
 		$this->pdo->queryExec(
-			sprintf('
+			sprintf(
+				'
 				UPDATE releases
 				SET proc_sorter = %d
 				WHERE id = %d',
@@ -685,7 +693,7 @@ class MiscSorter
 	}
 
 	/**
-	 * Derives type of processing to do by preg_splitting NFO file and returning the results of the split
+	 * Derives type of processing to do by preg_splitting NFO file and returning the results of the split.
 	 *
 	 * @param string $nfo
 	 *

@@ -42,7 +42,6 @@ switch (Settings::value('apps.sabnzbplus.integrationtype')) {
 }
 
 if (!is_null($queue)) {
-
 	if ($queueType === 'Sabnzbd') {
 		if (empty($queue->url)) {
 			$error = 'ERROR: The Sabnzbd URL is missing!';

@@ -11,7 +11,8 @@ $action = $_REQUEST['action'] ?? 'view';
 
 switch ($action) {
 	case 'submit':
-		$aniDB->updateTitle($_POST['anidbid'],
+		$aniDB->updateTitle(
+			$_POST['anidbid'],
 							$_POST['type'],
 							$_POST['startdate'],
 							$_POST['enddate'],
@@ -21,7 +22,8 @@ switch ($action) {
 							$_POST['description'],
 							$_POST['rating'],
 							$_POST['categories'],
-							$_POST['characters']);
+							$_POST['characters']
+		);
 
 		if (isset($_POST['from']) && !empty($_POST['from'])) {
 			header('Location:' . $_POST['from']);

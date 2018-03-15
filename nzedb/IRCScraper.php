@@ -9,25 +9,28 @@ use nzedb\Logger;
 use nzedb\PreDb;
 
 /**
- * Class IRCScraper
+ * Class IRCScraper.
  */
 class IRCScraper extends IRCClient
 {
 	/**
 	 * Regex to ignore categories.
+	 *
 	 * @var string|bool
 	 */
 	protected $_categoryIgnoreRegex;
 
 	/**
 	 * Array of current pre info.
+	 *
 	 * @var array
 	 * @access protected
 	 */
 	protected $_curPre;
 
 	/**
-	 * List of groups and their ID's
+	 * List of groups and their ID's.
+	 *
 	 * @var array
 	 * @access protected
 	 */
@@ -35,25 +38,28 @@ class IRCScraper extends IRCClient
 
 	/**
 	 * Array of ignored channels.
+	 *
 	 * @var array
 	 */
 	protected $_ignoredChannels;
 
 	/**
 	 * Logging object for reporting errors.
+	 *
 	 * @var \nzedb\Logger Object
 	 */
 	protected $log = null;
 
 	/**
 	 * Is this pre nuked or un nuked?
+	 *
 	 * @var bool
 	 * @access protected
 	 */
 	protected $_nuked;
 
 	/**
-	 * Result from model's (Predb) find('first')
+	 * Result from model's (Predb) find('first').
 	 *
 	 * Doesn't matter to us if it is a Record or Document sub class.
 	 *
@@ -70,6 +76,7 @@ class IRCScraper extends IRCClient
 
 	/**
 	 * Run this in silent mode (no text output).
+	 *
 	 * @var bool
 	 * @access protected
 	 */
@@ -77,12 +84,13 @@ class IRCScraper extends IRCClient
 
 	/**
 	 * Regex to ignore PRE titles.
+	 *
 	 * @var string|bool
 	 */
 	protected $_titleIgnoreRegex;
 
 	/**
-	 * Construct
+	 * Construct.
 	 *
 	 * @param bool $silent Run this in silent mode (no text output).
 	 * @param bool $debug  Turn on debug? Shows sent/received socket buffer messages.
@@ -114,7 +122,7 @@ class IRCScraper extends IRCClient
 				'#pre@corrupt'                => false,
 				'#scnzb'                      => false,
 				'#tvnzb'                      => false,
-				'srrdb'                       => false
+				'srrdb'                       => false,
 			];
 		}
 
@@ -152,7 +160,7 @@ class IRCScraper extends IRCClient
 
 		// Connect to IRC.
 		if ($this->connect(SCRAPE_IRC_SERVER, SCRAPE_IRC_PORT, SCRAPE_IRC_TLS) === false) {
-			exit (
+			exit(
 				'Error connecting to (' .
 				SCRAPE_IRC_SERVER .
 				':' .
@@ -203,8 +211,9 @@ class IRCScraper extends IRCClient
 		if (preg_match(
 			'/^(NEW|UPD|NUK): \[DT: (?P<time>.+?)\]\s?\[TT: (?P<title>.+?)\]\s?\[SC: (?P<source>.+?)\]\s?\[CT: (?P<category>.+?)\]\s?\[RQ: (?P<req>.+?)\]' .
 			'\s?\[SZ: (?P<size>.+?)\]\s?\[FL: (?P<files>.+?)\]\s?(\[FN: (?P<filename>.+?)\]\s?)?(\[(?P<nuked>(UN|MOD|RE|OLD)?NUKED?): (?P<reason>.+?)\])?$/i',
-			$this->_channelData['message'], $matches)) {
-
+			$this->_channelData['message'],
+			$matches
+		)) {
 			if (isset($this->_ignoredChannels[$matches['source']]) && $this->_ignoredChannels[$matches['source']] === true) {
 				return;
 			}
@@ -222,11 +231,13 @@ class IRCScraper extends IRCClient
 			//$this->_curPre['predate'] = $matches['time'];
 
 			// The date is provided as a UTC string
-			$this->_curPre['predate'] = \DateTime::createFromFormat('Y-m-d H:i:s',
+			$this->_curPre['predate'] = \DateTime::createFromFormat(
+				'Y-m-d H:i:s',
 				$matches['time'],
-				new \DateTimeZone('UTC'));
-//echo "\n";
-//var_dump($matches['time'], $this->_curPre['predate']->format('Y-m-d H:i:s'));
+				new \DateTimeZone('UTC')
+			);
+			//echo "\n";
+			//var_dump($matches['time'], $this->_curPre['predate']->format('Y-m-d H:i:s'));
 			// Convert the timezone to the one matching the Db connection.
 			$timezone = \lithium\data\Connections::config()['default']['object']->timezone();
 			$this->_curPre['predate']->setTimezone(new \DateTimeZone($timezone));
@@ -283,7 +294,7 @@ class IRCScraper extends IRCClient
 	protected function _checkForDupe()
 	{
 		$this->dbEntry = \app\models\Predb::find('first', [
-			'conditions' => [ 'title' => $this->_curPre['title'] ],
+			'conditions' => ['title' => $this->_curPre['title']],
 			//'with' => 'Groups',
 		]);
 
@@ -292,8 +303,12 @@ class IRCScraper extends IRCClient
 				$this->insertPreEntry();
 			} catch (\Exception $exception) {
 				if (nZEDb_LOGERROR) {
-					$this->log->log(__CLASS__, __METHOD__, $exception->getMessage(),
-						Logger::LOG_ERROR);
+					$this->log->log(
+						__CLASS__,
+						__METHOD__,
+						$exception->getMessage(),
+						Logger::LOG_ERROR
+					);
 				}
 			}
 		} else {
@@ -437,7 +452,6 @@ class IRCScraper extends IRCClient
 	protected function _doEcho($new = true)
 	{
 		if (!$this->_silent) {
-
 			$nukeString = '';
 			if ($this->_nuked !== false) {
 				switch ((int)$this->_curPre['nuked']) {
@@ -465,7 +479,8 @@ class IRCScraper extends IRCClient
 			echo
 				'[' . date('r') . ($new ? '] [ Added Pre ] [' : '] [Updated Pre] [') .
 				$this->_curPre['source'] . '] ' . $nukeString . '[' . $this->_curPre['title'] .
-				']' . (!empty($this->_curPre['category']) ? ' [' . $this->_curPre['category'] . ']' : (!empty($this->dbEntry->category) ? ' [' . $this->dbEntry->category . ']' : '')
+				']' . (
+					!empty($this->_curPre['category']) ? ' [' . $this->_curPre['category'] . ']' : (!empty($this->dbEntry->category) ? ' [' . $this->dbEntry->category . ']' : '')
 				) . (!empty($this->_curPre['size']) ? ' [' . $this->_curPre['size'] . ']' : '') .
 				PHP_EOL;
 		}
@@ -519,7 +534,7 @@ class IRCScraper extends IRCClient
 				'nuked'    => '',
 				'reason'   => '',
 				'files'    => '',
-				'filename' => ''
+				'filename' => '',
 			];
 	}
 }

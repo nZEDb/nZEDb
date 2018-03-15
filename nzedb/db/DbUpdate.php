@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2014 nZEDb
  */
@@ -26,13 +27,12 @@ use nzedb\utility\Git;
 use nzedb\utility\Misc;
 use nzedb\utility\Text;
 
-
 class DbUpdate
 {
 	public $backedup;
 
 	/**
-	 * @var \nzedb\db\DB    Instance variable for DB object.
+	 * @var \nzedb\db\DB Instance variable for DB object.
 	 */
 	public $pdo;
 
@@ -42,25 +42,25 @@ class DbUpdate
 	public $git;
 
 	/**
-	 * @var object    Instance variable for logging object. Currently only ColorCLI supported,
-	 * but expanding for full logging with agnostic API planned.
+	 * @var object Instance variable for logging object. Currently only ColorCLI supported,
+	 *             but expanding for full logging with agnostic API planned.
 	 */
 	public $log;
 
 	/**
-	 * @var object    Instance object for sites/settings class.
+	 * @var object Instance object for sites/settings class.
 	 */
 	public $settings;
 
 	protected $_DbSystem;
 
 	/**
-	 * @var bool    Has the Db been backed up?
+	 * @var bool Has the Db been backed up?
 	 */
 	private $backedUp = false;
 
 	/**
-	 * @var bool    Should we perform a backup?
+	 * @var bool Should we perform a backup?
 	 */
 	private $backup = false;
 
@@ -180,7 +180,7 @@ class DbUpdate
 				} else {
 					echo $this->log->header('Processing patch file: ' . $file);
 					$this->splitSQL($file, ['local' => $local, 'data' => $options['data']]);
-					$current = (integer)Settings::value('..sqlpatch');
+					$current = (int)Settings::value('..sqlpatch');
 					$current++;
 					$this->pdo->queryExec("UPDATE settings SET value = '$current' WHERE setting = 'sqlpatch';");
 					$newName = $matches['drive'] . $matches['path'] .
@@ -227,15 +227,16 @@ class DbUpdate
 					$patch = fread($fp, filesize($file));
 
 					if (preg_match($options['regex'], str_replace('\\', '/', $file), $matches)) {
-						$patch = (integer)$matches['patch'];
+						$patch = (int)$matches['patch'];
 						$setPatch = true;
 					} else {
 						if (preg_match(
 							'/UPDATE `?site`? SET `?value`? = \'?(?P<patch>\d+)\'? WHERE `?setting`? = \'sqlpatch\'/i',
 							$patch,
-							$matches)
+							$matches
+						)
 						) {
-							$patch = (integer)$matches['patch'];
+							$patch = (int)$matches['patch'];
 						} else {
 							throw new \RuntimeException('No patch information available, stopping!!');
 						}
@@ -410,9 +411,9 @@ class DbUpdate
 			'file'		=> '10-settings.tsv',
 			'path'		=> 'resources' . DS . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'regex'		=> '#^(?P<section>.*)\t(?P<subsection>.*)\t(?P<name>.*)\t(?P<value>.*)\t(?P<hint>.*)\t(?P<setting>.*)$#',
-			'value'		=> function(array $matches) {
-					return "{$matches['section']}\t{$matches['subsection']}\t{$matches['name']}\t{$matches['value']}\t{$matches['hint']}\t{$matches['setting']}";
-				}, // WARNING: leaving this empty will blank not remove lines.
+			'value'		=> function (array $matches) {
+				return "{$matches['section']}\t{$matches['subsection']}\t{$matches['name']}\t{$matches['value']}\t{$matches['hint']}\t{$matches['setting']}";
+			}, // WARNING: leaving this empty will blank not remove lines.
 			'verbose'	=> true,
 		];
 		$options += $default;

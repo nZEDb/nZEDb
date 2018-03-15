@@ -43,7 +43,7 @@ switch ($action) {
 				'minsizetoformrelease'  => 0,
 				'first_record'          => 0,
 				'last_record'           => 0,
-				'backfill_target'       => 0
+				'backfill_target'       => 0,
 			];
 		}
 		$page->smarty->assign('group', $group);

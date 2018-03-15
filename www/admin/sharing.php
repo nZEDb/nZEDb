@@ -6,9 +6,11 @@ $page->title = 'Sharing Settings';
 
 $offset = ($_GET['offset'] ?? 0);
 
-$allSites = $page->settings->query(sprintf('SELECT * FROM sharing_sites ORDER BY id LIMIT %d OFFSET %d',
+$allSites = $page->settings->query(sprintf(
+	'SELECT * FROM sharing_sites ORDER BY id LIMIT %d OFFSET %d',
 										   25,
-										   $offset));
+										   $offset
+));
 if (count($allSites) === 0) {
 	$allSites = false;
 }
@@ -39,7 +41,8 @@ if (count($_POST) !== 0) {
 		$maxDownload = $ourSite['max_download'];
 	}
 	$page->settings->queryExec(
-		sprintf('
+		sprintf(
+			'
 			UPDATE sharing
 			SET site_name = %s, max_push = %d, max_pull = %d, max_download = %d',
 				$page->settings->escapeString($siteName),

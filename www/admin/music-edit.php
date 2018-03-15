@@ -1,9 +1,9 @@
 <?php
 require_once './config.php';
 
+use nzedb\Category;
 use nzedb\Genres;
 use nzedb\Music;
-use nzedb\Category;
 
 $page  = new AdminPage();
 $music = new Music(['Settings' => $page->settings]);
@@ -38,7 +38,8 @@ if (isset($_REQUEST['id'])) {
 				'null' : $_POST['salesrank']);
 			$_POST['releasedate'] = (empty($_POST['releasedate']) || !strtotime($_POST['releasedate'])) ? $mus['releasedate'] : date('Y-m-d H:i:s', strtotime($_POST['releasedate']));
 
-			$music->update($musicID,
+			$music->update(
+				$musicID,
 						   $_POST['title'],
 						   $_POST['asin'],
 						   $_POST['url'],
@@ -49,7 +50,8 @@ if (isset($_REQUEST['id'])) {
 						   $_POST['year'],
 						   $_POST['tracks'],
 						   $_POST['cover'],
-						   $_POST['genre']);
+						   $_POST['genre']
+			);
 
 			header('Location:' . WWW_TOP . '/music-list.php');
 			die();

@@ -5,8 +5,8 @@
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ColorCLI;
-use nzedb\NNTP;
 use nzedb\db\DB;
+use nzedb\NNTP;
 
 echo 'This script is going to run without debug, you can turn on debug by passing true as an argument.' . PHP_EOL;
 
@@ -20,6 +20,7 @@ class NNTPTest extends NNTP
 		parent::__construct();
 		$this->setLogger($logger);
 	}
+
 	public function __destruct()
 	{
 		parent::__destruct();
@@ -27,7 +28,7 @@ class NNTPTest extends NNTP
 }
 
 /**
- * Class NNTPDebug
+ * Class NNTPDebug.
  */
 class NNTPDebug
 {
@@ -38,6 +39,8 @@ class NNTPDebug
 
 	/**
 	 * Construct.
+	 *
+	 * @param mixed $debug
 	 */
 	public function __construct($debug = false)
 	{

@@ -3,8 +3,8 @@
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ColorCLI;
-use nzedb\Movie;
 use nzedb\db\DB;
+use nzedb\Movie;
 
 $pdo = new DB();
 $c = new ColorCLI();

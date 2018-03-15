@@ -13,15 +13,13 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2018 nZEDb
  */
-
 namespace app\extensions\command\verify;
 
-
 use app\models\Settings;
-
 
 class Tables extends \app\extensions\console\Command
 {
@@ -65,28 +63,29 @@ class Tables extends \app\extensions\console\Command
 
 	protected function tableSettings()
 	{
-		$output = function($row, $header, &$firstLine, $result)
-		{
+		$output = function($row, $header, &$firstLine, $result) {
 			if ($firstLine === true) {
 				$this->out('section, subsection, name', ['style' => 'info']);
 				$firstLine = false;
 			}
 
 			if ($result === false) {
-				$this->out(" {$row['section']}, {$row['subsection']}, {$row['name']}: MISSING!",
-					['style' => 'error']);
+				$this->out(
+					" {$row['section']}, {$row['subsection']}, {$row['name']}: MISSING!",
+					['style' => 'error']
+				);
 			}
 		};
 
-		$validate = static function($row)
-		{
+		$validate = static function($row) {
 			$result = Settings::value(
 				[
 					'section'    => $row['section'],
 					'subsection' => $row['subsection'],
-					'name'       => $row['name']
+					'name'       => $row['name'],
 				],
-				true);
+				true
+			);
 			return ($result !== null);
 		};
 
@@ -103,16 +102,25 @@ class Tables extends \app\extensions\console\Command
 		return $dummy;
 	}
 
+	protected function defaultOutput($row, $header, &$error)
+	{
+		if ($error === false) {
+			$this->out($header, ['style' => 'primary']);
+			$error = true;
+		}
+		$this->out($row, ['style' => 'info']);
+	}
+
 	/**
-	 * @param array $options	Settings for the validation. Some more optional than others. Entries
-	 *                          include:
-	 *                          `file`  - filename of data file to use
-	 *                          `fix`   - whether to fix failures (false|closure)
-	 *                          `output`- closure to format text output.
-	 *                          `silent - disable output (boolean)
-	 *                          `test`  - closure to use for validation.
+	 * @param array $options Settings for the validation. Some more optional than others. Entries
+	 *                       include:
+	 *                       `file`  - filename of data file to use
+	 *                       `fix`   - whether to fix failures (false|closure)
+	 *                       `output`- closure to format text output.
+	 *                       `silent - disable output (boolean)
+	 *                       `test`  - closure to use for validation.
 	 *
-	 * @return boolean	true if no errors found, false otherwise
+	 * @return bool true if no errors found, false otherwise
 	 */
 	private function validate(array $options = [])
 	{
@@ -135,9 +143,9 @@ class Tables extends \app\extensions\console\Command
 		// Move the column names/order off of the array.
 		$header = trim(array_shift($rows));
 		$columns = explode(',', $header);
-		array_walk($columns,
-			function(&$value)
-			{
+		array_walk(
+			$columns,
+			function(&$value) {
 				$value = trim($value);
 			}
 		);
@@ -171,19 +179,10 @@ class Tables extends \app\extensions\console\Command
 
 		if ($error === false) {
 			$this->out('No problems found.', ['style' => 'primary']);
-		} else if ($options['fix'] === false) {
+		} elseif ($options['fix'] === false) {
 			$this->out('Please fix the above problems.', ['style' => 'warning']);
 		}
 
 		return $result;
-	}
-
-	protected function defaultOutput($row, $header, &$error)
-	{
-		if ($error === false) {
-			$this->out($header, ['style' => 'primary']);
-			$error = true;
-		}
-		$this->out($row, ['style' => 'info']);
 	}
 }

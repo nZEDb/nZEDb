@@ -1,7 +1,7 @@
 <?php
 
-use nzedb\Logging;
 use nzedb\Captcha;
+use nzedb\Logging;
 
 $page->smarty->assign(['error' => '', 'username' => '', 'rememberme' => '']);
 
@@ -24,7 +24,7 @@ if ($page->isPostBack()) {
 		if ($res) {
 			if ($dis) {
 				$page->smarty->assign('error', 'Your account has been disabled.');
-			} else if ($page->users->checkPassword($_POST['password'], $res['password'], $res['id'])) {
+			} elseif ($page->users->checkPassword($_POST['password'], $res['password'], $res['id'])) {
 				$rememberMe = (isset($_POST['rememberme']) && $_POST['rememberme'] == 'on') ? 1 : 0;
 				$page->users->login($res['id'], $_SERVER['REMOTE_ADDR'], $rememberMe);
 

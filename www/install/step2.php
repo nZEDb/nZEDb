@@ -21,7 +21,7 @@ if (!$cfg->isInitialized()) {
  *
  * @param string $dbName The name of the database to be checked.
  * @param string $dbType mysql
- * @param PDO $pdo Class PDO instance.
+ * @param PDO    $pdo    Class PDO instance.
  *
  * @return bool
  */
@@ -168,7 +168,7 @@ if ($page->isPostBack()) {
 			$DbSetup->processSQLFile(); // Setup default schema
 			$DbSetup->processSQLFile( // Process any custom stuff.
 				[
-					'filepath' => nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-data.sql'
+					'filepath' => nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-data.sql',
 				]
 			);
 			$DbSetup->loadTables(); // Load default data files

@@ -24,7 +24,7 @@ if (count($argv) !== 6) {
 
 $NE = new NZBExport();
 $NE->beginExport(
-	array(
+	[
 		// Path.
 		$argv[1],
 		// Start time.
@@ -34,6 +34,6 @@ $NE->beginExport(
 		// Group ID.
 		(strtolower($argv[4]) === 'false' ? 0 : (int)$argv[4]),
 		// Gzip.
-		(strtolower($argv[5]) === 'true' ? true : false)
-	)
+		(strtolower($argv[5]) === 'true' ? true : false),
+	]
 );

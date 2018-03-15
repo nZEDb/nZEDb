@@ -13,17 +13,16 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2017 nZEDb
  */
-
 namespace app\extensions\command;
 
 use app\extensions\util\Yenc;
 use app\models\Settings;
 use nzedb\db\DB;
 use nzedb\NNTP;
-
 
 /**
  * Lets you manually fetch data from your U.S.P.

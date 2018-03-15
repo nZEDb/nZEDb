@@ -21,7 +21,7 @@ if (!isset($argv[1])) {
 passthru('clear');
 if (isset($argv[1]) && $argv[1] == 'date') {
 	$order = 'order by first_record_postdate';
-} else if (isset($argv[1]) && $argv[1] == 'releases') {
+} elseif (isset($argv[1]) && $argv[1] == 'releases') {
 	$order = 'order by num_releases';
 } else {
 	$order = '';
@@ -29,7 +29,7 @@ if (isset($argv[1]) && $argv[1] == 'date') {
 
 if (isset($argv[2]) && ($argv[2] == 'ASC' || $argv[2] == 'asc')) {
 	$sort = 'ASC';
-} else if (isset($argv[2]) && ($argv[2] == 'DESC' || $argv[2] == 'desc')) {
+} elseif (isset($argv[2]) && ($argv[2] == 'DESC' || $argv[2] == 'desc')) {
 	$sort = 'DESC';
 } else {
 	$sort = '';
@@ -37,7 +37,7 @@ if (isset($argv[2]) && ($argv[2] == 'ASC' || $argv[2] == 'asc')) {
 
 if (isset($argv[3]) && is_numeric($argv[3])) {
 	$limit = 'LIMIT ' . $argv[3];
-} else if (isset($argv[2]) && is_numeric($argv[2])) {
+} elseif (isset($argv[2]) && is_numeric($argv[2])) {
 	$limit = 'LIMIT ' . $argv[2];
 } else {
 	$limit = '';
@@ -57,7 +57,8 @@ printf($mask, "\nGroup Name => " . $active['count'] . '[' . $groups . '] (' . nu
 printf($mask, '==================================================', '======================', '======================', '======================', '======================', '======================', '======================', '======================');
 
 $releases = $pdo->queryDirect(
-	sprintf("
+	sprintf(
+		"
 		SELECT name, backfill_target, first_record_postdate, last_updated,
 		CAST(last_record as SIGNED)-CAST(first_record as SIGNED) AS 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days,
 		COALESCE(rel.num, 0) AS num_releases,
@@ -66,7 +67,10 @@ $releases = $pdo->queryDirect(
 		LEFT OUTER JOIN ( SELECT groups_id, COUNT(id) AS num FROM releases GROUP BY groups_id ) rel ON rel.groups_id = groups.id
 		LEFT OUTER JOIN ( SELECT groups_id, COUNT(id) AS num FROM releases WHERE predb_id > 0 GROUP BY groups_id ) pre ON pre.groups_id = groups.id
 		LEFT OUTER JOIN ( SELECT groups_id, COUNT(id) AS num FROM releases WHERE iscategorized = 1 GROUP BY groups_id ) ren ON ren.groups_id = groups.id
-		WHERE active = 1 AND first_record_postdate %s %s %s", $order, $sort, $limit
+		WHERE active = 1 AND first_record_postdate %s %s %s",
+		$order,
+		$sort,
+		$limit
 	)
 );
 
@@ -74,8 +78,12 @@ if ($releases instanceof \Traversable) {
 	foreach ($releases as $release) {
 		$headers = number_format($release['headers downloaded']);
 		printf(
-			$mask, $release['name'], $release['backfill_target'] . '(' . $release['days'] . ')',
-			$release['first_record_postdate'], $release['last_updated'], $headers,
+			$mask,
+			$release['name'],
+			$release['backfill_target'] . '(' . $release['days'] . ')',
+			$release['first_record_postdate'],
+			$release['last_updated'],
+			$headers,
 			number_format($release['num_releases']),
 			$release['num_releases'] == 0 ? number_format($release['num_releases']) : number_format($release['renamed']) .
 				'(' . floor($release['renamed'] / $release['num_releases'] * 100) . '%)',

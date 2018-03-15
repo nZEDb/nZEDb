@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2015 nZEDb
  */
@@ -26,7 +27,7 @@ class smartyTV extends TV
 {
 	/**
 	 * Main processing director function for scrapers
-	 * Calls work query function and initiates processing
+	 * Calls work query function and initiates processing.
 	 *
 	 * @param      $groupID
 	 * @param      $guidChar
@@ -46,11 +47,11 @@ class smartyTV extends TV
 	/**
 	 * Retrieve info of TV episode from site using its API.
 	 *
-	 * @param integer $siteId
-	 * @param integer $series
-	 * @param integer $episode
+	 * @param int $siteId
+	 * @param int $series
+	 * @param int $episode
 	 *
-	 * @return array|false    False on failure, an array of information fields otherwise.
+	 * @return array|false False on failure, an array of information fields otherwise.
 	 */
 	protected function getEpisodeInfo($siteId, $series, $episode)
 	{
@@ -60,8 +61,8 @@ class smartyTV extends TV
 	/**
 	 * Retrieve poster image for TV episode from site using its API.
 	 *
-	 * @param integer $videoId ID from videos table.
-	 * @param integer $siteId ID that this site uses for the programme.
+	 * @param int $videoId ID from videos table.
+	 * @param int $siteId  ID that this site uses for the programme.
 	 *
 	 * @return null
 	 */
@@ -75,7 +76,7 @@ class smartyTV extends TV
 	 *
 	 * @param string $name Title of programme to look up. Usually a cleaned up version from releases table.
 	 *
-	 * @return array|false    False on failure, an array of information fields otherwise.
+	 * @return array|false False on failure, an array of information fields otherwise.
 	 */
 	protected function getShowInfo($name)
 	{
@@ -84,7 +85,7 @@ class smartyTV extends TV
 
 	/**
 	 * Assigns API show response values to a formatted array for insertion
-	 * Returns the formatted array
+	 * Returns the formatted array.
 	 *
 	 * @param $show
 	 *
@@ -97,7 +98,7 @@ class smartyTV extends TV
 
 	/**
 	 * Assigns API episode response values to a formatted array for insertion
-	 * Returns the formatted array
+	 * Returns the formatted array.
 	 *
 	 * @param $episode
 	 *

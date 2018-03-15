@@ -45,21 +45,24 @@ class TMDB extends TV
 	public $config;
 
 	/**
-	 * Construct. Instantiate TMDB Class
+	 * Construct. Instantiate TMDB Class.
 	 *
 	 * @param array $options Class instances.
 	 *
 	 * @access public
+	 *
 	 * @throws \Exception
 	 */
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
 		$this->token = new ApiToken(Settings::value('APIs..tmdbkey'));
-		$this->client = new Client($this->token, [
+		$this->client = new Client(
+			$this->token,
+			[
 				'cache' => [
-					'enabled' => false
-				]
+					'enabled' => false,
+				],
 			]
 		);
 		$this->configRepository = new ConfigurationRepository($this->client);
@@ -82,12 +85,12 @@ class TMDB extends TV
 
 	/**
 	 * Main processing director function for TMDB
-	 * Calls work query function and initiates processing
+	 * Calls work query function and initiates processing.
 	 *
 	 * @param string $groupID
 	 * @param string $guidChar
-	 * @param      $process
-	 * @param bool $local
+	 * @param        $process
+	 * @param bool   $local
 	 */
 	public function processSite($groupID, $guidChar, $process, $local = false)
 	{
@@ -101,11 +104,9 @@ class TMDB extends TV
 		}
 
 		if ($res instanceof \PDOStatement) {
-
 			$this->titleCache = [];
 
 			foreach ($res as $row) {
-
 				$this->posterUrl = '';
 				$tmdbid = false;
 
@@ -113,7 +114,6 @@ class TMDB extends TV
 				$release = $this->parseInfo($row['searchname']);
 
 				if (is_array($release) && $release['name'] !== '') {
-
 					if (in_array($release['cleanname'], $this->titleCache, false)) {
 						if ($this->echooutput) {
 							echo ColorCLI::headerOver('Title: ') .
@@ -216,7 +216,7 @@ class TMDB extends TV
 						$this->setVideoNotFound(parent::PROCESS_TRAKT, $row['id']);
 						$this->titleCache[] = $release['cleanname'];
 					}
-				} else{
+				} else {
 					//Processing failed, set the episode ID to the next processing group
 					$this->setVideoNotFound(parent::PROCESS_TRAKT, $row['id']);
 					$this->titleCache[] = $release['cleanname'];
@@ -226,8 +226,30 @@ class TMDB extends TV
 	}
 
 	/**
+	 * Retrieves the poster art for the processed show.
+	 *
+	 * @param int $videoId -- the local Video ID
+	 * @param int $showId  -- the TMDB ID
+	 *
+	 * @return int
+	 */
+	public function getPoster($videoId, $showId = 0)
+	{
+		$ri = new ReleaseImage($this->pdo);
+
+		// Try to get the Poster
+		$hascover = $ri->saveImage($videoId, $this->posterUrl, $this->imgSavePath);
+
+		// Mark it retrieved if we saved an image
+		if ($hascover === 1) {
+			$this->setCoverFound($videoId);
+		}
+		return $hascover;
+	}
+
+	/**
 	 * Calls the API to perform initial show name match to TMDB title
-	 * Returns a formatted array of show data or false if no match
+	 * Returns a formatted array of show data or false if no match.
 	 *
 	 * @param $cleanName
 	 *
@@ -252,7 +274,93 @@ class TMDB extends TV
 	}
 
 	/**
-	 * @param array $shows
+	 * Gets the specific episode info for the parsed release after match
+	 * Returns a formatted array of episode data or false if no match.
+	 *
+	 * @param int    $tmdbid
+	 * @param int    $season
+	 * @param int    $episode
+	 * @param string $airdate
+	 * @param int    $videoId
+	 *
+	 * @return array|bool
+	 */
+	protected function getEpisodeInfo($tmdbid, $season, $episode, $airdate = '', $videoId = 0)
+	{
+		$return = false;
+
+		try {
+			$response = $this->client->getTvEpisodeApi()->getEpisode($tmdbid, $season, $episode);
+		} catch (TmdbApiException $e) {
+			return false;
+		}
+
+		sleep(1);
+
+		//Handle Single Episode Lookups
+		if (is_array($response) && $this->checkRequiredAttr($response, 'tmdbE')) {
+			$return = $this->formatEpisodeInfo($response);
+		}
+		return $return;
+	}
+
+	/**
+	 * Assigns API show response values to a formatted array for insertion
+	 * Returns the formatted array.
+	 *
+	 * @param $show
+	 *
+	 * @return array
+	 */
+	protected function formatShowInfo($show)
+	{
+		$this->posterUrl = isset($show['poster_path']) ? 'https:' . $this->helper->getUrl($show['poster_path']) : '';
+
+		if (isset($show['external_ids']['imdb_id'])) {
+			preg_match('/tt(?P<imdbid>\d{6,7})$/i', $show['external_ids']['imdb_id'], $imdb);
+		}
+
+		return [
+			'type'      => parent::TYPE_TV,
+			'title'     => (string)$show['name'],
+			'summary'   => (string)$show['overview'],
+			'started'   => (string)$show['first_air_date'],
+			'publisher' => isset($show['network']) ? (string)$show['network'] : '',
+			'country'   => $show['origin_country'][0] ?? '',
+			'source'    => parent::SOURCE_TMDB,
+			'imdb'      => isset($imdb['imdbid']) ? (int)$imdb['imdbid'] : 0,
+			'tvdb'      => isset($show['external_ids']['tvdb_id']) ? (int)$show['external_ids']['tvdb_id'] : 0,
+			'trakt'     => 0,
+			'tvrage'    => isset($show['external_ids']['tvrage_id']) ? (int)$show['external_ids']['tvrage_id'] : 0,
+			'tvmaze'    => 0,
+			'tmdb'      => (int)$show['id'],
+			'aliases'   => !empty($show['alternative_titles']) ? (array)$show['alternative_titles'] : '',
+			'localzone' => "''",
+		];
+	}
+
+	/**
+	 * Assigns API episode response values to a formatted array for insertion
+	 * Returns the formatted array.
+	 *
+	 * @param $episode
+	 *
+	 * @return array
+	 */
+	protected function formatEpisodeInfo($episode)
+	{
+		return [
+			'title'       => (string)$episode['name'],
+			'series'      => (int)$episode['season_number'],
+			'episode'     => (int)$episode['episode_number'],
+			'se_complete' => 'S' . sprintf('%02d', $episode['season_number']) . 'E' . sprintf('%02d', $episode['episode_number']),
+			'firstaired'  => (string)$episode['air_date'],
+			'summary'     => (string)$episode['overview'],
+		];
+	}
+
+	/**
+	 * @param array  $shows
 	 * @param string $cleanName
 	 *
 	 * @return array|bool
@@ -263,7 +371,7 @@ class TMDB extends TV
 		$highestMatch = 0;
 
 		$show = [];
-		foreach ($shows AS $show) {
+		foreach ($shows as $show) {
 			if ($this->checkRequiredAttr($show, 'tmdbS')) {
 				// Check for exact title match first and then terminate if found
 				if (strtolower($show['name']) === strtolower($cleanName)) {
@@ -294,122 +402,14 @@ class TMDB extends TV
 			}
 
 			if ($showAlternativeTitles !== null && is_array($showAlternativeTitles)) {
-				foreach ($showAlternativeTitles AS $aka) {
+				foreach ($showAlternativeTitles as $aka) {
 					$highest['alternative_titles'][] = $aka['title'];
 				}
-				$highest['network'] = isset($show['networks'][0]['name']) ? $show['networks'][0]['name'] : '';
+				$highest['network'] = $show['networks'][0]['name'] ?? '';
 				$highest['external_ids'] = $showExternalIds;
 			}
 			$return = $this->formatShowInfo($highest);
 		}
 		return $return;
-	}
-
-	/**
-	 * Retrieves the poster art for the processed show
-	 *
-	 * @param int $videoId -- the local Video ID
-	 * @param int $showId  -- the TMDB ID
-	 *
-	 * @return int
-	 */
-	public function getPoster($videoId, $showId = 0)
-	{
-		$ri = new ReleaseImage($this->pdo);
-
-		// Try to get the Poster
-		$hascover = $ri->saveImage($videoId, $this->posterUrl, $this->imgSavePath);
-
-		// Mark it retrieved if we saved an image
-		if ($hascover === 1) {
-			$this->setCoverFound($videoId);
-		}
-		return $hascover;
-	}
-
-	/**
-	 * Gets the specific episode info for the parsed release after match
-	 * Returns a formatted array of episode data or false if no match
-	 *
-	 * @param integer $tmdbid
-	 * @param integer $season
-	 * @param integer $episode
-	 * @param string  $airdate
-	 * @param integer $videoId
-	 *
-	 * @return array|bool
-	 */
-	protected function getEpisodeInfo($tmdbid, $season, $episode, $airdate = '', $videoId = 0)
-	{
-		$return = false;
-
-		try {
-			$response = $this->client->getTvEpisodeApi()->getEpisode($tmdbid, $season, $episode);
-		} catch (TmdbApiException $e) {
-			return false;
-		}
-
-		sleep(1);
-
-		//Handle Single Episode Lookups
-		if (is_array($response) && $this->checkRequiredAttr($response, 'tmdbE')) {
-			$return = $this->formatEpisodeInfo($response);
-		}
-		return $return;
-	}
-
-	/**
-	 * Assigns API show response values to a formatted array for insertion
-	 * Returns the formatted array
-	 *
-	 * @param $show
-	 *
-	 * @return array
-	 */
-	protected function formatShowInfo($show)
-	{
-		$this->posterUrl = isset($show['poster_path']) ? 'https:' . $this->helper->getUrl($show['poster_path']) : '';
-
-		if (isset($show['external_ids']['imdb_id'])) {
-			preg_match('/tt(?P<imdbid>\d{6,7})$/i', $show['external_ids']['imdb_id'], $imdb);
-		}
-
-		return [
-			'type'      => parent::TYPE_TV,
-			'title'     => (string)$show['name'],
-			'summary'   => (string)$show['overview'],
-			'started'   => (string)$show['first_air_date'],
-			'publisher' => isset($show['network']) ? (string)$show['network'] : '',
-			'country'   => isset($show['origin_country'][0]) ? $show['origin_country'][0] : '',
-			'source'    => parent::SOURCE_TMDB,
-			'imdb'      => isset($imdb['imdbid']) ? (int)$imdb['imdbid'] : 0,
-			'tvdb'      => isset($show['external_ids']['tvdb_id']) ? (int)$show['external_ids']['tvdb_id'] : 0,
-			'trakt'     => 0,
-			'tvrage'    => isset($show['external_ids']['tvrage_id']) ? (int)$show['external_ids']['tvrage_id'] : 0,
-			'tvmaze'    => 0,
-			'tmdb'      => (int)$show['id'],
-			'aliases'   => !empty($show['alternative_titles']) ? (array)$show['alternative_titles'] : '',
-			'localzone' => "''"
-		];
-	}
-
-	/**
-	 * Assigns API episode response values to a formatted array for insertion
-	 * Returns the formatted array
-	 *
-	 * @param $episode
-	 *
-	 * @return array
-	 */
-	protected function formatEpisodeInfo($episode)
-	{
-		return [
-			'title'       => (string)$episode['name'],
-			'series'      => (int)$episode['season_number'],
-			'episode'     => (int)$episode['episode_number'],
-			'se_complete' => 'S' . sprintf('%02d', $episode['season_number']) . 'E' . sprintf('%02d', $episode['episode_number']),
-			'firstaired'  => (string)$episode['air_date'],
-			'summary'     => (string)$episode['overview']
-		];
 	}
 }

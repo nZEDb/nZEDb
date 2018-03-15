@@ -76,20 +76,19 @@ if (!$cfg->error) {
 					The template compile dir must be writable.<br />A quick solution is to run:	<br />
 					<?php
 					echo 'chmod 777 ' . nZEDb_RES . 'smarty' . DS . 'templates_c';
-					if (extension_loaded('posix') && strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
-						$group = posix_getgrgid(posix_getgid());
-						echo
+				if (extension_loaded('posix') && strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
+					$group = posix_getgrgid(posix_getgid());
+					echo
 						'<br /><br />Another solution is to run:<br />chown -R YourUnixUserName:' . $group['name'] . ' ' . nZEDb_ROOT .
 						'<br />Then give your user access to the group:<br />usermod -a -G ' . $group['name'] . ' YourUnixUserName' .
 						'<br />Finally give read/write access to your user/group:<br />chmod -R 774 ' . nZEDb_ROOT;
-					}
-					?>
+				} ?>
 				</div>
 			<?php
 			} else {
 				?>
 				<div class="error">Installation Locked! If reinstalling, please remove <?php echo
-                        nZEDb_CONFIGS . 'install.lock' ?>.</div>
+						nZEDb_CONFIGS . 'install.lock' ?>.</div>
 			<?php
 			}
 		}

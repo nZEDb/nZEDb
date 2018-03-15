@@ -15,7 +15,7 @@ if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 		. "php $argv[0] 60 15    ....: To update every 15 seconds and kill any script running more than 60 minutes.\n"));
 } else {
 	// Set reset timer
-	$time1 = TIME();
+	$time1 = time();
 	$check = '';
 	$killtime = $argv[1];
 	$sleep = $argv[2];
@@ -30,7 +30,7 @@ if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 
 		$counted = $threads = 0;
 		passthru('clear');
-		$output = array();
+		$output = [];
 		exec('ps --no-header -eo pid,user,etime,command | grep $USER | grep "update_groups\|update_binaries.php\|backfill_all\|backfill.php\|backfill_interval\|safe_pull" | grep -v monitor_binaries_backfill.php | grep -v grep', $output);
 		if (isset($output[0]) && strlen($output[0]) > 8) {
 			foreach ($output as $line) {
@@ -45,22 +45,22 @@ if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 					usleep(10000);
 					exec('kill ' . $line1[0] . ' 2>&1 1> /dev/null');
 					// reset good timer
-					$time1 = TIME();
+					$time1 = time();
 				} else {
 					echo $pdo->log->primary("PID: $line1[0] USER: $line1[1] TIME: $time[0] CMD: $line");
 				}
 			}
 		} else {
 			echo $pdo->log->header('update_binaries or backfill does not appear to be running');
-			$time1 = TIME();
+			$time1 = time();
 		}
 
 		echo $pdo->log->header("Monitoring ${threads} threads.");
 
 		// re-enable compressed haders if good running 10 min
-		if (TIME() - $time1 > ($killtime + 300)) {
+		if (time() - $time1 > ($killtime + 300)) {
 			$pdo->queryExec("UPDATE settings SET value = 1 WHERE setting = 'compressedheaders'");
-			$time1 = TIME();
+			$time1 = time();
 		}
 
 		passthru("php misc/update/nix/tmux/bin/showsleep.php $sleep");

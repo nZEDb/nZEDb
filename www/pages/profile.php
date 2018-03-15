@@ -17,7 +17,6 @@ $privateProfiles = (Settings::value('..privateprofiles') == 1 ? true : false);
 $publicView = false;
 
 if (!$privateProfiles || $privileged) {
-
 	$altID = ((isset($_GET['id']) && $_GET['id'] >= 0) ? (int)$_GET['id'] : false);
 	$altUsername = ((isset($_GET['name']) && strlen($_GET['name']) > 0) ? $_GET['name'] : false);
 
@@ -27,7 +26,7 @@ if (!$privateProfiles || $privileged) {
 		if ($user) {
 			$altID = $user['id'];
 		}
-	} else if ($altID !== false) {
+	} elseif ($altID !== false) {
 		$userID = $altID;
 		$publicView = true;
 	}
@@ -43,8 +42,9 @@ if (!isset($data['style']) || $data['style'] == 'None') {
 	$data['style'] = 'Using the admin selected theme.';
 }
 
-$offset = isset($_REQUEST['offset']) ? $_REQUEST['offset'] : 0;
-$page->smarty->assign([
+$offset = $_REQUEST['offset'] ?? 0;
+$page->smarty->assign(
+	[
 		'apirequests'       => $page->users->getApiRequests($userID),
 		'grabstoday'        => $page->users->getDownloadRequests($userID),
 		'userinvitedby'     => ($data['invitedby'] != '' ? $page->users->getById($data['invitedby']) : ''),
@@ -56,22 +56,23 @@ $page->smarty->assign([
 		'pageroffset'       => $offset,
 		'pageritemsperpage' => ITEMS_PER_PAGE,
 		'pagerquerybase'    => "/profile?id=$userID&offset=",
-		'pagerquerysuffix'  => '#comments'
+		'pagerquerysuffix'  => '#comments',
 	]
 );
 
 $sabApiKeyTypes = [
 	SABnzbd::API_TYPE_NZB => 'Nzb Api Key',
-	SABnzbd::API_TYPE_FULL => 'Full Api Key'
+	SABnzbd::API_TYPE_FULL => 'Full Api Key',
 ];
 $sabPriorities = [
 	SABnzbd::PRIORITY_FORCE  => 'Force', SABnzbd::PRIORITY_HIGH => 'High',
-	SABnzbd::PRIORITY_NORMAL => 'Normal', SABnzbd::PRIORITY_LOW => 'Low'
+	SABnzbd::PRIORITY_NORMAL => 'Normal', SABnzbd::PRIORITY_LOW => 'Low',
 ];
 $sabSettings = [1 => 'Site', 2 => 'Cookie'];
 
 // Pager must be fetched after the variables are assigned to smarty.
-$page->smarty->assign([
+$page->smarty->assign(
+	[
 		'pager'         => $page->smarty->fetch('pager.tpl'),
 		'commentslist'  => $rc->getCommentsForUserRange($userID, $offset, ITEMS_PER_PAGE),
 		'exccats'       => implode(',', $page->users->getCategoryExclusionNames($userID)),
@@ -79,7 +80,7 @@ $page->smarty->assign([
 		'sabapikey'     => $sab->apikey,
 		'sabapikeytype' => ($sab->apikeytype != '' ? $sabApiKeyTypes[$sab->apikeytype] : ''),
 		'sabpriority'   => ($sab->priority != '' ? $sabPriorities[$sab->priority] : ''),
-		'sabsetting'    => $sabSettings[($sab->checkCookie() === true ? 2 : 1)]
+		'sabsetting'    => $sabSettings[($sab->checkCookie() === true ? 2 : 1)],
 	]
 );
 

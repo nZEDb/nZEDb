@@ -13,15 +13,16 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2016 nZEDb
  */
 namespace app\models;
 
-
 class ReleasesGroups extends \lithium\data\Model
 {
 	public $belongsTo = ['Releases'];
+
 	public $hasMany = ['Groups'];
 
 	protected $_meta = [

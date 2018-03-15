@@ -34,7 +34,8 @@ class UserMovies
 	 */
 	public function addMovie($uid, $imdbid, $catid = [])
 	{
-		return $this->pdo->queryInsert(sprintf(
+		return $this->pdo->queryInsert(
+			sprintf(
 			'INSERT INTO user_movies (user_id, imdbid, categories, createddate)
 			VALUES (%d, %d, %s, NOW())',
 			$uid,
@@ -53,7 +54,8 @@ class UserMovies
 	 */
 	public function getMovies($uid)
 	{
-		return $this->pdo->query(sprintf(
+		return $this->pdo->query(
+			sprintf(
 			'SELECT um.*, mi.year, mi.plot, mi.cover, mi.title
 			FROM user_movies um
 			LEFT OUTER JOIN movieinfo mi ON mi.imdbid = um.imdbid
@@ -74,7 +76,8 @@ class UserMovies
 	 */
 	public function delMovie($uid, $imdbid)
 	{
-		return $this->pdo->queryExec(sprintf(
+		return $this->pdo->queryExec(
+			sprintf(
 			'DELETE FROM user_movies
 			WHERE user_id = %d
 			AND imdbid = %d ',
@@ -94,7 +97,8 @@ class UserMovies
 	 */
 	public function getMovie($uid, $imdbid)
 	{
-		return $this->pdo->queryOneRow(sprintf(
+		return $this->pdo->queryOneRow(
+			sprintf(
 			'SELECT um.*, mi.title
 			FROM user_movies um
 			LEFT OUTER JOIN movieinfo mi ON mi.imdbid = um.imdbid
@@ -113,7 +117,8 @@ class UserMovies
 	 */
 	public function delMovieForUser($uid)
 	{
-		$this->pdo->queryExec(sprintf(
+		$this->pdo->queryExec(
+			sprintf(
 			'DELETE FROM user_movies
 			WHERE user_id = %d',
 			$uid
@@ -130,7 +135,8 @@ class UserMovies
 	 */
 	public function updateMovie($uid, $imdbid, $catid = [])
 	{
-		$this->pdo->queryExec(sprintf(
+		$this->pdo->queryExec(
+			sprintf(
 			'UPDATE user_movies
 			SET categories = %s
 			WHERE user_id = %d

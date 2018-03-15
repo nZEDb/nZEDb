@@ -14,12 +14,12 @@ $rf = new ReleaseFiles($page->settings);
 $files = $rf->getByGuid($_REQUEST['id']);
 
 if (count($files) == 0) {
-	print 'No files';
+	echo 'No files';
 } else {
 	//print "<h3 class=\"tooltiphead\">rar archive contains...</h3>\n";
-	print "<ul>\n";
+	echo "<ul>\n";
 	foreach ($files as $f) {
-		print '<li>' . htmlentities($f['name'], ENT_QUOTES) . '&nbsp;' . ($f['passworded'] == 1 ? '<img width="12" src="' . nZEDb_THEMES_SHARED . 'images/icons/lock.gif" />' : '') . "</li>\n";
+		echo '<li>' . htmlentities($f['name'], ENT_QUOTES) . '&nbsp;' . ($f['passworded'] == 1 ? '<img width="12" src="' . nZEDb_THEMES_SHARED . 'images/icons/lock.gif" />' : '') . "</li>\n";
 	}
-	print '</ul>';
+	echo '</ul>';
 }

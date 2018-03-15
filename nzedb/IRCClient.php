@@ -12,6 +12,7 @@ abstract class IRCClient
 {
 	/**
 	 * Hostname IRC server used when connecting.
+	 *
 	 * @var string
 	 * @access protected
 	 */
@@ -19,6 +20,7 @@ abstract class IRCClient
 
 	/**
 	 * Port number IRC server.
+	 *
 	 * @var int|string
 	 * @access protected
 	 */
@@ -26,14 +28,15 @@ abstract class IRCClient
 
 	/**
 	 * Socket transport type for the IRC server.
+	 *
 	 * @var string
 	 * @access protected
 	 */
 	protected $_remote_transport = 'tcp';
 
-
 	/**
 	 * Hostname the IRC server sent us back.
+	 *
 	 * @var string
 	 * @access protected
 	 */
@@ -41,6 +44,7 @@ abstract class IRCClient
 
 	/**
 	 * String used when creating the stream socket.
+	 *
 	 * @var string
 	 * @access protected
 	 */
@@ -48,6 +52,7 @@ abstract class IRCClient
 
 	/**
 	 * Are we using tls/ssl?
+	 *
 	 * @var bool
 	 * @access protected
 	 */
@@ -55,6 +60,7 @@ abstract class IRCClient
 
 	/**
 	 * Time in seconds to timeout on connect.
+	 *
 	 * @var int
 	 * @access protected
 	 */
@@ -62,6 +68,7 @@ abstract class IRCClient
 
 	/**
 	 * Time in seconds before we timeout when sending/receiving a command.
+	 *
 	 * @var int
 	 * @access protected
 	 */
@@ -69,6 +76,7 @@ abstract class IRCClient
 
 	/**
 	 * How many times to retry when connecting to IRC.
+	 *
 	 * @var int|string
 	 * @access protected
 	 */
@@ -76,6 +84,7 @@ abstract class IRCClient
 
 	/**
 	 * Seconds to delay when reconnecting fails.
+	 *
 	 * @var int
 	 * @access protected
 	 */
@@ -83,6 +92,7 @@ abstract class IRCClient
 
 	/**
 	 * Stream socket client.
+	 *
 	 * @var resource
 	 * @access protected
 	 */
@@ -90,6 +100,7 @@ abstract class IRCClient
 
 	/**
 	 * Buffer contents.
+	 *
 	 * @var string
 	 * @access protected
 	 */
@@ -101,8 +112,10 @@ abstract class IRCClient
 	 *     'nickname' => string(The nick name of the person who posted.),
 	 *     'channel'  => string(The channel name.),
 	 *     'message'  => string(The message the person posted.)
-	 * );
+	 * );.
+	 *
 	 * @note Used with the processChannelMessages() function.
+	 *
 	 * @var array
 	 * @access protected
 	 */
@@ -110,6 +123,7 @@ abstract class IRCClient
 
 	/**
 	 * Nick name when we log in.
+	 *
 	 * @var string
 	 * @access protected
 	 */
@@ -117,6 +131,7 @@ abstract class IRCClient
 
 	/**
 	 * User name when we log in.
+	 *
 	 * @var string
 	 * @access protected
 	 */
@@ -124,6 +139,7 @@ abstract class IRCClient
 
 	/**
 	 * "Real" name when we log in.
+	 *
 	 * @var string
 	 * @access protected
 	 */
@@ -131,6 +147,7 @@ abstract class IRCClient
 
 	/**
 	 * Password when we log in.
+	 *
 	 * @var string|null
 	 * @access protected
 	 */
@@ -138,6 +155,7 @@ abstract class IRCClient
 
 	/**
 	 * List of channels and passwords to join.
+	 *
 	 * @var array
 	 * @access protected
 	 */
@@ -145,6 +163,7 @@ abstract class IRCClient
 
 	/**
 	 * Last time we received a ping or sent a ping to the server.
+	 *
 	 * @var int
 	 * @access protected
 	 */
@@ -152,6 +171,7 @@ abstract class IRCClient
 
 	/**
 	 * How many times we've tried to reconnect to IRC.
+	 *
 	 * @var int|string
 	 * @access protected
 	 */
@@ -159,12 +179,14 @@ abstract class IRCClient
 
 	/**
 	 * Turns on or off debugging.
+	 *
 	 * @var bool
 	 */
 	protected $_debug = true;
 
 	/**
 	 * Are we already logged in to IRC?
+	 *
 	 * @var bool
 	 */
 	protected $_alreadyLoggedIn = false;
@@ -348,15 +370,14 @@ abstract class IRCClient
 			// We got pinged, reply with a pong.
 			if (preg_match('/^PING\s*:(.+?)$/', $this->_buffer, $matches)) {
 				$this->_pong($matches[1]);
-
-			} else if (preg_match('/^:(.*?)\s+(\d+).*?(:.+?)?$/', $this->_buffer, $matches)) {
+			} elseif (preg_match('/^:(.*?)\s+(\d+).*?(:.+?)?$/', $this->_buffer, $matches)) {
 				// We found 001, which means we are logged in.
 				if ($matches[2] == 001) {
 					$this->_remote_host_received = $matches[1];
 					break;
 
 				// We got 464, which means we need to send a password.
-				} else if ($matches[2] == 464) {
+				} elseif ($matches[2] == 464) {
 					// Before the lower check, set the password : username:password
 					$tempPass = $userName . ':' . $password;
 
@@ -367,13 +388,13 @@ abstract class IRCClient
 
 					if ($password !== null && !$this->_writeSocket('PASS ' . $tempPass)) {
 						return false;
-					} else if (isset($matches[3]) && strpos(strtolower($matches[3]), 'invalid password')) {
+					} elseif (isset($matches[3]) && strpos(strtolower($matches[3]), 'invalid password')) {
 						echo 'Invalid password or username for (' . $this->_remote_host . ').';
 						return false;
 					}
 				}
-			//ERROR :Closing Link: kevin123[100.100.100.100] (This server is full.)
-			} else if (preg_match('/^ERROR\s*:/', $this->_buffer)) {
+				//ERROR :Closing Link: kevin123[100.100.100.100] (This server is full.)
+			} elseif (preg_match('/^ERROR\s*:/', $this->_buffer)) {
 				echo $this->_buffer . PHP_EOL;
 				return false;
 			}
@@ -407,7 +428,6 @@ abstract class IRCClient
 	public function readIncoming()
 	{
 		while (true) {
-
 			$this->_readSocket();
 
 			// If the server pings us, return it a pong.
@@ -416,16 +436,17 @@ abstract class IRCClient
 					$this->_pong($matches[1]);
 				}
 
-			// Check for a channel message.
-			} else if (preg_match('/^:(?P<nickname>.+?)\!.+?\s+PRIVMSG\s+(?P<channel>#.+?)\s+:\s*(?P<message>.+?)\s*$/',
+				// Check for a channel message.
+			} elseif (preg_match(
+				'/^:(?P<nickname>.+?)\!.+?\s+PRIVMSG\s+(?P<channel>#.+?)\s+:\s*(?P<message>.+?)\s*$/',
 				$this->_stripControlCharacters($this->_buffer),
-				$matches)) {
-
+				$matches
+			)) {
 				$this->_channelData =
 					[
 						'nickname' => $matches['nickname'],
 						'channel'  => $matches['channel'],
-						'message'  => $matches['message']
+						'message'  => $matches['message'],
 					];
 
 				$this->processChannelMessages();
@@ -604,7 +625,7 @@ abstract class IRCClient
 	/**
 	 * Write a single character to the socket.
 	 *
-	 * @param string     $character A single character.
+	 * @param string $character A single character.
 	 *
 	 * @return int|false Number of bytes written or false.
 	 */
@@ -680,8 +701,10 @@ abstract class IRCClient
 				'/\x0F/',                               // Escaped
 				'/\x16/',                               // Italic
 				'/\x1F/',                               // Underline
-				'/\x12/'                                // Device control 2
-			], '', $text
+				'/\x12/',                                // Device control 2
+			],
+			'',
+			$text
 		);
 	}
 }

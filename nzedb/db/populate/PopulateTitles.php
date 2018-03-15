@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link <http://www.gnu.org/licenses/>.
+ *
  * @author niel
  * @copyright 2014 nZEDb
  */
@@ -56,7 +57,7 @@ class PopulateTitles
 
 	protected $tempTable;
 
-	public function  __construct($options)
+	public function __construct($options)
 	{
 		$defaults = [
 			'pdo'	=> null,

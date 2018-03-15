@@ -15,11 +15,11 @@
  * not, see:
  *
  * @link <http://www.gnu.org/licenses/>.
+ *
  * @author niel
  * @copyright 2014 nZEDb
  */
 namespace nzedb\db;
-
 
 class PreDb extends DB
 {
@@ -71,12 +71,12 @@ class PreDb extends DB
 
 	/**
 	 * @param array|null $options array of parameter.
-	 *		'enclosedby'	- string for enclosed by clause. default: empty string,
-	 *		'fields'		- string for FIELDS SEPARATED BY clause. default: '\t',
-	 *		'limit'			- string for LIMIT clause. Zero indicate no clause. Default:  0,
-	 *		'lines'			- string for LINES TERMINATED BY. Default: '\r\n' (Windows style EOLs to allow \n to be used in text),
-	 *		'path'			- path (including filename) to write data to.
-	 *       All parameter will be escaped before use.
+	 *                            'enclosedby'	- string for enclosed by clause. default: empty string,
+	 *                            'fields'		- string for FIELDS SEPARATED BY clause. default: '\t',
+	 *                            'limit'			- string for LIMIT clause. Zero indicate no clause. Default:  0,
+	 *                            'lines'			- string for LINES TERMINATED BY. Default: '\r\n' (Windows style EOLs to allow \n to be used in text),
+	 *                            'path'			- path (including filename) to write data to.
+	 *                            All parameter will be escaped before use.
 	 *
 	 * @return false|\PDOStatement
 	 */
@@ -94,7 +94,7 @@ class PreDb extends DB
 
 		if (empty($options['path'])) {
 			return null;
-		} else if (!is_numeric($options['limit'])) {
+		} elseif (!is_numeric($options['limit'])) {
 			return null;
 		}
 
@@ -230,7 +230,7 @@ SQL_EXPORT;
 	}
 
 	/**
-	 * Add any groups that are not in our current groups table
+	 * Add any groups that are not in our current groups table.
 	 */
 	protected function prepareSQLAddGroups()
 	{

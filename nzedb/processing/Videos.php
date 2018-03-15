@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2015 nZEDb
  */
@@ -31,7 +32,9 @@ abstract class Videos
 {
 	// Video Type Identifiers
 	const TYPE_TV		= 0; // Type of video is a TV Programme/Show
+
 	const TYPE_FILM		= 1; // Type of video is a Film/Movie
+
 	const TYPE_ANIME	= 2; // Type of video is a Anime
 
 	/**
@@ -45,14 +48,14 @@ abstract class Videos
 	public $echooutput;
 
 	/**
-	 * @var array	sites	The sites that we have an ID columns for in our video table.
-	 */
-	private $sites = ['imdb', 'tmdb', 'trakt', 'tvdb', 'tvmaze', 'tvrage'];
-
-	/**
 	 * @var array Temp Array of cached failed lookups
 	 */
 	public $titleCache;
+
+	/**
+	 * @var array sites	The sites that we have an ID columns for in our video table.
+	 */
+	private $sites = ['imdb', 'tmdb', 'trakt', 'tvdb', 'tvmaze', 'tvrage'];
 
 	public function __construct(array $options = [])
 	{
@@ -71,74 +74,12 @@ abstract class Videos
 	}
 
 	/**
-	 * Main processing director function for scrapers
-	 * Calls work query function and initiates processing
-	 *
-	 * @param      $groupID
-	 * @param      $guidChar
-	 * @param      $process
-	 * @param bool $local
-	 */
-	abstract protected function processSite($groupID, $guidChar, $process, $local = false);
-
-	/**
-	 * Get video info from a Video ID and column.
-	 *
-	 * @param string  $siteColumn
-	 * @param integer $videoID
-	 *
-	 * @return array|false    False if invalid site, or ID not found; Site id value otherwise.
-	 */
-	protected function getSiteIDFromVideoID($siteColumn, $videoID)
-	{
-		if (in_array($siteColumn, $this->sites)) {
-			$result = $this->pdo->queryOneRow("SELECT $siteColumn FROM videos WHERE id = $videoID");
-
-			return isset($result[$siteColumn]) ? $result[$siteColumn] : false;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Get video info from a Site ID and column.
-	 *
-	 * @param string	$siteColumn
-	 * @param integer	$siteID
-	 *
-	 * @return int|false	False if invalid site, or ID not found; video.id value otherwise.
-	 */
-	protected function getVideoIDFromSiteID($siteColumn, $siteID)
-	{
-		if (in_array($siteColumn, $this->sites)) {
-			$result = $this->pdo->queryOneRow("SELECT id FROM videos WHERE $siteColumn = $siteID");
-
-			return isset($result['id']) ? (int)$result['id'] : false;
-		}
-		return false;
-	}
-
-	/**
-	 * Get TV show local timezone from a Video ID
-	 *
-	 * @param integer $videoID
-	 *
-	 * @return string Empty string if no query return or tz style timezone
-	 */
-	protected function getLocalZoneFromVideoID($videoID)
-	{
-		$result = $this->pdo->queryOneRow("SELECT localzone FROM tv_info WHERE videos_id = $videoID");
-
-		return (isset($result['localzone']) ? $result['localzone'] : '');
-	}
-
-	/**
 	 * Attempt a local lookup via the title first by exact match and then by like.
 	 * Returns a false for no match or the Video ID of the match.
 	 *
-	 * @param        $title
-	 * @param        $type
-	 * @param int    $source
+	 * @param     $title
+	 * @param     $type
+	 * @param int $source
 	 *
 	 * @return false|int
 	 */
@@ -204,11 +145,11 @@ abstract class Videos
 	}
 
 	/**
-	 * Supplementary function for getByTitle that queries for exact match
+	 * Supplementary function for getByTitle that queries for exact match.
 	 *
-	 * @param        $title
-	 * @param        $type
-	 * @param int    $source
+	 * @param     $title
+	 * @param     $type
+	 * @param int $source
 	 *
 	 * @return array|false
 	 */
@@ -217,7 +158,8 @@ abstract class Videos
 		$return = false;
 		if (!empty($title)) {
 			$return = $this->pdo->queryOneRow(
-				sprintf('
+				sprintf(
+					'
 					SELECT v.id
 					FROM videos v
 					WHERE v.title = %1$s
@@ -230,7 +172,8 @@ abstract class Videos
 			// Try for an alias
 			if ($return === false) {
 				$return = $this->pdo->queryOneRow(
-					sprintf('
+					sprintf(
+						'
 						SELECT v.id
 						FROM videos v
 						INNER JOIN videos_aliases va ON v.id = va.videos_id
@@ -248,11 +191,11 @@ abstract class Videos
 	}
 
 	/**
-	 * Supplementary function for getByTitle that queries for a like match
+	 * Supplementary function for getByTitle that queries for a like match.
 	 *
-	 * @param        $title
-	 * @param        $type
-	 * @param int    $source
+	 * @param     $title
+	 * @param     $type
+	 * @param int $source
 	 *
 	 * @return array|false
 	 */
@@ -262,7 +205,8 @@ abstract class Videos
 
 		if (!empty($title)) {
 			$return = $this->pdo->queryOneRow(
-				sprintf('
+				sprintf(
+					'
 					SELECT v.id
 					FROM videos v
 					WHERE v.title %s
@@ -275,7 +219,8 @@ abstract class Videos
 			// Try for an alias
 			if ($return === false) {
 				$return = $this->pdo->queryOneRow(
-					sprintf('
+					sprintf(
+						'
 						SELECT v.id
 						FROM videos v
 						INNER JOIN videos_aliases va ON v.id = va.videos_id
@@ -293,7 +238,7 @@ abstract class Videos
 	}
 
 	/**
-	 * Inserts aliases for videos
+	 * Inserts aliases for videos.
 	 *
 	 * @param       $videoId
 	 * @param array $aliases
@@ -301,7 +246,7 @@ abstract class Videos
 	public function addAliases($videoId, array $aliases = [])
 	{
 		if (!empty($aliases) && $videoId > 0) {
-			foreach ($aliases AS $key => $title) {
+			foreach ($aliases as $key => $title) {
 				// Check for tvmaze style aka
 				if (is_array($title) && !empty($title['name'])) {
 					$title = $title['name'];
@@ -311,7 +256,8 @@ abstract class Videos
 
 				if ($check === false) {
 					$this->pdo->queryInsert(
-						sprintf('
+						sprintf(
+							'
 							INSERT IGNORE INTO videos_aliases
 							(videos_id, title)
 							VALUES (%d, %s)',
@@ -325,7 +271,7 @@ abstract class Videos
 	}
 
 	/**
-	 * Retrieves all aliases for given VideoID or VideoID for a given alias
+	 * Retrieves all aliases for given VideoID or VideoID for a given alias.
 	 *
 	 * @param int    $videoId
 	 * @param string $alias
@@ -339,17 +285,82 @@ abstract class Videos
 
 		if ($videoId > 0) {
 			$sql = 'videos_id = ' . $videoId;
-		} else if ($alias !== '') {
+		} elseif ($alias !== '') {
 			$sql = 'title = ' . $this->pdo->escapeString($alias);
 		}
 
 		if ($sql !== '') {
-			$return = $this->pdo->query('
+			$return = $this->pdo->query(
+				'
 				SELECT *
 				FROM videos_aliases
-				WHERE ' . $sql, true, nZEDb_CACHE_EXPIRY_MEDIUM
+				WHERE ' . $sql,
+				true,
+				nZEDb_CACHE_EXPIRY_MEDIUM
 			);
 		}
 		return (empty($return) ? false : $return);
+	}
+
+	/**
+	 * Main processing director function for scrapers
+	 * Calls work query function and initiates processing.
+	 *
+	 * @param      $groupID
+	 * @param      $guidChar
+	 * @param      $process
+	 * @param bool $local
+	 */
+	abstract protected function processSite($groupID, $guidChar, $process, $local = false);
+
+	/**
+	 * Get video info from a Video ID and column.
+	 *
+	 * @param string $siteColumn
+	 * @param int    $videoID
+	 *
+	 * @return array|false False if invalid site, or ID not found; Site id value otherwise.
+	 */
+	protected function getSiteIDFromVideoID($siteColumn, $videoID)
+	{
+		if (in_array($siteColumn, $this->sites)) {
+			$result = $this->pdo->queryOneRow("SELECT $siteColumn FROM videos WHERE id = $videoID");
+
+			return $result[$siteColumn] ?? false;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get video info from a Site ID and column.
+	 *
+	 * @param string $siteColumn
+	 * @param int    $siteID
+	 *
+	 * @return int|false False if invalid site, or ID not found; video.id value otherwise.
+	 */
+	protected function getVideoIDFromSiteID($siteColumn, $siteID)
+	{
+		if (in_array($siteColumn, $this->sites)) {
+			$result = $this->pdo->queryOneRow("SELECT id FROM videos WHERE $siteColumn = $siteID");
+
+			return isset($result['id']) ? (int)$result['id'] : false;
+		}
+		return false;
+	}
+
+	/**
+	 * Get TV show local timezone from a Video ID.
+	 *
+	 * @param int $videoID
+	 *
+	 * @return string Empty string if no query return or tz style timezone
+	 */
+	protected function getLocalZoneFromVideoID($videoID)
+	{
+		$result = $this->pdo->queryOneRow("SELECT localzone FROM tv_info WHERE videos_id = $videoID");
+
+		return ($result['localzone'] ?? '');
 	}
 }

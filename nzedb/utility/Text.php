@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2015 nZEDb
  */
@@ -37,7 +38,8 @@ class Text
 		// Strip leading/trailing white space.
 		return trim(
 		// Replace 2 or more white space for a single space.
-			preg_replace('/\s{2,}/',
+			preg_replace(
+				'/\s{2,}/',
 						 ' ',
 						// Replace new lines and carriage returns. DO NOT try removing '\r' or '\n' as they are valid in queries which uses this method.
 						str_replace(["\n", "\r"], ' ', $text)
@@ -62,12 +64,12 @@ class Text
 	 * relative to the last occurrence of the specified character.
 	 * The character selected may be retained or discarded.
 	 *
-	 * @param string $character      the character to search for.
-	 * @param string $string         the string to search through.
-	 * @param string $side           determines whether text to the left or the right of the character is returned.
-	 *                               Options are: left, or right.
-	 * @param bool   $keepCharacter  determines whether or not to keep the character.
-	 *                               Options are: true, or false.
+	 * @param string $character     the character to search for.
+	 * @param string $string        the string to search through.
+	 * @param string $side          determines whether text to the left or the right of the character is returned.
+	 *                              Options are: left, or right.
+	 * @param bool   $keepCharacter determines whether or not to keep the character.
+	 *                              Options are: true, or false.
 	 *
 	 * @return string
 	 */
@@ -93,7 +95,7 @@ class Text
 		return ($piece);
 	}
 
-	public static  function pathCombine(array $elements, $prefix = '')
+	public static function pathCombine(array $elements, $prefix = '')
 	{
 		return $prefix . implode(DS, $elements);
 	}
@@ -114,7 +116,7 @@ class Text
 	 *
 	 * @param $text        String variable to strip.
 	 *
-	 * @return string    The stripped variable.
+	 * @return string The stripped variable.
 	 */
 	public static function stripNonPrintingChars(&$text)
 	{
@@ -162,7 +164,7 @@ class Text
 	}
 
 	/**
-	 * This function turns a roman numeral into an integer
+	 * This function turns a roman numeral into an integer.
 	 *
 	 * @param string $string
 	 *

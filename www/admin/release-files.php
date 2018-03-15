@@ -1,8 +1,8 @@
 <?php
 require_once './config.php';
 
-use nzedb\Releases;
 use nzedb\NZB;
+use nzedb\Releases;
 use nzedb\utility\Misc;
 
 $page = new AdminPage;

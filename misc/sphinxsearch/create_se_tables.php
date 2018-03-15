@@ -1,8 +1,8 @@
 <?php
 require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\ReleaseSearch;
 use nzedb\db\DB;
+use nzedb\ReleaseSearch;
 
 if (nZEDb_RELEASE_SEARCH_TYPE != ReleaseSearch::SPHINX) {
 	exit('Error, nZEDb_RELEASE_SEARCH_TYPE in nzedb/config/settings.php must be set to SPHINX!' . PHP_EOL);

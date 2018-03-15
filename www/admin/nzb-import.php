@@ -13,7 +13,6 @@ $page = new AdminPage();
 $filesToProcess = [];
 $output = '';
 if ($page->isPostBack()) {
-
 	$useNzbName = false;
 	$deleteNZB  = true;
 	// Get the list of NZB files from php /tmp folder if nzb files were uploaded.
@@ -46,7 +45,9 @@ if ($page->isPostBack()) {
 	if (count($filesToProcess) > 0) {
 		// Create a new instance of NZBImport and send it the file locations.
 		$output = (new NZBImport(['Browser' => true, 'Settings' => $page->settings]))->beginImport(
-			$filesToProcess, $useNzbName, $deleteNZB
+			$filesToProcess,
+			$useNzbName,
+			$deleteNZB
 		);
 	}
 }

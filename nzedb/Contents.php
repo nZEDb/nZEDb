@@ -6,7 +6,9 @@ use nzedb\db\DB;
 class Contents
 {
 	const TYPEUSEFUL = 1;
+
 	const TYPEARTICLE = 2;
+
 	const TYPEINDEX = 3;
 
 	/**
@@ -94,7 +96,6 @@ class Contents
 
 	public function getForMenuByTypeAndRole($id, $role)
 	{
-
 		$arr = [];
 		$rows = $this->data_getForMenuByTypeAndRole($id, $role);
 		if ($rows === false) {

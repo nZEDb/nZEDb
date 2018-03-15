@@ -5,6 +5,7 @@ use nzedb\utility\Misc;
 
 class Desura
 {
+	const DESURAURL = 'http://www.desura.com';
 
 	/**
 	 * @var
@@ -15,8 +16,6 @@ class Desura
 	 * @var
 	 */
 	public $searchTerm;
-
-	const DESURAURL = 'http://www.desura.com';
 
 	/**
 	 * @var
@@ -63,7 +62,6 @@ class Desura
 	 */
 	protected $_title = '';
 
-
 	public function __construct()
 	{
 		$this->_html = new \simple_html_dom();
@@ -73,8 +71,7 @@ class Desura
 	}
 
 	/**
-	 * Remove object/resources from memory
-	 *
+	 * Remove object/resources from memory.
 	 */
 	public function __destruct()
 	{
@@ -83,20 +80,20 @@ class Desura
 	}
 
 	/**
-	 * Game Description
+	 * Game Description.
 	 *
 	 * @return array
 	 */
 	public function gameDescription()
 	{
-			if ($this->_ret = $this->_html->find('div.headernormalbox, div.inner, div.body', 4)) {
-				$this->_res['description'] = trim($this->_ret->plaintext);
-			}
+		if ($this->_ret = $this->_html->find('div.headernormalbox, div.inner, div.body', 4)) {
+			$this->_res['description'] = trim($this->_ret->plaintext);
+		}
 		return $this->_res;
 	}
 
 	/**
-	 * Gets the Rating
+	 * Gets the Rating.
 	 *
 	 * @return array
 	 */
@@ -112,24 +109,24 @@ class Desura
 	}
 
 	/**
-	 * Gets the (cover image)
+	 * Gets the (cover image).
 	 *
 	 * @return array
 	 */
 	public function images()
 	{
-			if ($this->_ret = $this->_html->find('img[alt=Boxshot]', 0)) {
-				$this->_ret->src = preg_replace('#cache/#', '', $this->_ret->src);
-				$this->_ret->src = preg_replace('#thumb_150x150/#', '', $this->_ret->src);
-				$this->_res['cover'] = $this->_ret->src;
-			}
+		if ($this->_ret = $this->_html->find('img[alt=Boxshot]', 0)) {
+			$this->_ret->src = preg_replace('#cache/#', '', $this->_ret->src);
+			$this->_ret->src = preg_replace('#thumb_150x150/#', '', $this->_ret->src);
+			$this->_res['cover'] = $this->_ret->src;
+		}
 
-			// backcover will be with trailers where it will get loaded last
+		// backcover will be with trailers where it will get loaded last
 		return $this->_res;
 	}
 
 	/**
-	 * Get Details of the game (Genre, Platform(s), Developer, Publisher)
+	 * Get Details of the game (Genre, Platform(s), Developer, Publisher).
 	 *
 	 * @return array
 	 */
@@ -139,11 +136,11 @@ class Desura
 			foreach ($this->_ret->find('div.row') as $row) {
 				if ($this->_ret = $row->find('h5', 0)) {
 					switch (trim($this->_ret->plaintext)) {
-						case 'Genre' :
-						case 'Platform' :
-						case 'Platforms' :
-						case 'Developer' :
-						case 'Publisher' :
+						case 'Genre':
+						case 'Platform':
+						case 'Platforms':
+						case 'Developer':
+						case 'Publisher':
 							$this->_res['gamedetails'][$this->_ret->plaintext] = trim($this->_ret->next_sibling()->plaintext);
 							break;
 					}
@@ -155,7 +152,7 @@ class Desura
 	}
 
 	/**
-	 * Gets the Video and backdrop image for the game
+	 * Gets the Video and backdrop image for the game.
 	 *
 	 * @return array
 	 */
@@ -197,9 +194,11 @@ class Desura
 			if ($this->getUrl(self::DESURAURL . '/games/' . $this->searchTerm) !== false) {
 				if (!preg_match('#(Games system error)#i', $this->_response)) {
 					if ($this->_ret = $this->_html->find('a#watchtoggle', 0)) {
-						if (preg_match('#siteareaid=(?<gameid>\d+)#',
+						if (preg_match(
+							'#siteareaid=(?<gameid>\d+)#',
 									   $this->_ret->href,
-									   $matches)) {
+									   $matches
+						)) {
 							$this->_desuraGameID = $matches['gameid'];
 							$this->_directURL    = self::DESURAURL . '/games/' . $this->searchTerm;
 							$result              = true;
@@ -245,10 +244,10 @@ class Desura
 	}
 
 	/**
-	 * Gets Raw Html
+	 * Gets Raw Html.
 	 *
 	 * @param string $fetchURL
-	 * @param bool $usePost
+	 * @param bool   $usePost
 	 *
 	 * @return bool
 	 */
@@ -261,11 +260,11 @@ class Desura
 			curl_setopt($this->_ch, CURLOPT_POST, 1);
 			curl_setopt($this->_ch, CURLOPT_POSTFIELDS, $this->_postParams);
 		}
-			curl_setopt($this->_ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($this->_ch, CURLOPT_HEADER, 0);
-			curl_setopt($this->_ch, CURLOPT_VERBOSE, 0);
-			curl_setopt($this->_ch, CURLOPT_USERAGENT, 'Firefox/2.0.0.1');
-			curl_setopt($this->_ch, CURLOPT_FAILONERROR, 0);
+		curl_setopt($this->_ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($this->_ch, CURLOPT_HEADER, 0);
+		curl_setopt($this->_ch, CURLOPT_VERBOSE, 0);
+		curl_setopt($this->_ch, CURLOPT_USERAGENT, 'Firefox/2.0.0.1');
+		curl_setopt($this->_ch, CURLOPT_FAILONERROR, 0);
 		if (isset($this->cookie)) {
 			curl_setopt($this->_ch, CURLOPT_COOKIEJAR, $this->cookie);
 			curl_setopt($this->_ch, CURLOPT_COOKIEFILE, $this->cookie);

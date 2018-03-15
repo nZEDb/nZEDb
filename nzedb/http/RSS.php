@@ -1,18 +1,17 @@
 <?php
-
 namespace nzedb\http;
 
-use nzedb\Releases;
 use nzedb\Category;
-use nzedb\NZB;
 use nzedb\db\DB;
+use nzedb\NZB;
+use nzedb\Releases;
 
 /**
- * Class RSS -- contains specific functions for RSS
+ * Class RSS -- contains specific functions for RSS.
  *
  * @package nzedb
  */
-Class RSS extends Capabilities
+class RSS extends Capabilities
 {
 	/** Releases class
 	 * @var Releases
@@ -32,7 +31,7 @@ Class RSS extends Capabilities
 		parent::__construct($options);
 		$defaults = [
 			'Settings' => null,
-			'Releases' => null
+			'Releases' => null,
 		];
 		$options += $defaults;
 
@@ -66,7 +65,7 @@ Class RSS extends Capabilities
 					'INNER JOIN users_releases ON users_releases.user_id = %d AND users_releases.releases_id = r.id',
 					$userID
 				);
-			} else if ($cat[0] != -1) {
+			} elseif ($cat[0] != -1) {
 				$catSearch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 			}
 		}
@@ -110,7 +109,9 @@ Class RSS extends Capabilities
 				($aniDbID > 0 ? sprintf('AND r.anidbid = %d %s', $aniDbID, ($catSearch == '' ? $catLimit : '')) : ''),
 				($airDate > -1 ? sprintf('AND tve.firstaired >= DATE_SUB(CURDATE(), INTERVAL %d DAY)', $airDate) : ''),
 				(' LIMIT 0,' . ($offset > 100 ? 100 : $offset))
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
+			),
+			true,
+			nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 		return $sql;
 	}
@@ -128,7 +129,8 @@ Class RSS extends Capabilities
 	public function getShowsRss($limit, $userID = 0, $excludedCats = [], $airDate = -1)
 	{
 		return $this->pdo->query(
-			sprintf("
+			sprintf(
+				"
 				SELECT r.*, v.id, v.title, g.name AS group_name,
 					CONCAT(cp.title, '-', c.title) AS category_name,
 					%s AS category_ids,
@@ -147,7 +149,8 @@ Class RSS extends Capabilities
 				$this->releases->getConcatenatedCategoryIDs(),
 				$this->releases->uSQL(
 					$this->pdo->query(
-						sprintf('
+						sprintf(
+							'
 							SELECT videos_id, categories
 							FROM user_series
 							WHERE user_id = %d',
@@ -164,7 +167,9 @@ Class RSS extends Capabilities
 				Category::TV_OTHER,
 				$this->releases->showPasswords,
 				(' LIMIT ' . ($limit > 100 ? 100 : $limit) . ' OFFSET 0')
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
+			),
+			true,
+			nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 	}
 
@@ -180,7 +185,8 @@ Class RSS extends Capabilities
 	public function getMyMoviesRss($limit, $userID = 0, $excludedCats = [])
 	{
 		return $this->pdo->query(
-			sprintf("
+			sprintf(
+				"
 				SELECT r.*, mi.title AS releasetitle, g.name AS group_name,
 					CONCAT(cp.title, '-', c.title) AS category_name,
 					%s AS category_ids,
@@ -198,7 +204,8 @@ Class RSS extends Capabilities
 				$this->releases->getConcatenatedCategoryIDs(),
 				$this->releases->uSQL(
 					$this->pdo->query(
-						sprintf('
+						sprintf(
+							'
 							SELECT imdbid, categories
 							FROM user_movies
 							WHERE user_id = %d',
@@ -223,7 +230,6 @@ Class RSS extends Capabilities
 	/**
 	 * @param $column
 	 * @param $table
-	 *
 	 * @param $order
 	 *
 	 * @return array|bool
@@ -231,7 +237,8 @@ Class RSS extends Capabilities
 	public function getFirstInstance($column, $table, $order)
 	{
 		return $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT %1$s
 				FROM %2$s
 				WHERE %1$s > 0

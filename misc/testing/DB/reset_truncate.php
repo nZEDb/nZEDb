@@ -11,7 +11,7 @@ if (isset($argv[1]) && ($argv[1] == 'true' || $argv[1] == 'drop')) {
 	$pdo->queryExec('UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL');
 	echo $pdo->log->primary('Reseting all groups completed.');
 
-	$arr = array('parts', 'missed_parts', 'binaries', 'collections');
+	$arr = ['parts', 'missed_parts', 'binaries', 'collections'];
 	foreach ($arr as &$value) {
 		$rel = $pdo->queryExec("TRUNCATE TABLE $value");
 		if ($rel !== false) {
@@ -42,7 +42,8 @@ if (isset($argv[1]) && ($argv[1] == 'true' || $argv[1] == 'drop')) {
 	$delcount = $pdo->queryDirect('DELETE FROM releases WHERE nzbstatus = 0');
 	echo $pdo->log->primary($delcount->rowCount() . ' releases had no nzb, deleted.');
 } else {
-	exit($pdo->log->error("\nThis script removes releases with no NZBs, resets all groups, truncates or drops(tpg) \n"
+	exit($pdo->log->error(
+		"\nThis script removes releases with no NZBs, resets all groups, truncates or drops(tpg) \n"
 		. "article tables. All other releases are left alone.\n"
 		. "php $argv[0] [true, drop]   ...: To reset all groups and truncate/drop the tables.\n"
 		)

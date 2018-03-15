@@ -1,13 +1,12 @@
 <?php
 
 use app\models\Settings;
-use nzedb\utility\Misc;
 use nzedb\Captcha;
+use nzedb\utility\Misc;
 
 $captcha = new Captcha($page);
 $msg = '';
 if (isset($_POST['useremail'])) {
-
 	if ($captcha->getError() === false) {
 
 		// Send the contact info and report back to user.
@@ -18,7 +17,7 @@ if (isset($_POST['useremail'])) {
 		$mailbody = 'Values submitted from contact form:<br/>';
 
 		//@TODO take this loop out, it's not safe.
-		foreach($_POST as $key => $value) {
+		foreach ($_POST as $key => $value) {
 			if ($key != 'submit') {
 				$mailbody .= "$key : $value<br/>";
 			}

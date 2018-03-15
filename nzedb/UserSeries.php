@@ -4,7 +4,7 @@ namespace nzedb;
 use nzedb\db\DB;
 
 /**
- * Class UserSeries
+ * Class UserSeries.
  *
  * Sets and Gets data from and to the DB "userseries" table and the "my shows" web-page.
  */
@@ -31,9 +31,9 @@ class UserSeries
 	/**
 	 * When a user wants to add a show to "my shows" insert it into the user series table.
 	 *
-	 * @param int   $uID    ID of user.
+	 * @param int   $uID     ID of user.
 	 * @param int   $videoId Video ID of tv show.
-	 * @param array $catID  List of category ID's
+	 * @param array $catID   List of category ID's
 	 *
 	 * @return bool|int
 	 */
@@ -59,7 +59,8 @@ class UserSeries
 	public function getShows($uID)
 	{
 		return $this->pdo->query(
-			sprintf('
+			sprintf(
+				'
 				SELECT us.*, v.title
 				FROM user_series us
 				INNER JOIN videos v ON v.id = us.videos_id
@@ -73,7 +74,7 @@ class UserSeries
 	/**
 	 * Delete a tv show from the user's "my shows".
 	 *
-	 * @param int $uID    ID of user.
+	 * @param int $uID     ID of user.
 	 * @param int $videoId ID of tv show.
 	 */
 	public function delShow($uID, $videoId)
@@ -90,7 +91,7 @@ class UserSeries
 	/**
 	 * Get tv show information for a user.
 	 *
-	 * @param int $uID    ID of the user.
+	 * @param int $uID     ID of the user.
 	 * @param int $videoId ID of the TV show.
 	 *
 	 * @return array|bool
@@ -98,7 +99,8 @@ class UserSeries
 	public function getShow($uID, $videoId)
 	{
 		return $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT us.*, v.title
 				FROM user_series us
 				LEFT OUTER JOIN videos v ON v.id = us.videos_id
@@ -143,9 +145,9 @@ class UserSeries
 	/**
 	 * Update a TV show category ID for a user's "my show" TV show.
 	 *
-	 * @param int   $uID    ID of the user.
-	 * @param int $videoId ID of the TV show.
-	 * @param array $catID  List of category ID's.
+	 * @param int   $uID     ID of the user.
+	 * @param int   $videoId ID of the TV show.
+	 * @param array $catID   List of category ID's.
 	 */
 	public function updateShow($uID, $videoId, $catID = [])
 	{

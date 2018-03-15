@@ -1,8 +1,8 @@
 <?php
 
 use app\models\Settings;
-use nzedb\DnzbFailures;
 use nzedb\db\DB;
+use nzedb\DnzbFailures;
 
 // Page is accessible only by the rss token, or logged in users.
 if ($page->users->isLoggedIn()) {
@@ -37,7 +37,6 @@ if ($page->users->isLoggedIn()) {
 }
 
 if (isset($_GET['guid']) && isset($uid) && is_numeric($uid) && isset($rssToken)) {
-
 	$alt = (new DnzbFailures(['Settings' => $page->settings]))->getAlternate($_GET['guid'], $uid);
 	if ($alt === false) {
 		header('X-DNZB-RCode: 404');

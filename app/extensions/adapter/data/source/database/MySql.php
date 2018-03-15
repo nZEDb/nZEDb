@@ -5,9 +5,7 @@
  * code is distributed under the terms of the BSD 3-Clause License.
  * The full license text can be found in the LICENSE.txt file.
  */
-
 namespace app\extensions\adapter\data\source\database;
-
 
 /**
  * MySQL database driver. Extends the `Database` class to implement the necessary
@@ -71,8 +69,8 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 	 * Connects to the database by creating a PDO intance using the constructed DSN string.
 	 * Will set specific options on the connection as provided.
 	 *
-	 * @return boolean Returns `true` if a database connection could be established,
-	 *         otherwise `false`.
+	 * @return bool Returns `true` if a database connection could be established,
+	 *              otherwise `false`.
 	 */
 	public function connect()
 	{
@@ -99,20 +97,20 @@ class MySql extends \lithium\data\source\database\adapter\MySql
 	 *                           supplied.
 	 *
 	 * @return bool|string TZ string of the connection if $value is null, otherwise a boolean
-	 *					   indicating if setting the timezone succeeded or failed.
+	 *                     indicating if setting the timezone succeeded or failed.
 	 */
 	public function timezone($value = null)
 	{
 		if ($value === null) {
 			if ($this->session_tz === null) {
-				$this->session_tz = $this->connection->query(
-					'SELECT @@session.time_zone')->fetchColumn();
+				$this->session_tz = $this->connection->query('SELECT @@session.time_zone')
+					->fetchColumn();
 			}
 
 			$result = $this->session_tz;
-		} else if (empty($value)) {
+		} elseif (empty($value)) {
 			$result = false;
-			trigger_error(__CLASS__ . '::' . __METHOD__ . ': Empty value passed for timezone setting! Check date.timezone setting is set in PHP\'s configuration file.',E_USER_WARNING);
+			trigger_error(__CLASS__ . '::' . __METHOD__ . ': Empty value passed for timezone setting! Check date.timezone setting is set in PHP\'s configuration file.', E_USER_WARNING);
 		} else {
 			$result = $this->connection->exec("SET time_zone = '$value'") !== false;
 			if ($result) {

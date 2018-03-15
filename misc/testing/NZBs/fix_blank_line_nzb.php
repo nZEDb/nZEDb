@@ -1,9 +1,9 @@
 <?php
-/* Fixes NZB files with a blank first line. */
+// Fixes NZB files with a blank first line.
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\NZB;
 use nzedb\db\DB;
+use nzedb\NZB;
 
 $pdo = new DB();
 
@@ -36,10 +36,10 @@ if (isset($argv[1]) && $argv[1] == 'true') {
 					}
 				}
 				if ($nzbcount % 5000 == 0) {
-					echo $nzbcount . ' NZBs scanned. ' . $brokencount . ' NZBs fixed. ' . (TIME() - $timestart) . " seconds.\n";
-				} else if ($nzbcount % 1000 == 0) {
+					echo $nzbcount . ' NZBs scanned. ' . $brokencount . ' NZBs fixed. ' . (time() - $timestart) . " seconds.\n";
+				} elseif ($nzbcount % 1000 == 0) {
 					echo "\n";
-				} else if ($nzbcount % 10 == 0) {
+				} elseif ($nzbcount % 10 == 0) {
 					echo '.';
 				}
 			} else {
@@ -48,7 +48,7 @@ if (isset($argv[1]) && $argv[1] == 'true') {
 			unset($guid);
 		}
 	}
-	echo $pdo->log->header($nzbcount . ' NZB files scanned. in ' . TIME() - $timestart . ' seconds. ' . $brokencount . ' NZB files were fixed.');
+	echo $pdo->log->header($nzbcount . ' NZB files scanned. in ' . time() - $timestart . ' seconds. ' . $brokencount . ' NZB files were fixed.');
 } else {
 	exit($pdo->log->error("\nThis script can be dangerous, if you are sure you want to run this, STOP ALL OTHER nZEDb SCRIPTS.\n\n"
 				. "php $argv[0] true     ...: To remove blank lines from all nzbs.\n"));

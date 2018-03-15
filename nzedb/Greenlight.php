@@ -5,15 +5,17 @@ use nzedb\utility\Misc;
 
 class Greenlight
 {
+	const GREENLIGHTURL = 'http://steamcommunity.com/greenlight/';
+
+	const GREENLIGHTVARS = '&childpublishedfileid=0&section=items&appid=765&browsesort=textsearch';
+
+	const AGECHECKURL = 'http://store.steampowered.com/agecheck/app/';
+
+	const DIRECTGAMEURL = 'http://steamcommunity.com/sharedfiles/filedetails/?id=';
 
 	public $searchTerm = null;
+
 	public $cookie = null;
-
-
-	const GREENLIGHTURL = 'http://steamcommunity.com/greenlight/';
-	const GREENLIGHTVARS = '&childpublishedfileid=0&section=items&appid=765&browsesort=textsearch';
-	const AGECHECKURL = 'http://store.steampowered.com/agecheck/app/';
-	const DIRECTGAMEURL = 'http://steamcommunity.com/sharedfiles/filedetails/?id=';
 
 	/**
 	 * @var
@@ -69,7 +71,7 @@ class Greenlight
 	}
 
 	/**
-	 * Free up memory prevent memory leaks
+	 * Free up memory prevent memory leaks.
 	 */
 	public function __destruct()
 	{
@@ -92,31 +94,31 @@ class Greenlight
 	}
 
 	/**
-	 * Gets the images - cover and backdrop
+	 * Gets the images - cover and backdrop.
 	 *
 	 * @return array
 	 */
 	public function images()
 	{
-			if ($ret = $this->_html->find('div.workshopItemPreviewImageMain', 0)) {
-				if (preg_match('#\'(?<largeimage>.*)\'#i', $ret->outertext, $matches)) {
-					$this->_res['cover'] = trim($matches['largeimage']);
-				} else {
-					$this->_res['cover'] = $this->_html->find('img#previewImageMain', 0)->src;
+		if ($ret = $this->_html->find('div.workshopItemPreviewImageMain', 0)) {
+			if (preg_match('#\'(?<largeimage>.*)\'#i', $ret->outertext, $matches)) {
+				$this->_res['cover'] = trim($matches['largeimage']);
+			} else {
+				$this->_res['cover'] = $this->_html->find('img#previewImageMain', 0)->src;
+			}
+		}
+		if ($ret = $this->_html->find('div.screenshot_holder', 0)) {
+			if ($ret = $ret->find('a', 0)) {
+				if (preg_match('#\'(?<backdropimage>.*)\'#', $ret->outertext, $matches)) {
+					$this->_res['backdrop'] = trim($matches['backdropimage']);
 				}
 			}
-			if ($ret = $this->_html->find('div.screenshot_holder', 0)) {
-				if ($ret = $ret->find('a', 0)) {
-					if (preg_match('#\'(?<backdropimage>.*)\'#', $ret->outertext, $matches)) {
-						$this->_res['backdrop'] = trim($matches['backdropimage']);
-					}
-				}
-			}
+		}
 		return $this->_res;
 	}
 
 	/**
-	 * Return game details - Genre, Platform, Players
+	 * Return game details - Genre, Platform, Players.
 	 *
 	 * @return array
 	 */
@@ -148,15 +150,15 @@ class Greenlight
 	}
 
 	/**
-	 * Gets the trailer for the game
+	 * Gets the trailer for the game.
 	 *
 	 * @return array
 	 */
 	public function trailer()
 	{
-			if (preg_match('#youtube_video_id: "(?<youtubeid>.*)",#i', $this->_response, $matches)) {
-				$this->_res['trailer'] = 'https://www.youtube.com/watch?v=' . trim($matches['youtubeid']);
-			}
+		if (preg_match('#youtube_video_id: "(?<youtubeid>.*)",#i', $this->_response, $matches)) {
+			$this->_res['trailer'] = 'https://www.youtube.com/watch?v=' . trim($matches['youtubeid']);
+		}
 
 		return $this->_res;
 	}
@@ -200,7 +202,7 @@ class Greenlight
 	}
 
 	/**
-	 * Gets all Information
+	 * Gets all Information.
 	 *
 	 * @return array
 	 */
@@ -229,10 +231,30 @@ class Greenlight
 	}
 
 	/**
-	 * Gets the raw html to parse
+	 * Removes all but alphanumeric only and does a 100% match check.
+	 *
+	 * @param string $title
+	 * @param string $searchtitle
+	 *
+	 * @return bool
+	 */
+	protected function cleanTitles($title = '', $searchtitle = '')
+	{
+		$title = preg_replace('/[^\w]/', '', $title);
+		$searchtitle = preg_replace('/[^\w]/', '', $searchtitle);
+		similar_text($title, $searchtitle, $p);
+		if ($p == 100) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Gets the raw html to parse.
 	 *
 	 * @param string $fetchurl
-	 * @param bool $usepost
+	 * @param bool   $usepost
 	 *
 	 * @return bool
 	 */
@@ -267,25 +289,5 @@ class Greenlight
 		$this->_html->load($this->_response);
 
 		return true;
-	}
-
-	/**
-	 * Removes all but alphanumeric only and does a 100% match check
-	 *
-	 * @param string $title
-	 * @param string $searchtitle
-	 *
-	 * @return bool
-	 */
-	protected function cleanTitles($title = '', $searchtitle = '')
-	{
-		$title = preg_replace('/[^\w]/', '', $title);
-		$searchtitle = preg_replace('/[^\w]/', '', $searchtitle);
-		similar_text($title, $searchtitle, $p);
-		if ($p == 100) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 }

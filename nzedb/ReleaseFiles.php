@@ -11,14 +11,14 @@ use nzedb\db\DB;
 class ReleaseFiles
 {
 	/**
-	 * @var \nzedb\db\DB
-	 */
-	protected $pdo;
-
-	/**
 	 * @var SphinxSearch
 	 */
 	public $sphinxSearch;
+
+	/**
+	 * @var \nzedb\db\DB
+	 */
+	protected $pdo;
 
 	/**
 	 * @param \nzedb\db\DB $settings
@@ -51,7 +51,8 @@ class ReleaseFiles
 	public function getByGuid($guid)
 	{
 		return $this->pdo->query(
-			sprintf('
+			sprintf(
+				'
 				SELECT release_files.*
 				FROM release_files
 				INNER JOIN releases r ON r.id = release_files.releases_id
@@ -92,7 +93,8 @@ class ReleaseFiles
 		$insert = 0;
 
 		$duplicateCheck = $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT releases_id
 				FROM release_files
 				WHERE releases_id = %d AND name = %s',
@@ -103,7 +105,8 @@ class ReleaseFiles
 
 		if ($duplicateCheck === false) {
 			$insert = $this->pdo->queryInsert(
-					sprintf('
+					sprintf(
+						'
 						INSERT INTO release_files
 						(releases_id, name, size, createddate, passworded)
 						VALUES

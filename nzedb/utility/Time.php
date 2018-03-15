@@ -15,13 +15,14 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    ruhllatio
  * @copyright 2015 nZEDb
  */
 namespace nzedb\utility;
 
 /**
- * Class Time -- functions for working with time string and DTOs
+ * Class Time -- functions for working with time string and DTOs.
  *
  * @package nzedb\utility
  */
@@ -29,7 +30,7 @@ class Time
 {
 	/**
 	 * For a given timestamp, calculate the localized show/episode airdate
-	 * via the provided local airing timezone
+	 * via the provided local airing timezone.
 	 *
 	 * @param string $time
 	 * @param string $zone
@@ -58,7 +59,7 @@ class Time
 			'sep' => 9,
 			'oct' => 10,
 			'nov' => 11,
-			'dec' => 12
+			'dec' => 12,
 		];
 
 		$month = strtolower($month);

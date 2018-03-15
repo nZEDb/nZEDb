@@ -1,7 +1,5 @@
 <?php
-
 namespace nzedb\processing\adult;
-
 
 abstract class AdultMovies
 {
@@ -33,33 +31,6 @@ abstract class AdultMovies
 	}
 
 	/**
-	 * @param bool $extras
-	 *
-	 * @return mixed
-	 */
-	abstract protected function productInfo($extras = false);
-
-	/**
-	 * @return mixed
-	 */
-	abstract protected function covers();
-
-	/**
-	 * @return mixed
-	 */
-	abstract protected function synopsis();
-
-	/**
-	 * @return mixed
-	 */
-	abstract protected function cast();
-
-	/**
-	 * @return mixed
-	 */
-	abstract protected function genres();
-
-	/**
 	 * @param string $movie
 	 *
 	 * @return mixed
@@ -67,12 +38,7 @@ abstract class AdultMovies
 	abstract public function processSite($movie);
 
 	/**
-	 * @return mixed
-	 */
-	abstract protected function trailers();
-
-	/**
-	 * Gets all information
+	 * Gets all information.
 	 *
 	 * @return array|bool
 	 */
@@ -119,4 +85,36 @@ abstract class AdultMovies
 
 		return $results;
 	}
+
+	/**
+	 * @param bool $extras
+	 *
+	 * @return mixed
+	 */
+	abstract protected function productInfo($extras = false);
+
+	/**
+	 * @return mixed
+	 */
+	abstract protected function covers();
+
+	/**
+	 * @return mixed
+	 */
+	abstract protected function synopsis();
+
+	/**
+	 * @return mixed
+	 */
+	abstract protected function cast();
+
+	/**
+	 * @return mixed
+	 */
+	abstract protected function genres();
+
+	/**
+	 * @return mixed
+	 */
+	abstract protected function trailers();
 }

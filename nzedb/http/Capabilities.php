@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    ruhllatio
  * @copyright 2016 nZEDb
  */
@@ -23,11 +24,11 @@ namespace nzedb\http;
 use app\extensions\util\Versions;
 use app\models\Settings;
 use nzedb\Category;
-use nzedb\Utility\Misc;
 use nzedb\db\DB;
+use nzedb\Utility\Misc;
 
 /**
- * Class Output -- abstract class for printing web requests outside of Smarty
+ * Class Output -- abstract class for printing web requests outside of Smarty.
  *
  * @package nzedb\http
  */
@@ -37,7 +38,6 @@ abstract class Capabilities
 	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
-
 
 	/**
 	 * @var string The type of Capabilities request
@@ -61,11 +61,11 @@ abstract class Capabilities
 	/**
 	 * Print XML or JSON output.
 	 *
-	 * @param array|string  $data   Data to print.
-	 * @param array  $params Additional request parameters
-	 * @param int    $offset How much releases to skip
-	 * @param bool   $xml    True: Print as XML False: Print as JSON.
-	 * @param string $type   What type of API query to format if XML
+	 * @param array|string $data   Data to print.
+	 * @param array        $params Additional request parameters
+	 * @param int          $offset How much releases to skip
+	 * @param bool         $xml    True: Print as XML False: Print as JSON.
+	 * @param string       $type   What type of API query to format if XML
 	 */
 	public function output($data, $params, $offset, $xml = true, $type = '')
 	{
@@ -76,7 +76,7 @@ abstract class Capabilities
 			'Data'       => $data,
 			'Server'     => $this->getForMenu(),
 			'Offset'     => $offset,
-			'Type'       => $type
+			'Type'       => $type,
 		];
 
 		// Generate the XML Response
@@ -113,7 +113,7 @@ abstract class Capabilities
 	}
 
 	/**
-	 * Collect and return various capability information for usage in API
+	 * Collect and return various capability information for usage in API.
 	 *
 	 * @return array
 	 */
@@ -139,26 +139,25 @@ abstract class Capabilities
 				'email'      => Settings::value('site.main.email'),
 				'meta'       => Settings::value('site.main.metakeywords'),
 				'url'        => $serverroot,
-				'image'      => $serverroot . 'themes/shared/images/logo.png'
+				'image'      => $serverroot . 'themes/shared/images/logo.png',
 			],
 			'limits' => [
 				'max'     => 100,
-				'default' => 100
+				'default' => 100,
 			],
 			'registration' => [
 				'available' => 'yes',
-				'open'      => (int)Settings::value('..registerstatus') === 0 ? 'yes' : 'no'
+				'open'      => (int)Settings::value('..registerstatus') === 0 ? 'yes' : 'no',
 			],
 			'searching' => [
 				'search'       => ['available' => 'yes', 'supportedParams' => 'q'],
 				'tv-search'    => ['available' => 'yes', 'supportedParams' => 'q,vid,tvdbid,traktid,rid,tvmazeid,imdbid,tmdbid,season,ep'],
 				'movie-search' => ['available' => 'yes', 'supportedParams' => 'q,imdbid'],
-				'audio-search' => ['available' => 'no',  'supportedParams' => '']
+				'audio-search' => ['available' => 'no',  'supportedParams' => ''],
 			],
-			'categories' =>
-				$this->type === 'caps'
+			'categories' => $this->type === 'caps'
 					? (new Category(['Settings' => $this->pdo]))->getForMenu()
-					: null
+					: null,
 
 		];
 	}

@@ -1,9 +1,9 @@
 <?php
 
 use app\models\Settings;
-use nzedb\Users;
-use nzedb\db\DB;
 use nzedb\Captcha;
+use nzedb\db\DB;
+use nzedb\Users;
 
 if ($page->users->isLoggedIn()) {
 	header('Location: ' . WWW_TOP . '/');
@@ -22,7 +22,7 @@ if ($value == Settings::REGISTER_STATUS_CLOSED || $value == Settings::REGISTER_S
 }
 
 if ($showRegister == 1) {
-	$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
+	$action = $_REQUEST['action'] ?? 'view';
 
 	//Be sure to persist the invite code in the event of multiple form submissions. (errors)
 	if (isset($_REQUEST['invitecode'])) {
@@ -49,8 +49,16 @@ if ($showRegister == 1) {
 					// Get the default user role.
 					$userDefault = $page->users->getDefaultRole();
 
-					$ret = $page->users->signUp($userName, $firstName, $lastName, $password, $email,
-						$_SERVER['REMOTE_ADDR'], $userDefault['id'], $userDefault['defaultinvites'], $inviteCode
+					$ret = $page->users->signUp(
+						$userName,
+						$firstName,
+						$lastName,
+						$password,
+						$email,
+						$_SERVER['REMOTE_ADDR'],
+						$userDefault['id'],
+						$userDefault['defaultinvites'],
+						$inviteCode
 					);
 					if ($ret > 0) {
 						$page->users->login($ret, $_SERVER['REMOTE_ADDR']);
@@ -99,7 +107,8 @@ if ($showRegister == 1) {
 			}
 	}
 }
-$page->smarty->assign([
+$page->smarty->assign(
+	[
 		'username'          => $userName,
 		'firstname'         => $firstName,
 		'lastname'          => $lastName,
@@ -109,7 +118,7 @@ $page->smarty->assign([
 		'invitecode'        => $inviteCode,
 		'invite_code_query' => $inviteCodeQuery,
 		'showregister'      => $showRegister,
-		'error'             => $error
+		'error'             => $error,
 	]
 );
 $page->meta_title = 'Register';

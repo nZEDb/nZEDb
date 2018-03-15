@@ -2,8 +2,8 @@
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ConsoleTools;
-use nzedb\Groups;
 use nzedb\db\DB;
+use nzedb\Groups;
 
 $pdo = new DB();
 
@@ -76,4 +76,4 @@ if (isset($argv[2]) && $argv[2] == 'truncate') {
 	$pdo->queryExec('TRUNCATE TABLE parts');
 }
 
-echo $pdo->log->header("Processed: ${i} groups and " . number_format($parts_count['cnt']) . ' parts in ' . $consoleTools->convertTimer(TIME() - $start));
+echo $pdo->log->header("Processed: ${i} groups and " . number_format($parts_count['cnt']) . ' parts in ' . $consoleTools->convertTimer(time() - $start));

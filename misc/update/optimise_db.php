@@ -5,7 +5,6 @@ use nzedb\db\DB;
 
 $pdo = new DB();
 if (isset($argv[1]) && in_array($argv[1], ['space', 'analyze', 'full'])) {
-
 	if ($argv[1] === 'analyze') {
 		echo $pdo->log->header('Analyzing MySQL tables, this can take a while...' . PHP_EOL);
 	} else {
@@ -14,7 +13,7 @@ if (isset($argv[1]) && in_array($argv[1], ['space', 'analyze', 'full'])) {
 	$tableCount = $pdo->optimise(false, $argv[1], (isset($argv[2]) && $argv[2] === 'true'), (isset($argv[3]) ? [$argv[3]] : []));
 	if ($tableCount > 0 && $argv[1] === 'analyze') {
 		exit($pdo->log->header("Analyzed {$tableCount} MySQL tables successfully." . PHP_EOL));
-	} else if ($tableCount > 0) {
+	} elseif ($tableCount > 0) {
 		exit($pdo->log->header("Optimized {$tableCount} MySQL tables successfully." . PHP_EOL));
 	} else {
 		exit($pdo->log->notice('No MySQL tables to optimize.' . PHP_EOL));

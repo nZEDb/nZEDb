@@ -15,10 +15,12 @@ $limit = (isset($_POST['limit']) && is_numeric($_POST['limit']) ? $_POST['limit'
 $page->smarty->assign(['group' => $group, 'regex' => $regex, 'limit' => $limit]);
 
 if ($group && $regex) {
-	$page->smarty->assign('data',
-		(new Regexes([
+	$page->smarty->assign(
+		'data',
+		(new Regexes(
+			[
 			'Settings'   => $page->settings,
-			'Table_Name' => 'collection_regexes'
+			'Table_Name' => 'collection_regexes',
 		]
 		))->testCollectionRegex($group, $regex, $limit)
 	);

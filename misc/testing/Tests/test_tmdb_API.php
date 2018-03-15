@@ -34,7 +34,7 @@ if (!empty($argv[1]) && is_numeric($argv[2]) && is_numeric($argv[3])) {
 			if ($episodeObj) {
 				print_r($episodeObj);
 			}
-		} else if ($season == 0 && $episode == 0) {
+		} elseif ($season == 0 && $episode == 0) {
 			$episodeObj = $tmdb->client->getTVShow($series[0]->_data['id']);
 			if (is_array($episodeObj)) {
 				foreach ($episodeObj as $ep) {
@@ -44,11 +44,9 @@ if (!empty($argv[1]) && is_numeric($argv[2]) && is_numeric($argv[3])) {
 		} else {
 			exit($c->error('Invalid episode data returned from TMDB API.'));
 		}
-
 	} else {
 		exit($c->error('Invalid show data returned from TMDB API.'));
 	}
-
 } else {
 	exit($c->error('Invalid arguments.  This script requires a text string (show name) followed by a season and episode number.'));
 }

@@ -15,11 +15,11 @@
  * not, see:
  *
  * @link <http://www.gnu.org/licenses/>.
+ *
  * @author niel
  * @copyright 2015 nZEDb
  */
 namespace nzedb\processing\post;
-
 
 class ProcessAdditionalException extends \Exception
 {

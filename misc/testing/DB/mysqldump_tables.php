@@ -29,15 +29,15 @@ function builddefaultsfile()
 {
 	//generate file contents
 	$filetext = '[mysqldump]'
-				."\n"
-				.'user = ' . DB_USER
-				."\n"
-				.'password = ' . DB_PASSWORD
-				."\n[mysql]"
-				."\n"
-				.'user = ' . DB_USER
-				."\n"
-				.'password = ' . DB_PASSWORD;
+				. "\n"
+				. 'user = ' . DB_USER
+				. "\n"
+				. 'password = ' . DB_PASSWORD
+				. "\n[mysql]"
+				. "\n"
+				. 'user = ' . DB_USER
+				. "\n"
+				. 'password = ' . DB_PASSWORD;
 
 	$filehandle = fopen('mysql-defaults.txt', 'w+');
 	if (!$filehandle) {
@@ -172,9 +172,11 @@ if ((isset($argv[1]) && $argv[1] == 'db') && (isset($argv[2]) && $argv[2] == 'du
 								if (file_exists($filename)) {
 									newname($filename);
 								}
-								$pdo->queryDirect(sprintf('SELECT * INTO OUTFILE %s FROM %s',
+								$pdo->queryDirect(sprintf(
+									'SELECT * INTO OUTFILE %s FROM %s',
 														  $pdo->escapeString($filename),
-														  $tbl));
+														  $tbl
+								));
 							}
 						} else {
 							if ((isset($argv[1]) && $argv[1] == 'all') &&
@@ -189,9 +191,11 @@ if ((isset($argv[1]) && $argv[1] == 'db') && (isset($argv[2]) && $argv[2] == 'du
 									$filename = $argv[3] . $tbl . '.csv';
 									if (file_exists($filename)) {
 										echo $pdo->log->header("Restoring $tbl.");
-										$pdo->queryExec(sprintf('LOAD DATA INFILE %s INTO TABLE %s',
+										$pdo->queryExec(sprintf(
+											'LOAD DATA INFILE %s INTO TABLE %s',
 																$pdo->escapeString($filename),
-																$tbl));
+																$tbl
+										));
 									}
 								}
 								$pdo->queryExec('SET FOREIGN_KEY_CHECKS=1');

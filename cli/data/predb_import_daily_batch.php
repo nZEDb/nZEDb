@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2015 nZEDb
  */
@@ -86,7 +87,7 @@ if (nZEDb_DEBUG) {
 }
 
 foreach ($dirs as $dir) {
-	if ($dir['name'] == "0README.txt") {
+	if ($dir['name'] == '0README.txt') {
 		continue;
 	}
 
@@ -120,8 +121,10 @@ if (is_numeric($argv[1])) {
 foreach ($data as $dir => $files) {
 	foreach ($files as $file) {
 		//var_dump($file);
-		if (preg_match("#^https://raw\.githubusercontent\.com/nZEDb/nZEDbPre_Dumps/master/dumps/$dir/$filePattern$#",
-			$file['download_url'])) {
+		if (preg_match(
+			"#^https://raw\.githubusercontent\.com/nZEDb/nZEDbPre_Dumps/master/dumps/$dir/$filePattern$#",
+			$file['download_url']
+		)) {
 			if (preg_match("#^$filePattern$#", $file['name'], $match)) {
 				$timematch = $progress['last'];
 
@@ -177,7 +180,7 @@ foreach ($data as $dir => $files) {
 				$verbose = $argv[3] == true ? true : false;
 
 				if ($verbose) {
-					echo $predb->log->info("Clearing import table");
+					echo $predb->log->info('Clearing import table');
 				}
 
 				// Truncate to clear any old data
@@ -190,11 +193,12 @@ foreach ($data as $dir => $files) {
 						'lines'  => '\\r\\n',
 						'local'  => $local,
 						'path'   => $dumpFile,
-					]);
+					]
+				);
 
 				// Remove any titles where length <=8
 				if ($verbose === true) {
-					echo $predb->log->info("Deleting any records where title <=8 from Temporary Table");
+					echo $predb->log->info('Deleting any records where title <=8 from Temporary Table');
 				}
 				$predb->executeDeleteShort();
 
@@ -204,15 +208,18 @@ foreach ($data as $dir => $files) {
 				// Fill the groups_id
 				$predb->executeUpdateGroupID();
 
-				echo $predb->log->info("Inserting records from temporary table into predb table");
+				echo $predb->log->info('Inserting records from temporary table into predb table');
 				$predb->executeInsert();
 
 				// Delete the dump.
 				unlink($dumpFile);
 
-				$progress = $predb->progress(settings_array($match['stamp'] + 1, $progress),
-					['read' => false]);
-				echo sprintf("Successfully imported PreDB dump %d (%s), %d dumps remaining\n",
+				$progress = $predb->progress(
+					settings_array($match['stamp'] + 1, $progress),
+					['read' => false]
+				);
+				echo sprintf(
+					"Successfully imported PreDB dump %d (%s), %d dumps remaining\n",
 					$match['stamp'],
 					 date('Y-m-d', $match['stamp']),
 					--$total
@@ -250,9 +257,10 @@ function getDirListing($url)
 			'url'            => $url,
 			'requestheaders' => [
 				'Content-Type: application/json',
-				'User-Agent: nZEDb'
-			]
-		]);
+				'User-Agent: nZEDb',
+			],
+		]
+	);
 
 	if ($result === false) {
 		exit('Error connecting to GitHub, try again later?' . PHP_EOL);

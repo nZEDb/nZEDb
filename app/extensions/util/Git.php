@@ -13,6 +13,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2016 nZEDb
  */
@@ -36,7 +37,7 @@ class Git extends \lithium\core\Object
 		$defaults = [
 			'branches'		=> [
 				'stable' => ['0.x', 'Latest-testing', '\d+\.\d+\.\d+(\.\d+)?'],
-				'development' => ['dev', 'dev-test']
+				'development' => ['dev', 'dev-test'],
 			],
 			'create'		=> false,
 			'initialise'	=> false,
@@ -59,7 +60,7 @@ class Git extends \lithium\core\Object
 	}
 
 	/**
-	 * Return the currently active branch
+	 * Return the currently active branch.
 	 *
 	 * @return string
 	 */
@@ -100,8 +101,9 @@ class Git extends \lithium\core\Object
 	 *
 	 * @param $gitObject
 	 *
-	 * @return bool
 	 * @throws \Exception
+	 *
+	 * @return bool
 	 */
 	public function isCommited($gitObject)
 	{
@@ -161,13 +163,13 @@ class Git extends \lithium\core\Object
 
 	/**
 	 * Run a git command in the git repository
-	 * Accepts a git command to run
+	 * Accepts a git command to run.
 	 *
 	 * @access  public
 	 *
-	 * @param   string  $command Command to run
+	 * @param string $command Command to run
 	 *
-	 * @return  string
+	 * @return string
 	 */
 	public function run($command)
 	{
@@ -190,6 +192,8 @@ class Git extends \lithium\core\Object
 	 * Fetch the most recently added tag.
 	 *
 	 * Be aware this might cause problems if tags are added out of order?
+	 *
+	 * @param bool $cached
 	 *
 	 * @return string
 	 */

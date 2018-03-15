@@ -4,7 +4,7 @@ namespace nzedb;
 use nzedb\utility\Misc;
 
 /**
- * Class NZBGet
+ * Class NZBGet.
  *
  * Transfers data between an NZBGet server and an nZEDb website.
  *
@@ -14,6 +14,7 @@ class NZBGet
 {
 	/**
 	 * NZBGet username.
+	 *
 	 * @var string
 	 * @access public
 	 */
@@ -21,12 +22,15 @@ class NZBGet
 
 	/**
 	 * NZBGet password.
+	 *
 	 * @var string
 	 * @access public
 	 */
 	public $password = '';
+
 	/**
 	 * NZBGet URL.
+	 *
 	 * @var string
 	 * @access public
 	 */
@@ -34,6 +38,7 @@ class NZBGet
 
 	/**
 	 * Full URL (containing password/username/etc).
+	 *
 	 * @var string|bool
 	 * @access protected
 	 */
@@ -41,6 +46,7 @@ class NZBGet
 
 	/**
 	 * User ID.
+	 *
 	 * @var int
 	 * @access protected
 	 */
@@ -48,6 +54,7 @@ class NZBGet
 
 	/**
 	 * The users RSS token.
+	 *
 	 * @var string
 	 * @access protected
 	 */
@@ -55,6 +62,7 @@ class NZBGet
 
 	/**
 	 * URL to your nZEDb site.
+	 *
 	 * @var string
 	 * @access protected
 	 */
@@ -79,6 +87,8 @@ class NZBGet
 	 * @var \BasePage $page
 	 *
 	 * @access public
+	 *
+	 * @param & $page
 	 */
 	public function __construct(&$page)
 	{
@@ -145,7 +155,7 @@ NZBGet_NZB;
 		Misc::getUrl([
 										  'url'        => $this->fullURL . 'append',
 										  'method'     => 'post', 'postdata' => $header,
-										  'verifycert' => false
+										  'verifycert' => false,
 									  ]);
 	}
 
@@ -190,7 +200,7 @@ NZBGet_URL;
 		Misc::getUrl([
 						  'url'        => $this->fullURL . 'appendurl',
 						  'method'     => 'post', 'postdata' => $header,
-						  'verifycert' => false
+						  'verifycert' => false,
 					  ]);
 	}
 
@@ -218,7 +228,7 @@ NZBGet_PAUSE_ALL;
 		Misc::getUrl([
 										  'url'        => $this->fullURL . 'pausedownload2',
 										  'method'     => 'post', 'postdata' => $header,
-										  'verifycert' => false
+										  'verifycert' => false,
 									  ]);
 	}
 
@@ -246,7 +256,7 @@ NZBGet_RESUME_ALL;
 		Misc::getUrl([
 										  'url'        => $this->fullURL . 'resumedownload2',
 										  'method'     => 'post', 'postdata' => $header,
-										  'verifycert' => false
+										  'verifycert' => false,
 									  ]);
 	}
 
@@ -287,7 +297,7 @@ NZBGet_PAUSE_FROM_QUEUE;
 		Misc::getUrl([
 										  'url'        => $this->fullURL . 'editqueue',
 										  'method'     => 'post', 'postdata' => $header,
-										  'verifycert' => false
+										  'verifycert' => false,
 									  ]);
 	}
 
@@ -328,7 +338,7 @@ NZBGet_RESUME_FROM_QUEUE;
 		Misc::getUrl([
 										  'url'        => $this->fullURL . 'editqueue',
 										  'method'     => 'post', 'postdata' => $header,
-										  'verifycert' => false
+										  'verifycert' => false,
 									  ]);
 	}
 
@@ -369,7 +379,7 @@ NZBGet_DELETE_FROM_QUEUE;
 		Misc::getUrl([
 										  'url'        => $this->fullURL . 'editqueue',
 										  'method'     => 'post', 'postdata' => $header,
-										  'verifycert' => false
+										  'verifycert' => false,
 									  ]);
 	}
 
@@ -398,7 +408,7 @@ NZBGet_RATE;
 
 		Misc::getUrl([
 										  'url'      => $this->fullURL . 'rate', 'method' => 'post',
-										  'postdata' => $header, 'verifycert' => false
+										  'postdata' => $header, 'verifycert' => false,
 									  ]);
 	}
 
@@ -413,7 +423,7 @@ NZBGet_RATE;
 	{
 		$data = Misc::getUrl([
 													'url'        => $this->fullURL . 'listgroups',
-													'verifycert' => false
+													'verifycert' => false,
 												]);
 		$retVal = false;
 		if ($data) {
@@ -448,7 +458,7 @@ NZBGet_RATE;
 	{
 		$data = Misc::getUrl([
 													'url'        => $this->fullURL . 'status',
-													'verifycert' => false
+													'verifycert' => false,
 											  ]);
 		$retVal = false;
 		if ($data) {
@@ -478,9 +488,11 @@ NZBGet_RATE;
 	 */
 	public function verifyURL($url)
 	{
-		if (preg_match('/(?P<protocol>https?):\/\/(?P<url>.+?)(:(?P<port>\d+\/)|\/)$/i',
+		if (preg_match(
+			'/(?P<protocol>https?):\/\/(?P<url>.+?)(:(?P<port>\d+\/)|\/)$/i',
 					   $url,
-					   $matches)) {
+					   $matches
+		)) {
 			return
 				$matches['protocol'] . '://' . $this->userName . ':' . $this->password . '@' .
 				$matches['url'] . (isset($matches['port']) ? ':' . $matches['port'] : (substr($matches['url'], -1) === '/' ? '' : '/')) . 'xmlrpc/';

@@ -5,6 +5,7 @@ use app\models\Settings;
 use nzedb\Books;
 use nzedb\Category;
 use nzedb\Console;
+use nzedb\db\DB;
 use nzedb\Games;
 use nzedb\Groups;
 use nzedb\Logger;
@@ -12,17 +13,16 @@ use nzedb\Movie;
 use nzedb\Music;
 use nzedb\NameFixer;
 use nzedb\Nfo;
-use nzedb\Sharing;
-use nzedb\processing\tv\TVDB;
-use nzedb\processing\tv\TVMaze;
-use nzedb\processing\tv\TMDB;
-use nzedb\processing\tv\TraktTv;
-use nzedb\XXX;
-use nzedb\ReleaseFiles;
-use nzedb\db\DB;
 use nzedb\processing\post\AniDB;
 use nzedb\processing\post\ProcessAdditional;
+use nzedb\processing\tv\TMDB;
+use nzedb\processing\tv\TraktTv;
+use nzedb\processing\tv\TVDB;
+use nzedb\processing\tv\TVMaze;
+use nzedb\ReleaseFiles;
+use nzedb\Sharing;
 use nzedb\utility;
+use nzedb\XXX;
 
 class PostProcess
 {
@@ -40,6 +40,7 @@ class PostProcess
 
 	/**
 	 * Instance of NameFixer.
+	 *
 	 * @var NameFixer
 	 */
 	protected $nameFixer;
@@ -51,18 +52,21 @@ class PostProcess
 
 	/**
 	 * Use alternate NNTP provider when download fails?
+	 *
 	 * @var bool
 	 */
 	private $alternateNNTP;
 
 	/**
 	 * Add par2 info to rar list?
+	 *
 	 * @var bool
 	 */
 	private $addpar2;
 
 	/**
 	 * Should we echo to CLI?
+	 *
 	 * @var bool
 	 */
 	private $echooutput;
@@ -159,7 +163,7 @@ class PostProcess
 	public function processBooks()
 	{
 		if (Settings::value('..lookupbooks') != 0) {
-			(new Books(['Echo' => $this->echooutput, 'Settings' => $this->pdo, ]))->processBookReleases();
+			(new Books(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processBookReleases();
 		}
 	}
 
@@ -193,7 +197,7 @@ class PostProcess
 	 * @param string     $groupID       (Optional) ID of a group to work on.
 	 * @param string     $guidChar      (Optional) First letter of a release GUID to use to get work.
 	 * @param int|string $processMovies (Optional) 0 Don't process, 1 process all releases,
-	 *                                             2 process renamed releases only, '' check site setting
+	 *                                  2 process renamed releases only, '' check site setting
 	 *
 	 * @return void
 	 */
@@ -220,9 +224,9 @@ class PostProcess
 	/**
 	 * Process nfo files.
 	 *
-	 * @param \nzedb\NNTP   $nntp
-	 * @param string $groupID  (Optional) ID of a group to work on.
-	 * @param string $guidChar (Optional) First letter of a release GUID to use to get work.
+	 * @param \nzedb\NNTP $nntp
+	 * @param string      $groupID  (Optional) ID of a group to work on.
+	 * @param string      $guidChar (Optional) First letter of a release GUID to use to get work.
 	 *
 	 * @return void
 	 */
@@ -246,13 +250,13 @@ class PostProcess
 	/**
 	 * Process all TV related releases which will assign their series/episode/rage data.
 	 *
-	 * @param string        $groupID   (Optional) ID of a group to work on.
-	 * @param string        $guidChar  (Optional) First letter of a release GUID to use to get work.
-	 * @param string|integer $processTV (Optional)
-	 *                                         0 Don't process,
-	 *                                         1 process all releases,
-	 *                                         2 process renamed releases only,
-	 *                                         '' check site setting
+	 * @param string     $groupID   (Optional) ID of a group to work on.
+	 * @param string     $guidChar  (Optional) First letter of a release GUID to use to get work.
+	 * @param string|int $processTV (Optional)
+	 *                              0 Don't process,
+	 *                              1 process all releases,
+	 *                              2 process renamed releases only,
+	 *                              '' check site setting
 	 *
 	 * @return void
 	 */
@@ -283,9 +287,9 @@ class PostProcess
 	 *
 	 * @note Called externally by tmux/bin/update_per_group and update/postprocess.php
 	 *
-	 * @param \nzedb\NNTP       $nntp    Class NNTP
-	 * @param int|string $groupID  (Optional) ID of a group to work on.
-	 * @param string     $guidChar (Optional) First char of release GUID, can be used to select work.
+	 * @param \nzedb\NNTP $nntp     Class NNTP
+	 * @param int|string  $groupID  (Optional) ID of a group to work on.
+	 * @param string      $guidChar (Optional) First char of release GUID, can be used to select work.
 	 *
 	 * @return void
 	 */
@@ -299,11 +303,11 @@ class PostProcess
 	 *
 	 * @note Called from NZBContents.php
 	 *
-	 * @param string $messageID MessageID from NZB file.
-	 * @param int    $relID     ID of the release.
-	 * @param int    $groupID   Group ID of the release.
-	 * @param \nzedb\NNTP   $nntp      Class NNTP
-	 * @param int    $show      Only show result or apply iy.
+	 * @param string      $messageID MessageID from NZB file.
+	 * @param int         $relID     ID of the release.
+	 * @param int         $groupID   Group ID of the release.
+	 * @param \nzedb\NNTP $nntp      Class NNTP
+	 * @param int         $show      Only show result or apply iy.
 	 *
 	 * @return bool
 	 */
@@ -314,7 +318,8 @@ class PostProcess
 		}
 
 		$query = $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT id, groups_id, categories_id, name, searchname, UNIX_TIMESTAMP(postdate) AS post_date, id AS releases_id
 				FROM releases
 				WHERE isrenamed = 0
@@ -340,7 +345,7 @@ class PostProcess
 				Category::TV_OTHER,
 				Category::OTHER_HASHED,
 				Category::XXX_OTHER,
-				Category::OTHER_MISC
+				Category::OTHER_MISC,
 			]
 		)
 		) {
@@ -362,12 +367,10 @@ class PostProcess
 		// Get the file list from Par2Info.
 		$files = $this->_par2Info->getFileList();
 		if ($files !== false && count($files) > 0) {
-
 			$filesAdded = 0;
 
 			// Loop through the files.
 			foreach ($files as $file) {
-
 				if (!isset($file['name'])) {
 					continue;
 				}
@@ -381,7 +384,8 @@ class PostProcess
 					// Add to release files.
 					if ($filesAdded < 11 &&
 						$this->pdo->queryOneRow(
-							sprintf('
+							sprintf(
+								'
 								SELECT releases_id
 								FROM release_files
 								WHERE releases_id = %d
@@ -416,7 +420,8 @@ class PostProcess
 
 				// Update the file count with the new file count + old file count.
 				$this->pdo->queryExec(
-					sprintf('
+					sprintf(
+						'
 						UPDATE releases
 						SET rarinnerfilecount = rarinnerfilecount + %d
 						WHERE id = %d',

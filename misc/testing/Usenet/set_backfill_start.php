@@ -12,8 +12,8 @@ if (!isset($argv[1])) {
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\Binaries;
-use nzedb\NNTP;
 use nzedb\db\DB;
+use nzedb\NNTP;
 
 $pdo = new DB();
 
@@ -25,9 +25,9 @@ if ($argv[1] === 'all') {
 
 if (count($groups) === 0) {
 	if ($argv[1] === 'all') {
-		exit ('ERROR! No groups were found with backfill enabled!' . PHP_EOL);
+		exit('ERROR! No groups were found with backfill enabled!' . PHP_EOL);
 	} else {
-		exit ('ERROR! Group (' . $argv[1] . ') not found!' . PHP_EOL);
+		exit('ERROR! Group (' . $argv[1] . ') not found!' . PHP_EOL);
 	}
 }
 
@@ -64,7 +64,8 @@ foreach ($groups as $group) {
 	$articleDate = $binaries->postdate($articleNumber, $groupNNTP);
 
 	$pdo->queryExec(
-		sprintf('
+		sprintf(
+			'
 			UPDATE groups
 			SET first_record = %d, first_record_postdate = %s
 			WHERE id = %d',

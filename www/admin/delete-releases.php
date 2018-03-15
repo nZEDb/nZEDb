@@ -14,12 +14,10 @@ switch (($_REQUEST['action'] ?? 'view')) {
 		if ($values === false) {
 			$page->smarty->assign('error', 'Your search criteria is wrong.');
 		} else {
-			$relRemove = new ReleaseRemover(['Browser' => true, 'Settings' =>
-				$page->settings]);
+			$relRemove = new ReleaseRemover(['Browser' => true, 'Settings' => $page->settings]);
 			$succeeded = $RR->removeByCriteria($values);
 			if (is_string($succeeded) && strpos($succeeded, 'Success') === 0) {
 				$done = $succeeded;
-
 			} else {
 				$error = $succeeded;
 			}
@@ -50,12 +48,13 @@ switch (($_REQUEST['action'] ?? 'view')) {
 			'gnametypesel' => '1',
 			'sizetypesel'  => '0',
 			'adatetypesel' => '0',
-			'pdatetypesel' => '0'
+			'pdatetypesel' => '0',
 		];
 		break;
 }
 
-$page->smarty->assign([
+$page->smarty->assign(
+	[
 		'release'     => $release,
 		'error'       => $error,
 		'done'        => $done,
@@ -63,7 +62,7 @@ $page->smarty->assign([
 		'type2_ids'   => [0, 1, 2],
 		'type1_names' => ['Like', 'Equals'],
 		'type2_names' => ['Bigger', 'Smaller', 'Equals'],
-		'type3_names' => ['Bigger', 'Smaller']
+		'type3_names' => ['Bigger', 'Smaller'],
 	]
 );
 
@@ -92,7 +91,7 @@ function parseResponse(array $response)
 				break;
 			case 'nametypesel':
 				switch ($value) {
-					case '';
+					case '':
 						break;
 					case '0':
 						$options['name']['type'] = 'like';
@@ -104,7 +103,7 @@ function parseResponse(array $response)
 				break;
 			case 'snametypesel':
 				switch ($value) {
-					case '';
+					case '':
 						break;
 					case '0':
 						$options['searchname']['type'] = 'like';
@@ -116,7 +115,7 @@ function parseResponse(array $response)
 				break;
 			case 'fnametypesel':
 				switch ($value) {
-					case '';
+					case '':
 						break;
 					case '0':
 						$options['fromname']['type'] = 'like';
@@ -128,7 +127,7 @@ function parseResponse(array $response)
 				break;
 			case 'gnametypesel':
 				switch ($value) {
-					case '';
+					case '':
 						break;
 					case '0':
 						$options['groupname']['type'] = 'like';
@@ -140,7 +139,7 @@ function parseResponse(array $response)
 				break;
 			case 'sizetypesel':
 				switch ($value) {
-					case '';
+					case '':
 						break;
 					case '0':
 						$options['size']['type'] = 'bigger';
@@ -155,7 +154,7 @@ function parseResponse(array $response)
 				break;
 			case 'adatetypesel':
 				switch ($value) {
-					case '';
+					case '':
 						break;
 					case '0':
 						$options['adddate']['type'] = 'bigger';
@@ -167,7 +166,7 @@ function parseResponse(array $response)
 				break;
 			case 'pdatetypesel':
 				switch ($value) {
-					case '';
+					case '':
 						break;
 					case '0':
 						$options['postdate']['type'] = 'bigger';

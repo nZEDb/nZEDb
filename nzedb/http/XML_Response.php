@@ -15,32 +15,29 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    ruhllatio
  * @copyright 2016 nZEDb
  */
-
 namespace nzedb\http;
-
 
 use nzedb\Category;
 use nzedb\utility\Misc;
 
-
 /**
- * Class XMLReturn
+ * Class XMLReturn.
  *
  * @package nzedb
  */
 class XML_Response
 {
-
 	/**
 	 * @var string The buffered cData before final write
 	 */
 	protected $cdata;
 
 	/**
-	 * The RSS namespace used for the output
+	 * The RSS namespace used for the output.
 	 *
 	 * @var string
 	 */
@@ -49,42 +46,42 @@ class XML_Response
 	protected $offset;
 
 	/**
-	 * The trailing URL parameters on the request
+	 * The trailing URL parameters on the request.
 	 *
 	 * @var mixed
 	 */
 	protected $parameters;
 
 	/**
-	 * The release we are adding to the stream
+	 * The release we are adding to the stream.
 	 *
 	 * @var array
 	 */
 	protected $release;
 
 	/**
-	 * The retrieved releases we are returning from the API call
+	 * The retrieved releases we are returning from the API call.
 	 *
 	 * @var mixed
 	 */
 	protected $releases;
 
 	/**
-	 * The various server variables and active categories
+	 * The various server variables and active categories.
 	 *
 	 * @var mixed
 	 */
 	protected $server;
 
 	/**
-	 * The XML formatting operation we are returning
+	 * The XML formatting operation we are returning.
 	 *
 	 * @var mixed
 	 */
 	protected $type;
 
 	/**
-	 * The XMLWriter Class
+	 * The XMLWriter Class.
 	 *
 	 * @var \XMLWriter
 	 */
@@ -145,7 +142,71 @@ class XML_Response
 	}
 
 	/**
-	 * XML writes and returns the API capabilities
+	 * Adds total count of releases to the XML.
+	 */
+	public function includeTotalRows()
+	{
+		$this->xml->startElement($this->namespace . ':response');
+		$this->xml->writeAttribute('offset', $this->offset);
+		$this->xml->writeAttribute('total', isset($this->releases[0]['_totalrows']) ? $this->releases[0]['_totalrows'] : 0);
+		$this->xml->endElement();
+	}
+
+	/**
+	 * Loop through the releases and add their info to the XML stream.
+	 */
+	public function includeReleases()
+	{
+		if (is_array($this->releases) && !empty($this->releases)) {
+			foreach ($this->releases as $this->release) {
+				$this->xml->startElement('item');
+				$this->includeReleaseMain();
+				$this->setZedAttributes();
+				$this->xml->endElement();
+			}
+		}
+	}
+
+	/**
+	 * Writes the primary release information.
+	 */
+	public function includeReleaseMain()
+	{
+		$this->xml->writeElement('title', $this->release['searchname']);
+		$this->xml->startElement('guid');
+		$this->xml->writeAttribute('isPermaLink', 'true');
+		$this->xml->text("{$this->server['server']['url']}details/{$this->release['guid']}");
+		$this->xml->endElement();
+		$this->xml->writeElement(
+			'link',
+			"{$this->server['server']['url']}getnzb/{$this->release['guid']}.nzb" .
+			"&i={$this->parameters['uid']}" . "&r={$this->parameters['token']}" .
+			($this->parameters['del'] == '1' ? '&del=1' : '')
+		);
+		$this->xml->writeElement('comments', "{$this->server['server']['url']}details/{$this->release['guid']}#comments");
+		$this->xml->writeElement('pubDate', date(DATE_RSS, strtotime($this->release['adddate'])));
+		$this->xml->writeElement('category', $this->release['category_name']);
+		if ($this->namespace === 'newznab') {
+			$this->xml->writeElement('description', $this->release['searchname']);
+		} else {
+			$this->writeRssCdata();
+		}
+		if ((isset($this->parameters['dl']) && $this->parameters['dl'] == 1) || !isset($this->parameters['dl'])) {
+			$this->xml->startElement('enclosure');
+			$this->xml->writeAttribute(
+				'url',
+				"{$this->server['server']['url']}getnzb/{$this->release['guid']}.nzb" .
+				"&i={$this->parameters['uid']}" . "&r={$this->parameters['token']}" .
+				($this->parameters['del'] == '1' ? '&del=1' : '')
+			);
+			$this->xml->writeAttribute('length', $this->release['size']);
+			$this->xml->writeAttribute('type', 'application/x-nzb');
+			$this->xml->endElement();
+		}
+	}
+
+	/**
+	 * XML writes and returns the API capabilities.
 	 *
 	 * @return string The XML Formatted string data
 	 */
@@ -168,7 +229,7 @@ class XML_Response
 	}
 
 	/**
-	 * XML writes and returns the API data
+	 * XML writes and returns the API data.
 	 *
 	 * @return string The XML Formatted string data
 	 */
@@ -207,45 +268,47 @@ class XML_Response
 	}
 
 	/**
-	 * Starts a new element, loops through the attribute data and ends the element
+	 * Starts a new element, loops through the attribute data and ends the element.
+	 *
 	 * @param array $element An array with the name of the element and the attribute data
 	 */
 	protected function addNode(array $element)
 	{
 		$this->xml->startElement($element['name']);
-		foreach($element['data'] AS $attr => $val) {
+		foreach ($element['data'] as $attr => $val) {
 			$this->xml->writeAttribute($attr, $val);
 		}
 		$this->xml->endElement();
 	}
 
 	/**
-	 * Starts a new element, loops through the attribute data and ends the element
+	 * Starts a new element, loops through the attribute data and ends the element.
+	 *
 	 * @param array $element An array with the name of the element and the attribute data
 	 */
 	protected function addNodes($element)
 	{
 		$this->xml->startElement($element['name']);
-		foreach($element['data'] AS $elem => $value) {
+		foreach ($element['data'] as $elem => $value) {
 			$this->addNode(['name' => $elem, 'data' => $value]);
 		}
 		$this->xml->endElement();
 	}
 
 	/**
-	 * Adds the site category listing to the XML feed
+	 * Adds the site category listing to the XML feed.
 	 */
 	protected function writeCategoryListing()
 	{
 		$this->xml->startElement('categories');
-		foreach ($this->server['categories'] AS $p) {
+		foreach ($this->server['categories'] as $p) {
 			$this->xml->startElement('category');
 			$this->xml->writeAttribute('id', $p['id']);
 			$this->xml->writeAttribute('name', html_entity_decode($p['title']));
 			if ($p['description'] != '') {
 				$this->xml->writeAttribute('description', html_entity_decode($p['description']));
 			}
-			foreach($p['subcatlist'] AS $c) {
+			foreach ($p['subcatlist'] as $c) {
 				$this->xml->startElement('subcat');
 				$this->xml->writeAttribute('id', $c['id']);
 				$this->xml->writeAttribute('name', html_entity_decode($c['title']));
@@ -259,12 +322,11 @@ class XML_Response
 	}
 
 	/**
-	 * Adds RSS Atom information to the XML
-	 *
+	 * Adds RSS Atom information to the XML.
 	 */
 	protected function includeRssAtom()
 	{
-		switch($this->namespace) {
+		switch ($this->namespace) {
 			case 'newznab':
 				$url = 'http://www.newznab.com/DTD/2010/feeds/attributes/';
 				break;
@@ -280,9 +342,7 @@ class XML_Response
 		$this->xml->writeAttribute('encoding', 'utf-8');
 	}
 
-	/**
-	 *
-	 */
+
 	protected function includeRssAtomLink()
 	{
 		$this->xml->startElement('atom:link');
@@ -299,13 +359,13 @@ class XML_Response
 	}
 
 	/**
-	 * Writes the channel information for the feed
+	 * Writes the channel information for the feed.
 	 */
 	protected function includeMetaInfo()
 	{
 		$server = $this->server['server'];
 
-		switch($this->namespace) {
+		switch ($this->namespace) {
 			case 'newznab':
 				$path = 'apihelp/';
 				$tag = 'API';
@@ -328,7 +388,7 @@ class XML_Response
 	}
 
 	/**
-	 * Adds nZEDB logo data to the XML
+	 * Adds nZEDB logo data to the XML.
 	 */
 	protected function includeImage()
 	{
@@ -344,71 +404,7 @@ class XML_Response
 	}
 
 	/**
-	 * Adds total count of releases to the XML
-	 */
-	public function includeTotalRows()
-	{
-		$this->xml->startElement($this->namespace.':response');
-		$this->xml->writeAttribute('offset', $this->offset);
-		$this->xml->writeAttribute('total', isset($this->releases[0]['_totalrows']) ? $this->releases[0]['_totalrows'] : 0);
-		$this->xml->endElement();
-	}
-
-	/**
-	 * Loop through the releases and add their info to the XML stream
-	 */
-	public function includeReleases()
-	{
-		if(is_array($this->releases) && !empty($this->releases)) {
-			foreach ($this->releases AS $this->release) {
-				$this->xml->startElement('item');
-				$this->includeReleaseMain();
-				$this->setZedAttributes();
-				$this->xml->endElement();
-			}
-		}
-	}
-
-	/**
-	 * Writes the primary release information
-	 */
-	public function includeReleaseMain()
-	{
-		$this->xml->writeElement('title', $this->release['searchname']);
-		$this->xml->startElement('guid');
-		$this->xml->writeAttribute('isPermaLink', 'true');
-		$this->xml->text("{$this->server['server']['url']}details/{$this->release['guid']}");
-		$this->xml->endElement();
-		$this->xml->writeElement(
-			'link',
-			"{$this->server['server']['url']}getnzb/{$this->release['guid']}.nzb" .
-			"&i={$this->parameters['uid']}" . "&r={$this->parameters['token']}" .
-			($this->parameters['del'] == '1' ? '&del=1' : '')
-		);
-		$this->xml->writeElement('comments', "{$this->server['server']['url']}details/{$this->release['guid']}#comments");
-		$this->xml->writeElement('pubDate', date(DATE_RSS, strtotime($this->release['adddate'])));
-		$this->xml->writeElement('category', $this->release['category_name']);
-		if ($this->namespace === 'newznab') {
-			$this->xml->writeElement('description', $this->release['searchname']);
-		} else {
-			$this->writeRssCdata();
-		}
-		if((isset($this->parameters['dl']) && $this->parameters['dl'] == 1) || !isset($this->parameters['dl'])) {
-			$this->xml->startElement('enclosure');
-			$this->xml->writeAttribute(
-				'url',
-				"{$this->server['server']['url']}getnzb/{$this->release['guid']}.nzb" .
-				"&i={$this->parameters['uid']}" . "&r={$this->parameters['token']}" .
-				($this->parameters['del'] == '1' ? '&del=1' : '')
-			);
-			$this->xml->writeAttribute('length', $this->release['size']);
-			$this->xml->writeAttribute('type', 'application/x-nzb');
-			$this->xml->endElement();
-		}
-	}
-
-	/**
-	 * Writes the Zed (newznab) specific attributes
+	 * Writes the Zed (newznab) specific attributes.
 	 */
 	protected function setZedAttributes()
 	{
@@ -424,7 +420,7 @@ class XML_Response
 		if ($this->parameters['extended'] == 1) {
 			$this->writeZedAttr('files', $this->release['totalpart']);
 			$this->writeZedAttr('poster', $this->release['fromname']);
-			if(($this->release['videos_id'] > 0 || $this->release['tv_episodes_id'] > 0) && $this->namespace === 'newznab') {
+			if (($this->release['videos_id'] > 0 || $this->release['tv_episodes_id'] > 0) && $this->namespace === 'newznab') {
 				$this->setTvAttr();
 			}
 
@@ -448,13 +444,15 @@ class XML_Response
 			$this->writeZedAttr('comments', $this->release['comments']);
 			$this->writeZedAttr('password', $this->release['passwordstatus']);
 			$this->writeZedAttr('usenetdate', date_format(date_create($this->release['postdate']), 'D, d M Y H:i:s O'));
-			$this->writeZedAttr('group',
-				(isset($this->release['group_name']) ? $this->release['group_name'] : ''));
+			$this->writeZedAttr(
+				'group',
+				(isset($this->release['group_name']) ? $this->release['group_name'] : '')
+			);
 		}
 	}
 
 	/**
-	 * Writes the TV Specific attributes
+	 * Writes the TV Specific attributes.
 	 */
 	protected function setTvAttr()
 	{
@@ -492,9 +490,9 @@ class XML_Response
 	}
 
 	/**
-	 * Writes individual zed (newznab) type attributes
+	 * Writes individual zed (newznab) type attributes.
 	 *
-	 * @param string $name The namespaced attribute name tag
+	 * @param string $name  The namespaced attribute name tag
 	 * @param string $value The namespaced attribute value
 	 */
 	protected function writeZedAttr($name, $value)
@@ -507,7 +505,7 @@ class XML_Response
 
 	/**
 	 * Writes the cData (HTML format) for the RSS feed
-	 * Also calls supplementary cData writes depending upon post process
+	 * Also calls supplementary cData writes depending upon post process.
 	 */
 	protected function writeRssCdata()
 	{
@@ -519,7 +517,7 @@ class XML_Response
 		$p = $this->parameters;
 
 		$this->cdata = "\n\t<div>\n";
-		switch(true) {
+		switch (true) {
 			case !empty($r['cover']):
 				$dir = 'movies';
 				$column = 'imdbid';
@@ -580,9 +578,9 @@ class XML_Response
 
 		if ($r['parentid'] == Category::MOVIE_ROOT && $r['imdbid'] != '') {
 			$this->writeRssMovieInfo();
-		} else if ($r['parentid'] == Category::MUSIC_ROOT && $r['musicinfo_id'] > 0) {
+		} elseif ($r['parentid'] == Category::MUSIC_ROOT && $r['musicinfo_id'] > 0) {
 			$this->writeRssMusicInfo();
-		} else if ($r['parentid'] == Category::GAME_ROOT && $r['consoleinfo_id'] > 0) {
+		} elseif ($r['parentid'] == Category::GAME_ROOT && $r['consoleinfo_id'] > 0) {
 			$this->writeRssConsoleInfo();
 		}
 		$w->startElement('description');
@@ -591,7 +589,7 @@ class XML_Response
 	}
 
 	/**
-	 * Writes the Movie Info for the RSS feed cData
+	 * Writes the Movie Info for the RSS feed cData.
 	 */
 	protected function writeRssMovieInfo()
 	{
@@ -612,7 +610,7 @@ class XML_Response
 	}
 
 	/**
-	 * Writes the Music Info for the RSS feed cData
+	 * Writes the Music Info for the RSS feed cData.
 	 */
 	protected function writeRssMusicInfo()
 	{
@@ -623,7 +621,7 @@ class XML_Response
 
 		$cData = $this->buildCdata($musicCol);
 
-		if ($r['mu_url'] !== '' ) {
+		if ($r['mu_url'] !== '') {
 			$cDataUrl = "<li>Amazon: <a href=\"{$r['mu_url']}\">{$r['mu_title']}</a></li>";
 		}
 
@@ -637,7 +635,7 @@ class XML_Response
 		if ($r['mu_tracks'] != '') {
 			$tracks = explode('|', $r['mu_tracks']);
 			if (count($tracks) > 0) {
-				foreach ($tracks AS $track) {
+				foreach ($tracks as $track) {
 					$track = trim($track);
 					$tData .= "<li>{$track}</li>";
 				}
@@ -652,7 +650,7 @@ class XML_Response
 	}
 
 	/**
-	 * Writes the Console Info for the RSS feed cData
+	 * Writes the Console Info for the RSS feed cData.
 	 */
 	protected function writeRssConsoleInfo()
 	{
@@ -671,7 +669,7 @@ class XML_Response
 	}
 
 	/**
-	 * Accepts an array of values to loop through to build cData from the release info
+	 * Accepts an array of values to loop through to build cData from the release info.
 	 *
 	 * @param array $columns The columns in the release we need to insert
 	 *
@@ -683,7 +681,7 @@ class XML_Response
 
 		$cData = '';
 
-		foreach ($columns AS $info) {
+		foreach ($columns as $info) {
 			if (!empty($r[$info])) {
 				if ($info == 'mu_releasedate') {
 					$ucInfo = 'Released';

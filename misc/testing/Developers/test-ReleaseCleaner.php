@@ -1,9 +1,9 @@
 <?php
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use nzedb\db\DB;
 use nzedb\ReleaseCleaning;
 use nzedb\SphinxSearch;
-use nzedb\db\DB;
 
 $message =
 	'Shows old searchname vs new searchname for releases in a group using the releaseCleaning class. (Good for testing new regex)' .
@@ -20,7 +20,7 @@ if ($argc < 5) {
 if (!is_numeric($argv[2]) || !is_numeric($argv[4])) {
 	exit($message);
 }
-if (!in_array($argv[3], array('true', 'false'))) {
+if (!in_array($argv[3], ['true', 'false'])) {
 	exit($message);
 }
 

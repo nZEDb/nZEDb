@@ -1,6 +1,6 @@
 <?php
 /**
- * Lithium: the most rad php framework
+ * Lithium: the most rad php framework.
  *
  * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
@@ -11,10 +11,10 @@
  * aspects of your application.
  */
 use lithium\aop\Filters;
-use lithium\core\Libraries;
 use lithium\core\Environment;
-use lithium\g11n\Locale;
+use lithium\core\Libraries;
 use lithium\g11n\Catalog;
+use lithium\g11n\Locale;
 use lithium\g11n\Message;
 use lithium\g11n\Multibyte;
 use lithium\util\Inflector;
@@ -22,14 +22,14 @@ use lithium\util\Validator;
 use RuntimeException;
 
 /**
- * Dates
+ * Dates.
  *
  * Sets the default timezone used by all date/time functions.
  */
 date_default_timezone_set('UTC');
 
 /**
- * Locales
+ * Locales.
  *
  * Adds globalization specific settings to the environment. The settings for
  * the current locale, time zone and currency are kept as environment settings.
@@ -47,14 +47,14 @@ date_default_timezone_set('UTC');
  * @see lithium\core\Environment
  */
 $locale = 'en';
-$locales = array('en' => 'English');
+$locales = ['en' => 'English'];
 
 Environment::set('production', compact('locale', 'locales'));
 Environment::set('development', compact('locale', 'locales'));
-Environment::set('test', array('locale' => 'en', 'locales' => array('en' => 'English')));
+Environment::set('test', ['locale' => 'en', 'locales' => ['en' => 'English']]);
 
 /**
- * Effective/Request Locale
+ * Effective/Request Locale.
  *
  * Intercepts dispatching processes in order to set the effective locale by using
  * the locale of the request or if that is not available retrieving a locale preferred
@@ -67,7 +67,7 @@ $setLocale = function($params, $next) {
 	if (!$params['request']->locale()) {
 		$params['request']->locale(Locale::preferred($params['request']));
 	}
-	Environment::set(true, array('locale' => $params['request']->locale()));
+	Environment::set(true, ['locale' => $params['request']->locale()]);
 
 	return $next($params);
 };
@@ -75,7 +75,7 @@ Filters::apply('lithium\action\Dispatcher', '_callable', $setLocale);
 Filters::apply('lithium\console\Dispatcher', '_callable', $setLocale);
 
 /**
- * Resources
+ * Resources.
  *
  * Globalization (g11n) catalog configuration.  The catalog allows for obtaining and
  * writing globalized data. Each configuration can be adjusted through the following settings:
@@ -96,22 +96,22 @@ Filters::apply('lithium\console\Dispatcher', '_callable', $setLocale);
  * @link https://github.com/UnionOfRAD/li3_lldr
  * @link https://github.com/UnionOfRAD/li3_cldr
  */
-Catalog::config(array(
-	'runtime' => array(
-		'adapter' => 'Memory'
-	),
+Catalog::config([
+	'runtime' => [
+		'adapter' => 'Memory',
+	],
 	// 'app' => array(
 	// 	'adapter' => 'Gettext',
 	// 	'path' => Libraries::get(true, 'resources') . '/g11n'
 	// ),
-	'lithium' => array(
+	'lithium' => [
 		'adapter' => 'Php',
-		'path' => LITHIUM_LIBRARY_PATH . '/lithium/g11n/resources/php'
-	)
-) + Catalog::config());
+		'path' => LITHIUM_LIBRARY_PATH . '/lithium/g11n/resources/php',
+	],
+] + Catalog::config());
 
 /**
- * Multibyte Strings
+ * Multibyte Strings.
  *
  * Configuration for the `Multibyte` class which allows to work with UTF-8
  * encoded strings. At least one configuration named `'default'` must be
@@ -122,14 +122,14 @@ Catalog::config(array(
  *
  * @see lithium\g11n\Multibyte
  */
-Multibyte::config(array(
+Multibyte::config([
 //	'default' => array('adapter' => 'Intl'),
-	'default' => array('adapter' => 'Mbstring'),
+	'default' => ['adapter' => 'Mbstring'],
 //	'default' => array('adapter' => 'Iconv')
-) + Multibyte::config());
+] + Multibyte::config());
 
 /**
- * Transliteration
+ * Transliteration.
  *
  * Load locale specific transliteration rules through the `Catalog` class or
  * specify them manually to make `Inflector::slug()` work better with
@@ -142,7 +142,7 @@ Multibyte::config(array(
 // Inflector::rules('transliteration', array('/É|Ê/' => 'E'));
 
 /**
- * Grammar
+ * Grammar.
  *
  * If your application has custom singular or plural rules you can configure
  * that by uncommenting the lines below.
@@ -158,7 +158,7 @@ Multibyte::config(array(
 // Inflector::rules('uninflected', array('bord', 'baird'));
 
 /**
- * Validation
+ * Validation.
  *
  * Overwrites certain validation rules in order to make them locale aware. Locale
  * specific versions are added as formats to those rules. In order to validate a
@@ -189,7 +189,7 @@ Multibyte::config(array(
  * @see lithium\g11n\Multibyte
  * @see lithium\util\Validator
  */
-foreach (array('phone', 'postalCode', 'ssn') as $name) {
+foreach (['phone', 'postalCode', 'ssn'] as $name) {
 	$regex = Validator::rules($name);
 
 	Validator::add($name, function($value, $format, $options) use ($name, $regex) {
@@ -206,12 +206,12 @@ foreach (array('phone', 'postalCode', 'ssn') as $name) {
 }
 Validator::add('lengthBetween', function($value, $format, $options) {
 	$length = Multibyte::strlen($value);
-	$options += array('min' => 1, 'max' => 255);
+	$options += ['min' => 1, 'max' => 255];
 	return ($length >= $options['min'] && $length <= $options['max']);
 });
 
 /**
- * In-View Translation
+ * In-View Translation.
  *
  * Integration with `View`. Embeds message translation aliases into the `View`
  * class (or other content handler, if specified) when content is rendered. This
@@ -221,7 +221,7 @@ Validator::add('lengthBetween', function($value, $format, $options) {
  * @see lithium\net\http\Media
  */
 Filters::apply('lithium\net\http\Media', '_handle', function($params, $next) {
-	$params['handler'] += array('outputFilters' => array());
+	$params['handler'] += ['outputFilters' => []];
 	$params['handler']['outputFilters'] += Message::aliases();
 	return $next($params);
 });

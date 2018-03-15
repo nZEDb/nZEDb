@@ -15,10 +15,10 @@
  * not, see:
  *
  * @link <http://www.gnu.org/licenses/>.
+ *
  * @author niel
  * @copyright 2014 nZEDb
  */
-
 use nzedb\Category;
 
 /**
@@ -35,8 +35,8 @@ function getCategoryValue($category)
 
 // Function inspired by c0r3@newznabforums adds country flags on the browse page.
 /**
- * @param string $text	Text to match against.
- * @param string $page	Type of page. browse or search.
+ * @param string $text Text to match against.
+ * @param string $page Type of page. browse or search.
  *
  * @return string|false
  */
@@ -163,7 +163,7 @@ function release_flag($text, $page)
 
 		return
 			'<img title="' . $language . '" alt="' . $language . '" src="' . $www . 'themes/shared/img/flags/' . $code . '.png"/>';
-	} else if ($page == 'search') {
+	} elseif ($page == 'search') {
 		if ($code == '') {
 			return false;
 		} else {

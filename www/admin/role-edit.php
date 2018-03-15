@@ -22,19 +22,29 @@ switch (($_REQUEST['action'] ?? 'view')) {
 			'apirequests'      => '',
 			'downloadrequests' => '',
 			'defaultinvites'   => '',
-			'canpreview'       => 0
+			'canpreview'       => 0,
 		];
 		break;
 
 	case 'submit':
 		if ($_POST['id'] === '') {
-			$ret = $page->users->addRole($_POST['name'], $_POST['apirequests'], $_POST['downloadrequests'],
-				$_POST['defaultinvites'], $_POST['canpreview']
+			$ret = $page->users->addRole(
+				$_POST['name'],
+				$_POST['apirequests'],
+				$_POST['downloadrequests'],
+				$_POST['defaultinvites'],
+				$_POST['canpreview']
 			);
 			header('Location:' . WWW_TOP . '/role-list.php');
 		} else {
-			$ret = $page->users->updateRole($_POST['id'], $_POST['name'], $_POST['apirequests'],
-				$_POST['downloadrequests'], $_POST['defaultinvites'], $_POST['isdefault'], $_POST['canpreview']
+			$ret = $page->users->updateRole(
+				$_POST['id'],
+				$_POST['name'],
+				$_POST['apirequests'],
+				$_POST['downloadrequests'],
+				$_POST['defaultinvites'],
+				$_POST['isdefault'],
+				$_POST['canpreview']
 			);
 			header('Location:' . WWW_TOP . '/role-list.php');
 
@@ -54,7 +64,7 @@ switch (($_REQUEST['action'] ?? 'view')) {
 
 $page->smarty->assign('role', $role);
 $page->smarty->assign('roleexccat', $page->users->getRoleCategoryExclusion($_GET['id']));
-$page->smarty->assign('catlist',$category->getForSelect(false));
+$page->smarty->assign('catlist', $category->getForSelect(false));
 $page->smarty->assign('yesno_ids', [1, 0]);
 $page->smarty->assign('yesno_names', ['Yes', 'No']);
 

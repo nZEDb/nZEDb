@@ -2,8 +2,8 @@
 // Include config.php
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\ReleaseRemover;
 use nzedb\ColorCLI;
+use nzedb\ReleaseRemover;
 
 // New line for CLI.
 $n = PHP_EOL;
@@ -14,7 +14,8 @@ $cli = new ColorCLI();
 // Print arguments/usage.
 $totalArgs = count($argv);
 if ($totalArgs < 2) {
-	exit($cli->info($n .
+	exit($cli->info(
+		$n .
 		'This deletes releases based on a list of criteria you pass.' . $n .
 		'Usage:' . $n . $n .
 		'List of supported criteria:' . $n .

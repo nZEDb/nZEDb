@@ -13,14 +13,13 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2016 nZEDb
  */
-
 namespace app\extensions\util\yenc\adapter;
 
 use app\extensions\util\Yenc;
-
 
 class SimplePhpYencDecode extends \lithium\core\Object
 {
@@ -37,7 +36,7 @@ class SimplePhpYencDecode extends \lithium\core\Object
 	/**
 	 * Determines if this adapter is enabled by checking if the `nzedb_yenc` extension is loaded.
 	 *
-	 * @return boolean Returns `true` if enabled, otherwise `false`.
+	 * @return bool Returns `true` if enabled, otherwise `false`.
 	 */
 	public static function enabled()
 	{

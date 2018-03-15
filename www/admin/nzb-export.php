@@ -6,7 +6,7 @@ use nzedb\Releases;
 use nzedb\utility\Misc;
 
 if (Misc::isCLI()) {
-	exit ('This script is only for exporting from the web, use the script in misc/testing' . PHP_EOL);
+	exit('This script is only for exporting from the web, use the script in misc/testing' . PHP_EOL);
 }
 
 $page = new AdminPage();
@@ -21,9 +21,10 @@ if ($page->isPostBack()) {
 	$gzip = $_POST['gzip'];
 
 	if ($folder !== '') {
-		$output = (new NZBExport(['Browser'  => true, 'Settings' => $page->settings, 'Releases' => $rel]))->beginExport([
+		$output = (new NZBExport(['Browser'  => true, 'Settings' => $page->settings, 'Releases' => $rel]))->beginExport(
+			[
 				$folder, $fromDate, $toDate, ($_POST['group'] === '-1' ? 0 : (int)$_POST['group']),
-				($_POST['gzip'] === '1')
+				($_POST['gzip'] === '1'),
 			]
 		);
 	} else {
@@ -35,7 +36,8 @@ if ($page->isPostBack()) {
 }
 
 $page->title = 'Export Nzbs';
-$page->smarty->assign([
+$page->smarty->assign(
+	[
 		'output'    => $output,
 		'folder'    => $folder,
 		'fromdate'  => $fromDate,
@@ -43,7 +45,7 @@ $page->smarty->assign([
 		'group'     => $group,
 		'gzip'      => $gzip,
 		'gziplist'  => [1 => 'True', 0 => 'False'],
-		'grouplist' => $rel->getReleasedGroupsForSelect(true)
+		'grouplist' => $rel->getReleasedGroupsForSelect(true),
 	]
 );
 $page->content = $page->smarty->fetch('nzb-export.tpl');

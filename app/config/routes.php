@@ -1,6 +1,6 @@
 <?php
 /**
- * Lithium: the most rad php framework
+ * Lithium: the most rad php framework.
  *
  * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
@@ -16,11 +16,11 @@
  * @see lithium\net\http\Router
  * @see lithium\net\http\Route
  */
-use lithium\net\http\Router;
 use lithium\core\Environment;
+use lithium\net\http\Router;
 
 /**
- * ### Continuation routes
+ * ### Continuation routes.
  *
  * With globalization enabled a localized route is configured by connecting a
  * continuation route. Once the route has been connected, all the other
@@ -31,11 +31,11 @@ use lithium\core\Environment;
  */
 if ($locales = Environment::get('locales')) {
 	$template = '/{:locale:' . join('|', array_keys($locales)) . '}/{:args}';
-	Router::connect($template, array(), array('continue' => true));
+	Router::connect($template, [], ['continue' => true]);
 }
 
 /**
- * ### Basic page routes
+ * ### Basic page routes.
  *
  * Here, we are connecting `'/'` (the base path) to controller called `'Pages'`,
  * its action called `view()`, and we pass a param to select the view file
@@ -53,7 +53,7 @@ Router::connect('/', 'Pages::view');
 Router::connect('/pages/{:args}', 'Pages::view');
 
 /**
- * ### Testing routes
+ * ### Testing routes.
  *
  * Add the testing routes. These routes are only connected in non-production environments, and allow
  * browser-based access to the test suite for running unit and integration tests for the Lithium
@@ -61,12 +61,12 @@ Router::connect('/pages/{:args}', 'Pages::view');
  * [http://path/to/app/test](/test) to run tests.
  */
 if (!Environment::is('production')) {
-	Router::connect('/test/{:args}', array('controller' => 'lithium\test\Controller'));
-	Router::connect('/test', array('controller' => 'lithium\test\Controller'));
+	Router::connect('/test/{:args}', ['controller' => 'lithium\test\Controller']);
+	Router::connect('/test', ['controller' => 'lithium\test\Controller']);
 }
 
 /**
- * ### Database object routes
+ * ### Database object routes.
  *
  * The routes below are used primarily for accessing database objects, where `{:id}` corresponds to
  * the primary key of the database object, and can be accessed in the controller as
@@ -87,7 +87,7 @@ if (!Environment::is('production')) {
 // Router::connect('/{:controller}/{:action}/{:id:[0-9a-f]{24}}');
 
 /**
- * ### Default controller/action routes
+ * ### Default controller/action routes.
  *
  * Finally, connect the default route. This route acts as a catch-all, intercepting requests in the
  * following forms:

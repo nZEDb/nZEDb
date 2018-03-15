@@ -1,6 +1,6 @@
 <?php
 /**
- * Lithium: the most rad php framework
+ * Lithium: the most rad php framework.
  *
  * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
@@ -16,10 +16,9 @@
  *
  * @see lithium\aop\Filters
  */
-
 use lithium\aop\Filters;
-use lithium\core\Libraries;
 use lithium\core\Environment;
+use lithium\core\Libraries;
 
 /**
  * This filter intercepts the `run()` method of the `Dispatcher`, and first passes the `'request'`
@@ -46,7 +45,9 @@ Filters::apply('lithium\action\Dispatcher', 'run', function($params, $next) {
 			continue;
 		}
 		$file = "{$config['path']}/config/routes.php";
-		file_exists($file) ? call_user_func(function() use ($file) { include $file; }) : null;
+		file_exists($file) ? call_user_func(function() use ($file) {
+			include $file;
+		}) : null;
 	}
 	return $next($params);
 });

@@ -2,23 +2,25 @@
 
 // #nZEDb : Denotes modifications done for nZEDb integration.
 
-/* #nZEDb */
+// #nZEDb
 require_once './config.php';
 $page     = new AdminPage();
 $nZEDbURL = $page->serverurl;
-/* #nZEDb */
+// #nZEDb
 
 /**
- * OPcache GUI
+ * OPcache GUI.
  *
  * A simple but effective single-file GUI for the OPcache PHP extension.
  *
  * @author  Andrew Collington, andy@amnuts.com
+ *
  * @version 2.0.0
+ *
  * @link    https://github.com/amnuts/opcache-gui
+ *
  * @license MIT, http://acollington.mit-license.org/
  */
-
 if (!extension_loaded('Zend OPcache')) {
 	die('The Zend OPcache extension does not appear to be installed');
 }
@@ -26,8 +28,9 @@ if (!extension_loaded('Zend OPcache')) {
 class OpCacheService
 {
 	protected $data;
+
 	protected $options = [
-		'allow_invalidate' => true
+		'allow_invalidate' => true,
 	];
 
 	private function __construct($options = [])
@@ -124,7 +127,7 @@ class OpCacheService
 	{
 		$status  = opcache_get_status();
 		$config  = opcache_get_configuration();
-		$memsize = function($size, $precision = 3, $space = false) {
+		$memsize = function ($size, $precision = 3, $space = false) {
 			$i   = 0;
 			$val = [' bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 			while (($size / 1024) > 1) {
@@ -137,15 +140,17 @@ class OpCacheService
 
 		$files = [];
 		if (!empty($status['scripts'])) {
-			uasort($status['scripts'],
-				function($a, $b) {
+			uasort(
+				$status['scripts'],
+				function ($a, $b) {
 					return $a['hits'] < $b['hits'];
-				});
+				}
+			);
 			foreach ($status['scripts'] as &$file) {
 				$file['full_path'] = str_replace('\\', '/', $file['full_path']);
 				$file['readable']  = [
 					'hits'               => number_format($file['hits']),
-					'memory_consumption' => $memsize($file['memory_consumption'])
+					'memory_consumption' => $memsize($file['memory_consumption']),
 				];
 			}
 			$files = array_values($status['scripts']);
@@ -159,10 +164,13 @@ class OpCacheService
 													  ($status['memory_usage']['used_memory'] +
 													   $status['memory_usage']['wasted_memory'])
 													  /
-													  $config['directives']['opcache.memory_consumption'])),
+													  $config['directives']['opcache.memory_consumption']
+				)),
 				'hit_rate_percentage'    => round($status['opcache_statistics']['opcache_hit_rate']),
-				'wasted_percentage'      => round($status['memory_usage']['current_wasted_percentage'],
-												  2),
+				'wasted_percentage'      => round(
+					$status['memory_usage']['current_wasted_percentage'],
+												  2
+				),
 				'readable'               => [
 					'total_memory'       => $memsize($config['directives']['opcache.memory_consumption']),
 					'used_memory'        => $memsize($status['memory_usage']['used_memory']),
@@ -174,15 +182,20 @@ class OpCacheService
 					'blacklist_miss'     => number_format($status['opcache_statistics']['blacklist_misses']),
 					'num_cached_keys'    => number_format($status['opcache_statistics']['num_cached_keys']),
 					'max_cached_keys'    => number_format($status['opcache_statistics']['max_cached_keys']),
-					'start_time'         => date_format(date_create("@{$status['opcache_statistics']['start_time']}"),
-														'Y-m-d H:i:s'),
-					'last_restart_time'  => ($status['opcache_statistics']['last_restart_time'] == 0
+					'start_time'         => date_format(
+						date_create("@{$status['opcache_statistics']['start_time']}"),
+														'Y-m-d H:i:s'
+					),
+					'last_restart_time'  => (
+						$status['opcache_statistics']['last_restart_time'] == 0
 						? 'never'
 						:
-						date_format(date_create("@{$status['opcache_statistics']['last_restart_time']}"),
-									'Y-m-d H:i:s')
-					)
-				]
+						date_format(
+							date_create("@{$status['opcache_statistics']['last_restart_time']}"),
+									'Y-m-d H:i:s'
+						)
+					),
+				],
 			]
 		);
 
@@ -197,15 +210,18 @@ class OpCacheService
 			[
 				'php'    => PHP_VERSION,
 				'server' => $_SERVER['SERVER_SOFTWARE'],
-				'host'   => (function_exists('gethostname')
+				'host'   => (
+					function_exists('gethostname')
 					? gethostname()
-					: (php_uname('n')
-						?: (empty($_SERVER['SERVER_NAME'])
+					: (
+						php_uname('n')
+						?: (
+							empty($_SERVER['SERVER_NAME'])
 							? $_SERVER['HOST_NAME']
 							: $_SERVER['SERVER_NAME']
 						)
 					)
-				)
+				),
 			]
 		);
 
@@ -215,7 +231,7 @@ class OpCacheService
 			'files'      => $files,
 			'directives' => $directives,
 			'blacklist'  => $config['blacklist'],
-			'functions'  => get_extension_funcs('Zend OPcache')
+			'functions'  => get_extension_funcs('Zend OPcache'),
 		];
 	}
 }
@@ -600,7 +616,7 @@ $opcache = OpCacheService::init();
 <script type="text/javascript">
 	var realtime = false;
 	var opstate = <?php echo json_encode($opcache->getData()); ?>;
-	var canInvalidate = <?php echo ($opcache->canInvalidate() ? 'true' : 'false'); ?>;
+	var canInvalidate = <?php echo($opcache->canInvalidate() ? 'true' : 'false'); ?>;
 
 	$(function () {
 		function updateStatus() {

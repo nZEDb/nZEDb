@@ -7,12 +7,14 @@ use Moinax\TvDb\XmlException;
 use nzedb\ReleaseImage;
 
 /**
- * Class TVDB -- functions used to post process releases against TVDB
+ * Class TVDB -- functions used to post process releases against TVDB.
  */
 class TVDB extends TV
 {
 	const TVDB_URL = 'http://thetvdb.com';
+
 	const TVDB_API_KEY = '5296B37AEC35913D';
+
 	const MATCH_PROBABILITY = 75;
 
 	/**
@@ -70,7 +72,7 @@ class TVDB extends TV
 
 	/**
 	 * Main processing director function for scrapers
-	 * Calls work query function and initiates processing
+	 * Calls work query function and initiates processing.
 	 *
 	 * @param      $groupID
 	 * @param      $guidChar
@@ -88,17 +90,14 @@ class TVDB extends TV
 		}
 
 		if ($res instanceof \PDOStatement) {
-
 			$this->titleCache = [];
 
 			foreach ($res as $row) {
-
 				$tvdbid = false;
 
 				// Clean the show name for better match probability
 				$release = $this->parseInfo($row['searchname']);
 				if (is_array($release) && $release['name'] != '') {
-
 					if (in_array($release['cleanname'], $this->titleCache)) {
 						if ($this->echooutput) {
 							echo $this->pdo->log->headerOver('Title: ') .
@@ -133,7 +132,8 @@ class TVDB extends TV
 						}
 
 						// Check if we have a valid country and set it in the array
-						$country = (isset($release['country']) && strlen($release['country']) == 2
+						$country = (
+							isset($release['country']) && strlen($release['country']) == 2
 							? (string)$release['country']
 							: ''
 						);
@@ -146,8 +146,7 @@ class TVDB extends TV
 							$videoId = $this->add($tvdbShow);
 							$tvdbid = (int)$tvdbShow['tvdb'];
 						}
-
-					} else if ($this->echooutput && $tvdbid !== false) {
+					} elseif ($this->echooutput && $tvdbid !== false) {
 						echo $this->pdo->log->primaryOver('Video ID for ') .
 							$this->pdo->log->headerOver($release['cleanname']) .
 							$this->pdo->log->primary(' found in local db, attempting episode match.');
@@ -214,7 +213,33 @@ class TVDB extends TV
 	}
 
 	/**
-	 * Placeholder for Videos getBanner
+	 * Retrieves the poster art for the processed show.
+	 *
+	 * @param int $videoId -- the local Video ID
+	 * @param int $showId  -- the TVDB ID
+	 *
+	 * @return int
+	 */
+	public function getPoster($videoId, $showId)
+	{
+		$ri = new ReleaseImage($this->pdo);
+
+		// Try to get the Poster
+		$hascover = $ri->saveImage($videoId, sprintf($this->posterUrl, $showId), $this->imgSavePath, '', '');
+
+		// Couldn't get poster, try fan art instead
+		if ($hascover !== 1) {
+			$hascover = $ri->saveImage($videoId, sprintf($this->fanartUrl, $showId), $this->imgSavePath, '', '');
+		}
+		// Mark it retrieved if we saved an image
+		if ($hascover == 1) {
+			$this->setCoverFound($videoId);
+		}
+		return $hascover;
+	}
+
+	/**
+	 * Placeholder for Videos getBanner.
 	 *
 	 * @param $videoID
 	 * @param $siteId
@@ -228,10 +253,9 @@ class TVDB extends TV
 
 	/**
 	 * Calls the API to perform initial show name match to TVDB title
-	 * Returns a formatted array of show data or false if no match
+	 * Returns a formatted array of show data or false if no match.
 	 *
 	 * @param string $cleanName
-	 *
 	 * @param string $country
 	 *
 	 * @return array|false
@@ -307,40 +331,14 @@ class TVDB extends TV
 	}
 
 	/**
-	 * Retrieves the poster art for the processed show
-	 *
-	 * @param int $videoId -- the local Video ID
-	 * @param int $showId  -- the TVDB ID
-	 *
-	 * @return int
-	 */
-	public function getPoster($videoId, $showId)
-	{
-		$ri = new ReleaseImage($this->pdo);
-
-		// Try to get the Poster
-		$hascover = $ri->saveImage($videoId, sprintf($this->posterUrl, $showId), $this->imgSavePath, '', '');
-
-		// Couldn't get poster, try fan art instead
-		if ($hascover !== 1) {
-			$hascover = $ri->saveImage($videoId, sprintf($this->fanartUrl, $showId), $this->imgSavePath, '', '');
-		}
-		// Mark it retrieved if we saved an image
-		if ($hascover == 1) {
-			$this->setCoverFound($videoId);
-		}
-		return $hascover;
-	}
-
-	/**
 	 * Gets the specific episode info for the parsed release after match
-	 * Returns a formatted array of episode data or false if no match
+	 * Returns a formatted array of episode data or false if no match.
 	 *
-	 * @param integer $tvdbid
-	 * @param integer $season
-	 * @param integer $episode
-	 * @param string  $airdate
-	 * @param integer $videoId
+	 * @param int    $tvdbid
+	 * @param int    $season
+	 * @param int    $episode
+	 * @param string $airdate
+	 * @param int    $videoId
 	 *
 	 * @return array|false
 	 */
@@ -360,7 +358,7 @@ class TVDB extends TV
 					return false;
 				}
 			}
-		} else if ($videoId > 0) {
+		} elseif ($videoId > 0) {
 			try {
 				$response = $this->client->getSerieEpisodes($tvdbid, 'en');
 			} catch (CurlException $error) {
@@ -392,7 +390,7 @@ class TVDB extends TV
 			if ($this->checkRequiredAttr($response, 'tvdbE')) {
 				$return = $this->formatEpisodeInfo($response);
 			}
-		} else if (is_array($response) && isset($response['episodes']) && $videoId > 0) {
+		} elseif (is_array($response) && isset($response['episodes']) && $videoId > 0) {
 			foreach ($response['episodes'] as $singleEpisode) {
 				if ($this->checkRequiredAttr($singleEpisode, 'tvdbE')) {
 					$this->addEpisode($videoId, $this->formatEpisodeInfo($singleEpisode));
@@ -405,7 +403,7 @@ class TVDB extends TV
 
 	/**
 	 * Assigns API show response values to a formatted array for insertion
-	 * Returns the formatted array
+	 * Returns the formatted array.
 	 *
 	 * @param $show
 	 *
@@ -422,20 +420,20 @@ class TVDB extends TV
 			'started'   => $show->firstAired->format('Y-m-d'),
 			'publisher' => (string)$show->network,
 			'source'    => (int)parent::SOURCE_TVDB,
-			'imdb'      => (int)(isset($imdb['imdbid']) ? $imdb['imdbid'] : 0),
+			'imdb'      => (int)($imdb['imdbid'] ?? 0),
 			'tvdb'      => (int)$show->id,
 			'trakt'     => 0,
 			'tvrage'    => 0,
 			'tvmaze'    => 0,
 			'tmdb'      => 0,
 			'aliases'   => (!empty($show->aliasNames) ? (array)$show->aliasNames : ''),
-			'localzone' => "''"
+			'localzone' => "''",
 		];
 	}
 
 	/**
 	 * Assigns API episode response values to a formatted array for insertion
-	 * Returns the formatted array
+	 * Returns the formatted array.
 	 *
 	 * @param $episode
 	 *
@@ -449,7 +447,7 @@ class TVDB extends TV
 			'episode'     => (int)$episode->number,
 			'se_complete' => (string)'S' . sprintf('%02d', $episode->season) . 'E' . sprintf('%02d', $episode->number),
 			'firstaired'  => $episode->firstAired->format('Y-m-d'),
-			'summary'     => (string)$episode->overview
+			'summary'     => (string)$episode->overview,
 		];
 	}
 }

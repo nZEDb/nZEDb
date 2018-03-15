@@ -13,7 +13,7 @@ $poster = (isset($_REQUEST['poster']) && !empty($_REQUEST['poster']) ? $_REQUEST
 $page->smarty->assign(
 	[
 		'poster' => $poster,
-		'posters' => $posters
+		'posters' => $posters,
 	]
 );
 

@@ -2,8 +2,8 @@
 //This script will update all records in the gamesinfo table
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\Games;
 use nzedb\db\DB;
+use nzedb\Games;
 
 $pdo = new DB();
 $game = new Games(['Echo' => true, 'Settings' => $pdo]);

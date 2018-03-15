@@ -2,8 +2,8 @@
 
 use nzedb\Category;
 use nzedb\Releases;
-use nzedb\Videos;
 use nzedb\UserSeries;
+use nzedb\Videos;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
@@ -20,7 +20,7 @@ if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 		$category = $_REQUEST['t'];
 	}
 
-	$catarray = array();
+	$catarray = [];
 	$catarray[] = $category;
 
 	$rel = $releases->searchShows(['id' => $_GET['id']], '', '', '', 0, 1000, '', $catarray, -1);
@@ -34,7 +34,7 @@ if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 		$myshows = $us->getShow($page->users->currentUserId(), $show['id']);
 
 		// Sort releases by season, episode, date posted.
-		$series = $episode = $posted = array();
+		$series = $episode = $posted = [];
 		foreach ($rel as $rlk => $rlv) {
 			$series[$rlk] = $rlv['series'];
 			$episode[$rlk] = $rlv['episode'];
@@ -42,7 +42,7 @@ if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 		}
 		array_multisort($series, SORT_DESC, $episode, SORT_DESC, $posted, SORT_DESC, $rel);
 
-		$series = array();
+		$series = [];
 		foreach ($rel as $r) {
 			$series[$r['series']][$r['episode']][] = $r;
 		}
@@ -52,7 +52,7 @@ if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 		$page->smarty->assign('myshows', $myshows);
 
 		//get series name(s), description, country and genre
-		$seriestitles = $seriesdescription = $seriescountry = array();
+		$seriestitles = $seriesdescription = $seriescountry = [];
 		$seriestitles[] = $show['title'];
 
 		if (!empty($show['summary'])) {
@@ -77,7 +77,7 @@ if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 			$cdata = $cat->getById($category);
 			$catid = $category;
 		} else {
-			$cdata = array('title' => '');
+			$cdata = ['title' => ''];
 			$catid = '';
 		}
 		$page->smarty->assign('catname', $cdata['title']);
@@ -102,7 +102,7 @@ if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 	$page->meta_keywords = 'view,series,tv,show,description,details';
 	$page->meta_description = 'View Series List';
 
-	$serieslist = array();
+	$serieslist = [];
 	foreach ($masterserieslist as $s) {
 		if (preg_match('/^[0-9]/', $s['title'])) {
 			$thisrange = '0-9';

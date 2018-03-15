@@ -29,6 +29,7 @@ class NNTP extends \Net_NNTP_Client
 
 	/**
 	 * Log/echo debug?
+	 *
 	 * @var bool
 	 * @access protected
 	 */
@@ -36,6 +37,7 @@ class NNTP extends \Net_NNTP_Client
 
 	/**
 	 * Echo to cli?
+	 *
 	 * @var bool
 	 * @access protected
 	 */
@@ -43,13 +45,15 @@ class NNTP extends \Net_NNTP_Client
 
 	/**
 	 * Does the server support XFeature GZip header compression?
-	 * @var boolean
+	 *
+	 * @var bool
 	 * @access protected
 	 */
 	protected $_compressionSupported = true;
 
 	/**
 	 * Is header compression enabled for the session?
+	 *
 	 * @var bool
 	 * @access protected
 	 */
@@ -57,6 +61,7 @@ class NNTP extends \Net_NNTP_Client
 
 	/**
 	 * Currently selected group.
+	 *
 	 * @var string
 	 * @access protected
 	 */
@@ -64,6 +69,7 @@ class NNTP extends \Net_NNTP_Client
 
 	/**
 	 * Port of the current NNTP server.
+	 *
 	 * @var int
 	 * @access protected
 	 */
@@ -71,6 +77,7 @@ class NNTP extends \Net_NNTP_Client
 
 	/**
 	 * Address of the current NNTP server.
+	 *
 	 * @var string
 	 * @access protected
 	 */
@@ -78,6 +85,7 @@ class NNTP extends \Net_NNTP_Client
 
 	/**
 	 * Are we allowed to post to usenet?
+	 *
 	 * @var bool
 	 * @access protected
 	 */
@@ -85,10 +93,50 @@ class NNTP extends \Net_NNTP_Client
 
 	/**
 	 * How many times should we try to reconnect to the NNTP server?
+	 *
 	 * @var int
 	 * @access protected
 	 */
 	protected $_nntpRetries;
+
+	/**
+	 * Path to yyDecoder binary.
+	 *
+	 * @var bool|string
+	 * @access protected
+	 */
+	protected $_yyDecoderPath;
+
+	/**
+	 * If on unix, hide yydecode CLI output.
+	 *
+	 * @var string
+	 * @access protected
+	 */
+	protected $_yEncSilence;
+
+	/**
+	 * Path to temp yEnc input storage file.
+	 *
+	 * @var string
+	 * @access protected
+	 */
+	protected $_yEncTempInput;
+
+	/**
+	 * Path to temp yEnc output storage file.
+	 *
+	 * @var string
+	 * @access protected
+	 */
+	protected $_yEncTempOutput;
+
+	/**
+	 * Use the simple_php_yenc_decode extension for decoding yEnc articles?
+	 *
+	 * @var bool
+	 */
+	protected $_yEncExtension = false;
 
 	/**
 	 * Default constructor.
@@ -137,11 +185,11 @@ class NNTP extends \Net_NNTP_Client
 	/**
 	 * Connect to a usenet server.
 	 *
-	 * @param boolean $compression Should we attempt to enable XFeature Gzip compression on this connection?
-	 * @param boolean $alternate   Use the alternate NNTP connection.
+	 * @param bool $compression Should we attempt to enable XFeature Gzip compression on this connection?
+	 * @param bool $alternate   Use the alternate NNTP connection.
 	 *
-	 * @return mixed  On success = (bool)   Did we successfully connect to the usenet?
-	 *                On failure = (object) PEAR_Error.
+	 * @return mixed On success = (bool)   Did we successfully connect to the usenet?
+	 *               On failure = (object) PEAR_Error.
 	 *
 	 * @access public
 	 */
@@ -299,7 +347,7 @@ class NNTP extends \Net_NNTP_Client
 	/**
 	 * Disconnect from the current NNTP server.
 	 *
-	 * @param  bool $force Force quit even if not connected?
+	 * @param bool $force Force quit even if not connected?
 	 *
 	 * @return mixed On success : (bool)   Did we successfully disconnect from usenet?
 	 *               On Failure : (object) PEAR_Error.
@@ -322,23 +370,8 @@ class NNTP extends \Net_NNTP_Client
 	}
 
 	/**
-	 * Reset some properties when disconnecting from usenet.
-	 *
-	 * @void
-	 *
-	 * @access protected
-	 */
-	protected function _resetProperties()
-	{
-		$this->_compressionEnabled = false;
-		$this->_compressionSupported = true;
-		$this->_currentGroup = '';
-		$this->_postingAllowed = false;
-		parent::_resetProperties();
-	}
-
-	/**
 	 * Attempt to enable compression if the admin enabled the site setting.
+	 *
 	 * @note This can be used to enable compression if the server was connected without compression.
 	 *
 	 * @access public
@@ -381,8 +414,8 @@ class NNTP extends \Net_NNTP_Client
 	 * Fetch an overview of article(s) in the currently selected group.
 	 *
 	 * @param string $range
-	 * @param bool $names
-	 * @param bool $forceNames
+	 * @param bool   $names
+	 * @param bool   $forceNames
 	 *
 	 * @return mixed On success : (array)  Multidimensional array with article headers.
 	 *               On failure : (object) PEAR_Error.
@@ -551,7 +584,6 @@ class NNTP extends \Net_NNTP_Client
 
 		// Check if the msgIds are in an array.
 		if (is_array($identifiers)) {
-
 			$loops = $messageSize = 0;
 
 			// Loop over the message-ID's or article numbers.
@@ -580,7 +612,7 @@ class NNTP extends \Net_NNTP_Client
 						$messageSize = strlen($message);
 					}
 
-				// If there is an error try the alternate provider or return the PEAR error.
+					// If there is an error try the alternate provider or return the PEAR error.
 				} else {
 					// Check if admin has enabled alternate in site->edit.
 					if ($alternate === true) {
@@ -626,7 +658,7 @@ class NNTP extends \Net_NNTP_Client
 			}
 
 			// If it's a string check if it's a valid message-ID.
-		} else if (is_string($identifiers) || is_numeric($identifiers)) {
+		} elseif (is_string($identifiers) || is_numeric($identifiers)) {
 			$body = $this->_getMessage($groupName, $identifiers);
 			if ($alternate === true && $this->isError($body)) {
 				$nntp->doConnect(true, true);
@@ -659,8 +691,8 @@ class NNTP extends \Net_NNTP_Client
 	 *                           (int) The article number.
 	 * @param bool   $yEnc       Attempt to yEnc decode the body.
 	 *
-	 * @return mixed  On success : (array)  The article.
-	 *                On failure : (object) PEAR_Error.
+	 * @return mixed On success : (array)  The article.
+	 *               On failure : (object) PEAR_Error.
 	 *
 	 * @access public
 	 */
@@ -710,7 +742,7 @@ class NNTP extends \Net_NNTP_Client
 				// If we found the empty line it means we are done reading the header and we will start reading the body.
 				if (!$emptyLine) {
 					if ($line === '') {
-						$emptyLine = True;
+						$emptyLine = true;
 						continue;
 					}
 
@@ -739,8 +771,8 @@ class NNTP extends \Net_NNTP_Client
 	 * Download a full article header.
 	 *
 	 * @param string $groupName  The name of the group the article is in.
-	 * @param mixed $identifier (string) The message-ID of the article to download.
-	 *                          (int)    The article number.
+	 * @param mixed  $identifier (string) The message-ID of the article to download.
+	 *                           (int)    The article number.
 	 *
 	 * @return mixed On success : (array)  The header.
 	 *               On failure : (object) PEAR_Error.
@@ -804,18 +836,18 @@ class NNTP extends \Net_NNTP_Client
 	/**
 	 * Post an article to usenet.
 	 *
-	 * @param string $groups   mixed   (array)  Groups. ie.: $groups = array('alt.test', 'alt.testing', 'free.pt');
-	 *                          (string) Group.  ie.: $groups = 'alt.test';
-	 * @param string $subject  string  The subject.     ie.: $subject = 'Test article';
-	 * @param string $body     string  The message.     ie.: $message = 'This is only a test, please disregard.';
-	 * @param string $from     string  The poster.      ie.: $from = '<anon@anon.com>';
+	 * @param string $groups  mixed   (array)  Groups. ie.: $groups = array('alt.test', 'alt.testing', 'free.pt');
+	 *                        (string) Group.  ie.: $groups = 'alt.test';
+	 * @param string $subject string  The subject.     ie.: $subject = 'Test article';
+	 * @param string $body    string  The message.     ie.: $message = 'This is only a test, please disregard.';
+	 * @param string $from    string  The poster.      ie.: $from = '<anon@anon.com>';
 	 * @param $extra    string  Extra, separated by \r\n
 	 *                                           ie.: $extra  = 'Organization: <nZEDb>\r\nNNTP-Posting-Host: <127.0.0.1>';
 	 * @param $yEnc     bool    Encode the message with yEnc?
 	 * @param $compress bool    Compress the message with GZip?
 	 *
-	 * @return          mixed   On success : (bool)   True.
-	 *                          On failure : (object) PEAR_Error.
+	 * @return mixed On success : (bool)   True.
+	 *               On failure : (object) PEAR_Error.
 	 *
 	 * @access public
 	 */
@@ -881,7 +913,7 @@ class NNTP extends \Net_NNTP_Client
 	 *
 	 * @param NNTP   $nntp  Instance of class NNTP.
 	 * @param string $group Name of the group.
-	 * @param bool   $comp Use compression or not?
+	 * @param bool   $comp  Use compression or not?
 	 *
 	 * @return mixed On success : (array)  The group summary.
 	 *               On Failure : (object) PEAR_Error.
@@ -920,6 +952,7 @@ class NNTP extends \Net_NNTP_Client
 	 * yEncodes a string and returns it.
 	 *
 	 * @deprecated use app\extensions\util\Yenc::encode instead.
+	 *
 	 * @param string $string     String to encode.
 	 * @param string $filename   Name to use as the filename in the yEnc header (this does not have to be an actual file).
 	 * @param int    $lineLength Line length to use (can be up to 254 characters).
@@ -950,7 +983,7 @@ class NNTP extends \Net_NNTP_Client
 		$stringLength = strlen($string);
 		// Encode each character of the string one at a time.
 		for ($i = 0; $i < $stringLength; $i++) {
-			$value = ((ord($string{$i}) + 42) % 256);
+			$value = ((ord($string[$i]) + 42) % 256);
 
 			// Escape NULL, TAB, LF, CR, space, . and = characters.
 			if ($value == 0 || $value == 9 || $value == 10 || $value == 13 || $value == 32 || $value == 46 || $value == 61) {
@@ -1003,7 +1036,6 @@ class NNTP extends \Net_NNTP_Client
 			$headerSize  = $encoded[1];
 			$trailerSize = $encoded[3];
 			$encoded     = $encoded[2];
-
 		} else {
 			return false;
 		}
@@ -1049,11 +1081,27 @@ class NNTP extends \Net_NNTP_Client
 	}
 
 	/**
+	 * Reset some properties when disconnecting from usenet.
+	 *
+	 * @void
+	 *
+	 * @access protected
+	 */
+	protected function _resetProperties()
+	{
+		$this->_compressionEnabled = false;
+		$this->_compressionSupported = true;
+		$this->_currentGroup = '';
+		$this->_postingAllowed = false;
+		parent::_resetProperties();
+	}
+
+	/**
 	 * Decode a string of text encoded with yEnc. Ignores all errors.
 	 *
 	 * @deprecated use app\extensions\util\Yenc::decodeIgnore instead.
 	 *
-	 * @param  string $data The encoded text to decode.
+	 * @param string $data The encoded text to decode.
 	 *
 	 * @return string The decoded yEnc string, or the input string, if it's not yEnc.
 	 * @access protected
@@ -1068,14 +1116,19 @@ class NNTP extends \Net_NNTP_Client
 				$input =
 					trim(
 						preg_replace(
-							'/\r\n/im', '',
+							'/\r\n/im',
+							'',
 							preg_replace(
-								'/(^=yEnd.*)/im', '',
+								'/(^=yEnd.*)/im',
+								'',
 								preg_replace(
-									'/(^=yPart.*\\r\\n)/im', '',
+									'/(^=yPart.*\\r\\n)/im',
+									'',
 									preg_replace('/(^=yBegin.*\\r\\n)/im', '', $input[1], 1),
-								1),
-							1)
+								1
+								),
+							1
+							)
 						)
 					);
 
@@ -1083,8 +1136,7 @@ class NNTP extends \Net_NNTP_Client
 				for ($chr = 0; $chr < $length; $chr++) {
 					$data .= ($input[$chr] !== '=' ? chr(ord($input[$chr]) - 42) : chr((ord($input[++$chr]) - 64) - 42));
 				}
-
-			} else if ($this->_yEncExtension) {
+			} elseif ($this->_yEncExtension) {
 				$data = \simple_yenc_decode($input[1]);
 			} else {
 				$inFile = $this->_yEncTempInput . mt_rand(0, 999999);
@@ -1113,40 +1165,6 @@ class NNTP extends \Net_NNTP_Client
 	}
 
 	/**
-	 * Path to yyDecoder binary.
-	 * @var bool|string
-	 * @access protected
-	 */
-	protected $_yyDecoderPath;
-
-	/**
-	 * If on unix, hide yydecode CLI output.
-	 * @var string
-	 * @access protected
-	 */
-	protected $_yEncSilence;
-
-	/**
-	 * Path to temp yEnc input storage file.
-	 * @var string
-	 * @access protected
-	 */
-	protected $_yEncTempInput;
-
-	/**
-	 * Path to temp yEnc output storage file.
-	 * @var string
-	 * @access protected
-	 */
-	protected $_yEncTempOutput;
-
-	/**
-	 * Use the simple_php_yenc_decode extension for decoding yEnc articles?
-	 * @var bool
-	 */
-	protected $_yEncExtension = false;
-
-	/**
 	 * Split a string into lines of 510 chars ending with \r\n.
 	 * Usenet limits lines to 512 chars, with \r\n that leaves us 510.
 	 *
@@ -1173,9 +1191,10 @@ class NNTP extends \Net_NNTP_Client
 	 * Try to see if the NNTP server implements XFeature GZip Compression,
 	 * change the compression bool object if so.
 	 *
-	 * @param bool $secondTry     This is only used if enabling compression fails, the function will call itself to retry.
+	 * @param bool $secondTry This is only used if enabling compression fails, the function will call itself to retry.
+	 *
 	 * @return mixed On success : (bool)   True:  The server understood and compression is enabled.
-	 *                            (bool)   False: The server did not understand, compression is not enabled.
+	 *               (bool)   False: The server did not understand, compression is not enabled.
 	 *               On failure : (object) PEAR_Error.
 	 *
 	 * @access protected
@@ -1184,7 +1203,7 @@ class NNTP extends \Net_NNTP_Client
 	{
 		if ($this->_compressionEnabled === true) {
 			return true;
-		} else if ($this->_compressionSupported === false) {
+		} elseif ($this->_compressionSupported === false) {
 			return false;
 		}
 
@@ -1198,7 +1217,7 @@ class NNTP extends \Net_NNTP_Client
 			}
 			$this->_compressionSupported = false;
 			return $response;
-		} else if ($response !== 290) {
+		} elseif ($response !== 290) {
 			if ($secondTry === false) {
 				// Retry.
 				$this->cmdQuit();
@@ -1213,7 +1232,6 @@ class NNTP extends \Net_NNTP_Client
 			$this->_compressionSupported = false;
 
 			return false;
-
 		}
 
 		$this->_compressionEnabled = true;
@@ -1226,8 +1244,8 @@ class NNTP extends \Net_NNTP_Client
 	 * of their _getTextResponse function since it is incompatible at decoding
 	 * headers when XFeature GZip compression is enabled server side.
 	 *
-	 * @return self    Our overridden function when compression is enabled.
-	 *         parent  Parent function when no compression.
+	 * @return self Our overridden function when compression is enabled.
+	 *              parent  Parent function when no compression.
 	 *
 	 * @access protected
 	 */
@@ -1236,7 +1254,6 @@ class NNTP extends \Net_NNTP_Client
 		if ($this->_compressionEnabled === true &&
 			isset($this->_currentStatusResponse[1]) &&
 			stripos($this->_currentStatusResponse[1], 'COMPRESS=GZIP') !== false) {
-
 			return $this->_getXFeatureTextResponse();
 		} else {
 			return parent::_getTextResponse();
@@ -1248,8 +1265,8 @@ class NNTP extends \Net_NNTP_Client
 	 * until we find an indicator (period, carriage feed, line return ;; .\r\n), decompress the
 	 * data, split the data (bunch of headers in a string) into an array, finally return the array.
 	 *
-	 * @return mixed  On success : (array)  The headers.
-	 *                On failure : (object) PEAR_Error.
+	 * @return mixed On success : (array)  The headers.
+	 *               On failure : (object) PEAR_Error.
 	 * @access protected
 	 */
 	protected function &_getXFeatureTextResponse()
@@ -1276,7 +1293,7 @@ class NNTP extends \Net_NNTP_Client
 					// Don't sleep on last iteration.
 					if (!empty($buffer)) {
 						break;
-					} else if ($i < 2) {
+					} elseif ($i < 2) {
 						usleep(10000);
 					}
 				}
@@ -1287,14 +1304,14 @@ class NNTP extends \Net_NNTP_Client
 					$deComp = @gzuncompress(mb_substr($data, 0, -3, '8bit'));
 
 					if (!empty($deComp)) {
-
 						$bytesReceived = strlen($data);
 						if ($this->_echo && $bytesReceived > 10240) {
 							$this->pdo->log->doEcho(
 								$this->pdo->log->primaryOver(
 									'Received ' . round($bytesReceived / 1024) .
 									'KB from group (' . $this->group() . ').'
-								), true
+								),
+								true
 							);
 						}
 
@@ -1309,7 +1326,6 @@ class NNTP extends \Net_NNTP_Client
 						$message = $this->throwError($this->pdo->log->error($message), 1000);
 						return $message;
 					}
-
 				} else {
 					// The buffer was not empty, so we know this was not the real ending, so reset $possibleTerm.
 					$possibleTerm = false;
@@ -1356,9 +1372,9 @@ class NNTP extends \Net_NNTP_Client
 	/**
 	 * Check if the Message-ID has the required opening and closing brackets.
 	 *
-	 * @param  string $messageID The Message-ID with or without brackets.
+	 * @param string $messageID The Message-ID with or without brackets.
 	 *
-	 * @return string            Message-ID with brackets.
+	 * @return string Message-ID with brackets.
 	 *
 	 * @access protected
 	 */
@@ -1384,12 +1400,12 @@ class NNTP extends \Net_NNTP_Client
 	/**
 	 * Download an article body (an article without the header).
 	 *
-	 * @param string $groupName The name of the group the article is in.
-	 * @param mixed $identifier (string) The message-ID of the article to download.
-	 *                          (int)    The article number.
+	 * @param string $groupName  The name of the group the article is in.
+	 * @param mixed  $identifier (string) The message-ID of the article to download.
+	 *                           (int)    The article number.
 	 *
 	 * @return string On success : (string) The article's body.
-	 *               On failure : (object) PEAR_Error.
+	 *                On failure : (object) PEAR_Error.
 	 *
 	 * @access protected
 	 */
@@ -1440,8 +1456,11 @@ class NNTP extends \Net_NNTP_Client
 					// Check if the line terminates the text response.
 					if ($line === ".\r\n") {
 						if ($this->_debugBool) {
-							$this->_debugging->log(get_class(),
-								__FUNCTION__, 'Fetched body for article ' . $identifier, Logger::LOG_INFO
+							$this->_debugging->log(
+								get_class(),
+								__FUNCTION__,
+								'Fetched body for article ' . $identifier,
+								Logger::LOG_INFO
 							);
 						}
 						// Attempt to yEnc decode and return the body.
@@ -1455,7 +1474,6 @@ class NNTP extends \Net_NNTP_Client
 
 					// Add the line to the rest of the lines.
 					$body .= $line;
-
 				}
 				return $this->throwError('End of stream! Connection lost?', null);
 
@@ -1467,7 +1485,7 @@ class NNTP extends \Net_NNTP_Client
 	/**
 	 * Check if we are still connected. Reconnect if not.
 	 *
-	 * @param  bool $reSelectGroup Select back the group after connecting?
+	 * @param bool $reSelectGroup Select back the group after connecting?
 	 *
 	 * @return mixed On success: (bool)   True;
 	 *               On failure: (object) PEAR_Error

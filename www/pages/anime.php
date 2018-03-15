@@ -15,18 +15,23 @@ if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 
 	// force the category to TV_ANIME as it should be for anime, as $catarray was NULL and we know
 	// the category for sure for anime.
-	$releases = $Releases->searchbyAnidbId($_GET['id'], 0, 1000, '', [Category::TV_ANIME],
-	-1);
+	$releases = $Releases->searchbyAnidbId(
+		$_GET['id'],
+		0,
+		1000,
+		'',
+		[Category::TV_ANIME],
+	-1
+	);
 	$anidb = $AniDB->getAnimeInfo($_GET['id']);
 
 	if (!$releases && !$anidb) {
 		$page->show404();
-	} else if (!$anidb) {
+	} elseif (!$anidb) {
 		$page->smarty->assign('nodata', 'No AniDB information for this series.');
 	} elseif (!$releases) {
 		$page->smarty->assign('nodata', 'No releases for this series.');
 	} else {
-
 		$page->smarty->assign('anidb', $anidb);
 		$page->smarty->assign('animeEpisodeTitlesSize', count($releases));
 		$page->smarty->assign('animeEpisodeTitles', $releases);
@@ -70,7 +75,7 @@ if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 	$page->meta_keywords = 'view,anime,series,description,details';
 	$page->meta_description = 'View Anime List';
 
-	$animelist = array();
+	$animelist = [];
 	if ($masterserieslist instanceof \Traversable) {
 		foreach ($masterserieslist as $s) {
 			if (preg_match('/^[0-9]/', $s['title'])) {

@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link <http://www.gnu.org/licenses/>.
+ *
  * @author niel
  * @copyright 2014 nZEDb
  */
@@ -24,67 +25,67 @@ require_once nZEDb_LIB . 'utility' . DS . 'MoveFileTree.php';
 use app\models\Settings;
 use nzedb\db\DB;
 
-$dirs = array(
+$dirs = [
 	[
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/DB_scripts',
-		'target' => nZEDb_MISC . 'testing/DB'
+		'target' => nZEDb_MISC . 'testing/DB',
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/Dev_testing/Subject_testing',
-		'target' => nZEDb_MISC . 'testing/Developers/Subject'
+		'target' => nZEDb_MISC . 'testing/Developers/Subject',
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/Dev_testing',
-		'target' => nZEDb_MISC . 'testing/Developers'
+		'target' => nZEDb_MISC . 'testing/Developers',
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/PostProc_testing',
-		'target' => nZEDb_MISC . 'testing/PostProcess'
+		'target' => nZEDb_MISC . 'testing/PostProcess',
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/Regex_testing',
-		'target' => nZEDb_MISC . 'testing/Regex'
+		'target' => nZEDb_MISC . 'testing/Regex',
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/Release_scripts',
-		'target' => nZEDb_MISC . 'testing/Release'
+		'target' => nZEDb_MISC . 'testing/Release',
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts/nix_scripts/tmux/powerline/themes',
-		'target' => nZEDb_MISC . 'update/nix/tmux/powerline/themes'
+		'target' => nZEDb_MISC . 'update/nix/tmux/powerline/themes',
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts/nix_scripts/tmux/powerline',
-		'target' => nZEDb_MISC . 'update/nix/tmux/powerline'
+		'target' => nZEDb_MISC . 'update/nix/tmux/powerline',
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts/nix_scripts/screen/sequential',
-		'target' => nZEDb_MISC . 'update/nix/screen/sequential'
+		'target' => nZEDb_MISC . 'update/nix/screen/sequential',
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts/nix_scripts/tmux/',
-		'target' => nZEDb_MISC . 'update/nix/tmux'
+		'target' => nZEDb_MISC . 'update/nix/tmux',
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts/nix_scripts',
-		'target' => nZEDb_MISC . 'update/nix'
+		'target' => nZEDb_MISC . 'update/nix',
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts/python_scripts/lib',
-		'target' => nZEDb_MISC . 'update/python/lib'
+		'target' => nZEDb_MISC . 'update/python/lib',
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts/python_scripts',
-		'target' => nZEDb_MISC . 'update/python'
+		'target' => nZEDb_MISC . 'update/python',
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts/win_scripts',
-		'target' => nZEDb_MISC . 'update/win'
+		'target' => nZEDb_MISC . 'update/win',
 	], [
 		'basemv' => false,
 		'source' => nZEDb_MISC . 'update_scripts',
-		'target' => nZEDb_MISC . 'update'
+		'target' => nZEDb_MISC . 'update',
 	],
 
 /*
@@ -96,13 +97,13 @@ $dirs = array(
 				'source' => nZEDb_ROOT . 'nzbfiles',
 				'target' =>	nZEDb_RES . 'nzb'	]
 */
-);
+];
 
 
 foreach ($dirs as $path) {
 	$source = $path['source'];
 	$target = $path['target'];
-	$basemv = isset($path['basemv']) ? $path['basemv'] : true;
+	$basemv = $path['basemv'] ?? true;
 
 	if (file_exists($source)) {
 		$mover = new \nzedb\utility\MoveFileTree($source, $target, $basemv);

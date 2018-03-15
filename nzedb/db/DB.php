@@ -3,13 +3,12 @@ namespace nzedb\db;
 
 use nzedb\ColorCLI;
 use nzedb\ConsoleTools;
+use nzedb\libraries\Cache;
+use nzedb\libraries\CacheException;
 use nzedb\Logger;
 use nzedb\LoggerException;
 use nzedb\utility\Misc;
 use nzedb\utility\Text;
-use nzedb\libraries\Cache;
-use nzedb\libraries\CacheException;
-
 
 /**
  * Class for handling connection to MySQL database using PDO.
@@ -19,6 +18,7 @@ use nzedb\libraries\CacheException;
  *
  * Exceptions are caught and displayed to the user.
  * Properties are explicitly created, so IDEs can offer autocompletion for them.
+ *
  * @extends \PDO
  */
 class DB extends \PDO
@@ -26,7 +26,6 @@ class DB extends \PDO
 	const MINIMUM_VERSION_MARIADB = '10.0';
 
 	const MINIMUM_VERSION_MYSQL = '5.6';
-
 
 	/**
 	 * @var bool Is this a Command Line Interface instance.
@@ -41,14 +40,15 @@ class DB extends \PDO
 	public $consoleTools;
 
 	/**
-	 * @var \nzedb\ColorCLI	Instance variable for logging object. Currently only ColorCLI supported,
-	 * but expanding for full logging with agnostic API planned.
+	 * @var \nzedb\ColorCLI Instance variable for logging object. Currently only ColorCLI supported,
+	 *                      but expanding for full logging with agnostic API planned.
 	 */
 	public $log;
 
 	/**
 	 * @note Setting this static causes issues when creating multiple instances of this class with different
 	 *       MySQL servers, the next instances re-uses the server of the first instance.
+	 *
 	 * @var \PDO Instance of PDO class.
 	 */
 	public $pdo = null;
@@ -86,7 +86,7 @@ class DB extends \PDO
 	private $debugging;
 
 	/**
-	 * @var string	Stored copy of the dsn used to connect.
+	 * @var string Stored copy of the dsn used to connect.
 	 */
 	private $dsn;
 
@@ -106,7 +106,7 @@ class DB extends \PDO
 	private $password;
 
 	/**
-	 * @var boolean Whether the connection to the database server dhould be persistent.
+	 * @var bool Whether the connection to the database server dhould be persistent.
 	 */
 	private $persist = false;
 
@@ -119,7 +119,6 @@ class DB extends \PDO
 	 * @var string Unix socket to use when connecting to the database server.
 	 */
 	private $socket;
-
 
 	/**
 	 * @var bool Is the connection to a SphinxQL server?
@@ -172,7 +171,6 @@ class DB extends \PDO
 	 */
 	private $version = null;
 
-
 	/**
 	 * Constructor. Sets up all necessary properties. Instantiates a PDO object
 	 * if needed, otherwise returns the current one.
@@ -219,7 +217,7 @@ class DB extends \PDO
 
 		if (!empty($options['dbname'])) {
 			if ($options['createDb']) {
-			// Note this only ensures the database exists, not the tables.
+				// Note this only ensures the database exists, not the tables.
 				$this->initialiseDatabase($options['dbname']);
 			}
 
@@ -273,7 +271,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Turns off autocommit until commit() is ran. http://www.php.net/manual/en/pdo.begintransaction.php
+	 * Turns off autocommit until commit() is ran. http://www.php.net/manual/en/pdo.begintransaction.php.
 	 *
 	 * @return bool
 	 */
@@ -292,7 +290,7 @@ class DB extends \PDO
 	 * @param $table
 	 * @param $column
 	 *
-	 * @return array|boolean The array of indexes if found, or false if not.
+	 * @return array|bool The array of indexes if found, or false if not.
 	 */
 	public function checkColumnIndex($table, $column)
 	{
@@ -315,7 +313,7 @@ class DB extends \PDO
 	 *
 	 * @param string $name
 	 *
-	 * @return boolean True if the name exists on the server, otherwise false.
+	 * @return bool True if the name exists on the server, otherwise false.
 	 */
 	public function checkDbExists($name = null)
 	{
@@ -359,7 +357,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Commits a transaction. http://www.php.net/manual/en/pdo.commit.php
+	 * Commits a transaction. http://www.php.net/manual/en/pdo.commit.php.
 	 *
 	 * @return bool
 	 */
@@ -403,7 +401,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Returns a string, escaped with single quotes, false on failure. http://www.php.net/manual/en/pdo.quote.php
+	 * Returns a string, escaped with single quotes, false on failure. http://www.php.net/manual/en/pdo.quote.php.
 	 *
 	 * @param string $str
 	 *
@@ -419,7 +417,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Direct query. Return the affected row count. http://www.php.net/manual/en/pdo.exec.php
+	 * Direct query. Return the affected row count. http://www.php.net/manual/en/pdo.exec.php.
 	 *
 	 * @note  If not "consumed", causes this error:
 	 *        'SQLSTATE[HY000]: General error: 2014 Cannot execute queries while other unbuffered queries are active.
@@ -480,7 +478,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Retrieve db attributes http://us3.php.net/manual/en/pdo.getattribute.php
+	 * Retrieve db attributes http://us3.php.net/manual/en/pdo.getattribute.php.
 	 *
 	 * @param int $attribute
 	 *
@@ -494,10 +492,12 @@ class DB extends \PDO
 				$result = $this->pdo->getAttribute($attribute);
 			} catch (\PDOException $e) {
 				if ($this->_debug) {
-					$this->debugging->log(get_class(),
+					$this->debugging->log(
+						get_class(),
 						__FUNCTION__,
 						$e->getMessage(),
-						Logger::LOG_INFO);
+						Logger::LOG_INFO
+					);
 				}
 				echo $this->log->error("\n" . $e->getMessage());
 				$result = false;
@@ -536,7 +536,7 @@ class DB extends \PDO
 	 *
 	 * @param $name
 	 *
-	 * @return string|boolean	String of settings' value, or false.
+	 * @return string|bool String of settings' value, or false.
 	 */
 	public function getSetting($name)
 	{
@@ -551,15 +551,18 @@ class DB extends \PDO
 	 * @param bool  $excludeUnsectioned If rows with empty 'section' field should be excluded.
 	 *                                  Note this doesn't prevent empty 'subsection' fields.
 	 *
-	 * @return array
 	 * @throws \RuntimeException
+	 *
+	 * @return array
 	 */
 	public function getSettingsAsTree($excludeUnsectioned = true)
 	{
 		$where = $excludeUnsectioned ? "WHERE section != ''" : '';
 
-		$sql = sprintf('SELECT section, subsection, name, value, hint FROM settings %s ORDER BY section, subsection, name',
-			$where);
+		$sql = sprintf(
+			'SELECT section, subsection, name, value, hint FROM settings %s ORDER BY section, subsection, name',
+			$where
+		);
 		$results = $this->queryArray($sql);
 
 		$tree = [];
@@ -635,8 +638,9 @@ class DB extends \PDO
 	}
 
 	/**
-	 * @return boolean true if the version is valid for server's vendor, false otherwise.
 	 * @throws \RuntimeException if the vendor is not valid.
+	 *
+	 * @return bool true if the version is valid for server's vendor, false otherwise.
 	 */
 	public function isVendorVersionValid()
 	{
@@ -658,7 +662,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Formats a 'like' string. ex.(LIKE '%chocolate%')
+	 * Formats a 'like' string. ex.(LIKE '%chocolate%').
 	 *
 	 * @param string $str   The string.
 	 * @param bool   $left  Add a % to the left.
@@ -712,7 +716,6 @@ class DB extends \PDO
 
 		$optimised = 0;
 		if ($tableArray instanceof \PDOStatement && $tableArray->rowCount() > 0) {
-
 			$tableNames = '';
 			foreach ($tableArray as $table) {
 				$tableNames .= $table['name'] . ',';
@@ -724,7 +727,6 @@ class DB extends \PDO
 				$this->queryExec(sprintf('ANALYZE %s TABLE %s', $local, $tableNames));
 				$this->logOptimize($admin, 'ANALYZE', $tableNames);
 			} else {
-
 				$this->queryExec(sprintf('OPTIMIZE %s TABLE %s', $local, $tableNames));
 				$this->logOptimize($admin, 'OPTIMIZE', $tableNames);
 
@@ -750,9 +752,9 @@ class DB extends \PDO
 	 * NOTE: Restart does not happen if PDO is not using exceptions (PHP's default configuration).
 	 * In this case check the return value === false.
 	 *
-	 * @param boolean $restart Whether an attempt should be made to reinitialise the Db object on failure.
+	 * @param bool $restart Whether an attempt should be made to reinitialise the Db object on failure.
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function ping($restart = false)
 	{
@@ -783,10 +785,11 @@ class DB extends \PDO
 	 * To run the statement use the returned $statement with ->execute();
 	 * Ideally the signature would have array before $options but that causes a strict warning.
 	 *
-	 * @param string $query SQL query to run, with optional place holders.
+	 * @param string $query   SQL query to run, with optional place holders.
 	 * @param array  $options Driver options.
 	 *
 	 * @return false|\PDOstatement on success false on failure.
+	 *
 	 * @link http://www.php.net/pdo.prepare.php
 	 */
 	public function Prepare($query, $options = [])
@@ -795,10 +798,12 @@ class DB extends \PDO
 			$PDOstatement = $this->pdo->prepare($query, $options);
 		} catch (\PDOException $e) {
 			if ($this->_debug) {
-				$this->debugging->log(get_class(),
+				$this->debugging->log(
+					get_class(),
 					__FUNCTION__,
 					$e->getMessage(),
-					Logger::LOG_INFO);
+					Logger::LOG_INFO
+				);
 			}
 			echo $this->log->error("\n" . $e->getMessage());
 			$PDOstatement = false;
@@ -848,7 +853,7 @@ class DB extends \PDO
 	 *
 	 * @param string $query SQL to execute.
 	 *
-	 * @return array|boolean Array of results on success or false on failure.
+	 * @return array|bool Array of results on success or false on failure.
 	 */
 	public function queryArray($query)
 	{
@@ -871,7 +876,7 @@ class DB extends \PDO
 	 *
 	 * @param string $query The query to execute.
 	 *
-	 * @return array|boolean Array of results on success, false otherwise.
+	 * @return array|bool Array of results on success, false otherwise.
 	 */
 	public function queryAssoc($query)
 	{
@@ -928,15 +933,17 @@ class DB extends \PDO
 		$result = $this->queryOneRow('SELECT FOUND_ROWS() AS total');
 
 		if ($result !== false && $cache === true && $this->cacheEnabled === true) {
-			$this->cacheServer->set($this->cacheServer->createKey($query . 'count'),
+			$this->cacheServer->set(
+				$this->cacheServer->createKey($query . 'count'),
 				$result['total'],
-				$cacheExpiry);
+				$cacheExpiry
+			);
 		}
 
 		return
 			[
 				'total'  => ($result === false ? 0 : $result['total']),
-				'result' => $data
+				'result' => $data,
 			];
 	}
 
@@ -963,7 +970,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Query without returning an empty array like our function query(). http://php.net/manual/en/pdo.query.php
+	 * Query without returning an empty array like our function query(). http://php.net/manual/en/pdo.query.php.
 	 *
 	 * Uses the parentquery
 	 *
@@ -1029,11 +1036,13 @@ class DB extends \PDO
 			if (is_array($result) && isset($result['deadlock'])) {
 				$error = $result['message'];
 				if ($result['deadlock'] === true) {
-					$this->echoError('A Deadlock or lock wait timeout has occurred, sleeping. (' .
+					$this->echoError(
+						'A Deadlock or lock wait timeout has occurred, sleeping. (' .
 						($i - 1) .
 						')',
 						'queryExec',
-						4);
+						4
+					);
 					$this->consoleTools->showsleep($i * ($i / 2));
 					$i++;
 				} else {
@@ -1059,7 +1068,7 @@ class DB extends \PDO
 	 *
 	 * @param string $query
 	 *
-	 * @return integer|false|string
+	 * @return int|false|string
 	 */
 	public function queryInsert($query)
 	{
@@ -1074,10 +1083,12 @@ class DB extends \PDO
 			if (is_array($result) && isset($result['deadlock'])) {
 				$error = $result['message'];
 				if ($result['deadlock'] === true) {
-					$this->echoError('A Deadlock or lock wait timeout has occurred, sleeping. (' .
+					$this->echoError(
+						'A Deadlock or lock wait timeout has occurred, sleeping. (' .
 						($i - 1) . ')',
 						'queryInsert',
-						4);
+						4
+					);
 					$this->consoleTools->showsleep($i * ($i / 2));
 					$i++;
 				} else {
@@ -1110,9 +1121,11 @@ class DB extends \PDO
 	{
 		// Force the query to only return 1 row, so queryArray doesn't potentially run out of memory on a large data set.
 		// First check if query already contains a LIMIT clause.
-		if (preg_match('#\s+LIMIT\s+(?P<lower>\d+)(,\s+(?P<upper>\d+))?(;)?$#i',
+		if (preg_match(
+			'#\s+LIMIT\s+(?P<lower>\d+)(,\s+(?P<upper>\d+))?(;)?$#i',
 			$query,
-			$matches)) {
+			$matches
+		)) {
 			if (!isset($matches['upper']) && isset($matches['lower']) && $matches['lower'] == 1) {
 				// good it's already correctly set.
 			} else {
@@ -1134,7 +1147,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Rollback transcations. http://www.php.net/manual/en/pdo.rollback.php
+	 * Rollback transcations. http://www.php.net/manual/en/pdo.rollback.php.
 	 *
 	 * @return bool
 	 */
@@ -1205,14 +1218,17 @@ class DB extends \PDO
 		if ($error === null) {
 			$sql = $sqlKeys = [];
 			foreach ($form as $settingK => $settingV) {
-				$sql[] = sprintf('WHEN %s THEN %s',
+				$sql[] = sprintf(
+					'WHEN %s THEN %s',
 					$this->escapeString($settingK),
-					$this->escapeString($settingV));
+					$this->escapeString($settingV)
+				);
 				$sqlKeys[] = $this->escapeString($settingK);
 			}
 
 			$this->queryExec(
-				sprintf('UPDATE settings SET value = CASE setting %s END WHERE setting IN (%s)',
+				sprintf(
+					'UPDATE settings SET value = CASE setting %s END WHERE setting IN (%s)',
 					implode(' ', $sql),
 					implode(', ', $sqlKeys)
 				)
@@ -1238,7 +1254,7 @@ class DB extends \PDO
 
 	/**
 	 * Get a string for MySQL with a column name in between
-	 * ie: UNIX_TIMESTAMP(column_name) AS outputName
+	 * ie: UNIX_TIMESTAMP(column_name) AS outputName.
 	 *
 	 * @param string $column     The datetime column.
 	 * @param string $outputName The name to store the SQL data into. (the word after AS)
@@ -1252,7 +1268,7 @@ class DB extends \PDO
 
 	/**
 	 * Interpretation of mysql's UUID method.
-	 * Return uuid v4 string. http://www.php.net/manual/en/function.uniqid.php#94959
+	 * Return uuid v4 string. http://www.php.net/manual/en/function.uniqid.php#94959.
 	 *
 	 * @return string
 	 */
@@ -1275,8 +1291,9 @@ class DB extends \PDO
 	 * Use the 'vendor' and 'version' fields to check if the server meets the minimum required
 	 * version for the DBMS's vendor.
 	 *
-	 * @return boolean
 	 * @throws \RuntimeException if the version is not supported for the vendor.
+	 *
+	 * @return bool
 	 */
 	public function validateVendorVersion()
 	{
@@ -1290,19 +1307,19 @@ class DB extends \PDO
 				default:
 					$minVersion = self::MINIMUM_VERSION_MYSQL;
 			}
-			throw new \RuntimeException("Minimum version for vendor '{$this->vendor}' is {$minVersion}, current version is: '{$this->version}''",
-				1);
+			throw new \RuntimeException(
+				"Minimum version for vendor '{$this->vendor}' is {$minVersion}, current version is: '{$this->version}''",
+				1
+			);
 		}
 	}
-
-
 
 	/**
 	 * Verify that we've lost a connection to MySQL.
 	 *
 	 * @param string $errorMessage
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	protected function checkGoneAway($errorMessage)
 	{
@@ -1310,12 +1327,13 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Connect to database
+	 * Connect to database.
 	 *
 	 * @param array $options
 	 *
-	 * @return bool
 	 * @throws \ErrorException
+	 *
+	 * @return bool
 	 */
 	protected function connect(array $options)
 	{
@@ -1335,7 +1353,7 @@ class DB extends \PDO
 			\PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
 			\PDO::ATTR_TIMEOUT            => 180,
 			\PDO::ATTR_PERSISTENT         => $options['persist'],
-			\PDO::MYSQL_ATTR_LOCAL_INFILE => true
+			\PDO::MYSQL_ATTR_LOCAL_INFILE => true,
 		];
 
 		// removed try/catch to let the instantiating code handle the problem (Install for
@@ -1365,7 +1383,7 @@ class DB extends \PDO
 		// Find Database sever's TZ.
 		$tz = $this->queryOneRow('SELECT @@global.time_zone as global, @@session.time_zone as session;');
 
-		if($this->sphinx === false) {
+		if ($this->sphinx === false) {
 			if (empty($tz)) {
 				throw new \ErrorException("Unable to fetch database's tz_session settings.");
 			}
@@ -1477,6 +1495,7 @@ class DB extends \PDO
 	 * Reconnect to MySQL when the connection has been lost.
 	 *
 	 * @see ping(), checkGoneAway() for checking the connection.
+	 *
 	 * @return bool
 	 */
 	protected function reconnect()
@@ -1589,7 +1608,7 @@ class DB extends \PDO
 	/**
 	 * Initialise the database. NOTE this does not include the tables it just creates the database.
 	 *
-	 * @param string $name	The name of the database.
+	 * @param string $name The name of the database.
 	 *
 	 * @throws \RuntimeException
 	 */
@@ -1604,23 +1623,29 @@ class DB extends \PDO
 			try {
 				$this->pdo->query("DROP DATABASE $name");
 			} catch (\Exception $e) {
-				throw new \RuntimeException("Error trying to drop your old database: '{$name}'\n" .
+				throw new \RuntimeException(
+					"Error trying to drop your old database: '{$name}'\n" .
 					$e->getMessage(),
-					2);
+					2
+				);
 			}
 			$found = self::checkDbExists($name);
 		}
 
 		if ($found) {
 			//var_dump(self::getTableList());
-			throw new \RuntimeException("Could not drop your old database: '{$name}'" ,
-				2);
+			throw new \RuntimeException(
+				"Could not drop your old database: '{$name}'",
+				2
+			);
 		} else {
 			$this->pdo->query("CREATE DATABASE `{$name}` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
 
 			if (!self::checkDbExists($name)) {
-				throw new \RuntimeException("Could not create new database: '{$name}'",
-					3);
+				throw new \RuntimeException(
+					"Could not create new database: '{$name}'",
+					3
+				);
 			}
 		}
 	}
@@ -1640,7 +1665,6 @@ class DB extends \PDO
 		$message = $type . ' (' . $tables . ')';
 		if ($web === false) {
 			echo $this->log->primary($message);
-
 		}
 		if ($this->_debug) {
 			$this->debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_INFO);
@@ -1652,7 +1676,7 @@ class DB extends \PDO
 	 *
 	 * @param string $query
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	private function parseQuery(&$query)
 	{

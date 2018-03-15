@@ -33,7 +33,7 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 	}
 	echo  $pdo->log->header('SELECT title, nfo, size, files, filename, nuked, nukereason, category, created, source, requestid, g.name FROM ' . $table . " p LEFT OUTER JOIN groups g ON p.groups_id = g.id INTO OUTFILE '" . $path . "' FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n';\n");
 	$pdo->queryExec('SELECT title, nfo, size, files, filename, nuked, nukereason, category, created, source, requestid, g.name FROM ' . $table . " p LEFT OUTER JOIN groups g ON p.groups_id = g.id INTO OUTFILE '" . $path . "' FIELDS TERMINATED BY '\t\t' LINES TERMINATED BY '\r\n'");
-} else if (isset($argv[1]) && ($argv[1] == 'local' || $argv[1] == 'remote') && isset($argv[2]) && is_file($argv[2])) {
+} elseif (isset($argv[1]) && ($argv[1] == 'local' || $argv[1] == 'remote') && isset($argv[2]) && is_file($argv[2])) {
 	if (!preg_match('/^\//', $path)) {
 		$path = require_once getcwd() . '/' . $argv[2];
 	}

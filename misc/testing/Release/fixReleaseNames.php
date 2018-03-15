@@ -10,10 +10,10 @@
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use app\models\Settings;
+use nzedb\db\DB;
 use nzedb\NameFixer;
 use nzedb\NNTP;
 use nzedb\PreDb;
-use nzedb\db\DB;
 
 $n = "\n";
 $pdo = new DB();
@@ -25,7 +25,7 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 	$other = 1;
 	if ($argv[3] === 'all') {
 		$other = 2;
-	} else if ($argv[3] === 'preid') {
+	} elseif ($argv[3] === 'preid') {
 		$other = 3;
 	}
 	$setStatus = ($argv[4] == 'yes') ? 1 : 2;
@@ -76,7 +76,7 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 		case 10:
 			$namefixer->fixNamesWithMedia(2, $update, $other, $setStatus, $show);
 			break;
-		default :
+		default:
 			exit($pdo->log->error("\nERROR: Wrong argument, type php $argv[0] to see a list of valid arguments." . $n));
 			break;
 	}

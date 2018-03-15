@@ -1,12 +1,11 @@
 <?php
-
 namespace nzedb\processing\tv;
 
 use JPinkney\TVMaze\TVMaze as Client;
 use nzedb\ReleaseImage;
 
 /**
- * Class TVMaze
+ * Class TVMaze.
  *
  * Process information retrieved from the TVMaze API.
  */
@@ -15,7 +14,7 @@ class TVMaze extends TV
 	const MATCH_PROBABILITY = 75;
 
 	/**
-	 * Client for TVMaze API
+	 * Client for TVMaze API.
 	 *
 	 * @var \JPinkney\TVMaze\TVMaze
 	 */
@@ -27,7 +26,7 @@ class TVMaze extends TV
 	public $posterUrl;
 
 	/**
-	 * Construct. Instanciate TVMaze Client Class
+	 * Construct. Instanciate TVMaze Client Class.
 	 *
 	 * @param array $options Class instances.
 	 *
@@ -54,12 +53,12 @@ class TVMaze extends TV
 
 	/**
 	 * Main processing director function for scrapers
-	 * Calls work query function and initiates processing
+	 * Calls work query function and initiates processing.
 	 *
-	 * @param string  $groupID
-	 * @param string  $guidChar
-	 * @param         $process
-	 * @param boolean $local
+	 * @param string $groupID
+	 * @param string $guidChar
+	 * @param        $process
+	 * @param bool   $local
 	 */
 	public function processSite($groupID, $guidChar, $process, $local = false)
 	{
@@ -72,18 +71,15 @@ class TVMaze extends TV
 		}
 
 		if ($res instanceof \PDOStatement) {
-
 			$this->titleCache = [];
 
 			foreach ($res as $row) {
-
 				$this->posterUrl = '';
 				$tvmazeid = false;
 
 				// Clean the show name for better match probability
 				$release = $this->parseInfo($row['searchname']);
 				if (is_array($release) && $release['name'] != '') {
-
 					if (in_array($release['cleanname'], $this->titleCache)) {
 						if ($this->echooutput) {
 							echo $this->pdo->log->headerOver('Title: ') .
@@ -202,8 +198,30 @@ class TVMaze extends TV
 	}
 
 	/**
+	 * Retrieves the poster art for the processed show.
+	 *
+	 * @param int $videoId -- the local Video ID
+	 * @param int $showId  -- the TVMaze ID
+	 *
+	 * @return int
+	 */
+	public function getPoster($videoId, $showId = 0)
+	{
+		$ri = new ReleaseImage($this->pdo);
+
+		// Try to get the Poster
+		$hascover = $ri->saveImage($videoId, $this->posterUrl, $this->imgSavePath, '', '');
+
+		// Mark it retrieved if we saved an image
+		if ($hascover == 1) {
+			$this->setCoverFound($videoId);
+		}
+		return $hascover;
+	}
+
+	/**
 	 * Calls the API to lookup the TvMaze info for a given TVDB or TVRage ID
-	 * Returns a formatted array of show data or false if no match
+	 * Returns a formatted array of show data or false if no match.
 	 *
 	 * @param $site
 	 * @param $siteId
@@ -227,7 +245,7 @@ class TVMaze extends TV
 
 	/**
 	 * Calls the API to perform initial show name match to TVDB title
-	 * Returns a formatted array of show data or false if no match
+	 * Returns a formatted array of show data or false if no match.
 	 *
 	 * @param $cleanName
 	 *
@@ -264,10 +282,110 @@ class TVMaze extends TV
 	}
 
 	/**
+	 * Gets the specific episode info for the parsed release after match
+	 * Returns a formatted array of episode data or false if no match.
+	 *
+	 * @param int    $tvmazeid
+	 * @param int    $season
+	 * @param int    $episode
+	 * @param string $airdate
+	 * @param int    $videoId
+	 *
+	 * @return array|false
+	 */
+	protected function getEpisodeInfo($tvmazeid, $season, $episode, $airdate = '', $videoId = 0)
+	{
+		$return = $response = false;
+
+		if ($airdate !== '') {
+			$response = $this->client->getEpisodesByAirdate($tvmazeid, $airdate);
+		} elseif ($videoId > 0) {
+			$response = $this->client->getEpisodesByShowID($tvmazeid);
+		} else {
+			$response = $this->client->getEpisodeByNumber($tvmazeid, $season, $episode);
+		}
+
+		sleep(1);
+
+		//Handle Single Episode Lookups
+		if (is_object($response)) {
+			if ($this->checkRequiredAttr($response, 'tvmazeE')) {
+				$return = $this->formatEpisodeInfo($response);
+			}
+		} elseif (is_array($response)) {
+			//Handle new show/all episodes and airdate lookups
+			foreach ($response as $singleEpisode) {
+				if ($this->checkRequiredAttr($singleEpisode, 'tvmazeE')) {
+					// If this is an airdate lookup and it matches the airdate, set a return
+					if ($airdate !== '' && $airdate == $singleEpisode->airdate) {
+						$return = $this->formatEpisodeInfo($singleEpisode);
+					} else {
+						// Insert the episode
+						$this->addEpisode($videoId, $this->formatEpisodeInfo($singleEpisode));
+					}
+				}
+			}
+		}
+
+		return $return;
+	}
+
+	/**
+	 * Assigns API show response values to a formatted array for insertion
+	 * Returns the formatted array.
+	 *
+	 * @param $show
+	 *
+	 * @return array
+	 */
+	protected function formatShowInfo($show)
+	{
+		$this->posterUrl = (string)(isset($show->mediumImage) ? $show->mediumImage : '');
+
+		return [
+			'type'      => (int)parent::TYPE_TV,
+			'title'     => (string)$show->name,
+			'summary'   => (string)$show->summary,
+			'started'   => (string)$show->premiered,
+			'publisher' => (string)$show->network,
+			'country'   => (string)$show->country,
+			'source'    => (int)parent::SOURCE_TVMAZE,
+			'imdb'      => 0,
+			'tvdb'      => (int)(isset($show->externalIDs['thetvdb']) ? $show->externalIDs['thetvdb'] : 0),
+			'tvmaze'    => (int)$show->id,
+			'trakt'     => 0,
+			'tvrage'    => (int)(isset($show->externalIDs['tvrage']) ? $show->externalIDs['tvrage'] : 0),
+			'tmdb'      => 0,
+			'aliases'   => (!empty($show->akas) ? (array)$show->akas : ''),
+			'localzone' => "''",
+		];
+	}
+
+	/**
+	 * Assigns API episode response values to a formatted array for insertion
+	 * Returns the formatted array.
+	 *
+	 * @param $episode
+	 *
+	 * @return array
+	 */
+	protected function formatEpisodeInfo($episode)
+	{
+		return [
+			'title'       => (string)$episode->name,
+			'series'      => (int)$episode->season,
+			'episode'     => (int)$episode->number,
+			'se_complete' => (string)'S' . sprintf('%02d', $episode->season) . 'E' . sprintf('%02d', $episode->number),
+			'firstaired'  => (string)$episode->airdate,
+			'summary'     => (string)$episode->summary,
+		];
+	}
+
+	/**
 	 * @param $shows
 	 * @param string $cleanName
 	 *
-	 * @return array|boolean
+	 * @return array|bool
 	 */
 	private function matchShowInfo($shows, $cleanName)
 	{
@@ -307,127 +425,5 @@ class TVMaze extends TV
 			$return = $this->formatShowInfo($highest);
 		}
 		return $return;
-	}
-
-	/**
-	 * Retrieves the poster art for the processed show
-	 *
-	 * @param int $videoId -- the local Video ID
-	 * @param int $showId  -- the TVMaze ID
-	 *
-	 * @return int
-	 */
-	public function getPoster($videoId, $showId = 0)
-	{
-		$ri = new ReleaseImage($this->pdo);
-
-		// Try to get the Poster
-		$hascover = $ri->saveImage($videoId, $this->posterUrl, $this->imgSavePath, '', '');
-
-		// Mark it retrieved if we saved an image
-		if ($hascover == 1) {
-			$this->setCoverFound($videoId);
-		}
-		return $hascover;
-	}
-
-	/**
-	 * Gets the specific episode info for the parsed release after match
-	 * Returns a formatted array of episode data or false if no match
-	 *
-	 * @param integer $tvmazeid
-	 * @param integer $season
-	 * @param integer $episode
-	 * @param string  $airdate
-	 * @param integer $videoId
-	 *
-	 * @return array|false
-	 */
-	protected function getEpisodeInfo($tvmazeid, $season, $episode, $airdate = '', $videoId = 0)
-	{
-		$return = $response = false;
-
-		if ($airdate !== '') {
-				$response = $this->client->getEpisodesByAirdate($tvmazeid, $airdate);
-		} else if ($videoId > 0) {
-				$response = $this->client->getEpisodesByShowID($tvmazeid);
-		} else {
-				$response = $this->client->getEpisodeByNumber($tvmazeid, $season, $episode);
-		}
-
-		sleep(1);
-
-		//Handle Single Episode Lookups
-		if (is_object($response)) {
-			if ($this->checkRequiredAttr($response, 'tvmazeE')) {
-				$return = $this->formatEpisodeInfo($response);
-			}
-		} else if (is_array($response)) {
-			//Handle new show/all episodes and airdate lookups
-			foreach ($response as $singleEpisode) {
-				if ($this->checkRequiredAttr($singleEpisode, 'tvmazeE')) {
-					// If this is an airdate lookup and it matches the airdate, set a return
-					if ($airdate !== '' && $airdate == $singleEpisode->airdate) {
-						$return = $this->formatEpisodeInfo($singleEpisode);
-					} else {
-						// Insert the episode
-						$this->addEpisode($videoId, $this->formatEpisodeInfo($singleEpisode));
-					}
-				}
-			}
-		}
-
-		return $return;
-	}
-
-	/**
-	 * Assigns API show response values to a formatted array for insertion
-	 * Returns the formatted array
-	 *
-	 * @param $show
-	 *
-	 * @return array
-	 */
-	protected function formatShowInfo($show)
-	{
-		$this->posterUrl = (string)(isset($show->mediumImage) ? $show->mediumImage : '');
-
-		return [
-			'type'      => (int)parent::TYPE_TV,
-			'title'     => (string)$show->name,
-			'summary'   => (string)$show->summary,
-			'started'   => (string)$show->premiered,
-			'publisher' => (string)$show->network,
-			'country'   => (string)$show->country,
-			'source'    => (int)parent::SOURCE_TVMAZE,
-			'imdb'      => 0,
-			'tvdb'      => (int)(isset($show->externalIDs['thetvdb']) ? $show->externalIDs['thetvdb'] : 0),
-			'tvmaze'    => (int)$show->id,
-			'trakt'     => 0,
-			'tvrage'    => (int)(isset($show->externalIDs['tvrage']) ? $show->externalIDs['tvrage'] : 0),
-			'tmdb'      => 0,
-			'aliases'   => (!empty($show->akas) ? (array)$show->akas : ''),
-			'localzone' => "''"
-		];
-	}
-
-	/**
-	 * Assigns API episode response values to a formatted array for insertion
-	 * Returns the formatted array
-	 *
-	 * @param $episode
-	 *
-	 * @return array
-	 */
-	protected function formatEpisodeInfo($episode)
-	{
-		return [
-			'title'       => (string)$episode->name,
-			'series'      => (int)$episode->season,
-			'episode'     => (int)$episode->number,
-			'se_complete' => (string)'S' . sprintf('%02d', $episode->season) . 'E' . sprintf('%02d', $episode->number),
-			'firstaired'  => (string)$episode->airdate,
-			'summary'     => (string)$episode->summary
-		];
 	}
 }

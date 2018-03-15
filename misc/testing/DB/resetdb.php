@@ -3,10 +3,10 @@ require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR .
 
 use app\models\Settings;
 use nzedb\ConsoleTools;
+use nzedb\db\DB;
 use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\SphinxSearch;
-use nzedb\db\DB;
 
 passthru('clear');
 $pdo = new DB();
@@ -39,7 +39,7 @@ $arr = [
 		'videos', 'tv_episodes', 'tv_info', 'release_nfos', 'release_comments', 'sharing', 'sharing_sites',
 		'users_releases', 'user_movies', 'user_series', 'movieinfo', 'musicinfo', 'release_files',
 		'audio_data', 'release_subtitles', 'video_data', 'releaseextrafull', 'releases', 'anidb_titles',
-		'anidb_info', 'anidb_episodes', 'releases_groups'
+		'anidb_info', 'anidb_episodes', 'releases_groups',
 ];
 
 // Truncate applicable tables
@@ -68,8 +68,10 @@ try {
 	$files = new \RecursiveIteratorIterator(
 				new \RecursiveDirectoryIterator(
 					Settings::value('..nzbpath'),
-					\RecursiveDirectoryIterator::SKIP_DOTS),
-				\RecursiveIteratorIterator::CHILD_FIRST);
+					\RecursiveDirectoryIterator::SKIP_DOTS
+				),
+				\RecursiveIteratorIterator::CHILD_FIRST
+	);
 	foreach ($files as $file) {
 		if (basename($file) != '.gitignore' && basename($file) != 'tmpunrar') {
 			$todo = ($file->isDir() ? 'rmdir' : 'unlink');
@@ -95,4 +97,4 @@ try {
 	echo $pdo->log->error($e->getMessage());
 }
 
-echo $pdo->log->header('Deleted all releases, images, previews and samples. This script ran for ' . $consoletools->convertTime(TIME() - $timestart));
+echo $pdo->log->header('Deleted all releases, images, previews and samples. This script ran for ' . $consoletools->convertTime(time() - $timestart));

@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link <http://www.gnu.org/licenses/>.
+ *
  * @author niel
  * @copyright 2014 nZEDb
  */
@@ -22,11 +23,13 @@ namespace nzedb\utility;
 
 /**
  * Class Git - Wrapper for various git operations.
+ *
  * @package nzedb\utility
  */
 class Git extends \GitRepo
 {
 	private $branch;
+
 	private $mainBranches = ['0.x', 'dev', 'Latest-testing', 'dev-test'];
 
 	public function __construct(array $options = [])
@@ -43,7 +46,7 @@ class Git extends \GitRepo
 	}
 
 	/**
-	 * Return the number of commits made to repo
+	 * Return the number of commits made to repo.
 	 */
 	public function commits()
 	{
@@ -75,8 +78,9 @@ class Git extends \GitRepo
 	/**
 	 * @param string $gitObject
 	 *
-	 * @return bool
 	 * @throws \Exception
+	 *
+	 * @return bool
 	 */
 	public function isCommited($gitObject)
 	{

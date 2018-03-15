@@ -1,11 +1,10 @@
 <?php
 /**
- * Lithium: the most rad php framework
+ * Lithium: the most rad php framework.
  *
  * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
-
 use lithium\aop\Filters;
 use lithium\core\Environment;
 use lithium\core\Libraries;
@@ -15,7 +14,6 @@ use lithium\core\Libraries;
  * example in the command `li3 help --env=production`, is used to determine the environment.
  *
  * Routes are also loaded, to facilitate URL generation from within the console environment.
- *
  */
 Filters::apply('lithium\console\Dispatcher', 'run', function($params, $next) {
 	Environment::set($params['request']);
@@ -25,7 +23,9 @@ Filters::apply('lithium\console\Dispatcher', 'run', function($params, $next) {
 			continue;
 		}
 		$file = "{$config['path']}/config/routes.php";
-		file_exists($file) ? call_user_func(function () use ($file) { include $file; }) : null;
+		file_exists($file) ? call_user_func(function() use ($file) {
+			include $file;
+		}) : null;
 	}
 	return $next($params);
 });
@@ -33,7 +33,6 @@ Filters::apply('lithium\console\Dispatcher', 'run', function($params, $next) {
 /**
  * This filter will convert {:heading} to the specified color codes. This is useful for colorizing
  * output and creating different sections.
- *
  */
 // Filters::apply('lithium\console\Dispatcher', '_call', function($params, $next) {
 // 	$params['callable']->response->styles(array(

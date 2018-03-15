@@ -160,7 +160,7 @@ class Settings extends \app\extensions\data\Model
 	{
 		static::finder(
 			'setting',
-			function ($params, $next) {
+			function($params, $next) {
 				$params['options']['conditions'] = self::settingToArray($params['options']['conditions']);
 				$params['type'] = 'first';
 

@@ -54,7 +54,6 @@ class ReleaseComments
 
 	public function deleteCommentsForUser($id)
 	{
-
 		$numcomments = $this->getCommentCountForUser($id);
 		if ($numcomments > 0) {
 			$comments = $this->getCommentsForUserRange($id, 0, $numcomments);
@@ -75,7 +74,8 @@ class ReleaseComments
 		$username = ($username === false ? 'ANON' : $username['username']);
 
 		$comid = $this->pdo->queryInsert(
-			sprintf('
+			sprintf(
+				'
 				INSERT INTO release_comments (releases_id, text, user_id, createddate, host, username)
 				VALUES (%d, %s, %d, NOW(), %s, %s)',
 				$id,
@@ -92,7 +92,8 @@ class ReleaseComments
 	public function getCommentsRange($start, $num)
 	{
 		return $this->pdo->query(
-			sprintf('
+			sprintf(
+				'
 				SELECT rc.*, r.guid
 				FROM release_comments rc
 				LEFT JOIN releases r on r.id = rc.releases_id
@@ -106,7 +107,8 @@ class ReleaseComments
 	public function updateReleaseCommentCount($relid)
 	{
 		$this->pdo->queryExec(
-			sprintf('
+			sprintf(
+				'
 				UPDATE releases
 				SET comments = (SELECT COUNT(id) from release_comments WHERE release_comments.releases_id = %d)
 				WHERE releases.id = %d',
@@ -119,7 +121,8 @@ class ReleaseComments
 	public function getCommentCountForUser($uid)
 	{
 		$res = $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT COUNT(id) AS num
 				FROM release_comments
 				WHERE user_id = %d',
@@ -138,7 +141,8 @@ class ReleaseComments
 		}
 
 		return $this->pdo->query(
-			sprintf('
+			sprintf(
+				'
 				SELECT release_comments.*
 				FROM release_comments
 				WHERE user_id = %d

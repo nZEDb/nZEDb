@@ -1,9 +1,9 @@
 <?php
 require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install.php');
 
-use nzedb\Install;
-
 use nzedb\db\Settings;
+
+use nzedb\Install;
 
 $page = new InstallPage();
 

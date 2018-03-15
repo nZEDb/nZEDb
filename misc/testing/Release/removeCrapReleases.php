@@ -1,5 +1,5 @@
 <?php
-/* This script deletes releases that match certain criteria, type php removeCrapReleases.php false for details. */
+// This script deletes releases that match certain criteria, type php removeCrapReleases.php false for details.
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ColorCLI;
@@ -52,11 +52,11 @@ if ($argCnt === 2) {
 			"php $argv[0] true full blacklist 1 = Remove releases matching blacklist id 1." . $n
 		);
 	} else {
-		exit ($cli->error("Wrong usage! Type php $argv[0] false"));
+		exit($cli->error("Wrong usage! Type php $argv[0] false"));
 	}
 }
 if ($argCnt < 3) {
-	exit ($cli->error("Wrong usage! Type php $argv[0] false"));
+	exit($cli->error("Wrong usage! Type php $argv[0] false"));
 }
 
 if (isset($argv[3]) && $argv[3] === 'blacklist' && isset($argv[4])) {
@@ -64,4 +64,4 @@ if (isset($argv[3]) && $argv[3] === 'blacklist' && isset($argv[4])) {
 }
 
 $RR = new ReleaseRemover();
-$RR->removeCrap(($argv[1] === 'true' ? true : false), $argv[2], (isset($argv[3]) ? $argv[3] : ''), (isset($blacklistID) ? $argv[4] : ''));
+$RR->removeCrap(($argv[1] === 'true' ? true : false), $argv[2], ($argv[3] ?? ''), (isset($blacklistID) ? $argv[4] : ''));

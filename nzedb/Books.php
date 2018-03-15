@@ -5,9 +5,7 @@ use app\models\Settings;
 use libs\AmazonProductAPI;
 use nzedb\db\DB;
 
-/*
- * Class for processing book info.
- */
+// Class for processing book info.
 class Books
 {
 	public $catWhere;
@@ -63,7 +61,8 @@ class Books
 	public $renamed;
 
 	/**
-	 * Store names of failed Amazon lookup items
+	 * Store names of failed Amazon lookup items.
+	 *
 	 * @var array
 	 */
 	public $failCache;
@@ -98,7 +97,7 @@ class Books
 		}
 
 		$this->catWhere = 'AND (categories_id BETWEEN ' . Category::BOOKS_ROOT . ' AND ' . Category::BOOKS_UNKNOWN . ' OR categories_id = ' . Category::MUSIC_AUDIOBOOK . ') ';
-		$this->failCache = array();
+		$this->failCache = [];
 	}
 
 	/**
@@ -181,7 +180,6 @@ class Books
 	 */
 	public function getBookRange($cat, $start, $num, $orderby, $excludedcats = [])
 	{
-
 		$browseby = $this->getBrowseBy();
 
 		$catsrch = '';
@@ -202,7 +200,8 @@ class Books
 		$order = $this->getBookOrder($orderby);
 
 		$books = $this->pdo->queryCalc(
-			sprintf("
+			sprintf(
+				"
 				SELECT SQL_CALC_FOUND_ROWS boo.id,
 					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
 				FROM bookinfo boo
@@ -222,7 +221,9 @@ class Books
 				$order[0],
 				$order[1],
 				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
+			),
+			true,
+			nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 
 		$bookIDs = $releaseIDs = false;
@@ -234,7 +235,8 @@ class Books
 			}
 		}
 
-		$sql = sprintf("
+		$sql = sprintf(
+			"
 			SELECT
 				GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
 				GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount,
@@ -272,7 +274,7 @@ class Books
 		);
 		$return = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 		if (!empty($return)) {
-			$return[0]['_totalcount'] = (isset($books['total']) ? $books['total'] : 0);
+			$return[0]['_totalcount'] = ($books['total'] ?? 0);
 		}
 		return $return;
 	}
@@ -333,7 +335,7 @@ class Books
 			'releasedate_asc',
 			'releasedate_desc',
 			'author_asc',
-			'author_desc'
+			'author_desc',
 		];
 	}
 
@@ -402,80 +404,10 @@ class Books
 						AND categories_id in (%s)
 						ORDER BY postdate
 						DESC LIMIT %d', $this->renamed, $bookids[$i], $this->bookqty)
-					), $bookids[$i]
+					),
+					$bookids[$i]
 				);
 			}
-		}
-	}
-
-	/**
-	 * Process book releases.
-	 *
-	 * @param \PDOStatement|bool $res      Array containing unprocessed book SQL data set.
-	 * @param int                $categoryID The category id.
-	 * @void
-	 */
-	protected function processBookReleasesHelper($res, $categoryID)
-	{
-		if ($res instanceof \PDOStatement && $res->rowCount() > 0) {
-			if ($this->echooutput) {
-				$this->pdo->log->doEcho($this->pdo->log->header("\nProcessing " . $res->rowCount() . ' book release(s) for category ID ' . $categoryID));
-			}
-
-			foreach ($res as $arr) {
-				$startTime = microtime(true);
-				$usedAmazon = false;
-				// audiobooks are also books and should be handled in an identical manor, even though it falls under a music category
-				if ($arr['categories_id'] == Category::MUSIC_AUDIOBOOK) {
-					// audiobook
-					$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], 'audiobook');
-				} else {
-					// ebook
-					$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], 'ebook');
-				}
-
-				if ($bookInfo !== false) {
-					if ($this->echooutput) {
-						$this->pdo->log->doEcho($this->pdo->log->headerOver('Looking up: ') . $this->pdo->log->primary($bookInfo));
-					}
-
-					// Do a local lookup first
-					$bookCheck = $this->getBookInfoByName('', $bookInfo);
-
-					if ($bookCheck === false && in_array($bookInfo, $this->failCache)) {
-						// Lookup recently failed, no point trying again
-						if ($this->echooutput) {
-							$this->pdo->log->doEcho($this->pdo->log->headerOver('Cached previous failure. Skipping.') . PHP_EOL);
-						}
-						$bookId = -2;
-					} else if ($bookCheck === false) {
-						$bookId = $this->updateBookInfo($bookInfo);
-						$usedAmazon = true;
-						if ($bookId === false) {
-							$bookId = -2;
-							$this->failCache[] = $bookInfo;
-						}
-					} else {
-						$bookId = $bookCheck['id'];
-					}
-
-					// Update release.
-					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfo_id = %d WHERE id = %d %s', $bookId, $arr['id'], $this->catWhere));
-				} else {
-					// Could not parse release title.
-					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfo_id = %d WHERE id = %d %s', -2, $arr['id'], $this->catWhere));
-					if ($this->echooutput) {
-						echo '.';
-					}
-				}
-				// Sleep to not flood amazon.
-				$diff = (int)floor((microtime(true) - $startTime) * 1000000);
-				if ($this->sleeptime * 1000 - $diff > 0 && $usedAmazon === true) {
-					usleep($this->sleeptime * 1000 - $diff);
-				}
-			}
-		} else if ($this->echooutput) {
-			$this->pdo->log->doEcho($this->pdo->log->header('No book releases to process for category id ' . $categoryID));
 		}
 	}
 
@@ -501,7 +433,6 @@ class Books
 		// the default existing type was ebook, this handles that in the same manor as before
 		if ($releasetype == 'ebook') {
 			if (preg_match('/^([a-z0-9] )+$|ArtofUsenet|ekiosk|(ebook|mobi).+collection|erotica|Full Video|ImwithJamie|linkoff org|Mega.+pack|^[a-z0-9]+ (?!((January|February|March|April|May|June|July|August|September|O(c|k)tober|November|De(c|z)ember)))[a-z]+( (ebooks?|The))?$|NY Times|(Book|Massive) Dump|Sexual/i', $releasename)) {
-
 				if ($this->echooutput) {
 					$this->pdo->log->doEcho(
 						$this->pdo->log->headerOver('Changing category to misc books: ') . $this->pdo->log->primary($releasename)
@@ -509,8 +440,7 @@ class Books
 				}
 				$this->pdo->queryExec(sprintf('UPDATE releases SET categories_id = %s WHERE id = %d', Category::BOOKS_UNKNOWN, $releaseID));
 				return false;
-			} else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename)) {
-
+			} elseif (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename)) {
 				if ($this->echooutput) {
 					$this->pdo->log->doEcho(
 						$this->pdo->log->headerOver('Changing category to magazines: ') . $this->pdo->log->primary($releasename)
@@ -518,12 +448,12 @@ class Books
 				}
 				$this->pdo->queryExec(sprintf('UPDATE releases SET categories_id = %s WHERE id = %d', Category::BOOKS_MAGAZINES, $releaseID));
 				return false;
-			} else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename)) {
+			} elseif (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename)) {
 				return $releasename;
 			} else {
 				return false;
 			}
-		} else if ($releasetype == 'audiobook') {
+		} elseif ($releasetype == 'audiobook') {
 			if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename)) {
 				// we can skip category for audiobooks, since we already know it, so as long as the release name is valid return it so that it is postprocessed by amazon.  In the future, determining the type of audiobook could be added (Lecture or book), since we can skip lookups on lectures, but for now handle them all the same way
 				return $releasename;
@@ -535,8 +465,8 @@ class Books
 	}
 
 	/**
-	 * @param string $bookInfo
-	 * @param \SimpleXMLElement|null   $amazdata
+	 * @param string                 $bookInfo
+	 * @param \SimpleXMLElement|null $amazdata
 	 *
 	 * @return false|int|string
 	 */
@@ -549,7 +479,7 @@ class Books
 		$amaz = false;
 		if ($bookInfo != '') {
 			$amaz = $this->fetchAmazonProperties($bookInfo);
-		} else if ($amazdata != null) {
+		} elseif ($amazdata != null) {
 			$amaz = $amazdata;
 		}
 
@@ -621,35 +551,50 @@ class Books
 		$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM bookinfo WHERE asin = %s', $this->pdo->escapeString($book['asin'])));
 		if ($check === false) {
 			$bookId = $this->pdo->queryInsert(
-							sprintf('
+							sprintf(
+								'
 								INSERT INTO bookinfo
 									(title, author, asin, isbn, ean, url, salesrank, publisher, publishdate, pages,
 									overview, genre, cover, createddate, updateddate)
 								VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now())',
-								$this->pdo->escapeString($book['title']), $this->pdo->escapeString($book['author']),
-								$this->pdo->escapeString($book['asin']), $this->pdo->escapeString($book['isbn']),
-								$this->pdo->escapeString($book['ean']), $this->pdo->escapeString($book['url']),
-								$book['salesrank'], $this->pdo->escapeString($book['publisher']),
-								$this->pdo->escapeString($book['publishdate']), $book['pages'],
-								$this->pdo->escapeString($book['overview']), $this->pdo->escapeString($book['genre']),
+								$this->pdo->escapeString($book['title']),
+								$this->pdo->escapeString($book['author']),
+								$this->pdo->escapeString($book['asin']),
+								$this->pdo->escapeString($book['isbn']),
+								$this->pdo->escapeString($book['ean']),
+								$this->pdo->escapeString($book['url']),
+								$book['salesrank'],
+								$this->pdo->escapeString($book['publisher']),
+								$this->pdo->escapeString($book['publishdate']),
+								$book['pages'],
+								$this->pdo->escapeString($book['overview']),
+								$this->pdo->escapeString($book['genre']),
 								$book['cover']
 							)
 			);
 		} else {
 			$bookId = $check['id'];
 			$this->pdo->queryExec(
-						sprintf('
+						sprintf(
+							'
 							UPDATE bookinfo
 							SET title = %s, author = %s, asin = %s, isbn = %s, ean = %s, url = %s, salesrank = %s, publisher = %s,
 								publishdate = %s, pages = %s, overview = %s, genre = %s, cover = %d, updateddate = NOW()
 							WHERE id = %d',
-							$this->pdo->escapeString($book['title']), $this->pdo->escapeString($book['author']),
-							$this->pdo->escapeString($book['asin']), $this->pdo->escapeString($book['isbn']),
-							$this->pdo->escapeString($book['ean']), $this->pdo->escapeString($book['url']),
-							$book['salesrank'], $this->pdo->escapeString($book['publisher']),
-							$this->pdo->escapeString($book['publishdate']), $book['pages'],
-							$this->pdo->escapeString($book['overview']), $this->pdo->escapeString($book['genre']),
-							$book['cover'], $bookId
+							$this->pdo->escapeString($book['title']),
+							$this->pdo->escapeString($book['author']),
+							$this->pdo->escapeString($book['asin']),
+							$this->pdo->escapeString($book['isbn']),
+							$this->pdo->escapeString($book['ean']),
+							$this->pdo->escapeString($book['url']),
+							$book['salesrank'],
+							$this->pdo->escapeString($book['publisher']),
+							$this->pdo->escapeString($book['publishdate']),
+							$book['pages'],
+							$this->pdo->escapeString($book['overview']),
+							$this->pdo->escapeString($book['genre']),
+							$book['cover'],
+							$bookId
 						)
 			);
 		}
@@ -671,7 +616,8 @@ class Books
 			if ($this->echooutput) {
 				$this->pdo->log->doEcho(
 					$this->pdo->log->header('Nothing to update: ') .
-					$this->pdo->log->primary($book['author'] .
+					$this->pdo->log->primary(
+						$book['author'] .
 						' - ' .
 						$book['title']
 					)
@@ -679,5 +625,76 @@ class Books
 			}
 		}
 		return $bookId;
+	}
+
+	/**
+	 * Process book releases.
+	 *
+	 * @param \PDOStatement|bool $res        Array containing unprocessed book SQL data set.
+	 * @param int                $categoryID The category id.
+	 * @void
+	 */
+	protected function processBookReleasesHelper($res, $categoryID)
+	{
+		if ($res instanceof \PDOStatement && $res->rowCount() > 0) {
+			if ($this->echooutput) {
+				$this->pdo->log->doEcho($this->pdo->log->header("\nProcessing " . $res->rowCount() . ' book release(s) for category ID ' . $categoryID));
+			}
+
+			foreach ($res as $arr) {
+				$startTime = microtime(true);
+				$usedAmazon = false;
+				// audiobooks are also books and should be handled in an identical manor, even though it falls under a music category
+				if ($arr['categories_id'] == Category::MUSIC_AUDIOBOOK) {
+					// audiobook
+					$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], 'audiobook');
+				} else {
+					// ebook
+					$bookInfo = $this->parseTitle($arr['searchname'], $arr['id'], 'ebook');
+				}
+
+				if ($bookInfo !== false) {
+					if ($this->echooutput) {
+						$this->pdo->log->doEcho($this->pdo->log->headerOver('Looking up: ') . $this->pdo->log->primary($bookInfo));
+					}
+
+					// Do a local lookup first
+					$bookCheck = $this->getBookInfoByName('', $bookInfo);
+
+					if ($bookCheck === false && in_array($bookInfo, $this->failCache)) {
+						// Lookup recently failed, no point trying again
+						if ($this->echooutput) {
+							$this->pdo->log->doEcho($this->pdo->log->headerOver('Cached previous failure. Skipping.') . PHP_EOL);
+						}
+						$bookId = -2;
+					} elseif ($bookCheck === false) {
+						$bookId = $this->updateBookInfo($bookInfo);
+						$usedAmazon = true;
+						if ($bookId === false) {
+							$bookId = -2;
+							$this->failCache[] = $bookInfo;
+						}
+					} else {
+						$bookId = $bookCheck['id'];
+					}
+
+					// Update release.
+					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfo_id = %d WHERE id = %d %s', $bookId, $arr['id'], $this->catWhere));
+				} else {
+					// Could not parse release title.
+					$this->pdo->queryExec(sprintf('UPDATE releases SET bookinfo_id = %d WHERE id = %d %s', -2, $arr['id'], $this->catWhere));
+					if ($this->echooutput) {
+						echo '.';
+					}
+				}
+				// Sleep to not flood amazon.
+				$diff = (int)floor((microtime(true) - $startTime) * 1000000);
+				if ($this->sleeptime * 1000 - $diff > 0 && $usedAmazon === true) {
+					usleep($this->sleeptime * 1000 - $diff);
+				}
+			}
+		} elseif ($this->echooutput) {
+			$this->pdo->log->doEcho($this->pdo->log->header('No book releases to process for category id ' . $categoryID));
+		}
 	}
 }

@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2015 nZEDb
  */
@@ -49,7 +50,7 @@ class HasCorrectPermissions extends \li3_quality\qa\rules\syntax\HasCorrectPermi
 					$suffix,
 					$permsAllowed,
 					$permsFound
-				)
+				),
 			]);
 		}
 	}

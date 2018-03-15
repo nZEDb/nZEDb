@@ -2,8 +2,8 @@
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\Binaries;
-use nzedb\NNTP;
 use nzedb\db\DB;
+use nzedb\NNTP;
 
 /* This script will update the groups table to get the new article numbers for each group you have activated.
   It will also truncate the parts, binaries, collections, and missed_parts tables.
@@ -51,7 +51,7 @@ $totalend = microtime(true);
 echo $pdo->log->header('Total time to update all groups ' . gmdate('H:i:s', $totalend - $totalstart));
 
 // Truncate tables to complete the change to the new USP.
-$arr = array('parts', 'missed_parts', 'binaries', 'collections');
+$arr = ['parts', 'missed_parts', 'binaries', 'collections'];
 foreach ($arr as &$value) {
 	$rel = $pdo->queryExec("TRUNCATE TABLE $value");
 	if ($rel !== false) {
@@ -122,7 +122,7 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 		}
 		echo $pdo->log->warning("The oldest post indexed from $days day(s) ago is older than the first article stored on your news server.\nSetting to First available article of (date('r', $firstDate) or daysOld($firstDate) days).");
 		return $data['first'];
-	} else if ($goaldate > $lastDate && $bfcheck) {
+	} elseif ($goaldate > $lastDate && $bfcheck) {
 		if ($st === true) {
 			$nntp->doQuit();
 		}
@@ -134,7 +134,8 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 		echo $pdo->log->primary(
 			"Searching for postdates.\nGroup's Firstdate: " . $firstDate . ' (' .
 			date('r', $firstDate) . ").\nGroup's Lastdate: " . $lastDate . ' (' .
-			date('r', $lastDate) . ').');
+			date('r', $lastDate) . ').'
+		);
 	}
 
 	$interval = (int)floor(($upperbound - $lowerbound) * 0.5);

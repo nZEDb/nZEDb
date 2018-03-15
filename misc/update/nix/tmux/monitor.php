@@ -3,10 +3,10 @@ require_once realpath(dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SE
 
 use app\models\Settings;
 use nzedb\Category;
+use nzedb\db\DB;
 use nzedb\Tmux;
 use nzedb\TmuxOutput;
 use nzedb\TmuxRun;
-use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 $pdo = new DB();
@@ -114,7 +114,7 @@ while ($runVar['counts']['iterations'] > 0) {
 	}
 
 	//get usenet connection counts
-	unset ($runVar['conncounts']);
+	unset($runVar['conncounts']);
 	$runVar['conncounts'] = $tOut->getUSPConnections('primary', $runVar['connections']);
 
 	if ($runVar['constants']['alternate_nntp'] == 1) {
@@ -123,7 +123,6 @@ while ($runVar['counts']['iterations'] > 0) {
 
 	//run queries only after time exceeded, these queries can take awhile
 	if ($runVar['counts']['iterations'] == 1 || (time() - $runVar['timers']['timer2'] >= $runVar['settings']['monitor'] && $runVar['settings']['is_running'] == 1)) {
-
 		$runVar['counts']['proc1'] = $runVar['counts']['proc2'] = $runVar['counts']['proc3'] = $splitqry = $newOldqry = false;
 		$runVar['counts']['now']['total_work'] = 0;
 		$runVar['modsettings']['fix_crap'] = explode(', ', ($runVar['settings']['fix_crap']));
@@ -153,7 +152,8 @@ while ($runVar['counts']['iterations'] > 0) {
 
 		//This is subpartition compatible -- loops through all partitions and adds their total row counts instead of doing a slow query count
 		$partitions = $pdo->queryDirect(
-			sprintf("
+			sprintf(
+				"
 				SELECT SUM(TABLE_ROWS) AS count, PARTITION_NAME AS category
 				FROM information_schema.PARTITIONS
 				WHERE TABLE_NAME = 'releases'
@@ -310,11 +310,13 @@ while ($runVar['counts']['iterations'] > 0) {
 	}
 
 	//set kill switches
-	$runVar['killswitch']['pp'] = (($runVar['settings']['postprocess_kill'] < $runVar['counts']['now']['total_work']) && ($runVar['settings']['postprocess_kill'] != 0)
+	$runVar['killswitch']['pp'] = (
+		($runVar['settings']['postprocess_kill'] < $runVar['counts']['now']['total_work']) && ($runVar['settings']['postprocess_kill'] != 0)
 		? true
 		: false
 	);
-	$runVar['killswitch']['coll'] = (($runVar['settings']['collections_kill'] < $runVar['counts']['now']['collections_table']) && ($runVar['settings']['collections_kill'] != 0)
+	$runVar['killswitch']['coll'] = (
+		($runVar['settings']['collections_kill'] < $runVar['counts']['now']['collections_table']) && ($runVar['settings']['collections_kill'] != 0)
 		? true
 		: false
 	);
@@ -360,8 +362,7 @@ while ($runVar['counts']['iterations'] > 0) {
 			//run postprocess_releases non amazon
 			$tRun->runPane('nonamazon', $runVar);
 		}
-
-	} else if ($runVar['settings']['is_running'] === '0') {
+	} elseif ($runVar['settings']['is_running'] === '0') {
 		$tRun->runPane('notrunning', $runVar);
 	}
 

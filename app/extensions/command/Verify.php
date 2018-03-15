@@ -13,6 +13,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2016 nZEDb
  */
@@ -23,7 +24,6 @@ use app\extensions\command\verify\Tables;
 use lithium\core\ClassNotFoundException;
 use lithium\core\Libraries;
 use lithium\util\Inflector;
-
 
 /**
  * Verifies various parts of your indexer.
@@ -78,7 +78,7 @@ class Verify extends \app\extensions\console\Command
 	/**
 	 * Run the Permissions sub-command.
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function permissions()
 	{
@@ -101,7 +101,7 @@ class Verify extends \app\extensions\console\Command
 	 *
 	 * @param string $command The sub-command name. example: Permissions, Tables.
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	protected function execute($command)
 	{
@@ -139,9 +139,9 @@ class Verify extends \app\extensions\console\Command
 	}
 
 	/**
-	 * Get an instance of a sub-command
+	 * Get an instance of a sub-command.
 	 *
-	 * @param string $name the name of the sub-command to instantiate
+	 * @param string $name   the name of the sub-command to instantiate
 	 * @param array  $config
 	 *
 	 * @return object
@@ -153,7 +153,7 @@ class Verify extends \app\extensions\console\Command
 
 			return new $class([
 				'request' => $this->request,
-				'classes' => $this->_classes
+				'classes' => $this->_classes,
 			]);
 		}
 

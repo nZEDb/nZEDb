@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2016 nZEDb
  */
@@ -22,7 +23,6 @@ require_once nZEDb_ROOT . 'app/libraries/autoload.php';
 
 use \nzedb\config\Configure;
 use nzedb\utility\Misc;
-
 
 if (!defined('HAS_WHICH')) {
 	define('HAS_WHICH', Misc::hasWhich() ? true : false);

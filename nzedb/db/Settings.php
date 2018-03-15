@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2014 nZEDb
  */
@@ -27,18 +28,31 @@ use nzedb\utility\Text;
 class Settings extends DB
 {
 	const REGISTER_STATUS_OPEN      = 0;
+
 	const REGISTER_STATUS_INVITE    = 1;
+
 	const REGISTER_STATUS_CLOSED    = 2;
+
 	const REGISTER_STATUS_API_ONLY  = 3;
+
 	const ERR_BADUNRARPATH          = -1;
+
 	const ERR_BADFFMPEGPATH         = -2;
+
 	const ERR_BADMEDIAINFOPATH      = -3;
+
 	const ERR_BADNZBPATH            = -4;
+
 	const ERR_DEEPNOUNRAR           = -5;
+
 	const ERR_BADTMPUNRARPATH       = -6;
+
 	const ERR_BADNZBPATH_UNREADABLE = -7;
+
 	const ERR_BADNZBPATH_UNSET      = -8;
+
 	const ERR_BAD_COVERS_PATH       = -9;
+
 	const ERR_BAD_YYDECODER_PATH    = -10;
 
 	private $table;
@@ -64,7 +78,7 @@ class Settings extends DB
 	}
 
 	/**
-	 * Retrieve one or all settings from the Db as a string or an array;
+	 * Retrieve one or all settings from the Db as a string or an array;.
 	 *
 	 * @param array|string $options Name of setting to retrieve (null for all settings)
 	 *                              or array of 'feature', 'section', 'name' of setting{s} to retrieve
@@ -123,7 +137,7 @@ class Settings extends DB
 	 *
 	 * @param array $options Array containing the mandatory keys of 'section', 'subsection', and 'value'
 	 *
-	 * @return boolean	true or false indicating success/failure.
+	 * @return bool true or false indicating success/failure.
 	 */
 	public function setSetting(array $options) : bool
 	{
@@ -152,14 +166,16 @@ class Settings extends DB
 					$this->settings[$options['setting']] = $options['value'];
 				}
 				$result = $this->update($options);
-			} else if (!empty($options['name'])) {
+			} elseif (!empty($options['name'])) {
 				$where = sprintf("name = '%s'", $options['name']);
 				$where .= ($options['section'] === null) ? '' : sprintf(" AND section = '%s'", $options['section']);
 				$where .= ($options['subsection'] === null) ? '' : sprintf(" AND subsection = '%s'", $options['subsection']);
 
-				$sql    = sprintf("UPDATE settings SET value = '%s' WHERE %s",
+				$sql    = sprintf(
+					"UPDATE settings SET value = '%s' WHERE %s",
 								  $options['value'],
-								  $where);
+								  $where
+				);
 				$result = $this->pdo->query($sql);
 			}
 		}
@@ -179,15 +195,18 @@ class Settings extends DB
 		if ($error === null) {
 			$sql = $sqlKeys = [];
 			foreach ($form as $settingK => $settingV) {
-				$sql[]     = sprintf('WHEN %s THEN %s',
+				$sql[]     = sprintf(
+					'WHEN %s THEN %s',
 									 $this->escapeString($settingK),
-									 $this->escapeString($settingV));
+									 $this->escapeString($settingV)
+				);
 				$sqlKeys[] = $this->escapeString($settingK);
 			}
 
 			$table = $this->table();
 			$this->queryExec(
-				 sprintf("UPDATE $table SET value = CASE setting %s END WHERE setting IN (%s)",
+				 sprintf(
+				 	"UPDATE $table SET value = CASE setting %s END WHERE setting IN (%s)",
 						 implode(' ', $sql),
 						 implode(', ', $sqlKeys)
 				 )
@@ -252,7 +271,7 @@ class Settings extends DB
 		$sql .= ' ORDER BY section, subsection, name';
 		$result = $this->queryOneRow($sql);
 
-		return isset($result['value']) ? $result['value'] : null;
+		return $result['value'] ?? null;
 	}
 
 	protected function _getFromSites($options)

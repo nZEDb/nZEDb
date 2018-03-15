@@ -5,6 +5,7 @@ use app\models\Settings;
 use nzedb\db\DB;
 use nzedb\processing\PostProcess;
 use nzedb\utility\Misc;
+
 //use nzedb\processing\tv\TvRage;
 
 /**
@@ -13,8 +14,16 @@ use nzedb\utility\Misc;
  */
 class Nfo
 {
+	const NFO_FAILED = -9; // We failed to get a NFO after admin set max retries.
+
+	const NFO_UNPROC = -1; // Release has not been processed yet.
+
+	const NFO_NONFO  =  0; // Release has no NFO.
+
+	const NFO_FOUND  =  1; // Release has an NFO.
+
 	/**
-	 * Instance of class DB
+	 * Instance of class DB.
 	 *
 	 * @var \nzedb\db\DB
 	 * @access public
@@ -22,7 +31,16 @@ class Nfo
 	public $pdo;
 
 	/**
+	 * Echo to cli?
+	 *
+	 * @var bool
+	 * @access protected
+	 */
+	protected $echo;
+
+	/**
 	 * How many nfo's to process per run.
+	 *
 	 * @var int
 	 * @access private
 	 */
@@ -30,6 +48,7 @@ class Nfo
 
 	/**
 	 * Max NFO size to process.
+	 *
 	 * @var string|int
 	 * @access private
 	 */
@@ -37,6 +56,7 @@ class Nfo
 
 	/**
 	 * Max amount of times to retry to download a Nfo.
+	 *
 	 * @var string|int
 	 * @access private
 	 */
@@ -44,6 +64,7 @@ class Nfo
 
 	/**
 	 * Min NFO size to process.
+	 *
 	 * @var string|int
 	 * @access private
 	 */
@@ -51,22 +72,11 @@ class Nfo
 
 	/**
 	 * Path to temporarily store files.
+	 *
 	 * @var string
 	 * @access private
 	 */
 	private $tmpPath;
-
-	/**
-	 * Echo to cli?
-	 * @var bool
-	 * @access protected
-	 */
-	protected $echo;
-
-	const NFO_FAILED = -9; // We failed to get a NFO after admin set max retries.
-	const NFO_UNPROC = -1; // Release has not been processed yet.
-	const NFO_NONFO  =  0; // Release has no NFO.
-	const NFO_FOUND  =  1; // Release has an NFO.
 
 	/**
 	 * Default constructor.
@@ -103,11 +113,11 @@ class Nfo
 	}
 
 	/**
-	 * Look for a TV Show ID in a string. TODO: Add other scrape sources
+	 * Look for a TV Show ID in a string. TODO: Add other scrape sources.
 	 *
-	 * @param string  $str   The string with a Show ID.
+	 * @param string $str The string with a Show ID.
 	 *
-	 * @return array|bool   Return array with show ID and site source or false on failure.
+	 * @return array|bool Return array with show ID and site source or false on failure.
 	 *
 	 * @access public
 	 */
@@ -119,7 +129,7 @@ class Nfo
 			$return = (
 				[
 					'showid' => trim($matches[1]),
-					'site'   => 'tvrage'
+					'site'   => 'tvrage',
 				]
 			);
 		}
@@ -132,7 +142,7 @@ class Nfo
 	 * @param string $possibleNFO The nfo.
 	 * @param string $guid        The guid of the release.
 	 *
-	 * @return bool               True on success, False on failure.
+	 * @return bool True on success, False on failure.
 	 *
 	 * @access public
 	 */
@@ -145,8 +155,9 @@ class Nfo
 		// Make sure it's not too big or small, size needs to be at least 12 bytes for header checking. Ignore common file types.
 		$size = strlen($possibleNFO);
 		if ($size < 65535 && $size > 11 && !preg_match(
-				'/\A(\s*<\?xml|=newz\[NZB\]=|RIFF|\s*[RP]AR|.{0,10}(JFIF|matroska|ftyp|ID3))|;\s*Generated\s*by.*SF\w/i'
-				, $possibleNFO)) {
+				'/\A(\s*<\?xml|=newz\[NZB\]=|RIFF|\s*[RP]AR|.{0,10}(JFIF|matroska|ftyp|ID3))|;\s*Generated\s*by.*SF\w/i',
+			$possibleNFO
+		)) {
 			// File/GetId3 work with files, so save to disk.
 			$tmpPath = $this->tmpPath . $guid . '.nfo';
 			file_put_contents($tmpPath, $possibleNFO);
@@ -160,7 +171,7 @@ class Nfo
 					return true;
 
 				// Or binary.
-				} else if (preg_match('/^(JPE?G|Parity|PNG|RAR|XML|(7-)?[Zz]ip)/', $result) ||
+				} elseif (preg_match('/^(JPE?G|Parity|PNG|RAR|XML|(7-)?[Zz]ip)/', $result) ||
 					preg_match('/[\x00-\x08\x12-\x1F\x0B\x0E\x0F]/', $possibleNFO)) {
 					@unlink($tmpPath);
 					return false;
@@ -192,20 +203,20 @@ class Nfo
 	/**
 	 * Add an NFO from alternate sources. ex.: PreDB, rar, zip, etc...
 	 *
-	 * @param string $nfo     The nfo.
-	 * @param array  $release The SQL row for this release.
-	 * @param \nzedb\NNTP  $nntp    Instance of class NNTP.
+	 * @param string      $nfo     The nfo.
+	 * @param array       $release The SQL row for this release.
+	 * @param \nzedb\NNTP $nntp    Instance of class NNTP.
 	 *
-	 * @return boolean        True on success, False on failure.
+	 * @return bool True on success, False on failure.
 	 *
 	 * @access public
 	 */
 	public function addAlternateNfo(&$nfo, $release, $nntp)
 	{
 		if ($release['id'] > 0 && $this->isNFO($nfo, $release['guid'])) {
-
 			$check = $this->pdo->queryOneRow(
-				sprintf('
+				sprintf(
+					'
 					SELECT releases_id
 					FROM release_nfos
 					WHERE releases_id = %d',
@@ -215,7 +226,8 @@ class Nfo
 
 			if ($check === false) {
 				$this->pdo->queryInsert(
-					sprintf('
+					sprintf(
+						'
 						INSERT INTO release_nfos (nfo, releases_id)
 						VALUES (compress(%s), %d)',
 						$this->pdo->escapeString($nfo),
@@ -225,7 +237,8 @@ class Nfo
 			}
 
 			$this->pdo->queryExec(
-				sprintf('
+				sprintf(
+					'
 					UPDATE releases
 					SET nfostatus = %d
 					WHERE id = %d',
@@ -245,7 +258,7 @@ class Nfo
 						'NNTP' => $nntp,
 						'Nfo'  => $this,
 						'Settings'   => $this->pdo,
-						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this])
+						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this]),
 					]
 				);
 				$nzbContents->parseNZB($release['guid'], $release['id'], $release['groups_id']);
@@ -285,13 +298,13 @@ class Nfo
 	/**
 	 * Attempt to find NFO files inside the NZB's of releases.
 	 *
-	 * @param \NNTP $nntp            Instance of class NNTP.
-	 * @param string $groupID        (optional) Group ID.
-	 * @param string $guidChar       (optional) First character of the release GUID (used for multi-processing).
-	 * @param int    $processImdb    (optional) Attempt to find IMDB id's in the NZB?
-	 * @param int    $processTv      (optional) Attempt to find Tv id's in the NZB?
+	 * @param \NNTP  $nntp        Instance of class NNTP.
+	 * @param string $groupID     (optional) Group ID.
+	 * @param string $guidChar    (optional) First character of the release GUID (used for multi-processing).
+	 * @param int    $processImdb (optional) Attempt to find IMDB id's in the NZB?
+	 * @param int    $processTv   (optional) Attempt to find Tv id's in the NZB?
 	 *
-	 * @return int                   How many NFO's were processed?
+	 * @return int How many NFO's were processed?
 	 *
 	 * @access public
 	 */
@@ -303,7 +316,8 @@ class Nfo
 		$optionsQuery = self::NfoQueryString($this->pdo);
 
 		$res = $this->pdo->query(
-			sprintf('
+			sprintf(
+				'
 				SELECT r.id, r.guid, r.groups_id, r.name
 				FROM releases r
 				WHERE 1=1 %s %s %s
@@ -332,7 +346,8 @@ class Nfo
 			if ($this->echo) {
 				// Get count of releases per nfo status
 				$nfoStats = $this->pdo->queryDirect(
-					sprintf('
+					sprintf(
+						'
 						SELECT r.nfostatus AS status, COUNT(r.id) AS count
 						FROM releases r
 						WHERE 1=1 %s %s %s
@@ -359,7 +374,7 @@ class Nfo
 					'NNTP' => $nntp,
 					'Nfo' => $this,
 					'Settings' => $this->pdo,
-					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo])
+					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo]),
 				]
 			);
 			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo]);
@@ -379,7 +394,8 @@ class Nfo
 					$ret++;
 					$movie->doMovieUpdate(/** @scrutinizer ignore-type */ $fetchedBinary,
 						'nfo',
-						$arr['id'], $processImdb
+						$arr['id'],
+						$processImdb
 					);
 
 					// If set scan for tv info.
@@ -422,14 +438,18 @@ class Nfo
 		if ($releases instanceof \PDOStatement) {
 			foreach ($releases as $release) {
 				// remove any release_nfos for failed
-				$this->pdo->queryExec(sprintf('
+				$this->pdo->queryExec(
+					sprintf(
+					'
 					DELETE FROM release_nfos WHERE nfo IS NULL AND releases_id = %d',
 					$release['id']
 					)
 				);
 
 				// set release.nfostatus to failed
-				$this->pdo->queryExec(sprintf('
+				$this->pdo->queryExec(
+					sprintf(
+					'
 					UPDATE releases r SET r.nfostatus = %d WHERE r.id = %d',
 					self::NFO_FAILED,
 					$release['id']
@@ -448,5 +468,4 @@ class Nfo
 		}
 		return $ret;
 	}
-
 }

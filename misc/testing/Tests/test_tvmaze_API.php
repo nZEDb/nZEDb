@@ -21,7 +21,6 @@ if (isset($argv[1]) && !empty($argv[1]) && isset($argv[2]) && is_numeric($argv[2
 
 	// Use the first show found (highest match) and get the requested season/episode from $argv
 	if (! empty($series)) {
-
 		print_r($series[0]);
 
 		if ($season > 0 && $episode > 0 && $day === '') {
@@ -29,12 +28,12 @@ if (isset($argv[1]) && !empty($argv[1]) && isset($argv[2]) && is_numeric($argv[2
 			if ($episodeObj) {
 				print_r($episodeObj);
 			}
-		} else if ($season == 0 && $episode == 0) {
+		} elseif ($season == 0 && $episode == 0) {
 			$episodeObj = $tvmaze->client->getEpisodesByShowID($series[0]->id);
 			if (is_array($episodeObj)) {
 				print_r($episodeObj);
 			}
-		} else if (preg_match('#^(19|20)\d{2}\/\d{2}\/\d{2}$#', $season . '/' . $episode . '/' . $day, $airdate)) {
+		} elseif (preg_match('#^(19|20)\d{2}\/\d{2}\/\d{2}$#', $season . '/' . $episode . '/' . $day, $airdate)) {
 			$episodeObj = $tvmaze->client->getEpisodesByAirdate($series[0]->id, (string)$airdate[0]);
 			if ($episodeObj) {
 				print_r($episodeObj);
@@ -42,11 +41,9 @@ if (isset($argv[1]) && !empty($argv[1]) && isset($argv[2]) && is_numeric($argv[2
 		} else {
 			exit($c->error('Invalid episode data returned from TVMaze API.'));
 		}
-
 	} else {
 		exit($c->error('Invalid show data returned from TVMaze API.'));
 	}
-
 } else {
 	exit($c->error('Invalid arguments. This script requires a text string (show name) followed by a season and episode number.' . PHP_EOL .
 		"You can also optionally supply 'YYYY' 'MM' 'DD' arguments instead of season/episode for an airdate lookup.")

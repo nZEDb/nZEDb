@@ -22,30 +22,29 @@ $data = $m->getUpcoming($_GET['id']);
 if (!$data || $data['info'] == '') {
 	$page->smarty->assign('nodata', 'No upcoming data.');
 } else {
-
 	$data = json_decode($data['info']);
 
 	if (isset($data->error)) {
 		$page->smarty->assign('nodata', $data->error);
-	} else if (!isset($data->movies)) {
+	} elseif (!isset($data->movies)) {
 		$page->smarty->assign('nodata', 'Unspecified error.');
 	} else {
 		$page->smarty->assign('data', $data->movies);
 
 		switch ($_GET['id']) {
-			case Movie::SRC_BOXOFFICE;
+			case Movie::SRC_BOXOFFICE:
 				$page->title = 'Box Office';
 				break;
-			case Movie::SRC_INTHEATRE;
+			case Movie::SRC_INTHEATRE:
 				$page->title = 'In Theater';
 				break;
-			case Movie::SRC_OPENING;
+			case Movie::SRC_OPENING:
 				$page->title = 'Opening';
 				break;
-			case Movie::SRC_UPCOMING;
+			case Movie::SRC_UPCOMING:
 				$page->title = 'Upcoming';
 				break;
-			case Movie::SRC_DVD;
+			case Movie::SRC_DVD:
 				$page->title = 'DVD Releases';
 				break;
 		}
@@ -58,7 +57,7 @@ if (!$data || $data['info'] == '') {
 /**
  * extract just the cloudfront image url.
  *
- * @param string $imageURL    The url to change.
+ * @param string $imageURL The url to change.
  *
  * @return string
  */

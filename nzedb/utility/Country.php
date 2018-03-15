@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    ruhllatio
  * @copyright 2015 nZEDb
  */
@@ -23,7 +24,7 @@ namespace nzedb\utility;
 use nzedb\db\DB;
 
 /**
- * Class Country
+ * Class Country.
  *
  * @package nzedb\utility
  */
@@ -32,8 +33,7 @@ class Country
 	/**
 	 * Get a country code for a country name.
 	 *
-	 * @param string $country
-	 *
+	 * @param string       $country
 	 * @param \nzedb\db\DB $pdo
 	 *
 	 * @return mixed
@@ -43,7 +43,8 @@ class Country
 		$pdo = ($pdo instanceof DB ? $pdo : new DB());
 		if (!is_array($country) && strlen($country) > 2) {
 			$code = $pdo->queryOneRow(
-				sprintf('
+				sprintf(
+					'
 					SELECT id
 					FROM countries
 					WHERE country = %s',

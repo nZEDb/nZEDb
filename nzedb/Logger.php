@@ -5,7 +5,7 @@ use nzedb\utility\Misc;
 
 /**
  * Show log message to CLI/Web and log it to a file.
- * Turn these on in constants.php
+ * Turn these on in constants.php.
  *
  * @example usage:
  *
@@ -16,14 +16,20 @@ class Logger
 {
 	// You can use these constants when using the start method.
 	const LOG_FATAL   = 1; // Fatal error, the program exited.
+
 	const LOG_ERROR   = 2; // Recoverable error.
+
 	const LOG_WARNING = 3; // Warnings.
+
 	const LOG_NOTICE  = 4; // Notices.
+
 	const LOG_INFO    = 5; // Info message, not important.
+
 	const LOG_SQL     = 6; // Full SQL query when it fails.
 
 	/**
 	 * Name of class we are currently logging.
+	 *
 	 * @var string
 	 * @access private
 	 */
@@ -31,6 +37,7 @@ class Logger
 
 	/**
 	 * Name of method we are currently logging.
+	 *
 	 * @var string
 	 * @access private
 	 */
@@ -38,6 +45,7 @@ class Logger
 
 	/**
 	 * The log message.
+	 *
 	 * @var string
 	 * @access private
 	 */
@@ -45,13 +53,15 @@ class Logger
 
 	/**
 	 * Severity level.
+	 *
 	 * @var string
 	 * @access private
 	 */
 	private $severity = '';
 
 	/**
-	 * Class instance of colorCLI
+	 * Class instance of colorCLI.
+	 *
 	 * @var object
 	 * @access private
 	 */
@@ -59,6 +69,7 @@ class Logger
 
 	/**
 	 * Should we echo to CLI or web?
+	 *
 	 * @var bool
 	 * @access private
 	 */
@@ -66,6 +77,7 @@ class Logger
 
 	/**
 	 * Cache of the date.
+	 *
 	 * @var string
 	 * @access private
 	 */
@@ -73,6 +85,7 @@ class Logger
 
 	/**
 	 * Cache of unix time.
+	 *
 	 * @var int
 	 * @access private
 	 */
@@ -80,6 +93,7 @@ class Logger
 
 	/**
 	 * Is this the windows O/S?
+	 *
 	 * @var bool
 	 * @access private
 	 */
@@ -87,6 +101,7 @@ class Logger
 
 	/**
 	 * Unix time instance was created.
+	 *
 	 * @var int
 	 * @access private
 	 */
@@ -100,7 +115,8 @@ class Logger
 
 	/**
 	 * How many old logs can we have max in the logs folder.
-	 * (per log type, ex.: debug can have x logs, not_yEnc can have x logs, etc)
+	 * (per log type, ex.: debug can have x logs, not_yEnc can have x logs, etc).
+	 *
 	 * @var int
 	 * @access private
 	 */
@@ -108,6 +124,7 @@ class Logger
 
 	/**
 	 * Max log size in MegaBytes.
+	 *
 	 * @var int
 	 * @access private
 	 */
@@ -115,6 +132,7 @@ class Logger
 
 	/**
 	 * Full path to the log file.
+	 *
 	 * @var string
 	 * @access private
 	 */
@@ -122,6 +140,7 @@ class Logger
 
 	/**
 	 * Current name of the log file.
+	 *
 	 * @var string
 	 * @access private
 	 */
@@ -129,6 +148,7 @@ class Logger
 
 	/**
 	 * Current folder to store log files.
+	 *
 	 * @var string
 	 * @access private
 	 */
@@ -136,6 +156,7 @@ class Logger
 
 	/**
 	 * Show memory usage in log/cli out?
+	 *
 	 * @var bool
 	 * @access private
 	 */
@@ -143,6 +164,7 @@ class Logger
 
 	/**
 	 * Show CPU load in log/cli out?
+	 *
 	 * @var bool
 	 * @access private
 	 */
@@ -150,6 +172,7 @@ class Logger
 
 	/**
 	 * Show running time of script on log/cli out?
+	 *
 	 * @var bool
 	 * @access private
 	 */
@@ -157,6 +180,7 @@ class Logger
 
 	/**
 	 * Show resource usages on log/cli out?.
+	 *
 	 * @var bool
 	 * @access private
 	 */
@@ -170,6 +194,7 @@ class Logger
 	 *                       (Optional) Filename of log, must be alphanumeric (a-z 0-9) and contain no file extensions.
 	 *
 	 * @access public
+	 *
 	 * @throws LoggerException
 	 */
 	public function __construct(array $options = [])
@@ -181,7 +206,7 @@ class Logger
 		$defaults = [
 			'ColorCLI'    => null,
 			'LogFolder'   => '',
-			'LogFileName' => ''
+			'LogFileName' => '',
 		];
 		$options += $defaults;
 
@@ -225,12 +250,12 @@ class Logger
 	 * @param string $method   The method this is coming from.
 	 * @param string $message  The message to log/echo.
 	 * @param int    $severity How severe is this message?
-	 *               1 Fatal    - The program had to stop (exit).
-	 *               2 Error    - Something went very wrong but we recovered.
-	 *               3 Warning  - Not an error, but something we can probably fix.
-	 *               4 Notice   - User errors - the user did not enable any groups for example.
-	 *               5 Info     - General info, like we logged in to usenet for example.
-	 *               6 Query    - Failed SQL queries. (the full query).
+	 *                         1 Fatal    - The program had to stop (exit).
+	 *                         2 Error    - Something went very wrong but we recovered.
+	 *                         3 Warning  - Not an error, but something we can probably fix.
+	 *                         4 Notice   - User errors - the user did not enable any groups for example.
+	 *                         5 Info     - General info, like we logged in to usenet for example.
+	 *                         6 Query    - Failed SQL queries. (the full query).
 	 *
 	 * @access public
 	 */
@@ -278,13 +303,16 @@ class Logger
 			'MB',
 			'GB',
 			'TB',
-			'PB'
+			'PB',
 		];
 		return
 			str_pad(
 				number_format(
-					round($actualUsage / (1024 ** ($i = floor(log($actualUsage, 1024)))), 2)),
-					4, '~~~', STR_PAD_LEFT
+					round($actualUsage / (1024 ** ($i = floor(log($actualUsage, 1024)))), 2)
+				),
+					4,
+				'~~~',
+				STR_PAD_LEFT
 			) . $units[(int)$i];
 	}
 
@@ -325,7 +353,7 @@ class Logger
 				$strLen = strlen($load);
 				if ($strLen === 1) {
 					$string .= $load . '.00,';
-				} else if ($strLen === 3) {
+				} elseif ($strLen === 3) {
 					$string .= str_pad($load, 4, '0', STR_PAD_RIGHT) . ',';
 				} else {
 					$string .= $load . ',';
@@ -366,7 +394,7 @@ class Logger
 		return [
 			'LogFolder' => $defaultLogFolder,
 			'LogName'   => $defaultLogName,
-			'LogPath'   => $defaultLogFolder . $defaultLogName . '.log'
+			'LogPath'   => $defaultLogFolder . $defaultLogName . '.log',
 		];
 	}
 
@@ -401,6 +429,7 @@ class Logger
 
 	/**
 	 * Get/set all settings.
+	 *
 	 * @access private
 	 */
 	private function getSettings()
@@ -495,6 +524,7 @@ class Logger
 	 * Check if the log folder exists, if not create it.
 	 *
 	 * @access private
+	 *
 	 * @throws LoggerException
 	 */
 	private function createFolder()
@@ -514,6 +544,7 @@ class Logger
 	 * Initiate a log file.
 	 *
 	 * @access private
+	 *
 	 * @throws LoggerException
 	 */
 	private function initiateLog()
@@ -521,7 +552,8 @@ class Logger
 		if (!is_file($this->logPath)) {
 			if (!file_put_contents(
 					$this->logPath,
-					'[' . $this->getDate() . '] [INIT]   [Initiating new log file.]' . PHP_EOL)
+					'[' . $this->getDate() . '] [INIT]   [Initiating new log file.]' . PHP_EOL
+			)
 			) {
 				throw new LoggerException('Unable to create new log file ' . $this->logPath);
 			}
@@ -540,7 +572,7 @@ class Logger
 		$logSize = filesize($this->logPath);
 		if ($logSize === false) {
 			return;
-		} else if ($logSize >= ($this->maxLogSize * 1024 * 1024)) {
+		} elseif ($logSize >= ($this->maxLogSize * 1024 * 1024)) {
 			$this->closeFile();
 			$this->compressLog();
 			$this->initiateLog();
@@ -660,7 +692,9 @@ class Logger
 			trim(
 
 				// Removing 2 or more spaces.
-				preg_replace('/\s{2,}/', ' ',
+				preg_replace(
+					'/\s{2,}/',
+					' ',
 
 					// Removing new lines and carriage returns.
 					str_replace(["\n", '\n', "\r", '\r'], ' ', $this->logMessage)
@@ -746,5 +780,4 @@ class Logger
 				return false;
 		}
 	}
-
 }

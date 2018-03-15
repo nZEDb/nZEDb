@@ -15,10 +15,10 @@
  * not, see:
  *
  * @link <http://www.gnu.org/licenses/>.
+ *
  * @author niel
  * @copyright 2015 nZEDb
  */
-
 require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\db\PreDb;
@@ -45,18 +45,17 @@ HELP;
 	exit($message);
 } else {
 	$path = !preg_match('#^/#', $argv[2]) ? getcwd() . '/' . $argv[2] : $argv[2];
-
 }
 $argv[1] = strtolower($argv[1]);
 
 Misc::clearScreen();
 
-$table = isset($argv[3]) ? $argv[3] : 'predb';
+$table = $argv[3] ?? 'predb';
 
 $predb = new PreDb();
 $local = ($argv[1] === 'local');
 
-echo $predb->log->info("Clearing import table");
+echo $predb->log->info('Clearing import table');
 
 // Truncate to clear any old data
 $predb->executeTruncate();
@@ -72,7 +71,7 @@ $predb->executeLoadData([
 	]);
 
 // Remove any titles where length <=8
-echo $predb->log->info("Deleting any records where title <=8 from Temporary Table");
+echo $predb->log->info('Deleting any records where title <=8 from Temporary Table');
 
 $predb->executeDeleteShort();
 
@@ -82,7 +81,7 @@ $predb->executeAddGroups();
 // Fill the groups_id
 $predb->executeUpdateGroupID();
 
-echo $predb->log->info("Inserting records from temporary table into predb table");
+echo $predb->log->info('Inserting records from temporary table into predb table');
 $predb->executeInsert();
 
 ?>

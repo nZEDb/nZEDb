@@ -7,27 +7,9 @@ use app\models\Settings;
  * Categorizing of releases by name/group.
  *
  * Class Categorize
- *
-*/
+ */
 class Categorize extends Category
 {
-	/**
-	 * @var bool
-	 */
-	protected $categorizeForeign;
-
-	/**
-	 * @var bool Indicates whether the WebDL category should be used or not.
-	 */
-	protected $catWebDL;
-
-	/**
-	 * Temporary category while we sort through the name.
-	 *
-	 * @var int|string    Temporary variable for storing the Category constant (which is technically a string).
-	 */
-	protected $tmpCat = Category::OTHER_MISC;
-
 	/**
 	 * Release name to sort through.
 	 *
@@ -48,9 +30,33 @@ class Categorize extends Category
 	public $regexes;
 
 	/**
+	 * @var bool
+	 */
+	protected $categorizeForeign;
+
+	/**
+	 * @var bool Indicates whether the WebDL category should be used or not.
+	 */
+	protected $catWebDL;
+
+	/**
+	 * Temporary category while we sort through the name.
+	 *
+	 * @var int|string Temporary variable for storing the Category constant (which is technically a string).
+	 */
+	protected $tmpCat = Category::OTHER_MISC;
+
+	/**
 	 * @var string
 	 */
 	protected $poster;
+
+	/**
+	 * Cache of group names for group ID's.
+	 *
+	 * @var array
+	 */
+	private $groups = [];
 
 	/**
 	 * Construct.
@@ -72,7 +78,6 @@ class Categorize extends Category
 	 * Returns Category::OTHER_MISC if no category is appropriate.
 	 *
 	 * @param int|string $groupID     The groupID.
-	 *
 	 * @param string     $releaseName The name to parse.
 	 * @param string     $poster
 	 *
@@ -96,39 +101,11 @@ class Categorize extends Category
 			case $this->isMovie():
 			case $this->isConsole():
 			case $this->isBook():
-            case $this->isMusic():
+			case $this->isMusic():
 				return $this->tmpCat;
 		}
 
 		return $this->tmpCat;
-	}
-
-	/**
-	 * Cache of group names for group ID's.
-	 * @var array
-	 */
-	private $groups = [];
-
-	/**
-	 * Sets/Gets a group name for the current group ID in the buffer.
-	 *
-	 * @return string Group Name.
-	 */
-	private function groupName()
-	{
-		if (!isset($this->groups[$this->groupID])) {
-			$group = $this->pdo->queryOneRow(
-				sprintf('
-					SELECT LOWER(name) AS name
-					FROM groups
-					WHERE id = %d',
-					$this->groupID
-				)
-			);
-			$this->groups[$this->groupID] = ($group === false ? false : $group['name']);
-		}
-
-		return $this->groups[$this->groupID];
 	}
 
 	/**
@@ -177,7 +154,7 @@ class Categorize extends Category
 						case $this->isHDTV():
 						case $this->isSDTV():
 						case $this->isPC():
-                        case $this->isSportTV():
+						case $this->isSportTV():
 							break;
 						default:
 							return false;
@@ -545,6 +522,7 @@ class Categorize extends Category
 
 	/**
 	 * Try database regexes against a group / release name.
+	 *
 	 * @return bool
 	 */
 	public function databaseRegex()
@@ -636,20 +614,20 @@ class Categorize extends Category
 
 	public function isSportTV()
 	{
-        switch (true) {
-            case preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])/i', $this->releaseName):
-                return false;
-            case preg_match('/[-._ ]?(Bellator|bundesliga|EPL|ESPN|FIA|la[-._ ]liga|MMA|motogp|NFL|MLB|NCAA|PGA|FIM|NJPW|red[-._ ]bull|.+race|Sengoku|Strikeforce|supercup|uefa|UFC|wtcc|WWE)[-._ ]/i', $this->releaseName):
-            case preg_match('/[-._ ]?(DTM|FIFA|formula[-._ ]1|indycar|Rugby|NASCAR|NBA|NHL|NRL|netball[-._ ]anz|ROH|SBK|Superleague|The[-._ ]Ultimate[-._ ]Fighter|TNA|V8[-._ ]Supercars|WBA|WrestleMania)[-._ ]/i', $this->releaseName):
-            case preg_match('/[-._ ]?(AFL|Grand Prix|Indy[-._ ]Car|(iMPACT|Smoky[-._ ]Mountain|Texas)[-._ ]Wrestling|Moto[-._ ]?GP|NSCS[-._ ]ROUND|NECW|Poker|PWX|Rugby|WCW)[-._ ]/i', $this->releaseName):
-            case preg_match('/[-._ ]?(Horse)[-._ ]Racing[-._ ]/i', $this->releaseName):
-            case preg_match('/[-._ ](VERUM|GRiP|Ebi|OVERTAKE)/i', $this->releaseName):
-                $this->tmpCat = Category::TV_SPORT;
+		switch (true) {
+			case preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])/i', $this->releaseName):
+				return false;
+			case preg_match('/[-._ ]?(Bellator|bundesliga|EPL|ESPN|FIA|la[-._ ]liga|MMA|motogp|NFL|MLB|NCAA|PGA|FIM|NJPW|red[-._ ]bull|.+race|Sengoku|Strikeforce|supercup|uefa|UFC|wtcc|WWE)[-._ ]/i', $this->releaseName):
+			case preg_match('/[-._ ]?(DTM|FIFA|formula[-._ ]1|indycar|Rugby|NASCAR|NBA|NHL|NRL|netball[-._ ]anz|ROH|SBK|Superleague|The[-._ ]Ultimate[-._ ]Fighter|TNA|V8[-._ ]Supercars|WBA|WrestleMania)[-._ ]/i', $this->releaseName):
+			case preg_match('/[-._ ]?(AFL|Grand Prix|Indy[-._ ]Car|(iMPACT|Smoky[-._ ]Mountain|Texas)[-._ ]Wrestling|Moto[-._ ]?GP|NSCS[-._ ]ROUND|NECW|Poker|PWX|Rugby|WCW)[-._ ]/i', $this->releaseName):
+			case preg_match('/[-._ ]?(Horse)[-._ ]Racing[-._ ]/i', $this->releaseName):
+			case preg_match('/[-._ ](VERUM|GRiP|Ebi|OVERTAKE)/i', $this->releaseName):
+				$this->tmpCat = Category::TV_SPORT;
 
-                return true;
-            default:
-                return false;
-        }
+				return true;
+			default:
+				return false;
+		}
 	}
 
 	public function isDocumentaryTV()
@@ -1065,10 +1043,10 @@ class Categorize extends Category
 			$this->tmpCat = Category::XXX_SD;
 			return true;
 		}
-		if($this->checkPoster( '/oz@lot[.]com/i', $this->poster, Category::XXX_SD)) {
+		if ($this->checkPoster('/oz@lot[.]com/i', $this->poster, Category::XXX_SD)) {
 			return true;
 		}
-		if($this->checkPoster( '/anon@y[.]com/i', $this->poster, Category::XXX_SD)) {
+		if ($this->checkPoster('/anon@y[.]com/i', $this->poster, Category::XXX_SD)) {
 			return true;
 		}
 		return false;
@@ -1453,7 +1431,7 @@ class Categorize extends Category
 			}
 
 			return true;
-		} else if (preg_match('/\(pure_fm\)|-+\(?(2lp|cd[ms]([-_ .][a-z]{2})?|cover|ep|ltd_ed|mix|original|ost|.*?(edit(ion)?|remix(es)?|vinyl)|web)\)?-+((19|20)\d\d|you$)/i', $this->releaseName)) {
+		} elseif (preg_match('/\(pure_fm\)|-+\(?(2lp|cd[ms]([-_ .][a-z]{2})?|cover|ep|ltd_ed|mix|original|ost|.*?(edit(ion)?|remix(es)?|vinyl)|web)\)?-+((19|20)\d\d|you$)/i', $this->releaseName)) {
 			$this->tmpCat = Category::MUSIC_OTHER;
 
 			return true;
@@ -1585,9 +1563,9 @@ class Categorize extends Category
 	}
 
 	/**
-	 * @param string $regex     Regex to use for match
-	 * @param string $fromName  Poster that needs to be matched by regex
-	 * @param string $category  Category to set if there is a match
+	 * @param string $regex    Regex to use for match
+	 * @param string $fromName Poster that needs to be matched by regex
+	 * @param string $category Category to set if there is a match
 	 *
 	 * @return bool
 	 */
@@ -1598,5 +1576,28 @@ class Categorize extends Category
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Sets/Gets a group name for the current group ID in the buffer.
+	 *
+	 * @return string Group Name.
+	 */
+	private function groupName()
+	{
+		if (!isset($this->groups[$this->groupID])) {
+			$group = $this->pdo->queryOneRow(
+				sprintf(
+					'
+					SELECT LOWER(name) AS name
+					FROM groups
+					WHERE id = %d',
+					$this->groupID
+				)
+			);
+			$this->groups[$this->groupID] = ($group === false ? false : $group['name']);
+		}
+
+		return $this->groups[$this->groupID];
 	}
 }

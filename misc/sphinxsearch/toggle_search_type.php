@@ -1,8 +1,8 @@
 <?php
 require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\ReleaseSearch;
 use nzedb\db\DB;
+use nzedb\ReleaseSearch;
 
 if (!isset($argv[1]) || !in_array($argv[1], ['sphinx', 'standard'])) {
 	exit('Argument1 (required) is the method of search you would like to optimize for.  Choices are sphinx or standard.' . PHP_EOL .
@@ -42,7 +42,6 @@ function revertToStandard($pdo)
 	$engFormat = '';
 
 	if (isset($argv[2]) && in_array($argv[2], ['cinnodb', 'dinnodb', 'cmyisam', 'dmyisam'])) {
-
 		switch ($argv[2]) {
 			case 'cinnnodb':
 				$engFormat = 'ENGINE = InnoDB ROW_FORMAT = Compressed';
@@ -62,7 +61,8 @@ function revertToStandard($pdo)
 	echo PHP_EOL . $pdo->log->info('Dropping old table data and recreating fresh from schema. (Quick)' . PHP_EOL);
 	$pdo->queryExec('DROP TABLE IF EXISTS release_search_data');
 	$pdo->queryExec(
-			sprintf("
+			sprintf(
+				"
 				CREATE TABLE release_search_data (
 					id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 					releases_id INT(11) UNSIGNED NOT NULL,
@@ -93,7 +93,8 @@ function revertToStandard($pdo)
 
 	dropSearchTriggers($pdo);
 
-	$pdo->exec('
+	$pdo->exec(
+		'
 				CREATE TRIGGER insert_search AFTER INSERT ON releases FOR EACH ROW
 					BEGIN
 						INSERT INTO release_search_data (releases_id, guid, name, searchname, fromname)

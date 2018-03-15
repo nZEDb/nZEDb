@@ -15,10 +15,10 @@
  * not, see:
  *
  * @link <http://www.gnu.org/licenses/>.
+ *
  * @author niel
  * @copyright 2015 nZEDb
  */
-
 require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\db\PreDb;
@@ -50,13 +50,13 @@ HELP;
 
 if (file_exists($path) && is_file($path)) {
 	unlink($path);
-} else if (is_dir($path)) {
+} elseif (is_dir($path)) {
 	$path = Text::trailingSlash($path) . 'predb_export_' . strftime('%Y%m%d%H%M%S') . '.tsv';
 }
 
 Misc::clearScreen();
 
-$table = isset($argv[2]) ? $argv[2] : 'predb';
+$table = $argv[2] ?? 'predb';
 
 $predb = new PreDb();
 if (nZEDb_ECHOCLI) {

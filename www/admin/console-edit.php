@@ -1,9 +1,9 @@
 <?php
 require_once './config.php';
 
+use nzedb\Category;
 use nzedb\Console;
 use nzedb\Genres;
-use nzedb\Category;
 
 $page    = new AdminPage();
 $console = new Console(['Settings' => $page->settings]);
@@ -38,7 +38,8 @@ if (isset($_REQUEST['id'])) {
 				'null' : $_POST['salesrank'];
 			$_POST['releasedate'] = (empty($_POST['releasedate']) || !strtotime($_POST['releasedate'])) ? $con['releasedate'] : date('Y-m-d H:i:s', strtotime($_POST['releasedate']));
 
-			$console->update($genID,
+			$console->update(
+				$genID,
 							 $_POST['title'],
 							 $_POST['asin'],
 							 $_POST['url'],
@@ -48,7 +49,8 @@ if (isset($_REQUEST['id'])) {
 							 $_POST['releasedate'],
 							 $_POST['esrb'],
 							 $_POST['cover'],
-							 $_POST['genre']);
+							 $_POST['genre']
+			);
 
 			header('Location:' . WWW_TOP . '/console-list.php');
 			die();

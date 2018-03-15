@@ -6,14 +6,17 @@ use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 /**
- * Class Releases
+ * Class Releases.
  */
 class Releases
 {
 	// RAR/ZIP Passworded indicator.
 	const PASSWD_NONE      = 0; // No password.
+
 	const PASSWD_POTENTIAL = 1; // Might have a password.
+
 	const BAD_FILE         = 2; // Possibly broken RAR/ZIP.
+
 	const PASSWD_RAR       = 10; // Definitely passworded.
 
 	/**
@@ -47,13 +50,22 @@ class Releases
 	public $showPasswords;
 
 	/**
+	 * Cache of concatenated category ID's used in queries.
+	 *
+	 * @var string|null
+	 */
+	private $concatenatedCategoryIDsCache;
+
+	/**
 	 * @var array $options Class instances.
+	 *
+	 * @param array $options
 	 */
 	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Settings' => null,
-			'Groups'   => null
+			'Groups'   => null,
 		];
 		$options += $defaults;
 
@@ -77,7 +89,8 @@ class Releases
 	public function insertRelease(array $parameters = [])
 	{
 		$parameters['id'] = $this->pdo->queryInsert(
-			sprintf('
+			sprintf(
+				'
 				INSERT INTO releases
 					(name, searchname, totalpart, groups_id, adddate, guid, leftguid, postdate, fromname,
 					size, passwordstatus, haspreview, categories_id, nfostatus, nzbstatus,
@@ -106,6 +119,7 @@ class Releases
 
 	/**
 	 * Create a GUID for a release.
+	 *
 	 * @return string
 	 */
 	public function createGUID()
@@ -126,7 +140,9 @@ class Releases
 				LEFT JOIN groups g ON g.id = r.groups_id
 				WHERE r.nzbstatus = %d',
 				NZB::NZB_ADDED
-			), true, nZEDb_CACHE_EXPIRY_LONG
+			),
+			true,
+			nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
@@ -150,7 +166,9 @@ class Releases
 				ORDER BY r.postdate DESC %s",
 				NZB::NZB_ADDED,
 				($start === false ? '' : 'LIMIT ' . $num . ' OFFSET ' . $start)
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
+			),
+			true,
+			nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 	}
 
@@ -251,7 +269,7 @@ class Releases
 		}
 
 		return $sql;
-}
+	}
 
 	/**
 	 * Return site setting for hiding/showing passworded releases.
@@ -329,7 +347,7 @@ class Releases
 			'files_asc',
 			'files_desc',
 			'stats_asc',
-			'stats_desc'
+			'stats_desc',
 		];
 	}
 
@@ -362,37 +380,10 @@ class Releases
 	}
 
 	/**
-	 * Create a date query string for exporting.
-	 *
-	 * @param string $date
-	 * @param bool   $from
-	 *
-	 * @return string
-	 */
-	private function exportDateString($date, $from = true)
-	{
-		if ($date != '') {
-			$dateParts = explode('/', $date);
-			if (count($dateParts) === 3) {
-				$date = sprintf(
-					' AND postdate %s %s ',
-					($from ? '>' : '<'),
-					$this->pdo->escapeString(
-						$dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0] .
-						($from ? ' 00:00:00' : ' 23:59:59')
-					)
-				);
-			} else {
-				$date = '';
-			}
-		}
-		return $date;
-	}
-
-	/**
 	 * Get date in this format : 01/01/2014 of the oldest release.
 	 *
 	 * @note Used for exporting NZB's.
+	 *
 	 * @return mixed
 	 */
 	public function getEarliestUsenetPostDate()
@@ -406,6 +397,7 @@ class Releases
 	 * Get date in this format : 01/01/2014 of the newest release.
 	 *
 	 * @note Used for exporting NZB's.
+	 *
 	 * @return mixed
 	 */
 	public function getLatestUsenetPostDate()
@@ -421,6 +413,7 @@ class Releases
 	 * @param bool $blnIncludeAll
 	 *
 	 * @note Used for exporting NZB's.
+	 *
 	 * @return array
 	 */
 	public function getReleasedGroupsForSelect($blnIncludeAll = true)
@@ -443,12 +436,6 @@ class Releases
 	}
 
 	/**
-	 * Cache of concatenated category ID's used in queries.
-	 * @var string|null
-	 */
-	private $concatenatedCategoryIDsCache;
-
-	/**
 	 * Gets / sets a string of concatenated category ID's used in queries.
 	 *
 	 * @return string|null
@@ -456,13 +443,15 @@ class Releases
 	public function getConcatenatedCategoryIDs()
 	{
 		if ($this->concatenatedCategoryIDsCache === null) {
-			$result = $this->pdo->query("
+			$result = $this->pdo->query(
+				"
 				SELECT CONCAT(cp.id, ',', c.id) AS category_ids
 				FROM categories c
 				LEFT JOIN categories cp ON cp.id = c.parentid
 				WHERE c.parentid IS NOT NULL
 				AND cp.id IS NOT NULL",
-				true, nZEDb_CACHE_EXPIRY_LONG
+				true,
+				nZEDb_CACHE_EXPIRY_LONG
 			);
 			if (isset($result[0]['category_ids'])) {
 				$this->concatenatedCategoryIDsCache = $result[0]['category_ids'];
@@ -521,7 +510,9 @@ class Releases
 				$orderBy[0],
 				$orderBy[1],
 				($offset === false ? '' : (' LIMIT ' . $limit . ' OFFSET ' . $offset))
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
+			),
+			true,
+			nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 	}
 
@@ -565,7 +556,8 @@ class Releases
 	{
 		$res = $this->pdo->query(
 			'SELECT COUNT(id) AS num FROM releases',
-			true, nZEDb_CACHE_EXPIRY_MEDIUM
+			true,
+			nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 		return (empty($res) ? 0 : $res[0]['num']);
 	}
@@ -601,11 +593,11 @@ class Releases
 	/**
 	 * Deletes a single release by GUID, and all the corresponding files.
 	 *
-	 * @param array        $identifiers ['g' => Release GUID(mandatory), 'id => ReleaseID(optional, pass false)]
+	 * @param array        $identifiers  ['g' => Release GUID(mandatory), 'id => ReleaseID(optional, pass false)]
 	 * @param NZB          $nzb
 	 * @param ReleaseImage $releaseImage
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function deleteSingle($identifiers, $nzb, $releaseImage)
 	{
@@ -654,11 +646,23 @@ class Releases
 	 * @param        $episodeId
 	 * @param int    $imDbID
 	 * @param int    $aniDbID
-	 *
 	 */
-	public function update($ID, $name, $searchName, $fromName, $categoryID, $parts, $grabs, $size,
-						   $postedDate, $addedDate, $videoId, $episodeId, $imDbID, $aniDbID)
-	{
+	public function update(
+		$ID,
+		$name,
+		$searchName,
+		$fromName,
+		$categoryID,
+		$parts,
+		$grabs,
+		$size,
+						   $postedDate,
+		$addedDate,
+		$videoId,
+		$episodeId,
+		$imDbID,
+		$aniDbID
+	) {
 		$this->pdo->queryExec(
 			sprintf(
 				'UPDATE releases
@@ -692,6 +696,7 @@ class Releases
 	 * @param $videoId
 	 * @param $episodeId
 	 * @param $imdbId
+	 * @param mixed $anidbId
 	 *
 	 * @return array|bool|int
 	 */
@@ -707,7 +712,7 @@ class Releases
 			'videos_id'      => $videoId,
 			'tv_episodes_id' => $episodeId,
 			'anidbid'        => $anidbId,
-			'imdbid'         => $imdbId
+			'imdbid'         => $imdbId,
 		];
 
 		$updateSql = [];
@@ -781,7 +786,7 @@ class Releases
 	 * @param int    $limit
 	 * @param string $orderBy
 	 * @param int    $maxAge
-	 * @param integer[] $excludedCats
+	 * @param int[]  $excludedCats
 	 * @param string $type
 	 * @param array  $cat
 	 * @param int    $minSize
@@ -909,27 +914,34 @@ class Releases
 	}
 
 	/**
-	 * Search TV Shows via the API
+	 * Search TV Shows via the API.
 	 *
 	 * @param array  $siteIdArr Array containing all possible TV Processing site IDs desired
-	 * @param string $series The series or season number requested
-	 * @param string $episode The episode number requested
-	 * @param string $airdate The airdate of the episode requested
-	 * @param int    $offset Skip this many releases
-	 * @param int    $limit Return this many releases
-	 * @param string $name The show name to search
-	 * @param array  $cat The category to search
-	 * @param int    $maxAge The maximum age of releases to be returned
-	 * @param int    $minSize The minimum size of releases to be returned
+	 * @param string $series    The series or season number requested
+	 * @param string $episode   The episode number requested
+	 * @param string $airdate   The airdate of the episode requested
+	 * @param int    $offset    Skip this many releases
+	 * @param int    $limit     Return this many releases
+	 * @param string $name      The show name to search
+	 * @param array  $cat       The category to search
+	 * @param int    $maxAge    The maximum age of releases to be returned
+	 * @param int    $minSize   The minimum size of releases to be returned
 	 *
 	 * @return array
 	 */
 	public function searchShows(
-			$siteIdArr = array(), $series = '', $episode = '', $airdate = '', $offset = 0,
-			$limit = 100, $name = '', $cat = [-1], $maxAge = -1, $minSize = 0
-		)
-	{
-		$siteSQL = array();
+			$siteIdArr = [],
+		$series = '',
+		$episode = '',
+		$airdate = '',
+		$offset = 0,
+			$limit = 100,
+		$name = '',
+		$cat = [-1],
+		$maxAge = -1,
+		$minSize = 0
+		) {
+		$siteSQL = [];
 		$showSql = '';
 
 		if (is_array($siteIdArr)) {
@@ -942,7 +954,8 @@ class Releases
 
 		if (count($siteSQL) > 0) {
 			// If we have show info, find the Episode ID/Video ID first to avoid table scans
-			$showQry = sprintf("
+			$showQry = sprintf(
+				"
 				SELECT
 					v.id AS video,
 					GROUP_CONCAT(tve.id SEPARATOR ',') AS episodes
@@ -959,7 +972,7 @@ class Releases
 			if ($show !== false) {
 				if ((!empty($series) || !empty($episode) || !empty($airdate)) && strlen((string)$show['episodes']) > 0) {
 					$showSql = sprintf('AND r.tv_episodes_id IN (%s)', $show['episodes']);
-				} else if ((int)$show['video'] > 0) {
+				} elseif ((int)$show['video'] > 0) {
 					$showSql = 'AND r.videos_id = ' . $show['video'];
 					// If $series is set but episode is not, return Season Packs only
 					if (!empty($series) && empty($episode)) {
@@ -967,11 +980,11 @@ class Releases
 					}
 				} else {
 					// If we were passed Episode Info and no match was found, do not run the query
-					return array();
+					return [];
 				}
 			} else {
 				// If we were passed Site ID Info and no match was found, do not run the query
-				return array();
+				return [];
 			}
 		}
 
@@ -982,7 +995,7 @@ class Releases
 				if (!empty($episode)  && strpos($episode, '/') === false) {
 					$name .= sprintf('E%s', str_pad($episode, 2, '0', STR_PAD_LEFT));
 				}
-			} else if (!empty($airdate)) {
+			} elseif (!empty($airdate)) {
 				$name .= sprintf(' %s', str_replace(['/', '-', '.', '_'], ' ', $airdate));
 			}
 		}
@@ -1041,7 +1054,6 @@ class Releases
 
 		$releases = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 		if (!empty($releases) && count($releases)) {
-
 			$releases[0]['_totalrows'] = $this->getPagerCount(
 				preg_replace('#LEFT(\s+OUTER)?\s+JOIN\s+(?!tv_episodes)\s+.*ON.*=.*\n#i', ' ', $baseSql)
 			);
@@ -1116,6 +1128,7 @@ class Releases
 	 * @param string $name
 	 * @param array  $cat
 	 * @param int    $maxAge
+	 * @param mixed  $minSize
 	 *
 	 * @return array
 	 */
@@ -1170,25 +1183,6 @@ class Releases
 	}
 
 	/**
-	 * Get count of releases for pager.
-	 *
-	 * @param string $query The query to get the count from.
-	 *
-	 * @return int
-	 */
-	private function getPagerCount($query)
-	{
-		$count = $this->pdo->query(
-			sprintf(
-				'SELECT COUNT(z.id) AS count FROM (%s LIMIT %s) z',
-				preg_replace('/SELECT.+?FROM\s+releases/is', 'SELECT r.id FROM releases', $query),
-				nZEDb_MAX_PAGER_RESULTS
-			), true, nZEDb_CACHE_EXPIRY_SHORT
-		);
-		return (isset($count[0]['count']) ? $count[0]['count'] : 0);
-	}
-
-	/**
 	 * @param       $currentID
 	 * @param       $name
 	 * @param int   $limit
@@ -1204,7 +1198,24 @@ class Releases
 		$parentCat = $catRow['parentid'];
 
 		$results = $this->search(
-			$this->getSimilarName($name), -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, 0, $limit, '', -1, $excludedCats, null, [$parentCat]
+			$this->getSimilarName($name),
+			-1,
+			-1,
+			-1,
+			-1,
+			-1,
+			-1,
+			0,
+			0,
+			-1,
+			-1,
+			0,
+			$limit,
+			'',
+			-1,
+			$excludedCats,
+			null,
+			[$parentCat]
 		);
 		if (!$results) {
 			return $results;
@@ -1272,6 +1283,7 @@ class Releases
 	}
 
 	// Writes a zip file of an array of release guids directly to the stream.
+
 	/**
 	 * @param $guids
 	 *
@@ -1347,7 +1359,7 @@ class Releases
 	}
 
 	/**
-	 * Resets the videos_id and tv_episodes_id column on all releases to zero for a given Video ID
+	 * Resets the videos_id and tv_episodes_id column on all releases to zero for a given Video ID.
 	 *
 	 * @param $videoId
 	 *
@@ -1356,7 +1368,8 @@ class Releases
 	public function removeVideoIdFromReleases($videoId)
 	{
 		return $this->pdo->queryExec(
-				sprintf('
+				sprintf(
+					'
 					UPDATE releases
 					SET videos_id = 0, tv_episodes_id = 0
 					WHERE videos_id = %d',
@@ -1373,7 +1386,8 @@ class Releases
 	public function removeAnidbIdFromReleases($anidbID)
 	{
 		return	$this->pdo->queryExec(
-					sprintf('
+					sprintf(
+						'
 						UPDATE releases
 						SET anidbid = -1
 						WHERE anidbid = %d',
@@ -1389,7 +1403,8 @@ class Releases
 	 */
 	public function getById($id)
 	{
-		$qry = sprintf('
+		$qry = sprintf(
+			'
 				SELECT r.*, g.name AS group_name
 				FROM releases r
 				LEFT JOIN groups g ON g.id = r.groups_id
@@ -1440,7 +1455,9 @@ class Releases
 			GROUP BY id, searchname, adddate
 			HAVING SUM(grabs) > 0
 			ORDER BY grabs DESC
-			LIMIT 10', true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 10',
+			true,
+			nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
@@ -1456,7 +1473,9 @@ class Releases
 			GROUP BY id, searchname, adddate
 			HAVING SUM(comments) > 0
 			ORDER BY comments DESC
-			LIMIT 10', true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 10',
+			true,
+			nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
@@ -1472,7 +1491,9 @@ class Releases
 			INNER JOIN releases r ON r.categories_id = c.id
 			WHERE r.adddate > NOW() - INTERVAL 1 WEEK
 			GROUP BY CONCAT(cp.title, ' > ', c.title)
-			ORDER BY count DESC", true, nZEDb_CACHE_EXPIRY_MEDIUM
+			ORDER BY count DESC",
+			true,
+			nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 	}
 
@@ -1494,7 +1515,9 @@ class Releases
 			AND m.cover = 1
 			AND r.id in (select max(id) from releases where imdbid > 0 group by imdbid)
 			ORDER BY r.postdate DESC
-			LIMIT 24', true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 24',
+			true,
+			nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
@@ -1561,7 +1584,9 @@ class Releases
 			AND gi.cover > 0
 			AND r.id in (select max(id) from releases where gamesinfo_id > 0 group by gamesinfo_id)
 			ORDER BY r.postdate DESC
-			LIMIT 24', true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 24',
+			true,
+			nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
@@ -1584,7 +1609,9 @@ class Releases
 			AND m.cover > 0
 			AND r.id in (select max(id) from releases where musicinfo_id > 0 group by musicinfo_id)
 			ORDER BY r.postdate DESC
-			LIMIT 24', true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 24',
+			true,
+			nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
@@ -1607,7 +1634,9 @@ class Releases
 			AND b.cover > 0
 			AND r.id in (select max(id) from releases where bookinfo_id > 0 group by bookinfo_id)
 			ORDER BY r.postdate DESC
-			LIMIT 24', true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 24',
+			true,
+			nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
@@ -1626,13 +1655,15 @@ class Releases
 			FROM releases r
 			INNER JOIN videos v ON r.videos_id = v.id
 			INNER JOIN tv_info tvi ON r.videos_id = tvi.videos_id
-			WHERE r.categories_id BETWEEN ' . Category::TV_ROOT . ' AND '	. Category::TV_OTHER .
+			WHERE r.categories_id BETWEEN ' . Category::TV_ROOT . ' AND ' . Category::TV_OTHER .
 			' AND v.id > 0
 			AND v.type = 0
 			AND tvi.image = 1
 			AND r.id in (select max(id) from releases where videos_id > 0 group by videos_id)
 			ORDER BY r.postdate DESC
-			LIMIT 24', true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 24',
+			true,
+			nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
 
@@ -1656,7 +1687,58 @@ class Releases
 			AND r.id IN (SELECT MAX(id) FROM releases WHERE anidbid > 0 GROUP BY anidbid)
 			GROUP BY r.id
 			ORDER BY r.postdate DESC
-			LIMIT 24", true, nZEDb_CACHE_EXPIRY_LONG
+			LIMIT 24",
+			true,
+			nZEDb_CACHE_EXPIRY_LONG
 		);
+	}
+
+	/**
+	 * Create a date query string for exporting.
+	 *
+	 * @param string $date
+	 * @param bool   $from
+	 *
+	 * @return string
+	 */
+	private function exportDateString($date, $from = true)
+	{
+		if ($date != '') {
+			$dateParts = explode('/', $date);
+			if (count($dateParts) === 3) {
+				$date = sprintf(
+					' AND postdate %s %s ',
+					($from ? '>' : '<'),
+					$this->pdo->escapeString(
+						$dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0] .
+						($from ? ' 00:00:00' : ' 23:59:59')
+					)
+				);
+			} else {
+				$date = '';
+			}
+		}
+		return $date;
+	}
+
+	/**
+	 * Get count of releases for pager.
+	 *
+	 * @param string $query The query to get the count from.
+	 *
+	 * @return int
+	 */
+	private function getPagerCount($query)
+	{
+		$count = $this->pdo->query(
+			sprintf(
+				'SELECT COUNT(z.id) AS count FROM (%s LIMIT %s) z',
+				preg_replace('/SELECT.+?FROM\s+releases/is', 'SELECT r.id FROM releases', $query),
+				nZEDb_MAX_PAGER_RESULTS
+			),
+			true,
+			nZEDb_CACHE_EXPIRY_SHORT
+		);
+		return ($count[0]['count'] ?? 0);
 	}
 }

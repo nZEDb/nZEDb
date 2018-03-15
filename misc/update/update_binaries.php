@@ -6,9 +6,9 @@ require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstr
 
 use app\models\Settings;
 use nzedb\Binaries;
+use nzedb\db\DB;
 use nzedb\Groups;
 use nzedb\NNTP;
-use nzedb\db\DB;
 
 $pdo = new DB();
 

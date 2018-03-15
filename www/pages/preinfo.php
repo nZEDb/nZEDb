@@ -1,6 +1,6 @@
 <?php
 /**
- * You can make this page accessible publicly by changing the nZEDb_PREINFO_OPEN setting in www/settings.php
+ * You can make this page accessible publicly by changing the nZEDb_PREINFO_OPEN setting in www/settings.php.
  *
  * This page prints an XML (or JSON, see extras) on the browser with predb data based on criteria.
  *
@@ -126,7 +126,6 @@
  *                  )
  *              )
  */
-
 use nzedb\db\DB;
 
 if (nZEDb_PREINFO_OPEN) {
@@ -147,7 +146,6 @@ if (isset($_GET['json']) && $_GET['json'] == 1) {
 	$json = true;
 }
 if (isset($_GET['type'])) {
-
 	$limit = 1;
 	if (isset($_GET['limit']) && is_numeric($_GET['limit'])) {
 		$limit = $_GET['limit'];
@@ -173,7 +171,7 @@ if (isset($_GET['type'])) {
 	if (isset($_GET['nuked'])) {
 		if ($_GET['nuked'] == 0) {
 			$nuked = ' AND p.nuked = 0';
-		} else if ($_GET['nuked'] == 1) {
+		} elseif ($_GET['nuked'] == 1) {
 			$nuked = ' AND p.nuked > 0';
 		}
 	}
@@ -184,7 +182,8 @@ if (isset($_GET['type'])) {
 			if (isset($_GET['reqid']) && is_numeric($_GET['reqid']) && isset($_GET['group']) && is_string($_GET['group'])) {
 				$pdo = new DB;
 				$preData = $pdo->query(
-					sprintf('
+					sprintf(
+						'
 						SELECT p.*,
 						g.name AS groupname
 						FROM predb p
@@ -211,7 +210,8 @@ if (isset($_GET['type'])) {
 			if (isset($_GET['title'])) {
 				$pdo = new DB;
 				$preData = $pdo->query(
-					sprintf('SELECT * FROM predb p WHERE p.title %s %s %s %s LIMIT %d OFFSET %d',
+					sprintf(
+						'SELECT * FROM predb p WHERE p.title %s %s %s %s LIMIT %d OFFSET %d',
 						$newer,
 						$older,
 						$nuked,
@@ -229,7 +229,8 @@ if (isset($_GET['type'])) {
 			if (isset($_GET['md5']) && strlen($_GET['md5']) === 32) {
 				$pdo = new DB;
 				$preData = $pdo->query(
-					sprintf('SELECT p.*, HEX(ph.hash) AS md5 FROM predb p INNER JOIN predb_hashes ph ON ph.predb_id = p.id WHERE hash = UNHEX(%s) %s %s %s LIMIT %d OFFSET %d',
+					sprintf(
+						'SELECT p.*, HEX(ph.hash) AS md5 FROM predb p INNER JOIN predb_hashes ph ON ph.predb_id = p.id WHERE hash = UNHEX(%s) %s %s %s LIMIT %d OFFSET %d',
 						$pdo->escapeString($_GET['md5']),
 						$newer,
 						$older,
@@ -246,7 +247,8 @@ if (isset($_GET['type'])) {
 			if (isset($_GET['sha1']) && strlen($_GET['sha1']) === 40) {
 				$pdo = new DB;
 				$preData = $pdo->query(
-					sprintf('SELECT p.*, HEX(ph.hash) AS sha1 FROM predb p INNER JOIN predb_hashes ph ON ph.predb_id = p.id WHERE hash = UNHEX(%s) %s %s %s LIMIT %d OFFSET %d',
+					sprintf(
+						'SELECT p.*, HEX(ph.hash) AS sha1 FROM predb p INNER JOIN predb_hashes ph ON ph.predb_id = p.id WHERE hash = UNHEX(%s) %s %s %s LIMIT %d OFFSET %d',
 						$pdo->escapeString($_GET['sha1']),
 						$newer,
 						$older,
@@ -263,7 +265,8 @@ if (isset($_GET['type'])) {
 			if (isset($_GET['category'])) {
 				$pdo = new DB;
 				$preData = $pdo->query(
-					sprintf('SELECT * FROM predb p WHERE p.category %s %s %s %s LIMIT %d OFFSET %d',
+					sprintf(
+						'SELECT * FROM predb p WHERE p.category %s %s %s %s LIMIT %d OFFSET %d',
 						$newer,
 						$older,
 						$nuked,
@@ -279,7 +282,8 @@ if (isset($_GET['type'])) {
 		case 'all':
 			$pdo = new DB;
 			$preData = $pdo->query(
-				sprintf('SELECT * FROM predb p WHERE 1=1 %s %s %s ORDER BY p.created DESC LIMIT %d OFFSET %d',
+				sprintf(
+					'SELECT * FROM predb p WHERE 1=1 %s %s %s ORDER BY p.created DESC LIMIT %d OFFSET %d',
 					$newer,
 					$older,
 					$nuked,
@@ -289,8 +293,7 @@ if (isset($_GET['type'])) {
 			);
 			break;
 	}
-} else if (isset($_POST['data'])) {
-
+} elseif (isset($_POST['data'])) {
 	$reqData = @unserialize($_POST['data']);
 	if ($reqData !== false && is_array($reqData) && isset($reqData[0]['ident'])) {
 		$pdo = new DB;
@@ -298,7 +301,8 @@ if (isset($_GET['type'])) {
 
 		foreach ($reqData as $request) {
 			$result = $pdo->queryOneRow(
-				sprintf('
+				sprintf(
+					'
 					SELECT p.*,
 					g.name AS groupname
 					FROM predb p
@@ -329,19 +333,19 @@ if ($json === false) {
 		foreach ($preData as $data) {
 			echo
 				'<request',
-				' reqid="'      . (!empty($data['requestid'])  ? $data['requestid']  : '') . '"',
-				' md5="'        . (!empty($data['md5'])        ? $data['md5']        : '') . '"',
-				' sha1="'       . (!empty($data['sha1'])       ? $data['sha1']       : '') . '"',
-				' nuked="'      . (!empty($data['nuked'])      ? $data['nuked']      : '') . '"',
-				' category="'   . (!empty($data['category'])   ? $data['category']   : '') . '"',
-				' source="'     . (!empty($data['source'])     ? $data['source']     : '') . '"',
+				' reqid="' . (!empty($data['requestid']) ? $data['requestid'] : '') . '"',
+				' md5="' . (!empty($data['md5']) ? $data['md5'] : '') . '"',
+				' sha1="' . (!empty($data['sha1']) ? $data['sha1'] : '') . '"',
+				' nuked="' . (!empty($data['nuked']) ? $data['nuked'] : '') . '"',
+				' category="' . (!empty($data['category']) ? $data['category'] : '') . '"',
+				' source="' . (!empty($data['source']) ? $data['source'] : '') . '"',
 				' nukereason="' . (!empty($data['nukereason']) ? $data['nukereason'] : '') . '"',
-				' files="'      . (!empty($data['files'])      ? $data['files']      : '') . '"',
-				' name="'       . (!empty($data['title'])      ? sanitize($data['title']) : '') . '"',
-				' date="'       . (!empty($data['created'])    ? strtotime($data['created']) : '') . '"',
-				' size="'       . (!empty($data['size']) && $data['size'] != 'NULL' ? $data['size'] : '') . '"',
-				' group="'      . (isset($data['groupname']) && !empty($data['groupname']) ? $data['groupname'] : '' ) . '"',
-				' ident="'      . (isset($data['ident']) && !empty($data['ident']) ? $data['ident'] : '') . '"',
+				' files="' . (!empty($data['files']) ? $data['files'] : '') . '"',
+				' name="' . (!empty($data['title']) ? sanitize($data['title']) : '') . '"',
+				' date="' . (!empty($data['created']) ? strtotime($data['created']) : '') . '"',
+				' size="' . (!empty($data['size']) && $data['size'] != 'NULL' ? $data['size'] : '') . '"',
+				' group="' . (isset($data['groupname']) && !empty($data['groupname']) ? $data['groupname'] : '') . '"',
+				' ident="' . (isset($data['ident']) && !empty($data['ident']) ? $data['ident'] : '') . '"',
 				'/>';
 		}
 	}

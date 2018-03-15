@@ -6,36 +6,51 @@ use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 /**
- * Class Users
+ * Class Users.
  */
 class Users
 {
 	const ERR_SIGNUP_BADUNAME = -1;
+
 	const ERR_SIGNUP_BADPASS = -2;
+
 	const ERR_SIGNUP_BADEMAIL = -3;
+
 	const ERR_SIGNUP_UNAMEINUSE = -4;
+
 	const ERR_SIGNUP_EMAILINUSE = -5;
+
 	const ERR_SIGNUP_BADINVITECODE = -6;
+
 	const FAILURE = 0;
+
 	const SUCCESS = 1;
 
 	const ROLE_GUEST = 0;
+
 	const ROLE_USER = 1;
+
 	const ROLE_ADMIN = 2;
+
 	const ROLE_DISABLED = 3;
+
 	const ROLE_MODERATOR = 4;
 
 	const DEFAULT_INVITES = 1;
+
 	const DEFAULT_INVITE_EXPIRY_DAYS = 7;
 
 	const SALTLEN = 4;
+
 	const SHA1LEN = 40;
 
 	/**
 	 * Users select queue type.
 	 */
 	const QUEUE_NONE    = 0;
+
 	const QUEUE_SABNZBD = 1;
+
 	const QUEUE_NZBGET  = 2;
 
 	/**
@@ -121,7 +136,8 @@ class Users
 	{
 		if ($apiRequests) {
 			$this->clearApiRequests(false);
-			$query = ("
+			$query = (
+				"
 				SELECT users.*, user_roles.name AS rolename, COUNT(user_requests.id) AS apirequests
 				FROM users
 				INNER JOIN user_roles ON user_roles.id = users.role
@@ -132,7 +148,8 @@ class Users
 				ORDER BY %s %s %s"
 			);
 		} else {
-			$query = ('
+			$query = (
+				'
 				SELECT users.*, user_roles.name AS rolename
 				FROM users
 				INNER JOIN user_roles ON user_roles.id = users.role
@@ -215,15 +232,15 @@ class Users
 	/**
 	 * Add a new user.
 	 *
-	 * @param string  $userName
-	 * @param string  $firstName
-	 * @param string  $lastName
-	 * @param string  $password
-	 * @param string  $email
-	 * @param integer $role
+	 * @param string $userName
+	 * @param string $firstName
+	 * @param string $lastName
+	 * @param string $password
+	 * @param string $email
+	 * @param int    $role
 	 * @param $host
-	 * @param integer $invites
-	 * @param integer $invitedBy
+	 * @param int $invites
+	 * @param int $invitedBy
 	 *
 	 * @return bool|int
 	 */
@@ -234,7 +251,8 @@ class Users
 			return false;
 		}
 		return $this->pdo->queryInsert(
-			sprintf('
+			sprintf(
+				'
 				INSERT INTO users (username, password, email, role, createddate, host, rsstoken,
 					invites, invitedby, userseed, firstname, lastname)
 				VALUES (%s, %s, %s, %d, NOW(), %s, MD5(%s), %d, %s, MD5(%s), %s, %s)',
@@ -284,13 +302,33 @@ class Users
 	 *
 	 * @return int
 	 */
-	public function update($id, $userName, $firstName, $lastName, $email, $grabs, $role, $invites,
-		$movieView, $xxxView, $musicView, $consoleView, $gameView, $bookView,
-		$cp_url = false, $cp_api = false, $style = 'None', $queueType = '',
-		$nzbGetURL = '', $nzbGetUsername = '', $nzbGetPassword = '',
-		$sabURL = '', $sabApiKey = '', $sabPriority = '', $sabApiKeyType = '')
-	{
-
+	public function update(
+		$id,
+		$userName,
+		$firstName,
+		$lastName,
+		$email,
+		$grabs,
+		$role,
+		$invites,
+		$movieView,
+		$xxxView,
+		$musicView,
+		$consoleView,
+		$gameView,
+		$bookView,
+		$cp_url = false,
+		$cp_api = false,
+		$style = 'None',
+		$queueType = '',
+		$nzbGetURL = '',
+		$nzbGetUsername = '',
+		$nzbGetPassword = '',
+		$sabURL = '',
+		$sabApiKey = '',
+		$sabPriority = '',
+		$sabApiKeyType = ''
+	) {
 		$userName = trim($userName);
 		$email = trim($email);
 
@@ -490,12 +528,13 @@ class Users
 	 *
 	 * @param int $userID ID of the user.
 	 *
-	 * @return boolean|array
+	 * @return bool|array
 	 */
 	public function getById($userID)
 	{
 		return $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT users.*, user_roles.name AS rolename, user_roles.canpreview,
 					user_roles.apirequests, user_roles.downloadrequests, NOW() AS now
 				FROM users
@@ -526,6 +565,7 @@ class Users
 
 	/**
 	 * Get all user info and associated info from other tables using their API key.
+	 *
 	 * @param string $rssToken API key.
 	 *
 	 * @return array|bool
@@ -533,7 +573,8 @@ class Users
 	public function getByRssToken($rssToken)
 	{
 		return $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT users.*, user_roles.apirequests, user_roles.downloadrequests, NOW() AS now
 				FROM users
 				INNER JOIN user_roles ON user_roles.id = users.role
@@ -566,7 +607,7 @@ class Users
 			'grabs_asc',
 			'grabs_desc',
 			'role_asc',
-			'role_desc'
+			'role_desc',
 		];
 	}
 
@@ -589,7 +630,7 @@ class Users
 	 *
 	 * @param string $password
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function isValidPassword($password)
 	{
@@ -598,10 +639,12 @@ class Users
 
 	/**
 	 * Check if the user is disabled.
-	 * Wrapper for roleCheck
+	 * Wrapper for roleCheck.
 	 *
 	 * @param string $userName Name of the user.
+	 *
 	 * @todo Would probably be better to use userId instead of username.
+	 *
 	 * @return bool
 	 */
 	public function isDisabled($userName)
@@ -677,8 +720,16 @@ class Users
 	 * @return bool|int
 	 */
 	public function signUp(
-		$userName, $firstName, $lastName, $password, $email, $host, $role = self::ROLE_USER,
-		$invites = self::DEFAULT_INVITES, $inviteCode = '', $forceInviteMode = false
+		$userName,
+		$firstName,
+		$lastName,
+		$password,
+		$email,
+		$host,
+		$role = self::ROLE_USER,
+		$invites = self::DEFAULT_INVITES,
+		$inviteCode = '',
+		$forceInviteMode = false
 	) {
 		$userName = trim($userName);
 		if (!$this->isValidUsername($userName)) {
@@ -806,7 +857,7 @@ class Users
 	{
 		if (isset($_SESSION['uid'])) {
 			return true;
-		} else if (isset($_COOKIE['uid']) && isset($_COOKIE['idh'])) {
+		} elseif (isset($_COOKIE['uid']) && isset($_COOKIE['idh'])) {
 			$u = $this->getById($_COOKIE['uid']);
 
 			if (($_COOKIE['idh'] == $this->hashSHA1($u['userseed'] . $_COOKIE['uid'])) && ($u['role'] != self::ROLE_DISABLED)) {
@@ -823,7 +874,7 @@ class Users
 	 */
 	public function currentUserId()
 	{
-		return (isset($_SESSION['uid']) ? $_SESSION['uid'] : -1);
+		return ($_SESSION['uid'] ?? -1);
 	}
 
 	/**
@@ -897,7 +948,8 @@ class Users
 		$user = $this->getById($userID);
 		$secure_cookie = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? '1' : '0');
 		setcookie('uid', $userID, (time() + 2592000), '/', null, $secure_cookie, true);
-		setcookie('idh', ($this->hashSHA1($user['userseed'] . $userID)), (time() + 2592000), '/', null, $secure_cookie, true);	}
+		setcookie('idh', ($this->hashSHA1($user['userseed'] . $userID)), (time() + 2592000), '/', null, $secure_cookie, true);
+	}
 
 	/**
 	 * Add a release to the user's cart.
@@ -928,7 +980,8 @@ class Users
 	public function getCart($userID)
 	{
 		return $this->pdo->query(
-			sprintf('
+			sprintf(
+				'
 				SELECT users_releases.*, releases.searchname, releases.guid
 				FROM users_releases
 				INNER JOIN releases ON releases.id = users_releases.releases_id
@@ -941,7 +994,7 @@ class Users
 	/**
 	 * Delete items from the users cart.
 	 *
-	 * @param array $guids    List of items to delete.
+	 * @param array $guids  List of items to delete.
 	 * @param int   $userID ID of the user.
 	 *
 	 * @return bool
@@ -962,7 +1015,9 @@ class Users
 
 		return (bool)$this->pdo->queryExec(
 			sprintf(
-				'DELETE FROM users_releases WHERE releases_id IN (%s) AND user_id = %d', implode(',', $del), $userID
+				'DELETE FROM users_releases WHERE releases_id IN (%s) AND user_id = %d',
+				implode(',', $del),
+				$userID
 			)
 		);
 	}
@@ -1040,7 +1095,7 @@ class Users
 	}
 
 	/**
-	 * Get a list of categories excluded for role
+	 * Get a list of categories excluded for role.
 	 *
 	 * @param $role
 	 *
@@ -1050,17 +1105,17 @@ class Users
 	{
 		$ret = [];
 		$data = $this->pdo->query(sprintf('SELECT categories_id FROM role_excluded_categories WHERE role = %d', $role));
-		foreach ($data as $d)
+		foreach ($data as $d) {
 			$ret[] = $d['categories_id'];
+		}
 
 		return $ret;
 	}
 
 	/**
-	 * Add category exclusion for role
+	 * Add category exclusion for role.
 	 *
 	 * @param $role
-	 *
 	 * @param $categoryIDs
 	 */
 	public function addRoleCategoryExclusions($role, $categoryIDs)
@@ -1074,7 +1129,7 @@ class Users
 	}
 
 	/**
-	 * Delete role category exclusion
+	 * Delete role category exclusion.
 	 *
 	 * @param $role
 	 */
@@ -1257,7 +1312,8 @@ class Users
 	 */
 	public function getTopGrabbers()
 	{
-		return $this->pdo->query('
+		return $this->pdo->query(
+			'
 			SELECT id, username, SUM(grabs) AS grabs
 			FROM users
 			GROUP BY id, username HAVING SUM(grabs) > 0
@@ -1270,10 +1326,11 @@ class Users
 	 * Get list of user signups by month.
 	 *
 	 * @return array
-	*/
+	 */
 	public function getUsersByMonth()
 	{
-		return $this->pdo->query("
+		return $this->pdo->query(
+			"
 			SELECT DATE_FORMAT(createddate, '%M %Y') AS mth, COUNT(id) AS num
 			FROM users
 			WHERE createddate IS NOT NULL AND createddate != '0000-00-00 00:00:00'
@@ -1281,7 +1338,6 @@ class Users
 			ORDER BY createddate DESC"
 		);
 	}
-
 
 	/**
 	 * Get list of user roles.
@@ -1329,8 +1385,13 @@ class Users
 	public function addRole($name, $apiRequests, $downloadRequests, $defaultInvites, $canPreview)
 	{
 		return $this->pdo->queryInsert(
-			sprintf('INSERT INTO user_roles (name, apirequests, downloadrequests, defaultinvites, canpreview) VALUES (%s, %d, %d, %d, %d)',
-				$this->pdo->escapeString($name), $apiRequests, $downloadRequests, $defaultInvites, $canPreview
+			sprintf(
+				'INSERT INTO user_roles (name, apirequests, downloadrequests, defaultinvites, canpreview) VALUES (%s, %d, %d, %d, %d)',
+				$this->pdo->escapeString($name),
+				$apiRequests,
+				$downloadRequests,
+				$defaultInvites,
+				$canPreview
 			)
 		);
 	}
@@ -1355,7 +1416,8 @@ class Users
 		}
 
 		return $this->pdo->queryExec(
-			sprintf('
+			sprintf(
+				'
 				UPDATE user_roles
 				SET name = %s, apirequests = %d, downloadrequests = %d, defaultinvites = %d, isdefault = %d, canpreview = %d
 				WHERE id = %d',
@@ -1407,29 +1469,6 @@ class Users
 			sprintf('SELECT COUNT(id) AS num FROM user_requests WHERE user_id = %d', $userID)
 		);
 		return (!$requests ? 0 : (int)$requests['num']);
-	}
-
-	/**
-	 * Delete api requests older than a day.
-	 *
-	 * @param int|bool  $userID
-	 *                   int The users ID.
-	 *                   bool false do all user ID's..
-	 *
-	 * @return void
-	 */
-	protected function clearApiRequests($userID)
-	{
-		if ($userID === false) {
-			$this->pdo->queryExec('DELETE FROM user_requests WHERE timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)');
-		} else {
-			$this->pdo->queryExec(
-				sprintf(
-					'DELETE FROM user_requests WHERE user_id = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)',
-					$userID
-				)
-			);
-		}
 	}
 
 	/**
@@ -1497,12 +1536,14 @@ class Users
 	 * Checks if a user is a specific role.
 	 *
 	 * @notes Uses type of $user to denote identifier. if string: username, if int: userid
-	 * @param int $roleID
+	 *
+	 * @param int        $roleID
 	 * @param string|int $user
+	 *
 	 * @return bool
 	 */
-	public function roleCheck($roleID, $user) {
-
+	public function roleCheck($roleID, $user)
+	{
 		if (is_string($user) && strlen($user) > 0) {
 			$user = $this->pdo->escapeString($user);
 			$querySuffix = "username = $user";
@@ -1519,26 +1560,53 @@ class Users
 			)
 		);
 
-		return ((integer)$result['role'] == (integer) $roleID) ? true : false;
+		return ((int)$result['role'] == (int) $roleID) ? true : false;
 	}
 
 	/**
 	 * Wrapper for roleCheck specifically for Admins.
 	 *
 	 * @param int $userID
+	 *
 	 * @return bool
 	 */
-	public function isAdmin($userID) {
-		return $this->roleCheck(self::ROLE_ADMIN, (integer) $userID);
+	public function isAdmin($userID)
+	{
+		return $this->roleCheck(self::ROLE_ADMIN, (int) $userID);
 	}
 
 	/**
 	 * Wrapper for roleCheck specifically for Moderators.
 	 *
 	 * @param int $userId
+	 *
 	 * @return bool
 	 */
-	public function isModerator($userId) {
-		return $this->roleCheck(self::ROLE_MODERATOR, (integer) $userId);
+	public function isModerator($userId)
+	{
+		return $this->roleCheck(self::ROLE_MODERATOR, (int) $userId);
+	}
+
+	/**
+	 * Delete api requests older than a day.
+	 *
+	 * @param int|bool $userID
+	 *                         int The users ID.
+	 *                         bool false do all user ID's..
+	 *
+	 * @return void
+	 */
+	protected function clearApiRequests($userID)
+	{
+		if ($userID === false) {
+			$this->pdo->queryExec('DELETE FROM user_requests WHERE timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)');
+		} else {
+			$this->pdo->queryExec(
+				sprintf(
+					'DELETE FROM user_requests WHERE user_id = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)',
+					$userID
+				)
+			);
+		}
 	}
 }

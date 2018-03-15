@@ -6,16 +6,20 @@ use nzedb\db\DB;
 /**
  * Class for inserting names/categories etc from PreDB sources into the DB,
  * also for matching names on files / subjects.
- *
  */
 class PreDb
 {
 	// Nuke status.
 	const PRE_NONUKE  = 0; // Pre is not nuked.
+
 	const PRE_UNNUKED = 1; // Pre was un nuked.
+
 	const PRE_NUKED   = 2; // Pre is nuked.
+
 	const PRE_MODNUKE = 3; // Nuke reason was modified.
+
 	const PRE_RENUKED = 4; // Pre was re nuked.
+
 	const PRE_OLDNUKE = 5; // Pre is nuked for being old.
 
 	/**
@@ -72,7 +76,8 @@ class PreDb
 		}
 
 		$res = $this->pdo->queryDirect(
-			sprintf('
+			sprintf(
+				'
 				SELECT p.id AS predb_id, r.id AS releases_id
 				FROM predb p
 				INNER JOIN releases r ON p.title = r.searchname
@@ -93,7 +98,7 @@ class PreDb
 
 					if ($this->echooutput) {
 						$consoleTools->overWritePrimary(
-							'Matching up preDB titles with release searchnames: ' . $consoleTools->percentString( ++$updated, $total)
+							'Matching up preDB titles with release searchnames: ' . $consoleTools->percentString(++$updated, $total)
 						);
 					}
 				}
@@ -130,7 +135,7 @@ class PreDb
 		if ($titleCheck !== false) {
 			return [
 				'title' => $cleanerName,
-				'predb_id' => $titleCheck['id']
+				'predb_id' => $titleCheck['id'],
 			];
 		}
 
@@ -142,7 +147,7 @@ class PreDb
 		if ($fileCheck !== false) {
 			return [
 				'title' => $fileCheck['title'],
-				'predb_id' => $fileCheck['id']
+				'predb_id' => $fileCheck['id'],
 			];
 		}
 
@@ -204,7 +209,7 @@ class PreDb
 			foreach ($res as $row) {
 				if (preg_match('/[a-fA-F0-9]{32,40}/i', $row['name'], $matches)) {
 					$updated = $updated + $namefixer->matchPredbHash($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
-				} else if (preg_match('/[a-fA-F0-9]{32,40}/i', $row['filename'], $matches)) {
+				} elseif (preg_match('/[a-fA-F0-9]{32,40}/i', $row['filename'], $matches)) {
 					$updated = $updated + $namefixer->matchPredbHash($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
 				}
 				if ($show === 2) {
@@ -244,7 +249,8 @@ class PreDb
 
 		$count = $this->getCount($search);
 
-		$sql = sprintf('
+		$sql = sprintf(
+			'
 			SELECT p.*, r.guid
 			FROM predb p
 			LEFT OUTER JOIN releases r ON p.id = r.predb_id %s
@@ -268,7 +274,8 @@ class PreDb
 	 */
 	public function getCount($search = '')
 	{
-		$count = $this->pdo->query("
+		$count = $this->pdo->query(
+			"
 			SELECT COUNT(id) AS cnt
 			FROM predb {$search}",
 			true,
@@ -300,5 +307,4 @@ class PreDb
 	{
 		return $this->pdo->queryOneRow(sprintf('SELECT * FROM predb WHERE id = %d', $preID));
 	}
-
 }

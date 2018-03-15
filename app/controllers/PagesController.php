@@ -1,11 +1,10 @@
 <?php
 /**
- * Lithium: the most rad php framework
+ * Lithium: the most rad php framework.
  *
  * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
-
 namespace app\controllers;
 
 /**
@@ -23,8 +22,8 @@ namespace app\controllers;
  * For example, browsing to `/pages/about/company` will render
  * `/views/pages/about/company.html.php`.
  */
-class PagesController extends \lithium\action\Controller {
-
+class PagesController extends \lithium\action\Controller
+{
 	public function view()
 	{
 		$options = [];

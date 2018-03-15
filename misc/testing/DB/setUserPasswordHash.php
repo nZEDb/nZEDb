@@ -8,8 +8,8 @@
  */
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\Users;
 use nzedb\db\DB;
+use nzedb\Users;
 
 $pdo = new DB();
 
@@ -46,7 +46,8 @@ if ($user !== false) {
 		$hash = $pdo->queryExec(
 			sprintf(
 				'UPDATE users SET password = %s WHERE id = %d',
-				$hash, $user['id']
+				$hash,
+				$user['id']
 			)
 		);
 	}

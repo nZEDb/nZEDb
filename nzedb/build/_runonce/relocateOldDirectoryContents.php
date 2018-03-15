@@ -11,63 +11,63 @@ $status = 0;
 $dirs = [
 	[
 		'old' => 'misc/testing/DB_scripts',
-		'newpath' => 'misc/testing/DB'
+		'newpath' => 'misc/testing/DB',
 	],
 	[
 		'old' => 'misc/testing/Dev_testing/Subject_testing',
-		'newpath' => 'misc/testing/Developers/Subject'
+		'newpath' => 'misc/testing/Developers/Subject',
 	],
 	[
 		'old' => 'misc/testing/Dev_testing',
-		'newpath' => 'misc/testing/Developers'
+		'newpath' => 'misc/testing/Developers',
 	],
 	[
 		'old' => 'misc/testing/PostProc_testing',
-		'newpath' => 'misc/testing/PostProcess'
+		'newpath' => 'misc/testing/PostProcess',
 	],
 	[
 		'old' => 'misc/testing/Regex_testing',
-		'newpath' => 'misc/testing/Regex'
+		'newpath' => 'misc/testing/Regex',
 	],
 	[
 		'old' => 'misc/testing/Release_scripts',
-		'newpath' => 'misc/testing/Release'
+		'newpath' => 'misc/testing/Release',
 	],
 	[
 		'old' => 'misc/update_scripts/nix_scripts/tmux/powerline/themes',
-		'newpath' => 'misc/update/nix/tmux/powerline/themes'
+		'newpath' => 'misc/update/nix/tmux/powerline/themes',
 	],
 	[
 		'old' => 'misc/update_scripts/nix_scripts/tmux/powerline',
-		'newpath' => 'misc/update/nix/tmux/powerline'
+		'newpath' => 'misc/update/nix/tmux/powerline',
 	],
 	[
 		'old' => 'misc/update_scripts/nix_scripts/screen/sequential',
-		'newpath' => 'misc/update/nix/screen/sequential'
+		'newpath' => 'misc/update/nix/screen/sequential',
 	],
 	[
 		'old' => 'misc/update_scripts/nix_scripts/tmux/',
-		'newpath' => 'misc/update/nix/tmux'
+		'newpath' => 'misc/update/nix/tmux',
 	],
 	[
 		'old' => 'misc/update_scripts/nix_scripts',
-		'newpath' => 'misc/update/nix'
+		'newpath' => 'misc/update/nix',
 	],
 	[
 		'old' => 'misc/update_scripts/python_scripts/lib',
-		'newpath' => 'misc/update/python/lib'
+		'newpath' => 'misc/update/python/lib',
 	],
 	[
 		'old' => 'misc/update_scripts/python_scripts',
-		'newpath' => 'misc/update/python'
+		'newpath' => 'misc/update/python',
 	],
 	[
 		'old' => 'misc/update_scripts/win_scripts',
-		'newpath' => 'misc/update/win'
+		'newpath' => 'misc/update/win',
 	],
 	[
 		'old' => 'misc/update_scripts',
-		'newpath' => 'misc/update'
+		'newpath' => 'misc/update',
 	],
 ];
 

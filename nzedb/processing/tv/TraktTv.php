@@ -7,7 +7,7 @@ use nzedb\ReleaseImage;
 use nzedb\utility\Time;
 
 /**
- * Class TraktTv
+ * Class TraktTv.
  *
  * Process information retrieved from the Trakt API.
  */
@@ -16,15 +16,29 @@ class TraktTv extends TV
 	const MATCH_PROBABILITY = 75;
 
 	/**
-	 * Client for Trakt API
+	 * Client for Trakt API.
 	 *
 	 * @var \nzedb\libraries\TraktAPI
 	 */
 	public $client;
 
 	/**
+	 * The URL to grab the TV poster.
+	 *
+	 * @var string
+	 */
+	public $posterUrl;
+
+	/**
+	 * The URL to grab the TV fanart.
+	 *
+	 * @var string
+	 */
+	public $fanartUrl;
+
+	/**
 	 * The Trakt.tv API v2 Client ID (SHA256 hash - 64 characters long string). Used for movie and tv lookups.
-	 * Create one here: https://trakt.tv/oauth/applications/new
+	 * Create one here: https://trakt.tv/oauth/applications/new.
 	 *
 	 * @var array|bool|string
 	 */
@@ -34,26 +48,13 @@ class TraktTv extends TV
 	 * List of headers to send to Trakt.tv when making a request.
 	 *
 	 * @see http://docs.trakt.apiary.io/#introduction/required-headers
+	 *
 	 * @var array
 	 */
 	private $requestHeaders;
 
 	/**
-	 * The URL to grab the TV poster
-	 *
-	 * @var string
-	 */
-	public $posterUrl;
-
-	/**
-	 * The URL to grab the TV fanart
-	 *
-	 * @var string
-	 */
-	public $fanartUrl;
-
-	/**
-	 * The localized (network airing) timezone of the show
+	 * The localized (network airing) timezone of the show.
 	 *
 	 * @var string
 	 */
@@ -74,7 +75,7 @@ class TraktTv extends TV
 			'Content-Type: application/json',
 			'trakt-api-version: 2',
 			'trakt-api-key: ' . $this->clientId,
-			'Content-Length: 0'
+			'Content-Length: 0',
 		];
 		$this->client = new TraktAPI($this->requestHeaders);
 		$this->time = new Time();
@@ -82,12 +83,12 @@ class TraktTv extends TV
 
 	/**
 	 * Main processing director function for scrapers
-	 * Calls work query function and initiates processing
+	 * Calls work query function and initiates processing.
 	 *
-	 * @param string  $groupID
-	 * @param string  $guidChar
-	 * @param         $process
-	 * @param boolean $local
+	 * @param string $groupID
+	 * @param string $guidChar
+	 * @param        $process
+	 * @param bool   $local
 	 */
 	public function processSite($groupID, $guidChar, $process, $local = false)
 	{
@@ -101,14 +102,12 @@ class TraktTv extends TV
 
 		if ($res instanceof \PDOStatement) {
 			foreach ($res as $row) {
-
 				$traktid = false;
 				$this->posterUrl = $this->fanartUrl = $this->localizedTZ = '';
 
 				// Clean the show name for better match probability
 				$release = $this->parseInfo($row['searchname']);
 				if (is_array($release) && $release['name'] != '') {
-
 					if (in_array($release['cleanname'], $this->titleCache)) {
 						if ($this->echooutput) {
 							echo $this->pdo->log->headerOver('Title: ') .
@@ -145,7 +144,6 @@ class TraktTv extends TV
 							$videoId = $this->add($traktShow);
 							$traktid = (int)$traktShow['trakt'];
 						}
-
 					} else {
 						if ($this->echooutput) {
 							echo $this->pdo->log->primaryOver('Found local Trakt match for: ') .
@@ -227,9 +225,9 @@ class TraktTv extends TV
 	/**
 	 * Retrieve info of TV episode from site using its API.
 	 *
-	 * @param integer $siteId
-	 * @param integer $series
-	 * @param integer $episode
+	 * @param int $siteId
+	 * @param int $series
+	 * @param int $episode
 	 *
 	 * @return array|false False on failure, an array of information fields otherwise.
 	 */
@@ -249,9 +247,7 @@ class TraktTv extends TV
 		return $return;
 	}
 
-	/**
-	 *
-	 */
+
 	public function getMovieInfo()
 	{
 		;
@@ -260,8 +256,8 @@ class TraktTv extends TV
 	/**
 	 * Retrieve poster image for TV episode from site using its API.
 	 *
-	 * @param integer $videoId ID from videos table.
-	 * @param integer $siteId  ID that this site uses for the programme.
+	 * @param int $videoId ID from videos table.
+	 * @param int $siteId  ID that this site uses for the programme.
 	 *
 	 * @return null
 	 */
@@ -291,7 +287,7 @@ class TraktTv extends TV
 	 *
 	 * @param string $name Title of programme to look up. Usually a cleaned up version from releases table.
 	 *
-	 * @return array|false    False on failure, an array of information fields otherwise.
+	 * @return array|false False on failure, an array of information fields otherwise.
 	 */
 	public function getShowInfo($name)
 	{
@@ -337,7 +333,7 @@ class TraktTv extends TV
 
 	/**
 	 * Assigns API show response values to a formatted array for insertion
-	 * Returns the formatted array
+	 * Returns the formatted array.
 	 *
 	 * @param $show
 	 *
@@ -347,15 +343,15 @@ class TraktTv extends TV
 	{
 		preg_match('/tt(?P<imdbid>\d{6,7})$/i', $show['ids']['imdb'], $imdb);
 		$this->posterUrl =
-			(isset($show['images']['poster']['thumb'])
-				? $show['images']['poster']['thumb']
-				: ''
+			(
+				$show['images']['poster']['thumb']
+				?? ''
 			)
 		;
 		$this->fanartUrl =
-				(isset($show['images']['fanart']['thumb'])
-						? $show['images']['fanart']['thumb']
-						: ''
+				(
+					$show['images']['fanart']['thumb']
+						?? ''
 				)
 		;
 
@@ -369,20 +365,20 @@ class TraktTv extends TV
 			'publisher' => (string)$show['network'],
 			'country'   => (string)strtoupper($show['country']),
 			'source'    => (int)parent::SOURCE_TRAKT,
-			'imdb'      => (int)(isset($imdb['imdbid']) ? $imdb['imdbid'] : 0),
-			'tvdb'      => (int)(isset($show['ids']['tvdb']) ? $show['ids']['tvdb'] : 0),
+			'imdb'      => (int)($imdb['imdbid'] ?? 0),
+			'tvdb'      => (int)($show['ids']['tvdb'] ?? 0),
 			'trakt'     => (int)$show['ids']['trakt'],
-			'tvrage'    => (int)(isset($show['ids']['tvrage']) ? $show['ids']['tvrage'] : 0),
+			'tvrage'    => (int)($show['ids']['tvrage'] ?? 0),
 			'tvmaze'    => 0,
-			'tmdb'      => (int)(isset($show['ids']['tmdb']) ? $show['ids']['tmdb'] : 0),
+			'tmdb'      => (int)($show['ids']['tmdb'] ?? 0),
 			'aliases'   => (isset($show['aliases']) && !empty($show['aliases']) ? (array)$show['aliases'] : ''),
-			'localzone' => (string)$this->localizedTZ
+			'localzone' => (string)$this->localizedTZ,
 		];
 	}
 
 	/**
 	 * Assigns API episode response values to a formatted array for insertion
-	 * Returns the formatted array
+	 * Returns the formatted array.
 	 *
 	 * @param $episode
 	 *
@@ -396,7 +392,7 @@ class TraktTv extends TV
 			'episode'     => (int)$episode['number'],
 			'se_complete' => (string)'S' . sprintf('%02d', $episode['season']) . 'E' . sprintf('%02d', $episode['number']),
 			'firstaired'  => (string)$this->time->localizeAirdate($episode['first_aired'], $this->localizedTZ),
-			'summary'     => (string)$episode['overview']
+			'summary'     => (string)$episode['overview'],
 		];
 	}
 }

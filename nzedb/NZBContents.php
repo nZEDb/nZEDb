@@ -71,14 +71,14 @@ class NZBContents
 	 * Construct.
 	 *
 	 * @param array $options
-	 *     array(
-	 *         'Echo'        => bool        ; To echo to CLI or not.
-	 *         'NNTP'        => NNTP        ; Class NNTP.
-	 *         'Nfo'         => Nfo         ; Class Nfo.
-	 *         'NZB'         => NZB         ; Class NZB.
-	 *         'Settings'    => DB          ; Class nzedb\db\Settings.
-	 *         'PostProcess' => PostProcess ; Class PostProcess.
-	 *     )
+	 *                       array(
+	 *                       'Echo'        => bool        ; To echo to CLI or not.
+	 *                       'NNTP'        => NNTP        ; Class NNTP.
+	 *                       'Nfo'         => Nfo         ; Class Nfo.
+	 *                       'NZB'         => NZB         ; Class NZB.
+	 *                       'Settings'    => DB          ; Class nzedb\db\Settings.
+	 *                       'PostProcess' => PostProcess ; Class PostProcess.
+	 *                       )
 	 *
 	 * @access public
 	 */
@@ -140,7 +140,7 @@ class NZBContents
 			}
 			if ($this->nfo->isNFO($fetchedBinary, $guid) === true) {
 				if ($this->echooutput) {
-					echo ($messageID['hidden'] === false ? '+' : '*');
+					echo($messageID['hidden'] === false ? '+' : '*');
 				}
 			} else {
 				if ($this->echooutput) {
@@ -160,7 +160,7 @@ class NZBContents
 	}
 
 	/**
-	 * Attempts to get the releasename from a par2 file
+	 * Attempts to get the releasename from a par2 file.
 	 *
 	 * @param string $guid
 	 * @param int    $relID
@@ -231,10 +231,12 @@ class NZBContents
 
 				if ($foundNFO === false && $hiddenNFO === false) {
 					if (preg_match('/\(1\/1\)$/i', $subject) &&
-						!preg_match('/\.(apk|bat|bmp|cbr|cbz|cfg|css|csv|cue|db|dll|doc|epub|exe|gif|htm|ico|idx|ini' .
+						!preg_match(
+							'/\.(apk|bat|bmp|cbr|cbz|cfg|css|csv|cue|db|dll|doc|epub|exe|gif|htm|ico|idx|ini' .
 							'|jpg|lit|log|m3u|mid|mobi|mp3|nib|nzb|odt|opf|otf|par|par2|pdf|psd|pps|png|ppt|r\d{2,4}' .
 							'|rar|sfv|srr|sub|srt|sql|rom|rtf|tif|torrent|ttf|txt|vb|vol\d+\+\d+|wps|xml|zip)/i',
-							$subject)) {
+							$subject
+						)) {
 						$hiddenID = (string)$nzbcontents->segments->segment;
 						$hiddenNFO = true;
 					}

@@ -32,17 +32,16 @@ switch ($action) {
 			$page->title = 'MultiGroup Poster Edit';
 			// Note: explicitly setting default stuff below, which could be shortened to:
 			// $entry = MultigroupPosters::find($_GET['id']);
-			$poster = MultigroupPosters::find('first',
+			$poster = MultigroupPosters::find(
+				'first',
 				[
-					'conditions' =>
-						[
-							'id' => $_GET['id']
+					'conditions' => [
+							'id' => $_GET['id'],
 						],
-					'fields' =>
-						[
+					'fields' => [
 							'id',
-							'poster'
-						]
+							'poster',
+						],
 				]
 			);
 		} else {

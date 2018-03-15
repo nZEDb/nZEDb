@@ -1,17 +1,16 @@
 <?php
 /**
- * Lithium: the most rad php framework
+ * Lithium: the most rad php framework.
  *
  * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
-
-use lithium\core\Libraries;
 use lithium\core\Environment;
+use lithium\core\Libraries;
 use lithium\data\Connections;
 
 $this->title('Home');
-$this->html->style('debug', array('inline' => false));
+$this->html->style('debug', ['inline' => false]);
 
 $self = $this;
 
@@ -47,7 +46,7 @@ $compiled = function($flag) {
 	return strpos(ob_get_clean(), $flag) !== false;
 };
 
-$checks = array(
+$checks = [
 	'resourcesWritable' => function() use ($notify) {
 		if (is_writable(/** @scrutinizer ignore-type */ $path = Libraries::get(true, 'resources'))) {
 			return $notify('success', 'Resources directory is writable');
@@ -151,37 +150,50 @@ $checks = array(
 		);
 	},
 	'dbSupport' => function() use ($support) {
-		$paths = array('data.source', 'adapter.data.source.database', 'adapter.data.source.http');
-		$list = array();
+		$paths = ['data.source', 'adapter.data.source.database', 'adapter.data.source.http'];
+		$list = [];
 
 		foreach ($paths as $path) {
-			$list = array_merge($list,
-				/** @scrutinizer ignore-type */ Libraries::locate($path, null, array('recursive' => false))
-            );
+			$list = array_merge(
+				$list,
+/** @scrutinizer ignore-type */ Libraries::locate($path, null, ['recursive' => false])
+			);
 		}
-		$list = array_filter($list, function($class) {
-		        return method_exists($class, 'enabled');
-		    }
+		$list = array_filter(
+			$list,
+			function($class) {
+				return method_exists($class, 'enabled');
+			}
 		);
-		$map = array_combine($list, array_map(function($c) {
-		        return $c::enabled();
-		    },
-            $list)
-        );
+		$map = array_combine(
+			$list,
+			array_map(
+			function($c) {
+				return $c::enabled();
+			},
+			$list
+		)
+		);
 
 		return $support('Database support', $map);
 	},
 	'cacheSupport' => function() use ($support) {
-		$list = Libraries::locate('adapter.storage.cache', null, array('recursive' => false));
-		$list = array_filter($list, function($class) {
-		        return method_exists($class, 'enabled');
-		    }
+		$list = Libraries::locate('adapter.storage.cache', null, ['recursive' => false]);
+		$list = array_filter(
+			$list,
+			function($class) {
+				return method_exists($class, 'enabled');
+			}
 		);
-		$map = array_combine($list, array_map(function($c) {
+		$map = array_combine(
+			$list,
+			array_map(
+			function($c) {
 				return $c::enabled();
 			},
-            $list)
-        );
+			$list
+		)
+		);
 
 		return $support('Cache support', $map);
 	},
@@ -217,23 +229,24 @@ $checks = array(
 				</ul>"
 			);
 		}
-		$tests = $self->html->link('run all tests', array(
+		$tests = $self->html->link('run all tests', [
 			'controller' => 'lithium\test\Controller',
-			'args' => 'all'
-		));
-		$dashboard = $self->html->link('test dashboard', array(
-			'controller' => 'lithium\test\Controller'
-		));
+			'args' => 'all',
+		]);
+		$dashboard = $self->html->link('test dashboard', [
+			'controller' => 'lithium\test\Controller',
+		]);
 		$ticket = $self->html->link(
-			'file a ticket', 'https://github.com/UnionOfRAD/lithium/issues'
+			'file a ticket',
+			'https://github.com/UnionOfRAD/lithium/issues'
 		);
 
 		return $support(
 			'Run the tests',
 			"Check the {$dashboard} or {$tests} now to ensure Lithium is working as expected."
 		);
-	}
-);
+	},
+];
 
 ?>
 <div class="jumbotron">
@@ -253,7 +266,8 @@ $checks = array(
 <h3>Quickstart</h3>
 <p>
 	<?php echo $this->html->link(
-		'Quickstart', 'http://li3.me/docs/manual/quickstart'
+		'Quickstart',
+	'http://li3.me/docs/manual/quickstart'
 	); ?> is a guide for PHP users who are looking to start building a simple application.
 </p>
 

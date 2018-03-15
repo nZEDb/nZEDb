@@ -3,12 +3,14 @@ namespace nzedb;
 
 /**
  * Attempts to find a PRE name for a release using a request ID from our local pre database,
- * or internet request id database using a Standalone -- more intensive methods
+ * or internet request id database using a Standalone -- more intensive methods.
  *
  * Class RequestIDLocal
  */
 class RequestIDLocal extends RequestID
 {
+	private $groupIDCache = [];
+
 	/**
 	 * @param array $options Class instances / Echo to cli?
 	 */
@@ -69,7 +71,7 @@ class RequestIDLocal extends RequestID
 	{
 		$renamed = $checked = 0;
 		if ($this->_releases instanceof \PDOStatement) {
-			/* @var $releases \PDOStatement[] */
+			// @var $releases \PDOStatement[]
 			$releases = &$this->_releases;
 			foreach ($releases as $this->_release) {
 				$this->_requestID = $this->_siftReqId();
@@ -90,7 +92,6 @@ class RequestIDLocal extends RequestID
 						$this->consoleTools->percentString(++$checked, $this->_totalReleases)
 					);
 				}
-
 			}
 		}
 
@@ -141,7 +142,7 @@ class RequestIDLocal extends RequestID
 
 	/**
 	 * Sub function that attempts to match RequestID Releases
-	 * by preg_matching the title from the usenet name
+	 * by preg_matching the title from the usenet name.
 	 *
 	 * @return array|bool
 	 */
@@ -192,8 +193,6 @@ class RequestIDLocal extends RequestID
 		return false;
 	}
 
-	private $groupIDCache = [];
-
 	/**
 	 * Attempts to remap the release groups_id by extracting the new group name from the release usenet name.
 	 *
@@ -238,7 +237,8 @@ class RequestIDLocal extends RequestID
 			$groupID = $this->groups->getIDByName($groupName);
 		}
 		$check = $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT id, title FROM predb WHERE requestid = %d AND groups_id = %d',
 				$this->_requestID,
 				($groupID === '' ? 0 : $groupID)
@@ -259,7 +259,8 @@ class RequestIDLocal extends RequestID
 		if ($determinedCat == $this->_release['categories_id']) {
 			$newTitle = $this->pdo->escapeString($this->_newTitle['title']);
 			$this->pdo->queryExec(
-				sprintf('
+				sprintf(
+					'
 					UPDATE releases
 					SET predb_id = %d, reqidstatus = %d, isrenamed = 1, iscategorized = 1, searchname = %s
 					WHERE id = %d',
@@ -273,7 +274,8 @@ class RequestIDLocal extends RequestID
 		} else {
 			$newTitle = $this->pdo->escapeString($this->_newTitle['title']);
 			$this->pdo->queryExec(
-				sprintf('
+				sprintf(
+					'
 					UPDATE releases SET
 						videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL, consoleinfo_id = NULL,
 						bookinfo_id = NULL, anidbid = NULL, predb_id = %d, reqidstatus = %d, isrenamed = 1,
@@ -298,7 +300,7 @@ class RequestIDLocal extends RequestID
 					'old_category' => $this->category->getNameByID($this->_release['categories_id']),
 					'group'        => $this->_release['groupname'],
 					'release_id'   => $this->_release['id'],
-					'method'       => 'RequestIDLocal'
+					'method'       => 'RequestIDLocal',
 				]
 			);
 		}

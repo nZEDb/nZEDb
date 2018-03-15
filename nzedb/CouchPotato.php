@@ -15,33 +15,36 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    DariusIII
  * @copyright 2016 nZEDb
  */
-
 namespace nzedb;
 
 use nzedb\utility\Misc;
 
 /**
- * Class CouchPotato
+ * Class CouchPotato.
  */
 class CouchPotato
 {
 	/**
 	 * URL to the CP server.
+	 *
 	 * @var string
 	 */
 	public $cpurl = '';
 
 	/**
 	 * The CP key.
+	 *
 	 * @var string
 	 */
 	public $cpapi = '';
 
 	/**
-	 * ImdbID
+	 * ImdbID.
+	 *
 	 * @var string
 	 */
 	public $imdbid = '';
@@ -61,13 +64,15 @@ class CouchPotato
 	 * Send a movie to CouchPotato.
 	 *
 	 * @param string $id
+	 *
 	 * @return bool|mixed
 	 */
 	public function sendToCouchPotato($id)
 	{
 		$this->imdbid = $id;
 
-		return Misc::getUrl([
+		return Misc::getUrl(
+			[
 				'url' => $this->cpurl . '/api/' . $this->cpapi . '/movie.add/?identifier=tt' . $this->imdbid,
 				'verifypeer' => false,
 			]

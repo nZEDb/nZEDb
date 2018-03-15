@@ -1,8 +1,11 @@
 <?php
 /**
- * Class to access Amazons Product Advertising API
+ * Class to access Amazons Product Advertising API.
+ *
  * @author Sameer Borate
+ *
  * @link http://www.codediesel.com
+ *
  * @version 1.0
  * All requests are not implemented here. You can easily
  * implement the others from the ones given below.
@@ -29,7 +32,6 @@
 
 	http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/BasicAuthProcess.html
 */
-
 namespace libs;
 
 use nzedb\utility\Misc;
@@ -37,7 +39,7 @@ use nzedb\utility\Misc;
 class AmazonProductAPI
 {
 	/**
-	 * Constants for product types
+	 * Constants for product types.
 	 *
 	 * @note More categories can be found here:
 	 *       http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/APPNDX_SearchIndexValues.html
@@ -45,85 +47,30 @@ class AmazonProductAPI
 	 * @var string
 	 */
 	const BOOKS      = 'Books';
+
 	const DIGITALMUS = 'DigitalMusic';
+
 	const DVD        = 'DVD';
+
 	// This can be DigitalDownloads as well.
 	const GAMES       = 'VideoGames';
+
 	const MP3         = 'MP3Downloads';
+
 	const MUSICTRACKS = 'MusicTracks';
+
 	const MUSIC       = 'Music';
 
 	/**
-	 * Your Amazon Access Key Id
-	 * @access private
-	 * @var string
-	 */
-	private $public_key = '';
-
-	/**
-	 * Your Amazon Secret Access Key
-	 * @access private
-	 * @var string
-	 */
-	private $private_key = '';
-
-	 /**
-	 * Your Amazon Secret Associate Tag
-	 * @access private
-	 * @var string
-	 */
-	private $associate_tag = '';
-
-	/**
-	 * The current search string.
-	 * @var string
-	 */
-	private $searchString;
-
-	/**
-	 * The current search category.
-	 * @var string
-	 */
-	private $category;
-
-	/**
-	 * The current search type.
-	 * @var string
-	 */
-	private $searchType;
-
-	/**
-	 * The current search node.
-	 * @var string
-	 */
-	private $searchNode;
-
-	/**
-	 * How many times have we tried to query amazon after being throttled
-	 * @var int
-	 */
-	private $tries;
-
-	/**
-	 * How many seconds must will we sleep currently while throttled.
-	 * @var int
-	 */
-	private $currentSleepTime = 0;
-
-	/**
-	 * Are we using this method currently?
-	 * @var bool
-	 */
-	private $searchProducts = false;
-
-	/**
 	 * How many times should we try to query after being throttled.
+	 *
 	 * @var int
 	 */
 	const maxTries = 3;
 
 	/**
 	 * How many seconds should we wait after being throttled.
+	 *
 	 * @var int
 	 */
 	const sleepTime = 3;
@@ -134,10 +81,86 @@ class AmazonProductAPI
 	const sleepIncrease = 1;
 
 	/**
+	 * Your Amazon Access Key Id.
+	 *
+	 * @access private
+	 *
+	 * @var string
+	 */
+	private $public_key = '';
+
+	/**
+	 * Your Amazon Secret Access Key.
+	 *
+	 * @access private
+	 *
+	 * @var string
+	 */
+	private $private_key = '';
+
+	/**
+	 * Your Amazon Secret Associate Tag.
+	 *
+	 * @access private
+	 *
+	 * @var string
+	 */
+	private $associate_tag = '';
+
+	/**
+	 * The current search string.
+	 *
+	 * @var string
+	 */
+	private $searchString;
+
+	/**
+	 * The current search category.
+	 *
+	 * @var string
+	 */
+	private $category;
+
+	/**
+	 * The current search type.
+	 *
+	 * @var string
+	 */
+	private $searchType;
+
+	/**
+	 * The current search node.
+	 *
+	 * @var string
+	 */
+	private $searchNode;
+
+	/**
+	 * How many times have we tried to query amazon after being throttled.
+	 *
+	 * @var int
+	 */
+	private $tries;
+
+	/**
+	 * How many seconds must will we sleep currently while throttled.
+	 *
+	 * @var int
+	 */
+	private $currentSleepTime = 0;
+
+	/**
+	 * Are we using this method currently?
+	 *
+	 * @var bool
+	 */
+	private $searchProducts = false;
+
+	/**
 	 * Construct.
 	 *
-	 * @param string $pubk Amazon public key.
-	 * @param string $privk Amazon private key.
+	 * @param string $pubk         Amazon public key.
+	 * @param string $privk        Amazon private key.
 	 * @param string $associatetag Amazon associate tag.
 	 */
 	public function __construct($pubk, $privk, $associatetag)
@@ -150,10 +173,10 @@ class AmazonProductAPI
 	}
 
 	/**
-	 * Return details of products searched by various types
+	 * Return details of products searched by various types.
 	 *
-	 * @param string $search search term
-	 * @param string $category search category
+	 * @param string $search     search term
+	 * @param string $category   search category
 	 * @param string $searchType type of search
 	 * @param string $searchNode
 	 *
@@ -168,102 +191,101 @@ class AmazonProductAPI
 		$this->searchNode = $searchNode;
 		$this->searchProducts = true;
 
-		switch($searchType)
-		{
-			case 'UPC' :
+		switch ($searchType) {
+			case 'UPC':
 				$parameters =
-					array(
+					[
 						'Operation'     => 'ItemLookup',
 						'ItemId'        => $search,
 						'SearchIndex'   => $category,
 						'IdType'        => 'UPC',
-						'ResponseGroup' => 'Medium');
+						'ResponseGroup' => 'Medium', ];
 				break;
 
-			case 'ISBN' :
+			case 'ISBN':
 				$parameters =
-					array(
+					[
 						'Operation' => 'ItemLookup',
 						'ItemId'        => $search,
 						'SearchIndex'   => self::BOOKS,
 						'IdType'        => 'ISBN',
-						'ResponseGroup' => 'Medium'
-					);
+						'ResponseGroup' => 'Medium',
+					];
 				break;
 
-			case 'TITLE' :
-				switch($category)
-				{
-					case 'MUSICTRACKS' :
+			case 'TITLE':
+				switch ($category) {
+					case 'MUSICTRACKS':
 						$parameters =
-							array(
+							[
 								'Operation'     => 'ItemSearch',
 								//"Title"       => $search,
 								'Keywords'      => $search,
 								'Sort'          => 'titlerank',
 								'SearchIndex'   => $category,
-								'ResponseGroup' => 'Large'
-							);
+								'ResponseGroup' => 'Large',
+							];
 						break;
-					default :
+					default:
 						$parameters =
-							array(
+							[
 								'Operation'     => 'ItemSearch',
 								//"Title"       => $search,
 								'Keywords'      => $search,
 								'Sort'          => 'relevancerank',
 								'SearchIndex'   => $category,
-								'ResponseGroup' => 'Large'
-							);
+								'ResponseGroup' => 'Large',
+							];
 						break;
 				}
 				break;
 
-			case 'TITLE2' :
+			case 'TITLE2':
 				$parameters =
-					array(
+					[
 						'Operation'      => 'ItemSearch',
 						'Title'          => $search,
 						//"Keywords"     => $search,
 						'Sort'           => 'relevancerank',
 						'SearchIndex'    => $category,
-						'ResponseGroup'  => 'Large'
-					);
+						'ResponseGroup'  => 'Large',
+					];
 				break;
 
 			// Same as TITLE but add BrowseNodeID param.
-			case 'NODE' :
+			case 'NODE':
 				$parameters =
-					array(
+					[
 						'Operation'     => 'ItemSearch',
 						//"Title"       => $search,
 						'Keywords'      => $search,
 						'SearchIndex'   => $category,
 						'BrowseNode'    => $searchNode,
-						'ResponseGroup' => 'Large'
-					);
+						'ResponseGroup' => 'Large',
+					];
 				break;
 		}
 		return $this->verifyXmlResponse($this->queryAmazon($parameters));
 	}
 
 	/**
-	 * Return details of a product searched by UPC
+	 * Return details of a product searched by UPC.
 	 *
-	 * @param int $upc_code UPC code of the product to search
+	 * @param int    $upc_code     UPC code of the product to search
 	 * @param string $product_type type of the product
+	 *
 	 * @return mixed simpleXML object
 	 */
 	public function getItemByUpc($upc_code, $product_type)
 	{
 		$parameters =
-			array(
+			[
 				'Operation'     => 'ItemLookup',
 				'ItemId'        => $upc_code,
 				'SearchIndex'   => $product_type,
 				'IdType'        => 'UPC',
-				'ResponseGroup' => 'Medium'
-			);
+				'ResponseGroup' => 'Medium',
+			];
 
 		$xml_response = $this->queryAmazon($parameters);
 		return $this->verifyXmlResponse($xml_response);
@@ -273,38 +295,39 @@ class AmazonProductAPI
 	 * Return details of a product searched by ASIN.
 	 *
 	 * @param int    $asin_code ASIN code of the product to search
-	 * @param string $region Domain name extension (com, ca, etc).
+	 * @param string $region    Domain name extension (com, ca, etc).
 	 *
 	 * @return bool|mixed
 	 */
 	public function getItemByAsin($asin_code, $region = 'com')
 	{
 		$parameters =
-			array(
+			[
 				'Operation'      => 'ItemLookup',
 				'ItemId'         => $asin_code,
-				'ResponseGroup'  => 'Medium'
-			);
+				'ResponseGroup'  => 'Medium',
+			];
 
 		$xml_response = $this->queryAmazon($parameters, $region);
 		return $this->verifyXmlResponse($xml_response);
 	}
 
 	/**
-	 * Return details of a product searched by keyword
+	 * Return details of a product searched by keyword.
 	 *
-	 * @param string $keyword keyword to search
+	 * @param string $keyword      keyword to search
 	 * @param string $product_type type of the product
+	 *
 	 * @return mixed simpleXML object
 	 */
 	public function getItemByKeyword($keyword, $product_type)
 	{
 		$parameters =
-			array(
+			[
 				'Operation'    => 'ItemSearch',
 				'Keywords'     => $keyword,
-				'SearchIndex'  => $product_type
-			);
+				'SearchIndex'  => $product_type,
+			];
 
 		$xml_response = $this->queryAmazon($parameters);
 		return $this->verifyXmlResponse($xml_response);
@@ -312,6 +335,7 @@ class AmazonProductAPI
 
 	/**
 	 * Reset some class object variables.
+	 *
 	 * @void
 	 */
 	private function resetVars()
@@ -322,12 +346,13 @@ class AmazonProductAPI
 	}
 
 	/**
-	 * Check if the xml received from Amazon is valid
+	 * Check if the xml received from Amazon is valid.
 	 *
 	 * @param mixed $response xml response to check
 	 *
-	 * @return \SimpleXMLElement|false False if the xml is invalid, mixed if the xml response if it is valid
 	 * @throws \Exception if we could not connect to Amazon
+	 *
+	 * @return \SimpleXMLElement|false False if the xml is invalid, mixed if the xml response if it is valid
 	 */
 	private function verifyXmlResponse($response)
 	{
@@ -352,10 +377,10 @@ class AmazonProductAPI
 			echo $response->Error->Message . "\n";
 			$this->resetVars();
 			throw new \Exception($response->Error->Message);
-		} else if ($response === False) {
+		} elseif ($response === false) {
 			$this->resetVars();
 			throw new \Exception('Could not connect to Amazon.');
-		} else if ($response == 'missingkey') {
+		} elseif ($response == 'missingkey') {
 			$this->resetVars();
 			throw new \Exception('Missing Amazon API key or associate tag.');
 		} else {
@@ -370,10 +395,10 @@ class AmazonProductAPI
 	}
 
 	/**
-	 * Query Amazon with the issued parameters
+	 * Query Amazon with the issued parameters.
 	 *
 	 * @param array  $parameters parameters to query around
-	 * @param string $region Domain name extension (com, ca, etc).
+	 * @param string $region     Domain name extension (com, ca, etc).
 	 *
 	 * @return bool|SimpleXMLElement|string xml query response
 	 */
@@ -393,12 +418,10 @@ class AmazonProductAPI
 	 */
 	private function aws_signed_request($region, $params, $public_key, $private_key, $associate_tag = '')
 	{
-
-		if ($public_key !== '' && $private_key !== '' && $associate_tag !== '')
-		{
+		if ($public_key !== '' && $private_key !== '' && $associate_tag !== '') {
 			$method = 'GET';
 			// Must be in small case.
-			$host = 'ecs.amazonaws.'.$region;
+			$host = 'ecs.amazonaws.' . $region;
 			$uri = '/onca/xml';
 
 			$params['Service']        = 'AWSECommerceService';
@@ -414,43 +437,42 @@ class AmazonProductAPI
 			*/
 			ksort($params);
 
-			$canonicalized_query = array();
+			$canonicalized_query = [];
 
-			foreach ($params as $param=>$value)
-			{
+			foreach ($params as $param=>$value) {
 				$param = str_replace('%7E', '~', rawurlencode($param));
 				$value = str_replace('%7E', '~', rawurlencode($value));
-				$canonicalized_query[] = $param.'='.$value;
+				$canonicalized_query[] = $param . '=' . $value;
 			}
 
 			$canonicalized_query = implode('&', $canonicalized_query);
 
-			$string_to_sign = $method."\n".$host."\n".$uri."\n".$canonicalized_query;
+			$string_to_sign = $method . "\n" . $host . "\n" . $uri . "\n" . $canonicalized_query;
 
 			/* Calculate the signature using HMAC with SHA256 and base64-encoding.
 			* The 'hash_hmac' function is only available from PHP 5 >= 5.1.2.
 			*/
-			$signature = base64_encode(hash_hmac('sha256', $string_to_sign, $private_key, True));
+			$signature = base64_encode(hash_hmac('sha256', $string_to_sign, $private_key, true));
 
 			// Encode the signature for the request.
 			$signature = str_replace('%7E', '~', rawurlencode($signature));
 
 			// Create request.
-			$request = 'http://'.$host.$uri.'?'.$canonicalized_query.'&Signature='.$signature;
+			$request = 'http://' . $host . $uri . '?' . $canonicalized_query . '&Signature=' . $signature;
 
 			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL,$request);
+			curl_setopt($ch, CURLOPT_URL, $request);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 			curl_setopt_array($ch, Misc::curlSslContextOptions());
 
 			$xml_response = curl_exec($ch);
-			if ($xml_response === False) {
-				return False;
+			if ($xml_response === false) {
+				return false;
 			} else {
 				// Parse XML.
 				$parsed_xml = @simplexml_load_string($xml_response);
-				return ($parsed_xml === False) ? False : $parsed_xml;
+				return ($parsed_xml === false) ? false : $parsed_xml;
 			}
 		} else {
 			return 'missingkey';

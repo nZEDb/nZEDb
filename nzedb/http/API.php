@@ -15,23 +15,24 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    ruhllatio
  * @copyright 2016 nZEDb
  */
 namespace nzedb\http;
 
 use nzedb\Category;
-use nzedb\Groups;
 use nzedb\db\DB;
+use nzedb\Groups;
 use nzedb\utility\Misc;
 
 /**
- * Class API
+ * Class API.
  *
  * @package nzedb
  */
-class API extends Capabilities {
-
+class API extends Capabilities
+{
 	/** Settings class
 	 * @var \nzedb\db\DB
 	 */
@@ -59,7 +60,8 @@ class API extends Capabilities {
 	}
 
 	/**
-	 * Add language from media info XML to release search names (Used by API)
+	 * Add language from media info XML to release search names (Used by API).
+	 *
 	 * @param array $releases
 	 */
 	public function addLanguage(&$releases)
@@ -67,7 +69,8 @@ class API extends Capabilities {
 		if (! empty($releases) && \count($releases)) {
 			foreach ($releases as $key => $release) {
 				if (isset($release['id'])) {
-					$language = $this->pdo->queryOneRow("
+					$language = $this->pdo->queryOneRow(
+						"
 						SELECT audiolanguage
 						FROM audio_data
 						WHERE releases_id = {$release['id']}"
@@ -102,6 +105,7 @@ class API extends Capabilities {
 
 	/**
 	 * Verify cat parameter.
+	 *
 	 * @return array
 	 */
 	public function categoryID()
@@ -121,6 +125,7 @@ class API extends Capabilities {
 
 	/**
 	 * Verify groupName parameter.
+	 *
 	 * @return mixed
 	 */
 	public function group()
@@ -128,7 +133,7 @@ class API extends Capabilities {
 		$groupName = -1;
 		if (isset($this->getRequest['group'])) {
 			$group = (new Groups())->isValidGroup($this->getRequest['group']);
-			if ($group !== false){
+			if ($group !== false) {
 				$groupName = $group;
 			}
 		}
@@ -137,6 +142,7 @@ class API extends Capabilities {
 
 	/**
 	 * Verify limit parameter.
+	 *
 	 * @return int
 	 */
 	public function limit()
@@ -150,6 +156,7 @@ class API extends Capabilities {
 
 	/**
 	 * Verify offset parameter.
+	 *
 	 * @return int
 	 */
 	public function offset()
@@ -163,6 +170,7 @@ class API extends Capabilities {
 
 	/**
 	 * Check if a parameter is empty.
+	 *
 	 * @param string $parameter
 	 */
 	public function verifyEmptyParameter($parameter)
@@ -173,7 +181,7 @@ class API extends Capabilities {
 	}
 
 	/**
-	 * Inject the coverurl
+	 * Inject the coverurl.
 	 *
 	 * @param          $releases
 	 * @param callable $getCoverURL

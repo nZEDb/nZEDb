@@ -16,7 +16,7 @@ class Forum
 	public function __construct(array $options = [])
 	{
 		$defaults = [
-			'Settings' => null
+			'Settings' => null,
 		];
 		$options += $defaults;
 
@@ -39,10 +39,17 @@ class Forum
 		}
 
 		return $this->pdo->queryInsert(
-			sprintf('
+			sprintf(
+				'
 				INSERT INTO forum_posts (forumid, parentid, user_id, subject, message, locked, sticky, replies, createddate, updateddate)
 				VALUES (1, %d, %d, %s, %s, %d, %d, %d, NOW(), NOW())',
-				$parentid, $userid, $this->pdo->escapeString($subject), $this->pdo->escapeString($message), $locked, $sticky, $replies
+				$parentid,
+				$userid,
+				$this->pdo->escapeString($subject),
+				$this->pdo->escapeString($message),
+				$locked,
+				$sticky,
+				$replies
 			)
 		);
 	}
@@ -60,7 +67,8 @@ class Forum
 	public function getPosts($parent)
 	{
 		return $this->pdo->query(
-			sprintf('
+			sprintf(
+				'
 				SELECT forum_posts.*, users.username
 				FROM forum_posts
 				LEFT OUTER JOIN users ON users.id = forum_posts.user_id
@@ -87,7 +95,8 @@ class Forum
 	public function getBrowseRange($start, $num)
 	{
 		return $this->pdo->query(
-			sprintf('
+			sprintf(
+				'
 				SELECT forum_posts.*, users.username
 				FROM forum_posts
 				LEFT OUTER JOIN users ON users.id = forum_posts.user_id
@@ -129,7 +138,8 @@ class Forum
 	public function getForUserRange($uid, $start, $num)
 	{
 		return $this->pdo->query(
-			sprintf('
+			sprintf(
+				'
 				SELECT forum_posts.*, users.username
 				FROM forum_posts
 				LEFT OUTER JOIN users ON users.id = forum_posts.user_id
@@ -142,7 +152,7 @@ class Forum
 	}
 
 	/**
-	 * Edit forum post for user
+	 * Edit forum post for user.
 	 *
 	 * @param $id
 	 * @param $message
@@ -152,7 +162,9 @@ class Forum
 	{
 		$post = $this->getPost($id);
 		if ($post) {
-			$this->pdo->queryExec(sprintf('
+			$this->pdo->queryExec(
+				sprintf(
+				'
 									UPDATE forum_posts
 									SET message = %s
 									WHERE id = %d

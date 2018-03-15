@@ -16,7 +16,7 @@ echo $cli->header("This script will show all Backfill Groups.\n"
 $limit = '';
 if (isset($argv[2]) && is_numeric($argv[2])) {
 	$limit = 'limit ' . $argv[2];
-} else if (isset($argv[1]) && is_numeric($argv[1])) {
+} elseif (isset($argv[1]) && is_numeric($argv[1])) {
 	$limit = 'limit ' . $argv[1];
 }
 
@@ -43,7 +43,7 @@ if (isset($argv[1]) && ($argv[1] === 'desc' || $argv[1] === 'DESC')) {
 			printf($mask, $rel['name'], $rel['backfill_target'] . '(' . $rel['days'] . ')', $rel['first_record_postdate'], $rel['last_updated'], $headers);
 		}
 	}
-} else if (isset($argv[1]) && ($argv[1] === 'asc' || $argv[1] === 'ASC')) {
+} elseif (isset($argv[1]) && ($argv[1] === 'asc' || $argv[1] === 'ASC')) {
 	if ($rels = $pdo->query(sprintf('SELECT name, backfill_target, first_record_postdate, last_updated, last_updated, '
 			. 'CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS headers_downloaded, '
 			. 'TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days FROM groups '

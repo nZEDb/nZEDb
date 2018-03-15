@@ -15,6 +15,7 @@ class ColorCLI
 		'Yellow' => '33',
 		'Gray' => '37',
 	];
+
 	// Feel free to add any other colors that you like here.
 	public static $colors256 = [
 		'Gray' => '008', 'Red' => '009',
@@ -142,12 +143,14 @@ class ColorCLI
 		'Grey28' => '252', 'Grey29' => '253',
 		'Grey30' => '254', 'Grey31' => '255',
 	];
+
 	public static $background_colors = [
 		'Black' => '40', 'Red' => '41',
 		'Green' => '42', 'Yellow' => '43',
 		'Blue' => '44', 'Purple' => '45',
 		'Cyan' => '46', 'White' => '47',
 	];
+
 	public static $options = [
 		'Norm' => '0', 'Bold' => '1',
 		'Dim' => '2', 'Uline' => '4',
@@ -273,7 +276,7 @@ class ColorCLI
 	 * Echo message to CLI.
 	 *
 	 * @param string $message The message.
-	 * @param bool $nl Add a new line?
+	 * @param bool   $nl      Add a new line?
 	 * @void
 	 */
 	public static function doEcho($message, $nl = false)

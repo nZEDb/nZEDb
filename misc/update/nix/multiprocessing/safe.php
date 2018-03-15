@@ -7,10 +7,10 @@ if (!isset($argv[1]) || !in_array($argv[1], ['backfill', 'binaries'])) {
 	);
 }
 
-require('.do_not_run/require.php');
+require '.do_not_run/require.php';
 
 use nzedb\libraries\Forking;
 
-declare(ticks = 1)
-
-(new Forking())->processWorkType('safe_' . $argv[1]);
+declare(ticks = 1) {
+	(new Forking())->processWorkType('safe_' . $argv[1]);
+}

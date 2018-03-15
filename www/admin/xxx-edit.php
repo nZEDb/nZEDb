@@ -51,7 +51,8 @@ if (isset($_REQUEST['id'])) {
 			}
 			$trailerurl['url'] = $_POST['trailerurl'];
 			$trailerurl        = serialize($trailerurl);
-			$xxxmovie->update($requestID,
+			$xxxmovie->update(
+				$requestID,
 							  $_POST['title'],
 							  $_POST['tagline'],
 							  $_POST['plot'],
@@ -64,7 +65,8 @@ if (isset($_REQUEST['id'])) {
 							  $_POST['directurl'],
 							  $_POST['classused'],
 							  $_POST['cover'],
-							  $_POST['backdrop']);
+							  $_POST['backdrop']
+			);
 			header('Location:' . WWW_TOP . '/xxx-list.php');
 			die();
 			break;

@@ -4,10 +4,10 @@ require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR .
 
 use nzedb\ColorCLI;
 use nzedb\ConsoleTools;
+use nzedb\db\DB;
 use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
-use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 $cli = new ColorCLI();
@@ -27,13 +27,13 @@ function create_guids($live, $delete = false)
 {
 	$pdo = new DB();
 	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
-	$timestart = TIME();
+	$timestart = time();
 	$relcount = $deleted = $total = 0;
 
 	$relrecs = false;
 	if ($live == 'true') {
 		$relrecs = $pdo->queryDirect(sprintf('SELECT id, guid FROM releases WHERE nzbstatus = 1 AND nzb_guid IS NULL ORDER BY id DESC'));
-	} else if ($live == 'limited') {
+	} elseif ($live == 'limited') {
 		$relrecs = $pdo->queryDirect(sprintf('SELECT id, guid FROM releases WHERE nzbstatus = 1 AND nzb_guid IS NULL ORDER BY id DESC LIMIT 10000'));
 	}
 	if ($relrecs) {
@@ -62,7 +62,7 @@ function create_guids($live, $delete = false)
 						}
 						continue;
 					}
-					$binary_names = array();
+					$binary_names = [];
 					foreach ($nzbfile->file as $file) {
 						$binary_names[] = $file['subject'];
 					}
@@ -83,7 +83,7 @@ function create_guids($live, $delete = false)
 
 							$pdo->queryExec('UPDATE releases set nzb_guid = UNHEX(' . $pdo->escapestring($nzb_guid) . ') WHERE id = ' . $relrec['id']);
 							$relcount++;
-							$consoletools->overWritePrimary('Created: [' . $deleted . '] ' . $consoletools->percentString($reccnt, $total) . ' Time:' . $consoletools->convertTimer(TIME() - $timestart));
+							$consoletools->overWritePrimary('Created: [' . $deleted . '] ' . $consoletools->percentString($reccnt, $total) . ' Time:' . $consoletools->convertTimer(time() - $timestart));
 							break;
 						}
 					}
@@ -99,9 +99,9 @@ function create_guids($live, $delete = false)
 		if ($relcount > 0) {
 			echo "\n";
 		}
-		echo $pdo->log->header('Updated ' . $relcount . ' release(s). This script ran for ' . $consoletools->convertTime(TIME() - $timestart));
+		echo $pdo->log->header('Updated ' . $relcount . ' release(s). This script ran for ' . $consoletools->convertTime(time() - $timestart));
 	} else {
-		echo $pdo->log->info('Query time: ' . $consoletools->convertTime(TIME() - $timestart));
+		echo $pdo->log->info('Query time: ' . $consoletools->convertTime(time() - $timestart));
 		exit($pdo->log->info('No releases are missing the guid.'));
 	}
 }

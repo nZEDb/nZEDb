@@ -1,21 +1,20 @@
 <?php
 /**
- * Lithium: the most rad php framework
+ * Lithium: the most rad php framework.
  *
  * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
-
 use lithium\aop\Filters;
-use lithium\storage\Cache;
-use lithium\storage\cache\adapter\Apc;
-use lithium\core\Libraries;
 use lithium\core\Environment;
+use lithium\core\Libraries;
 use lithium\data\Connections;
 use lithium\data\source\Database;
+use lithium\storage\Cache;
+use lithium\storage\cache\adapter\Apc;
 
 /**
- * Configuration
+ * Configuration.
  *
  * Configures the adapters to use with the cache class. Available adapters are `Memcache`,
  * `File`, `Redis`, `Apc`, `XCache` and `Memory`. Please see the documentation on the
@@ -37,16 +36,16 @@ $cachePath = Libraries::get(true, 'resources') . '/tmp/cache';
 if (!(($apc = Apc::enabled()) || PHP_SAPI === 'cli') && !is_writable($cachePath)) {
 	return;
 }
-Cache::config(array(
-	'default' => array(
+Cache::config([
+	'default' => [
 		'adapter' => $apc ? 'Apc' : 'File',
-		'strategies' => $apc ? array() : array('Serializer'),
-		'scope' => $apc ? md5(LITHIUM_APP_PATH) : null
-	)
-));
+		'strategies' => $apc ? [] : ['Serializer'],
+		'scope' => $apc ? md5(LITHIUM_APP_PATH) : null,
+	],
+]);
 
 /**
- * Apply
+ * Apply.
  *
  * Applies caching to neuralgic points of the framework but only when we are running
  * in production. This is also a good central place to add your own caching rules.
@@ -88,11 +87,11 @@ Filters::apply('lithium\action\Dispatcher', 'run', function($params, $next) {
 			}
 			$cacheKey = "data.connections.{$name}.sources.{$params['entity']}.schema";
 
-			return Cache::read('default', $cacheKey, array(
+			return Cache::read('default', $cacheKey, [
 				'write' => function() use ($params, $next) {
-					return array('+1 day' => $next($params));
-				}
-			));
+					return ['+1 day' => $next($params)];
+				},
+			]);
 		});
 	}
 	return $next($params);

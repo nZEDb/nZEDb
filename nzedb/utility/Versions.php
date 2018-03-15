@@ -13,8 +13,11 @@ class Versions
 	 * These constants are bitwise for checking what was changed.
 	 */
 	const UPDATED_GIT_COMMIT	= 1;
+
 	const UPDATED_GIT_TAG		= 2;
+
 	const UPDATED_SQL_DB_PATCH	= 4;
+
 	const UPDATED_SQL_FILE_LAST	= 8;
 
 	/**
@@ -28,7 +31,7 @@ class Versions
 	public $out;
 
 	/**
-	 * @var integer Bitwise mask of elements that have been changed.
+	 * @var int Bitwise mask of elements that have been changed.
 	 */
 	protected $_changes = 0;
 
@@ -49,6 +52,7 @@ class Versions
 
 	/**
 	 * Shortcut to the nzedb->versions node to make method work shorter.
+	 *
 	 * @var object SimpleXMLElement
 	 */
 	protected $_vers;
@@ -60,9 +64,10 @@ class Versions
 
 	/**
 	 * Class constructor initialises the SimpleXML object and sets a few properties.
+	 *
 	 * @param string $filepath Optional filespec for the XML file to use. Will use default otherwise.
 	 *
-	 * @throws \Exception If the XML is invalid.
+	 * @throws \Exception        If the XML is invalid.
 	 * @throws \RuntimeException If version file does not exist.
 	 */
 	public function __construct($filepath = null)
@@ -90,9 +95,11 @@ class Versions
 	}
 
 	/**
-	 * Run all checks
-	 * @param boolean $update Whether the XML should be updated by the check.
-	 * @return boolean	True if any of the checks actually caused an update (not if it indicated one was needed), flase otherwise
+	 * Run all checks.
+	 *
+	 * @param bool $update Whether the XML should be updated by the check.
+	 *
+	 * @return bool True if any of the checks actually caused an update (not if it indicated one was needed), flase otherwise
 	 */
 	public function checkAll($update = true)
 	{
@@ -104,8 +111,10 @@ class Versions
 
 	/**
 	 * Checks the git commit number against the XML's stored value.
-	 * @param boolean $update Whether the XML should be updated by the check.
-	 * @return integer|boolean The new git commit number, or false.
+	 *
+	 * @param bool $update Whether the XML should be updated by the check.
+	 *
+	 * @return int|bool The new git commit number, or false.
 	 */
 	public function checkGitCommit($update = true)
 	{
@@ -136,15 +145,17 @@ class Versions
 
 	/**
 	 * Checks the git's latest version tag against the XML's stored value. Version should be
-	 * Major.Minor.Revision[.fix] (**commit number is NOT revision**)
+	 * Major.Minor.Revision[.fix] (**commit number is NOT revision**).
 	 *
-	 * @param boolean $update Whether the XML should be updated by the check.
-	 * @return boolean The new git's latest version tag, or false.
+	 * @param bool $update Whether the XML should be updated by the check.
+	 *
+	 * @return bool The new git's latest version tag, or false.
 	 */
 	public function checkGitTag($update = true)
 	{
 		trigger_error(
-			'This method is deprecated. Use app/extensions/utils/Versions::checkGitTag() instead.');
+			'This method is deprecated. Use app/extensions/utils/Versions::checkGitTag() instead.'
+		);
 
 		$branch = $this->git->getBranch();
 		$this->_gitHighestTag = $latest = trim($this->git->tagLatest());
@@ -179,9 +190,9 @@ class Versions
 	/**
 	 * Checks the database sqlpatch setting against the XML's stored value.
 	 *
-	 * @param boolean $update Whether the XML should be updated by the check.
+	 * @param bool $update Whether the XML should be updated by the check.
 	 *
-	 * @return boolean The new database sqlpatch version, or false.
+	 * @return bool The new database sqlpatch version, or false.
 	 */
 	public function checkSQLDb($update = false)
 	{
@@ -203,9 +214,9 @@ class Versions
 	/**
 	 * Checks the numeric value from the last SQL patch file, updating the versions file if desired.
 	 *
-	 * @param bool $update	Whether to update the versions file.
+	 * @param bool $update Whether to update the versions file.
 	 *
-	 * @return bool|int	False if there is a problem, otherwise the number from the last patch file.
+	 * @return bool|int False if there is a problem, otherwise the number from the last patch file.
 	 */
 	public function checkSQLFileLatest($update = true)
 	{
@@ -213,8 +224,7 @@ class Versions
 			'data'  => nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'   => 'sql',
 			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . 'mysql',
-			'regex' =>
-				'#^' . Misc::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
+			'regex' => '#^' . Misc::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
 			'safe'  => true,
 		];
 		$files = Misc::getDirFiles($options);
@@ -299,7 +309,8 @@ class Versions
 
 	/**
 	 * Check whether the XML has been changed by one of the methods here.
-	 * @return boolean True if the XML has been changed.
+	 *
+	 * @return bool True if the XML has been changed.
 	 */
 	public function hasChanged()
 	{

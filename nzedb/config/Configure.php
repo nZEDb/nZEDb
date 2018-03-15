@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2015 nZEDb
  */
@@ -25,15 +26,15 @@ class Configure
 	private $environments = [
 		'indexer' => [
 			'config'	=> true,
-			'settings'	=> false
+			'settings'	=> false,
 		],
 		'install' => [
 			'config'	=> false,
-			'settings'	=> false
+			'settings'	=> false,
 		],
 		'smarty'  => [
 			'config'	=> true,
-			'settings'	=> false
+			'settings'	=> false,
 		],
 	];
 
@@ -78,7 +79,7 @@ class Configure
 						}
 						unset($current_settings_file_version);
 					}
-				} else if (!defined('ITEMS_PER_PAGE')) {
+				} elseif (!defined('ITEMS_PER_PAGE')) {
 					define('ITEMS_PER_PAGE', '50');
 					define('ITEMS_PER_COVER_PAGE', '20');
 					define('nZEDb_ECHOCLI', true);
@@ -126,7 +127,7 @@ class Configure
 	{
 		if (empty($environment)) {
 			return;
-		} else if (array_key_exists($environment, $this->environments)) {
+		} elseif (array_key_exists($environment, $this->environments)) {
 			foreach ($this->environments[$environment] as $config => $throwException) {
 				$this->loadSettings($config, $throwException);
 			}

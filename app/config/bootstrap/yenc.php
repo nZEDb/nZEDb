@@ -13,12 +13,11 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2016 nZEDb
  */
-
 use app\models\Settings;
-
 
 if (defined('nZEDb_INSTALLER') && nZEDb_INSTALLER !== false) {
 	$adapter = 'Php';
@@ -49,23 +48,23 @@ if (defined('nZEDb_INSTALLER') && nZEDb_INSTALLER !== false) {
 app\extensions\util\Yenc::config(
 	[
 		'default' => [
-			'adapter' => $adapter
+			'adapter' => $adapter,
 		],
 
 		'nzedb' => [
-			'adapter' => 'NzedbYenc'
+			'adapter' => 'NzedbYenc',
 		],
 
 		'php' => [
-			'adapter' => 'Php'
+			'adapter' => 'Php',
 		],
 
 		'simple' => [
-			'adapter' => 'SimplePhpYencDecode'
+			'adapter' => 'SimplePhpYencDecode',
 		],
 
 		'ydecode' => [
-			'adapter' => 'Ydecode'
+			'adapter' => 'Ydecode',
 		],
 	]
 );

@@ -15,7 +15,8 @@ $from = ($_REQUEST['from'] ?? WWW_TOP . '/release-list.php');
 
 switch ($action) {
 	case 'submit':
-		$releases->update($_POST['id'],
+		$releases->update(
+			$_POST['id'],
 						  $_POST['name'],
 						  $_POST['searchname'],
 						  $_POST['fromname'],
@@ -28,7 +29,8 @@ switch ($action) {
 						  $_POST['videos_id'],
 						  $_POST['tv_episodes_id'],
 						  $_POST['imdbid'],
-						  $_POST['anidbid']);
+						  $_POST['anidbid']
+		);
 		header('Location:' . $from);
 		break;
 

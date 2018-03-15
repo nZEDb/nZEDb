@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2013 nZEDb
+ * Copyright (C) 2013 nZEDb.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ColorCLI;
-use nzedb\Users;
 use nzedb\db\DB;
+use nzedb\Users;
 
 $colorCLI = new ColorCLI();
 
@@ -35,7 +35,7 @@ $usage = "\nUsage: php {$argv[0]} <IUnderStandTheRisks>";
 echo $colorCLI->warning($warning);
 if ($argc != 2) {
 	exit($colorCLI->error("\nWrong number of parameters$usage"));
-} else if ($argv[1] !== 1 && $argv[1] != '<IUnderStandTheRisks>' && $argv[1] != 'IUnderStandTheRisks' && $argv[1] != 'true') {
+} elseif ($argv[1] !== 1 && $argv[1] != '<IUnderStandTheRisks>' && $argv[1] != 'IUnderStandTheRisks' && $argv[1] != 'true') {
 	exit($colorCLI->error("\nInvalid parameter(s)$usage"));
 }
 
@@ -65,7 +65,7 @@ function needUpdate($user)
 	if (empty($user['email'])) {
 		$status = false;
 		echo $colorCLI->error('Cannot update password hash - Email is not set for user: ' . $user['username']);
-	} else if (preg_match('#^\$.+$#', $user['password'])) {
+	} elseif (preg_match('#^\$.+$#', $user['password'])) {
 		$status = false;
 		echo $user['username'] . $colorCLI->primary(' is already using new style hash ;-)');
 	}

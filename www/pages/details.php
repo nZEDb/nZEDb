@@ -4,6 +4,7 @@ use app\models\Settings;
 use nzedb\AniDB;
 use nzedb\Books;
 use nzedb\Console;
+use nzedb\DnzbFailures;
 use nzedb\Games;
 use nzedb\Movie;
 use nzedb\Music;
@@ -14,7 +15,6 @@ use nzedb\ReleaseFiles;
 use nzedb\Releases;
 use nzedb\Videos;
 use nzedb\XXX;
-use nzedb\DnzbFailures;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();

@@ -13,17 +13,17 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2018 nZEDb
  */
-
 namespace app\extensions\command\verify;
 
 /**
  * Verifies permissions of various parts of the indexer.
  * Actions:
- * * db		TODO
- * * dirs	Directories
+ * - db		TODO
+ * - dirs	Directories.
  */
 class Permissions extends \app\extensions\console\Command
 {
@@ -77,7 +77,6 @@ class Permissions extends \app\extensions\console\Command
 		} else {
 			$this->primary('Congratulations, file permissions look good!');
 		}
-
 	}
 
 	protected function _init()

@@ -3,20 +3,20 @@ require_once realpath(dirname(dirname(dirname(dirname(dirname(__DIR__))))) . DIR
 
 use app\models\Settings;
 use nzedb\Category;
+use nzedb\db\DB;
 use nzedb\MiscSorter;
 use nzedb\NameFixer;
 use nzedb\Nfo;
 use nzedb\NNTP;
 use nzedb\NZB;
 use nzedb\NZBContents;
-use nzedb\db\DB;
 use nzedb\processing\PostProcess;
 
 $pdo = new DB();
 
 if (!isset($argv[1])) {
 	exit($pdo->log->error('This script is not intended to be run manually, it is called from Multiprocessing.'));
-} else if (isset($argv[1])) {
+} elseif (isset($argv[1])) {
 	$namefixer = new NameFixer(['Settings' => $pdo]);
 	$sorter = new MiscSorter(true, $pdo);
 	$pieces = explode(' ', $argv[1]);
@@ -34,7 +34,8 @@ if (!isset($argv[1])) {
 			// Find releases to process.  We only want releases that have no PreDB match, have not been renamed, exist
 			// in Other Categories, have already been PP Add/NFO processed, and haven't been fully fixRelName processed
 			$releases = $pdo->queryDirect(
-				sprintf("
+				sprintf(
+					"
 					SELECT
 						r.id AS releases_id, r.guid, r.groups_id, r.categories_id, r.name, r.searchname, r.proc_nfo,
 						r.proc_uid, r.proc_files, r.proc_par2, r.proc_sorter, r.ishashed, r.dehashstatus, r.nfostatus,
@@ -93,9 +94,7 @@ if (!isset($argv[1])) {
 			);
 
 			if ($releases instanceof \Traversable) {
-
 				foreach ($releases as $release) {
-
 					$namefixer->checked++;
 					$namefixer->reset();
 
@@ -113,7 +112,7 @@ if (!isset($argv[1])) {
 						}
 					}
 
-					if($namefixer->matched) {
+					if ($namefixer->matched) {
 						continue;
 					}
 					$namefixer->reset();
@@ -126,7 +125,7 @@ if (!isset($argv[1])) {
 					// Not all gate requirements in query always set column status as PP Add check is in query
 					$namefixer->_updateSingleColumn('proc_uid', NameFixer::PROC_UID_DONE, $release['releases_id']);
 
-					if($namefixer->matched) {
+					if ($namefixer->matched) {
 						continue;
 					}
 					$namefixer->reset();
@@ -142,7 +141,7 @@ if (!isset($argv[1])) {
 						$namefixer->_updateSingleColumn('proc_nfo', NameFixer::PROC_NFO_DONE, $release['releases_id']);
 					}
 
-					if($namefixer->matched) {
+					if ($namefixer->matched) {
 						continue;
 					}
 					$namefixer->reset();
@@ -153,7 +152,7 @@ if (!isset($argv[1])) {
 						$fileNames = explode('|', $release['filestring']);
 						if (is_array($fileNames)) {
 							$releaseFile = $release;
-							foreach ($fileNames AS $fileName) {
+							foreach ($fileNames as $fileName) {
 								if ($namefixer->matched === false) {
 									echo $pdo->log->primaryOver('f');
 									$releaseFile['textstring'] = $fileName;
@@ -165,7 +164,7 @@ if (!isset($argv[1])) {
 					// Not all gate requirements in query always set column status as PP Add check is in query
 					$namefixer->_updateSingleColumn('proc_files', NameFixer::PROC_FILES_DONE, $release['releases_id']);
 
-					if($namefixer->matched) {
+					if ($namefixer->matched) {
 						continue;
 					}
 					$namefixer->reset();
@@ -188,14 +187,14 @@ if (!isset($argv[1])) {
 							$nzbcontents = new NZBContents(
 								[
 									'Echo' => true, 'NNTP' => $nntp, 'Nfo' => $Nfo, 'Settings' => $pdo,
-									'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer])
+									'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer]),
 								]
 							);
 						}
 						$nzbcontents->checkPAR2($release['guid'], $release['releases_id'], $release['groups_id'], 1, 1);
 					}
 
-					if($namefixer->matched) {
+					if ($namefixer->matched) {
 						continue;
 					}
 					$namefixer->reset();
@@ -213,7 +212,8 @@ if (!isset($argv[1])) {
 
 		case $pieces[0] === 'predbft' && isset($maxperrun) && is_numeric($maxperrun) && isset($thread) && is_numeric($thread):
 			$pres = $pdo->queryDirect(
-				sprintf('
+				sprintf(
+					'
 					SELECT p.id AS predb_id, p.title, p.source, p.searched
 					FROM predb p
 					WHERE LENGTH(title) >= 15 AND title NOT REGEXP "[\"\<\> ]"
@@ -242,7 +242,8 @@ if (!isset($argv[1])) {
 						echo '.';
 					}
 					$pdo->queryExec(
-						sprintf('
+						sprintf(
+							'
 							UPDATE predb
 							SET searched = %d
 							WHERE id = %d',

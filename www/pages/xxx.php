@@ -1,8 +1,8 @@
 <?php
 
 use nzedb\Category;
-use nzedb\XXX;
 use nzedb\DnzbFailures;
+use nzedb\XXX;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
@@ -13,7 +13,7 @@ $cat = new Category(['Settings' => $page->settings]);
 $fail = new DnzbFailures(['Settings' => $page->settings]);
 
 $moviecats = $cat->getChildren(Category::XXX_ROOT);
-$mtmp = array();
+$mtmp = [];
 foreach ($moviecats as $mcat) {
 	$mtmp[$mcat['id']] = $mcat;
 }
@@ -21,7 +21,7 @@ $category = Category::XXX_ROOT;
 if (isset($_REQUEST['t']) && array_key_exists($_REQUEST['t'], $mtmp)) {
 	$category = $_REQUEST['t'] + 0;
 }
-$catarray = array();
+$catarray = [];
 $catarray[] = $category;
 
 $page->smarty->assign('catlist', $mtmp);
@@ -31,7 +31,7 @@ $offset = (isset($_REQUEST['offset']) && ctype_digit($_REQUEST['offset'])) ? $_R
 $ordering = $movie->getXXXOrdering();
 $orderby = isset($_REQUEST['ob']) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST['ob'] : '';
 
-$results = $movies = array();
+$results = $movies = [];
 $results = $movie->getXXXRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata['categoryexclusions']);
 foreach ($results as $result) {
 	$result['genre'] = $movie->makeFieldLinks($result, 'genre');
@@ -55,8 +55,10 @@ $page->smarty->assign('genre', $genre);
 
 $browseby_link = '&amp;title=' . $title . '&amp;actors=' . $actors . '&amp;director=' . $director . '&amp;genre=' . $genre;
 
-$page->smarty->assign('pagertotalitems',
-		isset($results[0]['_totalcount']) ? $results[0]['_totalcount'] : 0);
+$page->smarty->assign(
+	'pagertotalitems',
+		$results[0]['_totalcount'] ?? 0
+);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_COVER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP . '/xxx?t=' . $category . $browseby_link . '&amp;ob=' . $orderby . '&amp;offset=');

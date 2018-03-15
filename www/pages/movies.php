@@ -1,8 +1,8 @@
 <?php
 
 use nzedb\Category;
-use nzedb\Movie;
 use nzedb\DnzbFailures;
+use nzedb\Movie;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
@@ -77,8 +77,10 @@ $page->smarty->assign('year', $year);
 
 $browseby_link = '&amp;title=' . $title . '&amp;actors=' . $actors . '&amp;director=' . $director . '&amp;rating=' . $rating . '&amp;genre=' . $genre . '&amp;year=' . $year;
 
-$page->smarty->assign('pagertotalitems',
-		isset($results[0]['_totalcount']) ? $results[0]['_totalcount'] : 0);
+$page->smarty->assign(
+	'pagertotalitems',
+		$results[0]['_totalcount'] ?? 0
+);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_COVER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP . '/movies?t=' . $category . $browseby_link . '&amp;ob=' . $orderby . '&amp;offset=');

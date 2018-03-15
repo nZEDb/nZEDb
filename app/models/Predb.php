@@ -13,6 +13,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2017 nZEDb
  */
@@ -27,13 +28,13 @@ class Predb extends \app\extensions\data\Model
 	public $validates = [
 		'title' => [
 			[
-				'required' => true
+				'required' => true,
 			],
 			[
 				'notEmpty',
-				'message' => 'You must supply a title for this entry.'
-			]
-		]
+				'message' => 'You must supply a title for this entry.',
+			],
+		],
 	];
 
 	public static function findRange($page = 1, $limit = ITEMS_PER_PAGE, $title = '')
@@ -41,7 +42,7 @@ class Predb extends \app\extensions\data\Model
 		$options = [
 			'limit' => $limit,
 			'order' => ['created' => 'DESC'],
-			'page'  => (int)$page
+			'page'  => (int)$page,
 		];
 
 		$options += Predb::getRangeWhere($title);

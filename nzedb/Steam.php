@@ -1,8 +1,8 @@
 <?php
 namespace nzedb;
 
-use app\models\SteamApps;
 use app\models\Settings;
+use app\models\SteamApps;
 use b3rs3rk\steamfront\Main;
 use nzedb\db\DB;
 
@@ -45,7 +45,7 @@ class Steam
 		$this->steamFront = new Main(
 			[
 				'country_code' => 'us',
-				'local_lang'   => 'english'
+				'local_lang'   => 'english',
 			]
 		);
 	}
@@ -53,7 +53,7 @@ class Steam
 	/**
 	 * Gets all Information for the game.
 	 *
-	 * @param integer $appID
+	 * @param int $appID
 	 *
 	 * @return array|bool
 	 */
@@ -72,7 +72,7 @@ class Steam
 				'publisher'   => $res->publishers,
 				'rating'      => $res->metacritic['score'],
 				'releasedate' => $res->releasedate['date'],
-				'genres'      => implode(',', array_column($res->genres, 'description'))
+				'genres'      => implode(',', array_column($res->genres, 'description')),
 			];
 
 			return $result;
@@ -86,12 +86,13 @@ class Steam
 	}
 
 	/**
-	 * Searches Steam Apps table for best title match -- prefers 100% match but returns highest over 90%
+	 * Searches Steam Apps table for best title match -- prefers 100% match but returns highest over 90%.
 	 *
 	 * @param string $searchTerm The parsed game name from the release searchname
 	 *
-	 * @return false|int $bestMatch The Best match from the given search term
 	 * @throws \Exception
+	 *
+	 * @return false|int $bestMatch The Best match from the given search term
 	 */
 	public function search($searchTerm)
 	{
@@ -105,7 +106,8 @@ class Steam
 
 		$this->populateSteamAppsTable();
 
-		$results = $this->pdo->queryDirect("
+		$results = $this->pdo->queryDirect(
+			"
 			SELECT name, appid
 			FROM steam_apps
 			WHERE MATCH(name) AGAINST({$this->pdo->escapeString($searchTerm)})
@@ -141,7 +143,8 @@ class Steam
 	}
 
 	/**
-	 * Downloads full Steam Store dump and imports data into local table
+	 * Downloads full Steam Store dump and imports data into local table.
+	 *
 	 * @throws \Exception
 	 */
 	public function populateSteamAppsTable()
@@ -157,10 +160,10 @@ class Steam
 			foreach ($fullAppArray as $appsArray) {
 				foreach ($appsArray as $appArray) {
 					foreach ($appArray as $app) {
-						$dupeCheck = SteamApps::find('first',
+						$dupeCheck = SteamApps::find(
+							'first',
 							[
-								'conditions' =>
-									[
+								'conditions' => [
 										'name'  => $app['name'],
 										'appid' => $app['appid'],
 									],
@@ -188,7 +191,7 @@ class Steam
 	}
 
 	/**
-	 * Sets the database time for last full AniDB update
+	 * Sets the database time for last full AniDB update.
 	 */
 	private function setLastUpdated()
 	{

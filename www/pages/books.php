@@ -13,7 +13,7 @@ $cat = new Category(['Settings' => $page->settings]);
 $fail = new DnzbFailures(['Settings' => $page->settings]);
 
 $boocats = $cat->getChildren(Category::BOOKS_ROOT);
-$btmp = array();
+$btmp = [];
 foreach ($boocats as $bcat) {
 	$btmp[$bcat['id']] = $bcat;
 }
@@ -22,7 +22,7 @@ if (isset($_REQUEST['t']) && array_key_exists($_REQUEST['t'], $btmp)) {
 	$category = $_REQUEST['t'] + 0;
 }
 
-$catarray = array();
+$catarray = [];
 $catarray[] = $category;
 
 $page->smarty->assign('catlist', $btmp);
@@ -32,7 +32,7 @@ $offset = (isset($_REQUEST['offset']) && ctype_digit($_REQUEST['offset'])) ? $_R
 $ordering = $book->getBookOrdering();
 $orderby = isset($_REQUEST['ob']) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST['ob'] : '';
 
-$results = $books = array();
+$results = $books = [];
 $results = $book->getBookRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, $page->userdata['categoryexclusions']);
 
 $maxwords = 50;
@@ -55,8 +55,10 @@ $page->smarty->assign('title', $title);
 
 $browseby_link = '&amp;title=' . $title . '&amp;author=' . $author;
 
-$page->smarty->assign('pagertotalitems',
-		isset($results[0]['_totalcount']) ? $results[0]['_totalcount'] : 0);
+$page->smarty->assign(
+	'pagertotalitems',
+		$results[0]['_totalcount'] ?? 0
+);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_COVER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP . '/books?t=' . $category . $browseby_link . '&amp;ob=' . $orderby . '&amp;offset=');

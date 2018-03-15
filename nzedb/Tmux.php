@@ -1,12 +1,12 @@
 <?php
 namespace nzedb;
 
-use app\models\Settings;
 use app\extensions\util\Versions;
+use app\models\Settings;
 use nzedb\db\DB;
 
 /**
- * Class Tmux
+ * Class Tmux.
  *
  * @package nzedb
  */
@@ -27,7 +27,7 @@ class Tmux
 	 *
 	 * @param \nzedb\db\DB|null $pdo
 	 */
-	function __construct(DB $pdo = null)
+	public function __construct(DB $pdo = null)
 	{
 		$this->pdo = (empty($pdo) ? new DB() : $pdo);
 	}
@@ -108,7 +108,6 @@ class Tmux
 	 */
 	public function getUSPConnections($which, $connections)
 	{
-
 		switch ($which) {
 			case 'alternate':
 				$ip = 'ip_a';
@@ -127,8 +126,8 @@ class Tmux
 		$runVar['conncounts'][$which]['total'] = str_replace("\n", '', shell_exec('ss -n | grep -c ' . $connections[$ip] . ':' . $connections[$port]));
 
 		if ($runVar['conncounts'][$which]['active'] == 0 && $runVar['conncounts'][$which]['total'] == 0) {
-				$runVar['conncounts'][$which]['active'] = str_replace("\n", '', shell_exec('ss -n | grep ' . $connections[$ip] . ':https | grep -c ESTAB'));
-				$runVar['conncounts'][$which]['total'] = str_replace("\n", '', shell_exec('ss -n | grep -c ' . $connections[$ip] . ':https'));
+			$runVar['conncounts'][$which]['active'] = str_replace("\n", '', shell_exec('ss -n | grep ' . $connections[$ip] . ':https | grep -c ESTAB'));
+			$runVar['conncounts'][$which]['total'] = str_replace("\n", '', shell_exec('ss -n | grep -c ' . $connections[$ip] . ':https'));
 		}
 		if ($runVar['conncounts'][$which]['active'] == 0 && $runVar['conncounts'][$which]['total'] == 0) {
 			$runVar['conncounts'][$which]['active'] = str_replace("\n", '', shell_exec('ss -n | grep ' . $connections[$port] . ' | grep -c ESTAB'));
@@ -317,6 +316,7 @@ class Tmux
 	}
 
 	//get microtime
+
 	/**
 	 * @return float
 	 */
@@ -327,7 +327,7 @@ class Tmux
 	}
 
 	/**
-	 * @param double $bytes
+	 * @param float $bytes
 	 *
 	 * @return string
 	 */
@@ -393,6 +393,7 @@ class Tmux
 	}
 
 	// Returns random bool, weighted by $chance
+
 	/**
 	 * @param     $loop
 	 * @param int $chance
@@ -466,7 +467,8 @@ class Tmux
 	{
 		switch ((int)$qry) {
 			case 1:
-				return sprintf('
+				return sprintf(
+					'
 					SELECT
 					SUM(IF(nzbstatus = %d AND categories_id BETWEEN %d AND %d AND categories_id != %d AND videos_id = 0 AND tv_episodes_id BETWEEN -3 AND 0 AND size > 1048576,1,0)) AS processtv,
 					SUM(IF(nzbstatus = %1$d AND categories_id = %d AND anidbid IS NULL,1,0)) AS processanime,
@@ -546,7 +548,8 @@ class Tmux
 					(SELECT COUNT(id) FROM groups WHERE name IS NOT NULL) AS all_groups";
 
 			case 4:
-				return sprintf("
+				return sprintf(
+					"
 					SELECT
 					(SELECT TABLE_ROWS FROM information_schema.TABLES WHERE table_name = 'predb' AND TABLE_SCHEMA = %1\$s) AS predb,
 					(SELECT TABLE_ROWS FROM information_schema.TABLES WHERE table_name = 'missed_parts' AND TABLE_SCHEMA = %1\$s) AS missed_parts_table,
@@ -614,7 +617,7 @@ class Tmux
 	}
 
 	/**
-	 * Retrieves and returns ALL collections, binaries, parts, and missed parts table names from the Db
+	 * Retrieves and returns ALL collections, binaries, parts, and missed parts table names from the Db.
 	 *
 	 * @return bool|\PDOStatement
 	 */
@@ -622,7 +625,8 @@ class Tmux
 	{
 		$regstr = '^(multigroup_)?(collections|binaries|parts|missed_parts)(_[0-9]+)?$';
 
-		return $this->pdo->queryDirect("
+		return $this->pdo->queryDirect(
+			"
 			SELECT TABLE_NAME AS name
       		FROM information_schema.TABLES
       		WHERE TABLE_SCHEMA = (SELECT DATABASE())

@@ -13,6 +13,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    DariusIII
  * @copyright 2016 NNTmux/nZEDb
  */
@@ -22,7 +23,7 @@ class SteamApps extends \lithium\data\Model
 {
 	protected $_meta = [
 		'key' => [
-			'name'
+			'name',
 		],
 	];
 }

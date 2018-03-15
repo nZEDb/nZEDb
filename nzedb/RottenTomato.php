@@ -17,6 +17,7 @@ class RottenTomato
 
 	/**
 	 * RT Api key.
+	 *
 	 * @var string
 	 */
 	private $_apikey;
@@ -44,7 +45,7 @@ class RottenTomato
 			'lists/movies/box_office.json',
 			[
 				'limit'   => $limit,
-				'country' => $country
+				'country' => $country,
 			]
 		);
 	}
@@ -66,7 +67,7 @@ class RottenTomato
 			[
 				'page_limit' => $limit,
 				'page'       => $page,
-				'country'    => $country
+				'country'    => $country,
 			]
 		);
 	}
@@ -86,7 +87,7 @@ class RottenTomato
 			'lists/movies/opening.json',
 			[
 				'limit'   => $limit,
-				'country' => $country
+				'country' => $country,
 			]
 		);
 	}
@@ -108,7 +109,7 @@ class RottenTomato
 			[
 				'page_limit' => $limit,
 				'page'       => $page,
-				'country'    => $country
+				'country'    => $country,
 			]
 		);
 	}
@@ -139,7 +140,7 @@ class RottenTomato
 			[
 				'q'          => $title,
 				'page_limit' => $limit,
-				'page'       => $page
+				'page'       => $page,
 			]
 		);
 	}
@@ -167,8 +168,8 @@ class RottenTomato
 	 *                        "top_critic" shows all the Rotten Tomatoes designated top critics.
 	 *                        "dvd" pulls the reviews given on the DVD of the movie.
 	 *                        "all" as the name implies retrieves all reviews.
-	 * @param int $limit      The number of reviews to show per page.
-	 * @param int $page       The selected page of reviews.
+	 * @param int    $limit   The number of reviews to show per page.
+	 * @param int    $page    The selected page of reviews.
 	 * @param string $country Provides localized data for the selected country (ISO 3166-1 alpha-2) if available.
 	 *                        Otherwise, returns US data.
 	 *
@@ -182,7 +183,7 @@ class RottenTomato
 				'review_type' => $type,
 				'page_limit'  => $limit,
 				'page'        => $page,
-				'country'     => $country
+				'country'     => $country,
 			]
 		);
 	}
@@ -200,30 +201,6 @@ class RottenTomato
 	}
 
 	/**
-	 * Make a request to RT.
-	 *
-	 * @param string  $function The type of request.
-	 * @param array   $params   Extra HTTP parameters.
-	 *
-	 * @return string JSON data from RT.
-	 */
-	private function _makeCall($function, $params = [])
-	{
-		return trim(
-			Misc::getUrl([
-					'url' => RottenTomato::API_URL .
-						$function .
-						'?limit=' .
-						mt_rand(15, 20) .
-						'&apikey=' .
-						$this->_apikey .
-						(!empty($params) ? ('&' . http_build_query($params)) : '')
-				]
-			)
-		);
-	}
-
-	/**
 	 * Get the RT api key.
 	 *
 	 * @return string
@@ -231,5 +208,30 @@ class RottenTomato
 	public function getApiKey()
 	{
 		return $this->_apikey;
+	}
+
+	/**
+	 * Make a request to RT.
+	 *
+	 * @param string $function The type of request.
+	 * @param array  $params   Extra HTTP parameters.
+	 *
+	 * @return string JSON data from RT.
+	 */
+	private function _makeCall($function, $params = [])
+	{
+		return trim(
+			Misc::getUrl(
+				[
+					'url' => RottenTomato::API_URL .
+						$function .
+						'?limit=' .
+						mt_rand(15, 20) .
+						'&apikey=' .
+						$this->_apikey .
+						(!empty($params) ? ('&' . http_build_query($params)) : ''),
+				]
+			)
+		);
 	}
 }

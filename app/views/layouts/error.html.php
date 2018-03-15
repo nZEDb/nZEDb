@@ -1,6 +1,6 @@
 <?php
 /**
- * Lithium: the most rad php framework
+ * Lithium: the most rad php framework.
  *
  * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
@@ -12,6 +12,7 @@
  * complex logic or dynamic data, which could potentially trigger recursive errors.
  */
 use lithium\core\Libraries;
+
 $path = Libraries::get(true, 'path');
 ?>
 <!doctype html>
@@ -19,10 +20,10 @@ $path = Libraries::get(true, 'path');
 <head>
 	<?php echo $this->html->charset(); ?>
 	<title>Unhandled exception</title>
-	<?php echo $this->html->style(array('bootstrap.min', 'lithified', 'debug')); ?>
+	<?php echo $this->html->style(['bootstrap.min', 'lithified', 'debug']); ?>
 	<?php echo $this->scripts(); ?>
 	<?php echo $this->styles(); ?>
-	<?php echo $this->html->link('Icon', null, array('type' => 'icon')); ?>
+	<?php echo $this->html->link('Icon', null, ['type' => 'icon']); ?>
 </head>
 <body class="lithified">
 	<div class="container">
@@ -51,11 +52,11 @@ $path = Libraries::get(true, 'path');
 			<h3>Configuration</h3>
 			<p>
 				This layout can be changed by modifying
-				<code><?="{$path}/views/layouts/error.html.php";?></code>
+				<code><?="{$path}/views/layouts/error.html.php"; ?></code>
 			</p>
 			<p>
 				To modify your error-handling configuration, see
-				<code><?="{$path}/config/bootstrap/errors.php";?></code>
+				<code><?="{$path}/config/bootstrap/errors.php"; ?></code>
 			</p>
 		</div>
 

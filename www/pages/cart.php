@@ -20,7 +20,7 @@ if (isset($_GET['add'])) {
 	}
 } elseif (isset($_REQUEST['delete'])) {
 	if (isset($_GET['delete']) && !empty($_GET['delete'])) {
-		$ids = array($_GET['delete']);
+		$ids = [$_GET['delete']];
 	} elseif (isset($_POST['delete']) && is_array($_POST['delete'])) {
 		$ids = $_POST['delete'];
 	}

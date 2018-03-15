@@ -186,7 +186,8 @@ class Regexes
 					c.fromname, c.collectionhash
 				FROM %s b
 				INNER JOIN %s c ON c.id = b.collections_id',
-				$tableNames['bname'], $tableNames['cname']
+				$tableNames['bname'],
+				$tableNames['cname']
 			)
 		);
 
@@ -265,7 +266,7 @@ class Regexes
 					$data[$row['id']] = [
 						'subject'  => $row['name'],
 						'old_name' => $row['searchname'],
-						'new_name' => $match
+						'new_name' => $match,
 					];
 					if ($limit++ > $displayLimit) {
 						break;
@@ -294,7 +295,6 @@ class Regexes
 		// If there are no regex, return and try regex in this file.
 		if ($this->_regexCache[$groupName]['regex']) {
 			foreach ($this->_regexCache[$groupName]['regex'] as $regex) {
-
 				if ($this->tableName === 'category_regexes') {
 					$this->_categoriesID = $regex['categories_id'];
 				}
@@ -330,7 +330,9 @@ class Regexes
 				($this->tableName === 'category_regexes' ? ', r.categories_id' : ''),
 				$this->tableName,
 				$this->pdo->escapeString($groupName)
-			), true, 900
+			),
+			true,
+			900
 		);
 		// Set the TTL.
 		$this->_regexCache[$groupName]['ttl'] = time();
@@ -355,7 +357,7 @@ class Regexes
 				$logger = new Logger();
 				$logger->log(__CLASS__, __METHOD__, $message, Logger::LOG_ERROR);
 			}
-		} else if (count($matches) > 0) {
+		} elseif (count($matches) > 0) {
 			// Sort the keys, the named key matches will be concatenated in this order.
 			ksort($matches);
 			foreach ($matches as $key => $value) {

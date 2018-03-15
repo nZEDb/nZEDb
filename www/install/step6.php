@@ -49,7 +49,8 @@ if ($page->isPostBack()) {
 				$host = DB_SOCKET;
 			}
 
-			lithium\data\Connections::add('default',
+			lithium\data\Connections::add(
+				'default',
 				[
 					'type'       => 'database',
 					'adapter'    => $adapter,

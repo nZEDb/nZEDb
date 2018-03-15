@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link	  <http://www.gnu.org/licenses/>.
+ *
  * @author	niel
  * @copyright 2014 nZEDb
  */
@@ -33,8 +34,9 @@ class EndsWithCloseTag extends \li3_quality\qa\rules\syntax\EndsWithCloseTag
 				$this->addViolation(
 					[
 						'message' => $message,
-						'line' => $cnt - 1
-					]);
+						'line' => $cnt - 1,
+					]
+				);
 			}
 		}
 	}

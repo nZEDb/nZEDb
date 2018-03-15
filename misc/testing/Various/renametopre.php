@@ -6,11 +6,11 @@ use nzedb\Categorize;
 use nzedb\Category;
 use nzedb\ColorCLI;
 use nzedb\ConsoleTools;
+use nzedb\db\DB;
 use nzedb\Groups;
 use nzedb\NameFixer;
 use nzedb\ReleaseCleaning;
 use nzedb\ReleaseFiles;
-use nzedb\db\DB;
 
 /*
  *
@@ -49,7 +49,7 @@ function preName($argv, $argc)
 	$show = 2;
 	if ($argv[$argc - 1] === 'show') {
 		$show = 1;
-	} else if ($argv[$argc - 1] === 'bad') {
+	} elseif ($argv[$argc - 1] === 'bad') {
 		$show = 3;
 	}
 	$counter = 0;
@@ -58,38 +58,38 @@ function preName($argv, $argc)
 	$what = $where = '';
 	if ($argv[1] === 'full') {
 		$full = true;
-	} else if ($argv[1] === 'all') {
+	} elseif ($argv[1] === 'all') {
 		$all = true;
-	} else if ($argv[1] === 'predb_id') {
+	} elseif ($argv[1] === 'predb_id') {
 		$usepre = true;
-	} else if (is_numeric($argv[1])) {
+	} elseif (is_numeric($argv[1])) {
 		$what = ' AND adddate > NOW() - INTERVAL ' . $argv[1] . ' HOUR';
 	}
 	if ($usepre === true) {
 		$where = '';
 		$why = ' WHERE predb_id = 0 AND nzbstatus = 1';
-	} else if (isset($argv[1]) && is_numeric($argv[1])) {
+	} elseif (isset($argv[1]) && is_numeric($argv[1])) {
 		$where = '';
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
-	} else if (isset($argv[2]) && is_numeric($argv[2]) && $full === true) {
+	} elseif (isset($argv[2]) && is_numeric($argv[2]) && $full === true) {
 		$where = ' AND groups_id = ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
-	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $full === true) {
+	} elseif (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $full === true) {
 		$where = ' AND groups_id IN ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
-	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $all === true) {
+	} elseif (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $all === true) {
 		$where = ' AND groups_id IN ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1';
-	} else if (isset($argv[2]) && is_numeric($argv[2]) && $all === true) {
+	} elseif (isset($argv[2]) && is_numeric($argv[2]) && $all === true) {
 		$where = ' AND groups_id = ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1 and predb_id = 0';
-	} else if (isset($argv[2]) && is_numeric($argv[2])) {
+	} elseif (isset($argv[2]) && is_numeric($argv[2])) {
 		$where = ' AND groups_id = ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
-	} else if ($full === true) {
+	} elseif ($full === true) {
 		$why = ' WHERE nzbstatus = 1 AND (isrenamed = 0 OR categories_id between ' .
-				Category::BOOKS_ROOT . ' AND ' . Category::BOOKS_UNKNOWN .')';
-	} else if ($all === true) {
+				Category::BOOKS_ROOT . ' AND ' . Category::BOOKS_UNKNOWN . ')';
+	} elseif ($all === true) {
 		$why = ' WHERE nzbstatus = 1';
 	} else {
 		$why = ' WHERE 1=1';
@@ -135,7 +135,8 @@ function preName($argv, $argc)
 						$files = $rf->get($row['id']);
 						foreach ($files as $f) {
 							if (preg_match(
-								'/^(?P<title>.+?)(\\[\w\[\]\(\). -]+)?\.(pdf|htm(l)?|epub|mobi|azw|tif|doc(x)?|lit|txt|rtf|opf|fb2|prc|djvu|cb[rz])/', $f['name'],
+								'/^(?P<title>.+?)(\\[\w\[\]\(\). -]+)?\.(pdf|htm(l)?|epub|mobi|azw|tif|doc(x)?|lit|txt|rtf|opf|fb2|prc|djvu|cb[rz])/',
+								$f['name'],
 								$match
 							)
 							) {
@@ -145,14 +146,14 @@ function preName($argv, $argc)
 						}
 					}
 				}
-					//try to match clean name against predb filename
-					$prefile = $pdo->queryOneRow('SELECT id, title FROM predb WHERE filename = ' . $pdo->escapeString($cleanName));
-					if (isset($prefile['id'])) {
-						$preid = $prefile['id'];
-						$cleanName = $prefile['title'];
-						$predbfile = true;
-						$propername = true;
-					}
+				//try to match clean name against predb filename
+				$prefile = $pdo->queryOneRow('SELECT id, title FROM predb WHERE filename = ' . $pdo->escapeString($cleanName));
+				if (isset($prefile['id'])) {
+					$preid = $prefile['id'];
+					$cleanName = $prefile['title'];
+					$predbfile = true;
+					$propername = true;
+				}
 				if ($cleanName != $row['name'] && $cleanName != $row['searchname']) {
 					if (strlen(utf8_decode($cleanName)) > 3) {
 						$determinedcat = $category->determineCategory($row['groups_id'], $cleanName);
@@ -160,43 +161,50 @@ function preName($argv, $argc)
 							$pdo->queryExec(
 								sprintf(
 									'UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL, consoleinfo_id = NULL, bookinfo_id = NULL, anidbid = NULL, '
-									. 'iscategorized = 1, isrenamed = 1, searchname = %s, categories_id = %d, predb_id = ' . $preid . ' WHERE id = %d', $pdo->escapeString($cleanName), $determinedcat, $row['id']
+									. 'iscategorized = 1, isrenamed = 1, searchname = %s, categories_id = %d, predb_id = ' . $preid . ' WHERE id = %d',
+									$pdo->escapeString($cleanName),
+									$determinedcat,
+									$row['id']
 								)
 							);
 						} else {
 							$pdo->queryExec(
 								sprintf(
 									'UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL, consoleinfo_id = NULL, bookinfo_id = NULL, anidbid = NULL,  '
-									. 'iscategorized = 1, searchname = %s, categories_id = %d, predb_id = ' . $preid . ' WHERE id = %d', $pdo->escapeString($cleanName), $determinedcat, $row['id']
+									. 'iscategorized = 1, searchname = %s, categories_id = %d, predb_id = ' . $preid . ' WHERE id = %d',
+									$pdo->escapeString($cleanName),
+									$determinedcat,
+									$row['id']
 								)
 							);
 						}
 						if ($increment === true) {
 							$internal++;
-						} else if ($predb === true) {
+						} elseif ($predb === true) {
 							$pre++;
-						} else if ($predbfile === true) {
+						} elseif ($predbfile === true) {
 							$pre++;
-						} else if ($propername === true) {
+						} elseif ($propername === true) {
 							$external++;
 						}
 						if ($show === 1) {
 							$oldcatname = $category->getNameByID($row['categories_id']);
 							$newcatname = $category->getNameByID($determinedcat);
 
-							NameFixer::echoChangedReleaseName([
+							NameFixer::echoChangedReleaseName(
+								[
 									'new_name'     => $cleanName,
 									'old_name'     => $row['searchname'],
 									'new_category' => $newcatname,
 									'old_category' => $oldcatname,
 									'group'        => $groupname,
 									'release_id'   => $row['id'],
-									'method'       => 'misc/testing/Various/renametopre.php'
+									'method'       => 'misc/testing/Various/renametopre.php',
 								]
 							);
 						}
 					}
-				} else if ($show === 3 && preg_match('/^\[?\d*\].+?yEnc/i', $row['name'])) {
+				} elseif ($show === 3 && preg_match('/^\[?\d*\].+?yEnc/i', $row['name'])) {
 					echo $pdo->log->primary($row['name']);
 				}
 			}
@@ -205,7 +213,7 @@ function preName($argv, $argc)
 			}
 			if ($show === 2 && $usepre === false) {
 				$consoletools->overWritePrimary('Renamed Releases:  [Internal=' . number_format($internal) . '][External=' . number_format($external) . '][Predb=' . number_format($pre) . '] ' . $consoletools->percentString(++$counter, $total));
-			} else if ($show === 2 && $usepre === true) {
+			} elseif ($show === 2 && $usepre === true) {
 				$consoletools->overWritePrimary('Renamed Releases:  [' . number_format($pre) . '] ' . $consoletools->percentString(++$counter, $total));
 			}
 		}
@@ -213,37 +221,37 @@ function preName($argv, $argc)
 	echo $pdo->log->header("\n" . number_format($pre) . " renamed using preDB Match\n" . number_format($external) . " renamed using ReleaseCleaning.php\n" . number_format($internal) . " using renametopre.php\nout of " . number_format($total) . " releases.\n");
 	if (isset($argv[1]) && is_numeric($argv[1]) && !isset($argv[2])) {
 		echo $pdo->log->header("Categorizing all releases using searchname from the last ${argv[1]} hours. This can take a while, be patient.");
-	} else if (isset($argv[1]) && $argv[1] !== 'all' && isset($argv[2]) && !is_numeric($argv[2]) && !preg_match('/\([\d, ]+\)/', $argv[2])) {
+	} elseif (isset($argv[1]) && $argv[1] !== 'all' && isset($argv[2]) && !is_numeric($argv[2]) && !preg_match('/\([\d, ]+\)/', $argv[2])) {
 		echo $pdo->log->header('Categorizing all non-categorized releases in other->misc using searchname. This can take a while, be patient.');
-	} else if (isset($argv[1]) && isset($argv[2]) && (is_numeric($argv[2]) || preg_match('/\([\d, ]+\)/', $argv[2]))) {
+	} elseif (isset($argv[1]) && isset($argv[2]) && (is_numeric($argv[2]) || preg_match('/\([\d, ]+\)/', $argv[2]))) {
 		echo $pdo->log->header("Categorizing all non-categorized releases in ${argv[2]} using searchname. This can take a while, be patient.");
 	} else {
 		echo $pdo->log->header('Categorizing all releases using searchname. This can take a while, be patient.');
 	}
-	$timestart = TIME();
+	$timestart = time();
 	if (isset($argv[1]) && is_numeric($argv[1])) {
 		$relcount = catRelease('searchname', 'WHERE (iscategorized = 0 OR categories_id = ' .
 				Category::OTHER_MISC . ') AND adddate > NOW() - INTERVAL ' . $argv[1] . ' HOUR', true);
-	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $full === true) {
+	} elseif (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $full === true) {
 		$relcount = catRelease('searchname', str_replace(' AND', 'WHERE', $where) . ' AND iscategorized = 0 ', true);
-	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $all === true) {
+	} elseif (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $all === true) {
 		$relcount = catRelease('searchname', str_replace(' AND', 'WHERE', $where), true);
-	} else if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] == 'full') {
+	} elseif (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] == 'full') {
 		$relcount = catRelease('searchname', str_replace(' AND', 'WHERE', $where) . ' AND iscategorized = 0 ', true);
-	} else if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] == 'all') {
+	} elseif (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] == 'all') {
 		$relcount = catRelease('searchname', str_replace(' AND', 'WHERE', $where), true);
-	} else if (isset($argv[1]) && $argv[1] == 'full') {
+	} elseif (isset($argv[1]) && $argv[1] == 'full') {
 		$relcount = catRelease('searchname', 'WHERE categories_id = ' . Category::OTHER_MISC . ' OR iscategorized = 0', true);
-	} else if (isset($argv[1]) && $argv[1] == 'all') {
+	} elseif (isset($argv[1]) && $argv[1] == 'all') {
 		$relcount = catRelease('searchname', '', true);
-	} else if (isset($argv[1]) && $argv[1] == 'predb_id') {
+	} elseif (isset($argv[1]) && $argv[1] == 'predb_id') {
 		$relcount = catRelease('searchname', 'WHERE predb_id = 0 AND nzbstatus = 1', true);
 	} else {
 		$relcount = catRelease('searchname', 'WHERE (iscategorized = 0 OR categories_id = ' .
 				Category::OTHER_MISC . ') AND adddate > NOW() - INTERVAL ' . $argv[1] . ' HOUR', true);
 	}
 	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
-	$time = $consoletools->convertTime(TIME() - $timestart);
+	$time = $consoletools->convertTime(time() - $timestart);
 	echo $pdo->log->header('Finished categorizing ' . number_format($relcount) . ' releases in ' . $time . " seconds, using the usenet subject.\n");
 	resetSearchnames();
 }

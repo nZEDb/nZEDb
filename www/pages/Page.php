@@ -1,5 +1,5 @@
 <?php
-/* This is a smarty/www file and should be moved to the nZEDb_WWW/pages directory? */
+// This is a smarty/www file and should be moved to the nZEDb_WWW/pages directory?
 
 use nzedb\Category;
 use nzedb\Contents;
@@ -21,7 +21,7 @@ class Page extends BasePage
 			[
 				'user'    => nZEDb_THEMES . $this->theme . '/templates',
 				'shared'  => nZEDb_THEMES . 'shared/templates',
-				'default' => nZEDb_THEMES . 'Default/templates'
+				'default' => nZEDb_THEMES . 'Default/templates',
 			]
 		);
 
@@ -54,9 +54,9 @@ class Page extends BasePage
 				foreach ($parent['subcatlist'] as $consoleCat) {
 					if (preg_match('/^XBOX/i', $consoleCat['title'])) {
 						$consoleCatList['Microsoft'][] = $consoleCat;
-					} else if (preg_match('/^([3N]DS|N?GC)$|^WII/i', $consoleCat['title'])) {
+					} elseif (preg_match('/^([3N]DS|N?GC)$|^WII/i', $consoleCat['title'])) {
 						$consoleCatList['Nintendo'][] = $consoleCat;
-					} else if (preg_match('/PS[\dXP ]/i', $consoleCat['title'])) {
+					} elseif (preg_match('/PS[\dXP ]/i', $consoleCat['title'])) {
 						$consoleCatList['Sony'][] = $consoleCat;
 					} else {
 						$consoleCatList['Other'][] = $consoleCat;

@@ -15,11 +15,11 @@
  * not, see:
  *
  * @link <http://www.gnu.org/licenses/>.
+ *
  * @author niel
  * @copyright 2014 nZEDb
  */
 namespace nzedb;
-
 
 use Closure;
 
@@ -28,20 +28,19 @@ use Closure;
  */
 class StaticObject
 {
-
 	/**
 	 * Stores the closures that represent the method filters. They are indexed by called class.
 	 *
 	 * @var array Method filters, indexed by `get_called_class()`.
 	 */
-	protected static $_methodFilters = array();
+	protected static $_methodFilters = [];
 
 	/**
 	 * Keeps a cached list of each class' inheritance tree.
 	 *
 	 * @var array
 	 */
-	protected static $_parents = array();
+	protected static $_parents = [];
 
 	/**
 	 * Apply a closure to a method of the current static object.
@@ -61,12 +60,12 @@ class StaticObject
 	{
 		$class = get_called_class();
 		if ($method === false) {
-			static::$_methodFilters[$class] = array();
+			static::$_methodFilters[$class] = [];
 			return;
 		}
 		foreach ((array)$method as $m) {
 			if (!isset(static::$_methodFilters[$class][$m]) || $filter === false) {
-				static::$_methodFilters[$class][$m] = array();
+				static::$_methodFilters[$class][$m] = [];
 			}
 			if ($filter !== false) {
 				static::$_methodFilters[$class][$m][] = $filter;
@@ -84,7 +83,7 @@ class StaticObject
 	 *
 	 * @return mixed Returns the result of the method call.
 	 */
-	public static function invokeMethod($method, $params = array())
+	public static function invokeMethod($method, $params = [])
 	{
 		switch (count($params)) {
 			case 0:
@@ -100,7 +99,7 @@ class StaticObject
 			case 5:
 				return static::$method($params[0], $params[1], $params[2], $params[3], $params[4]);
 			default:
-				return forward_static_call_array(array(get_called_class(), $method), $params);
+				return forward_static_call_array([get_called_class(), $method], $params);
 		}
 	}
 
@@ -122,7 +121,7 @@ class StaticObject
 	/**
 	 * Exit immediately. Primarily used for overrides during testing.
 	 *
-	 * @param integer|string $status integer range 0 to 254, string printed on exit
+	 * @param int|string $status integer range 0 to 254, string printed on exit
 	 *
 	 * @return void
 	 */

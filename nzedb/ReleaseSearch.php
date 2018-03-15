@@ -6,22 +6,26 @@ use nzedb\db\DB;
 class ReleaseSearch
 {
 	const FULLTEXT = 0;
+
 	const LIKE     = 1;
+
 	const SPHINX   = 2;
 
-	/***
+	/**
 	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 
 	/**
 	 * Array where keys are the column name, and value is the search string.
+	 *
 	 * @var array
 	 */
 	private $searchOptions;
 
 	/**
 	 * Sets the string to join the releases table to the release search table if using full text.
+	 *
 	 * @var string
 	 */
 	private $fullTextJoinString;
@@ -81,6 +85,7 @@ class ReleaseSearch
 
 	/**
 	 * Returns the string for joining the release search table to the releases table.
+	 *
 	 * @return string
 	 */
 	public function getFullTextJoinString()
@@ -112,7 +117,6 @@ class ReleaseSearch
 			if ($searchWords !== '') {
 				$return .= sprintf(" AND MATCH(rs.%s) AGAINST('%s' IN BOOLEAN MODE)", $columnName, $searchWords);
 			}
-
 		}
 		// If we didn't get anything, try the LIKE method.
 		if ($return === '') {
@@ -138,7 +142,7 @@ class ReleaseSearch
 					$word = trim($word, "-\n\t\r\0\x0B ");
 					if ($wordCount == 0 && (strpos($word, '^') === 0)) {
 						$return .= sprintf(' AND r.%s %s', $columnName, $this->pdo->likeString(substr($word, 1), false));
-					} else if (strpos($word, '--') === 0) {
+					} elseif (strpos($word, '--') === 0) {
 						$return .= sprintf(' AND r.%s NOT %s', $columnName, $this->pdo->likeString(substr($word, 2)));
 					} else {
 						$return .= sprintf(' AND r.%s %s', $columnName, $this->pdo->likeString($word));
@@ -170,7 +174,8 @@ class ReleaseSearch
 			}
 			$searchWords = rtrim($searchWords, "\n\t\r\0\x0B ");
 			if ($searchWords !== '') {
-				$searchQuery .= sprintf('@%s %s ',
+				$searchQuery .= sprintf(
+					'@%s %s ',
 							$columnName,
 							$searchWords
 				);

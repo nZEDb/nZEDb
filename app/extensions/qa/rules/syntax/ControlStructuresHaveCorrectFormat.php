@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2014 nZEDb
  */
@@ -102,7 +103,7 @@ class ControlStructuresHaveCorrectFormat extends \li3_quality\qa\rules\syntax\Co
 	];
 
 	/**
-	 * Reusable expressions to make code easier to read and reusable
+	 * Reusable expressions to make code easier to read and reusable.
 	 *
 	 * @var array
 	 */
@@ -118,7 +119,9 @@ class ControlStructuresHaveCorrectFormat extends \li3_quality\qa\rules\syntax\Co
 	 * expression proivded in tokenMap and if none are found add a violation from the message
 	 * provided in tokenMap.
 	 *
-	 * @param  Testable $testable The testable object
+	 * @param Testable $testable The testable object
+	 * @param array    $config
+	 *
 	 * @return void
 	 */
 	public function apply($testable, array $config = [])
@@ -155,11 +158,12 @@ class ControlStructuresHaveCorrectFormat extends \li3_quality\qa\rules\syntax\Co
 	}
 
 	/**
-	 * Extract the Control content and its prefix
+	 * Extract the Control content and its prefix.
 	 *
-	 * @param  array  $tokenId The id of the token.
-	 * @param  array  $tokens  The tokens from $testable->tokens()
-	 * @return string          The extracted content + prefix
+	 * @param array $tokenId The id of the token.
+	 * @param array $tokens  The tokens from $testable->tokens()
+	 *
+	 * @return string The extracted content + prefix
 	 */
 	protected function _extractContent($tokenId, $tokens)
 	{
@@ -173,11 +177,13 @@ class ControlStructuresHaveCorrectFormat extends \li3_quality\qa\rules\syntax\Co
 	}
 
 	/**
-	 * Extract the control content
+	 * Extract the control content.
 	 *
-	 * @param  array  $tokenId The id of the token.
-	 * @param  array  $tokens  The tokens from $testable->tokens()
-	 * @return string          The extracted content
+	 * @param array $tokenId The id of the token.
+	 * @param array $tokens  The tokens from $testable->tokens()
+	 * @param mixed $root
+	 *
+	 * @return string The extracted content
 	 */
 	protected function _controlContent($tokenId, $tokens, $root = true)
 	{
@@ -200,8 +206,9 @@ class ControlStructuresHaveCorrectFormat extends \li3_quality\qa\rules\syntax\Co
 	/**
 	 * Abstracts the matching out. Will return true if any of the patterns match correctly.
 	 *
-	 * @param  array  $patterns The patterns to match overs.
-	 * @param  string $body     The string body.
+	 * @param array  $patterns The patterns to match overs.
+	 * @param string $body     The string body.
+	 *
 	 * @return bool
 	 */
 	protected function _matchPattern($patterns, $body)
@@ -213,7 +220,6 @@ class ControlStructuresHaveCorrectFormat extends \li3_quality\qa\rules\syntax\Co
 		}
 		return false;
 	}
-
 }
 
 ?>

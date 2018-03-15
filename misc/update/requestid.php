@@ -8,7 +8,7 @@ use nzedb\RequestIDWeb;
 $cli = new ColorCLI();
 
 if (!isset($argv[1]) || ($argv[1] != 'all' && $argv[1] != 'full' && $argv[1] != 'web' && !is_numeric($argv[1])) || !isset($argv[2]) || !in_array($argv[2], ['true', 'false'])) {
-	exit ($cli->error(
+	exit($cli->error(
 			PHP_EOL
 			. 'This script tries to match a release request ID by group to a PreDB request ID by group doing local lookup only.' . PHP_EOL
 			. 'In addition an optional final argument is time, in minutes, to check releases that have previously been checked.' . PHP_EOL . PHP_EOL

@@ -40,7 +40,7 @@ define('nZEDb_LOGS', nZEDb_RES . 'logs' . DS);
 define('nZEDb_SMARTY_CACHE', nZEDb_RES . 'smarty' . DS . 'cache/');
 
 // Smarty's configuration files.
-define('nZEDb_SMARTY_CONFIGS', nZEDb_RES .'smarty' . DS . 'configs/');
+define('nZEDb_SMARTY_CONFIGS', nZEDb_RES . 'smarty' . DS . 'configs/');
 
 // Smarty's compiled template cache.
 define('nZEDb_SMARTY_TEMPLATES', nZEDb_RES . 'smarty' . DS . 'templates_c/');

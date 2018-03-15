@@ -2,8 +2,8 @@
 require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use app\models\Settings;
-use nzedb\NNTP;
 use nzedb\db\DB;
+use nzedb\NNTP;
 use nzedb\processing\PostProcess;
 
 $pdo = new DB();
@@ -11,9 +11,8 @@ $pdo = new DB();
 /**
   Array with possible arguments for run and
   whether or not those methods of operation require NNTP
-**/
-
-$args = array(
+ */
+$args = [
 	'additional' => true,
 	'all'        => true,
 	'allinf'     => true,
@@ -29,12 +28,12 @@ $args = array(
 	'sharing'    => true,
 	'tv'         => false,
 	'xxx'        => false,
-);
+];
 
-$bool = array(
+$bool = [
 	'true',
-	'false'
-);
+	'false',
+];
 
 if (!isset($argv[1]) || !in_array($argv[1], $args) || !isset($argv[2]) || !in_array($argv[2], $bool)) {
 	exit(

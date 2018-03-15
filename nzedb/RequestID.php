@@ -7,13 +7,19 @@ abstract class RequestID
 {
 	// Request ID.
 	const REQID_OLD = -4; // We rechecked the web a second time and didn't find a title so don't process it again.
+
 	const REQID_NONE = -3; // The Request ID was not found locally or via web lookup.
+
 	const REQID_ZERO = -2; // The Request ID was 0.
+
 	const REQID_NOLL = -1; // Request ID was not found via local lookup.
+
 	const REQID_UPROC = 0; // Release has not been processed.
+
 	const REQID_FOUND = 1; // Request ID found and release was updated.
 
 	const IS_REQID_TRUE = 1; // releases.isrequestid is 1
+
 	const IS_REQID_FALSE = 0; // releases.isrequestid is 0
 
 	/**
@@ -48,30 +54,35 @@ abstract class RequestID
 
 	/**
 	 * The found request ID for the release.
+	 *
 	 * @var int
 	 */
 	protected $_requestID = self::REQID_ZERO;
 
 	/**
 	 * The title found from a request ID lookup.
+	 *
 	 * @var bool|string|array
 	 */
 	protected $_newTitle = false;
 
 	/**
 	 * Releases with potential Request ID's we can work on.
+	 *
 	 * @var \PDOStatement|false
 	 */
 	protected $_releases;
 
 	/**
 	 * Total amount of releases we will be working on.
+	 *
 	 * @var int
 	 */
 	protected $_totalReleases;
 
 	/**
 	 * Release we are currently working on.
+	 *
 	 * @var array
 	 */
 	protected $_release;
@@ -83,12 +94,14 @@ abstract class RequestID
 
 	/**
 	 * GroupID, which is optional, to limit query results.
+	 *
 	 * @var string
 	 */
 	protected $_groupID;
 
 	/**
 	 * First character of a release GUID, which is optional, to limit query results.
+	 *
 	 * @var string
 	 */
 	protected $_charGUID;
@@ -200,7 +213,8 @@ abstract class RequestID
 		}
 
 		$this->pdo->queryExec(
-			sprintf('
+			sprintf(
+				'
 				UPDATE releases SET reqidstatus = %d WHERE id = %d',
 					$status,
 					$releaseID
@@ -226,9 +240,11 @@ abstract class RequestID
 	{
 		$requestID = [];
 		switch (true) {
-			case preg_match('/\[\s*#?scnzb@?efnet\s*\]\[(\d+)\]/',
+			case preg_match(
+				'/\[\s*#?scnzb@?efnet\s*\]\[(\d+)\]/',
 							$this->_release['name'],
-							$requestID):
+							$requestID
+			):
 			case preg_match('/\[\s*(\d+)\s*\]/', $this->_release['name'], $requestID):
 			case preg_match('/^REQ\s*(\d{4,6})/i', $this->_release['name'], $requestID):
 			case preg_match('/^(\d{4,6})-\d{1}\s?\[/', $this->_release['name'], $requestID):

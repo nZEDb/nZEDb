@@ -12,14 +12,15 @@ $group = (isset($_REQUEST['group']) && !empty($_REQUEST['group']) ? $_REQUEST['g
 $offset = $_REQUEST['offset'] ?? 0;
 $regex  = $regexes->getRegex($group, ITEMS_PER_PAGE, $offset);
 
-$page->smarty->assign([
+$page->smarty->assign(
+	[
 		'group'             => $group,
 		'regex'             => $regex,
 		'pagertotalitems'   => $regexes->getCount($group),
 		'pageroffset'       => $offset,
 		'pageritemsperpage' => ITEMS_PER_PAGE,
 		'pagerquerysuffix'  => '',
-		'pagerquerybase'    => WWW_TOP . '/release_naming_regexes-list.php?' . $group . 'offset='
+		'pagerquerybase'    => WWW_TOP . '/release_naming_regexes-list.php?' . $group . 'offset=',
 	]
 );
 $page->smarty->assign('pager', $page->smarty->fetch('pager.tpl'));

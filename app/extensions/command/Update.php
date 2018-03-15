@@ -13,6 +13,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2016 nZEDb
  */
@@ -22,7 +23,6 @@ use app\extensions\util\Git;
 use app\extensions\util\Versions;
 use nzedb\db\DbUpdate;
 use Smarty;
-
 
 /**
  * Update various aspects of your indexer.
@@ -75,9 +75,9 @@ class Update extends \app\extensions\console\Command
 	/**
 	 * Update database tables/data by running patches.
 	 *
-	 * @return int|null		Error number on failure, otherwise null.
+	 * @throws \Exception Unknown failure.
 	 *
-	 * @throws \Exception	Unknown failure.
+	 * @return int|null Error number on failure, otherwise null.
 	 */
 	public function db()
 	{
@@ -146,10 +146,12 @@ class Update extends \app\extensions\console\Command
 			$cleared = $smarty->clearCompiledTemplate();
 			if ($cleared) {
 				$this->out('The Smarty compiled template cache has been cleared for you', 'primary');
-			} else if (!empty(glob(nZEDb_SMARTY_TEMPLATES . '*.php', GLOB_NOSORT))) {
-				$this->out('You should clear your Smarty compiled template cache at: ' .
+			} elseif (!empty(glob(nZEDb_SMARTY_TEMPLATES . '*.php', GLOB_NOSORT))) {
+				$this->out(
+					'You should clear your Smarty compiled template cache at: ' .
 					nZEDb_SMARTY_TEMPLATES,
-					'primary');
+					'primary'
+				);
 			}
 		} catch (\Exception $e) {
 			$this->error($e->getMessage());
@@ -170,7 +172,7 @@ class Update extends \app\extensions\console\Command
 	 * It first checks the current branch for stable versions. If found then the '--no-dev'
 	 * option is added to the command to prevent development packages being also downloded.
 	 *
-	 * @return integer Return status from Composer.
+	 * @return int Return status from Composer.
 	 */
 	protected function composer()
 	{

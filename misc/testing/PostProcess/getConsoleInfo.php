@@ -16,7 +16,8 @@ $res = $pdo->queryDirect(
 				BETWEEN %s AND %s ORDER BY id DESC',
 				Category::GAME_ROOT,
 				Category::GAME_OTHER
-				));
+				)
+);
 if ($res instanceof \PDOStatement) {
 	echo $pdo->log->header('Updating console info for ' . number_format($res->rowCount()) . ' releases.');
 

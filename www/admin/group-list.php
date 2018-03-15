@@ -15,11 +15,10 @@ $page->smarty->assign(
 		'pagertotalitems' => $groups->getCount($groupName, -1),
 		'pageroffset' => $offset,
 		'pageritemsperpage' => ITEMS_PER_PAGE,
-		'pagerquerybase' =>
-			WWW_TOP .
+		'pagerquerybase' => WWW_TOP .
 			'/group-list.php?' . (($groupName !== '') ? "groupname=$groupName&amp;" : '') . 'offset=',
 		'pagerquerysuffix' => '',
-		'grouplist' => $groups->getRange($offset, ITEMS_PER_PAGE, $groupName, -1)
+		'grouplist' => $groups->getRange($offset, ITEMS_PER_PAGE, $groupName, -1),
 	]
 );
 $page->smarty->assign('pager', $page->smarty->fetch('pager.tpl'));

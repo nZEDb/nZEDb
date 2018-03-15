@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link <http://www.gnu.org/licenses/>.
+ *
  * @author niel
  * @copyright 2014 nZEDb
  */
@@ -26,18 +27,21 @@ namespace nzedb\utility;
 class MoveFileTree
 {
 	protected $_dirs;
+
 	protected $_files;
+
 	protected $_source;
+
 	protected $_target;
 
 	private $rItIt;
 
 	/**
-	 * @param string|array $source A filepath to a valid directory, or an array of valid
-	 *                             filepaths (not neccessarily in the same directory).
-	 * @param string $target       A valid directory that the files and directories will be moved
-	 *                             to.
-	 * @param bool $moveSourceBase
+	 * @param string|array $source         A filepath to a valid directory, or an array of valid
+	 *                                     filepaths (not neccessarily in the same directory).
+	 * @param string       $target         A valid directory that the files and directories will be moved
+	 *                                     to.
+	 * @param bool         $moveSourceBase
 	 *
 	 * @throws \UnexpectedValueException
 	 */
@@ -45,7 +49,7 @@ class MoveFileTree
 	{
 		if (empty($source)) {
 			throw  new \UnexpectedValueException('Source value cannot be empty! Source is not a path to a directory.');
-		} else if (!is_array($source) && file_exists($source) && is_dir($source)) {
+		} elseif (!is_array($source) && file_exists($source) && is_dir($source)) {
 			$contents = scandir($source);
 			if (count($contents) < 3) {
 				throw new \UnexpectedValueException('Source directory does not contain anything to move.');

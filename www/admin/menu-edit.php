@@ -32,10 +32,9 @@ switch ($action) {
 	default:
 		$menuRow = [
 			'id' => '', 'title' => '', 'href' => '', 'tooltip' => '',
-			'menueval' => '', 'role' => 0, 'ordinal' => 0, 'newwindow' => 0
+			'menueval' => '', 'role' => 0, 'ordinal' => 0, 'newwindow' => 0,
 		];
 		if (isset($_GET['id'])) {
-
 			$menuID          = $_GET['id'];
 			$menuRow     = $menu->getById($menuID);
 		}

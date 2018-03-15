@@ -12,7 +12,7 @@ $id = $_GET['id'] + 0;
 if (isset($id) && !empty($_POST['addMessage'])) {
 	$parent = $forum->getPost($id);
 	$forum->editPost($id, $_POST['addMessage'], $page->users->currentUserId());
-	if($parent['parentid'] != 0) {
+	if ($parent['parentid'] != 0) {
 		header('Location:' . WWW_TOP . '/forumpost/' . $parent['parentid'] . '#last');
 	} else {
 		header('Location:' . WWW_TOP . '/forumpost/' . $id);

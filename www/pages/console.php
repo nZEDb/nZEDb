@@ -2,8 +2,8 @@
 
 use nzedb\Category;
 use nzedb\Console;
-use nzedb\Genres;
 use nzedb\DnzbFailures;
+use nzedb\Genres;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
@@ -15,7 +15,7 @@ $gen = new Genres(['Settings' => $page->settings]);
 $fail = new DnzbFailures(['Settings' => $page->settings]);
 
 $concats = $cat->getChildren(Category::GAME_ROOT);
-$ctmp = array();
+$ctmp = [];
 foreach ($concats as $ccat) {
 	$ctmp[$ccat['id']] = $ccat;
 }
@@ -24,7 +24,7 @@ if (isset($_REQUEST['t']) && array_key_exists($_REQUEST['t'], $ctmp)) {
 	$category = $_REQUEST['t'] + 0;
 }
 
-$catarray = array();
+$catarray = [];
 $catarray[] = $category;
 
 $page->smarty->assign('catlist', $ctmp);
@@ -34,7 +34,7 @@ $offset = (isset($_REQUEST['offset']) && ctype_digit($_REQUEST['offset'])) ? $_R
 $ordering = $console->getConsoleOrdering();
 $orderby = isset($_REQUEST['ob']) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST['ob'] : '';
 
-$results = $consoles = array();
+$results = $consoles = [];
 $results = $console->getConsoleRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, $page->userdata['categoryexclusions']);
 
 $maxwords = 50;
@@ -56,7 +56,7 @@ $title = (isset($_REQUEST['title']) && !empty($_REQUEST['title'])) ? stripslashe
 $page->smarty->assign('title', $title);
 
 $genres = $gen->getGenres(Category::GAME_ROOT, true);
-$tmpgnr = array();
+$tmpgnr = [];
 foreach ($genres as $gn) {
 	$tmpgnr[$gn['id']] = $gn['title'];
 }
@@ -66,8 +66,10 @@ $page->smarty->assign('genre', $genre);
 
 $browseby_link = '&amp;title=' . $title . '&amp;platform=' . $platform;
 
-$page->smarty->assign('pagertotalitems',
-		isset($results[0]['_totalcount']) ? $results[0]['_totalcount'] : 0);
+$page->smarty->assign(
+	'pagertotalitems',
+		$results[0]['_totalcount'] ?? 0
+);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_COVER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP . '/console?t=' . $category . $browseby_link . '&amp;ob=' . $orderby . '&amp;offset=');

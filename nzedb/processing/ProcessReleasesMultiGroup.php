@@ -1,5 +1,4 @@
 <?php
-
 namespace nzedb\processing;
 
 use app\models\MultigroupPosters;
@@ -19,16 +18,6 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	}
 
 	/**
-	 * Form fromNamesQuery for creating NZBs
-	 *
-	 * @void
-	 */
-	protected function formFromNamesQuery()
-	{
-		$this->fromNamesQuery = '';
-	}
-
-	/**
 	 * @param $fromName
 	 *
 	 * @return bool
@@ -37,6 +26,31 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	{
 		$poster = MultigroupPosters::find('first', ['conditions' => ['poster' => $fromName]]);
 		return (empty($poster) ? false : true);
+	}
+
+	/**
+	 * Returns MGR table names.
+	 *
+	 * @return array
+	 */
+	public static function tableNames()
+	{
+		return [
+			'cname' => 'multigroup_collections',
+			'bname' => 'multigroup_binaries',
+			'pname' => 'multigroup_parts',
+			'prname' => 'multigroup_missed_parts',
+		];
+	}
+
+	/**
+	 * Form fromNamesQuery for creating NZBs.
+	 *
+	 * @void
+	 */
+	protected function formFromNamesQuery()
+	{
+		$this->fromNamesQuery = '';
 	}
 
 	/**
@@ -49,20 +63,5 @@ class ProcessReleasesMultiGroup extends ProcessReleases
 	protected function initiateTableNames($groupID)
 	{
 		$this->tables = self::tableNames();
-	}
-
-	/**
-	 * Returns MGR table names
-	 *
-	 * @return array
-	 */
-	public static function tableNames()
-	{
-		return [
-			'cname' => 'multigroup_collections',
-			'bname' => 'multigroup_binaries',
-			'pname' => 'multigroup_parts',
-			'prname' => 'multigroup_missed_parts',
-		];
 	}
 }

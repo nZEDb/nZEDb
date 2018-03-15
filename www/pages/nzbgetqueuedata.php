@@ -15,7 +15,6 @@ $data = $nzbget->getQueue();
 
 if ($data !== false) {
 	if (count($data > 0)) {
-
 		$status = $nzbget->status();
 
 		if ($status !== false) {
@@ -73,4 +72,4 @@ if ($data !== false) {
 	$output .= "<p style='text-align:center;'>Error retreiving queue.</p>";
 }
 
-print $output;
+echo $output;

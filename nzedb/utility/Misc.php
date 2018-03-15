@@ -10,7 +10,6 @@ use GuzzleHttp\Exception\RequestException;
 use nzedb\ColorCLI;
 use nzedb\db\DB;
 
-
 /*
  * General util functions.
  * Class Util
@@ -30,6 +29,7 @@ class Misc
 	 * @todo Make this recursive with a switch to only check end point.
 	 *
 	 * @param $dir *nix path to directory or file
+	 * @param mixed $path
 	 *
 	 * @return bool|string True is successful, otherwise the part of the path that failed testing.
 	 */
@@ -95,7 +95,7 @@ class Misc
 		return $options;
 	}
 
-	public static function  getCoverURL(array $options = [])
+	public static function getCoverURL(array $options = [])
 	{
 		$defaults = [
 			'id' => null,
@@ -106,8 +106,10 @@ class Misc
 		$fileSpecTemplate = '%s/%s%s';
 		$fileSpec = '';
 
-		if (!empty($options['id']) && in_array($options['type'],
-		   ['anime', 'audio', 'audiosample', 'book', 'console', 'games', 'movies', 'music', 'preview', 'sample', 'tvrage', 'video', 'xxx'])) {
+		if (!empty($options['id']) && in_array(
+			$options['type'],
+		   ['anime', 'audio', 'audiosample', 'book', 'console', 'games', 'movies', 'music', 'preview', 'sample', 'tvrage', 'video', 'xxx']
+		)) {
 			$fileSpec = sprintf($fileSpecTemplate, $options['type'], $options['id'], $options['suffix']);
 			$fileSpec = file_exists(nZEDb_COVERS . $fileSpec) ? $fileSpec : sprintf($fileSpecTemplate, $options['type'], 'no', $options['suffix']);
 		}
@@ -115,17 +117,16 @@ class Misc
 		return $fileSpec;
 	}
 
-
 	/**
 	 * Get list of files/directories from supplied directory.
 	 *
 	 * @param array $options
-	 *        'dir'        => boolean, include directory paths
-	 *        'ext'        => file suffix, no full stop (period) separator should be used.
-	 *        'path'    => The path to list from. If left empty it will use whatever the current working directory is.
-	 *        'regex'    => Regular expressions that the full path must match to be included,
+	 *                       'dir'        => boolean, include directory paths
+	 *                       'ext'        => file suffix, no full stop (period) separator should be used.
+	 *                       'path'    => The path to list from. If left empty it will use whatever the current working directory is.
+	 *                       'regex'    => Regular expressions that the full path must match to be included,
 	 *
-	 * @return array    Always returns array of path-names in unix format (even on Windows).
+	 * @return array Always returns array of path-names in unix format (even on Windows).
 	 */
 	public static function getDirFiles(array $options = null)
 	{
@@ -155,7 +156,7 @@ class Misc
 			switch (true) {
 				case !$options['dir'] && $fileInfo->isDir():
 					break;
-				case !empty($options['ext']) && $fileInfo->getExtension() != $options['ext'];
+				case !empty($options['ext']) && $fileInfo->getExtension() != $options['ext']:
 					break;
 				case (empty($options['regex']) || !preg_match($options['regex'], $file)):
 					break;
@@ -186,8 +187,7 @@ class Misc
 		return $themelist;
 	}
 
-
-/**
+	/**
 	 * Use cURL To download a web page into a string.
 	 *
 	 * @param array $options See details below.
@@ -207,10 +207,10 @@ class Misc
 			'useragent'      => '',    // String ; User agent string.
 			'cookie'         => '',    // String ; Cookie string.
 			'requestheaders' => [],    // Array  ; List of request headers.
-			                           //          Example: ["Content-Type: application/json", "DNT: 1"]
+									   //          Example: ["Content-Type: application/json", "DNT: 1"]
 			'verifycert'     => true,  // Boolean; Verify certificate authenticity?
-			                           //          Since curl does not have a verify self signed certs option,
-			                           //          you should use this instead if your cert is self signed.
+									   //          Since curl does not have a verify self signed certs option,
+									   //          you should use this instead if your cert is self signed.
 		];
 
 		$options += $defaults;
@@ -251,7 +251,7 @@ class Misc
 			CURLOPT_HTTPHEADER     => $header,
 			CURLOPT_RETURNTRANSFER => 1,
 			CURLOPT_FOLLOWLOCATION => 1,
-			CURLOPT_TIMEOUT        => 15
+			CURLOPT_TIMEOUT        => 15,
 		];
 		$context += self::curlSslContextOptions($options['verifycert']);
 		if (!empty($options['useragent'])) {
@@ -263,7 +263,7 @@ class Misc
 		if ($options['method'] === 'post') {
 			$context += [
 				CURLOPT_POST       => 1,
-				CURLOPT_POSTFIELDS => $options['postdata']
+				CURLOPT_POSTFIELDS => $options['postdata'],
 			];
 		}
 		if ($options['debug']) {
@@ -271,7 +271,7 @@ class Misc
 				CURLOPT_HEADER      => true,
 				CURLINFO_HEADER_OUT => true,
 				CURLOPT_NOPROGRESS  => false,
-				CURLOPT_VERBOSE     => true
+				CURLOPT_VERBOSE     => true,
 			];
 		}
 		curl_setopt_array($ch, $context);
@@ -288,9 +288,9 @@ class Misc
 	}
 
 	/**
-	 * Get raw html from site URL for scraping
+	 * Get raw html from site URL for scraping.
 	 *
-	 * @param string $url
+	 * @param string       $url
 	 * @param false|string $cookie
 	 *
 	 * @return bool|string
@@ -310,9 +310,9 @@ class Misc
 			$response = $client->get($url)->getBody()->getContents();
 		} catch (RequestException $e) {
 			if ($e->hasResponse()) {
-				if($e->getCode() === 404) {
+				if ($e->getCode() === 404) {
 					ColorCLI::doEcho(ColorCLI::notice('Data not available on server'));
-				} else if ($e->getCode() === 503) {
+				} elseif ($e->getCode() === 503) {
 					ColorCLI::doEcho(ColorCLI::notice('Service unavailable'));
 				} else {
 					ColorCLI::doEcho(ColorCLI::notice('Unable to fetch data from server, http error reported: ' . $e->getCode()));
@@ -349,7 +349,7 @@ class Misc
 	}
 
 	/**
-	 * Check for availability of which command
+	 * Check for availability of which command.
 	 */
 	public static function hasWhich()
 	{
@@ -595,9 +595,11 @@ class Misc
 			case 'g':
 				$val *= 1024;
 			// Multiply again for each that matches.
+			// no break
 			case 'm':
 				$val *= 1024;
 			// Multiply again for each that matches.
+			// no break
 			case 'k':
 				$val *= 1024;
 		}
@@ -623,9 +625,8 @@ class Misc
 		return round($bytes / pow(1024, ($index = floor(log($bytes, 1024)))), $precision) . $unit[(int)$index];
 	}
 
-
 	/**
-	 * Fetches an embeddable video to a IMDB trailer from http://www.traileraddict.com
+	 * Fetches an embeddable video to a IMDB trailer from http://www.traileraddict.com.
 	 *
 	 * @param $imdbID
 	 *
@@ -645,12 +646,14 @@ class Misc
 	/**
 	 * Check if MAINTENANCE_MODE_ENABLED constant is set. Return appropriate HTML or XML response
 	 * with status code 503 if it is.
+	 *
+	 * @param mixed $outputMessage
 	 */
 	public static function maintainanceCheck($outputMessage = true)
 	{
 		if (defined('MAINTENANCE_MODE_ENABLED') && MAINTENANCE_MODE_ENABLED === true) {
-			if (!in_array($_SERVER['REMOTE_ADDR'], MAINTENANCE_MODE_IP_EXCEPTIONS) ) {
-				$page = (isset($_GET['page']) ? $_GET['page'] : 'content');
+			if (!in_array($_SERVER['REMOTE_ADDR'], MAINTENANCE_MODE_IP_EXCEPTIONS)) {
+				$page = ($_GET['page'] ?? 'content');
 				switch ($page) {
 					case 'api':
 					case 'failed':
@@ -699,36 +702,40 @@ class Misc
 	}
 
 	/**
-	 * Converts XML to an associative array with namespace preservation -- use if intending to JSON encode
+	 * Converts XML to an associative array with namespace preservation -- use if intending to JSON encode.
+	 *
 	 * @author Tamlyn from Outlandish.com
 	 *
-	 * @param \SimpleXMLElement $xml The SimpleXML parsed XML string data
+	 * @param \SimpleXMLElement $xml     The SimpleXML parsed XML string data
 	 * @param array             $options
 	 *
-	 * @return array            The associate array of the XML namespaced file
+	 * @return array The associate array of the XML namespaced file
 	 */
-	public static function xmlToArray(\SimpleXMLElement $xml, $options = array()) {
-		$defaults = array(
-			'namespaceSeparator' => ':',//you may want this to be something other than a colon
+	public static function xmlToArray(\SimpleXMLElement $xml, $options = [])
+	{
+		$defaults = [
+			'namespaceSeparator' => ':', //you may want this to be something other than a colon
 			'attributePrefix' => '@',   //to distinguish between attributes and nodes with the same name
-			'alwaysArray' => array(),   //array of xml tag names which should always become arrays
+			'alwaysArray' => [],   //array of xml tag names which should always become arrays
 			'autoArray' => true,        //only create arrays for tags which appear more than once
 			'textContent' => '$',       //key used for the text content of elements
 			'autoText' => true,         //skip textContent key if node has no attributes or child nodes
 			'keySearch' => false,       //optional search and replace on tag and attribute names
-			'keyReplace' => false       //replace values for above search values (as passed to str_replace())
-		);
+			'keyReplace' => false,       //replace values for above search values (as passed to str_replace())
+		];
 		$options = array_merge($defaults, $options);
 		$namespaces = $xml->getDocNamespaces();
 		$namespaces[''] = null; //add base (empty) namespace
 
-		$attributesArray = $tagsArray = array();
+		$attributesArray = $tagsArray = [];
 		foreach ($namespaces as $prefix => $namespace) {
 			//get attributes from all namespaces
 			foreach ($xml->attributes($namespace) as $attributeName => $attribute) {
 				//replace characters in attribute name
-				if ($options['keySearch']) $attributeName =
+				if ($options['keySearch']) {
+					$attributeName =
 					str_replace($options['keySearch'], $options['keyReplace'], $attributeName);
+				}
 				$attributeKey = $options['attributePrefix']
 					. ($prefix ? $prefix . $options['namespaceSeparator'] : '')
 					. $attributeName;
@@ -745,17 +752,21 @@ class Misc
 				$childProperties = current(self::xmlToArray($childXml, $options));
 
 				//replace characters in tag name
-				if ($options['keySearch']) $childTagName =
+				if ($options['keySearch']) {
+					$childTagName =
 					str_replace($options['keySearch'], $options['keyReplace'], $childTagName);
+				}
 				//add namespace prefix, if any
-				if ($prefix) $childTagName = $prefix . $options['namespaceSeparator'] . $childTagName;
+				if ($prefix) {
+					$childTagName = $prefix . $options['namespaceSeparator'] . $childTagName;
+				}
 
 				if (!isset($tagsArray[$childTagName])) {
 					//only entry with this key
 					//test if tags of this type should always be arrays, no matter the element count
 					$tagsArray[$childTagName] =
 						in_array($childTagName, $options['alwaysArray']) || !$options['autoArray']
-							? array($childProperties) : $childProperties;
+							? [$childProperties] : $childProperties;
 				} elseif (
 					is_array($tagsArray[$childTagName]) && array_keys($tagsArray[$childTagName])
 					=== range(0, count($tagsArray[$childTagName]) - 1)
@@ -764,24 +775,26 @@ class Misc
 					$tagsArray[$childTagName][] = $childProperties;
 				} else {
 					//key exists so convert to integer indexed array with previous value in position 0
-					$tagsArray[$childTagName] = array($tagsArray[$childTagName], $childProperties);
+					$tagsArray[$childTagName] = [$tagsArray[$childTagName], $childProperties];
 				}
 			}
 		}
 
 		//get text content of node
-		$textContentArray = array();
+		$textContentArray = [];
 		$plainText = trim((string)$xml);
-		if ($plainText !== '') $textContentArray[$options['textContent']] = $plainText;
+		if ($plainText !== '') {
+			$textContentArray[$options['textContent']] = $plainText;
+		}
 
 		//stick it all together
 		$propertiesArray = !$options['autoText'] || $attributesArray || $tagsArray || ($plainText === '')
 			? array_merge($attributesArray, $tagsArray, $textContentArray) : $plainText;
 
 		//return node as array
-		return array(
-			$xml->getName() => $propertiesArray
-		);
+		return [
+			$xml->getName() => $propertiesArray,
+		];
 	}
 
 	/**
@@ -792,9 +805,10 @@ class Misc
 	 * @param string $contents
 	 * @param string $from
 	 *
-	 * @return boolean
 	 * @throws \Exception
 	 * @throws \phpmailerException
+	 *
+	 * @return bool
 	 */
 	public static function sendEmail($to, $subject, $contents, $from)
 	{
@@ -958,7 +972,7 @@ class Misc
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
 			'<error code="' . $status . '" description="' . $message . "\"/>\n";
 		header('Content-type: text/xml');
-		header('Content-Length: ' . strlen($response) );
+		header('Content-Length: ' . strlen($response));
 		header('X-nZEDb: API ERROR [' . $status . '] ' . $message);
 		http_response_code($status);
 

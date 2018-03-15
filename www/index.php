@@ -73,13 +73,14 @@ switch ($page->page) {
 			if (Settings::value('..registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
 				header('Location: ' . Settings::value('site.main.code'));
 				break;
-			} else if (
+			} elseif (
 				!in_array($page->page, ['register', 'forgottenpassword']) &&
 				Settings::value('site.main.incognito', true) == true
 			) {
 				$page->page = 'login';
 			}
 		}
+		// no break
 	case 'api':
 	case 'failed':
 	case 'getnzb':

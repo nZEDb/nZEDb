@@ -1,7 +1,7 @@
 <?php
-declare(ticks = 1)
-
-require('.do_not_run/require.php');
+declare(ticks = 1) {
+	require '.do_not_run/require.php';
+}
 
 use nzedb\libraries\ForkingImportNZB;
 

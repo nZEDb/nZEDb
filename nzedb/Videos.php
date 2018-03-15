@@ -4,11 +4,11 @@ namespace nzedb;
 use nzedb\db\DB;
 
 /**
- * Class Videos -- functions for site interaction
+ * Class Videos -- functions for site interaction.
  *
  * @package nzedb
  */
-Class Videos
+class Videos
 {
 	/**
 	 * @param array $options
@@ -34,7 +34,8 @@ Class Videos
 	public function getByVideoID($id)
 	{
 		return $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 					SELECT v.*, tvi.summary, tvi.publisher, tvi.image
 					FROM videos v
 					INNER JOIN tv_info tvi ON v.id = tvi.videos_id
@@ -45,7 +46,7 @@ Class Videos
 	}
 
 	/**
-	 * Retrieves a range of all shows for the show-edit admin list
+	 * Retrieves a range of all shows for the show-edit admin list.
 	 *
 	 * @param        $start
 	 * @param        $num
@@ -67,7 +68,8 @@ Class Videos
 		}
 
 		return $this->pdo->query(
-			sprintf('
+			sprintf(
+				'
 						SELECT v.*,
 							tvi.summary, tvi.publisher, tvi.image
 						FROM videos v
@@ -81,7 +83,7 @@ Class Videos
 	}
 
 	/**
-	 * Returns a count of all shows -- usually used by pager
+	 * Returns a count of all shows -- usually used by pager.
 	 *
 	 * @param string $showname
 	 *
@@ -94,7 +96,8 @@ Class Videos
 			$rsql .= sprintf('AND v.title LIKE %s ', $this->pdo->escapeString('%' . $showname . '%'));
 		}
 		$res = $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 						SELECT COUNT(v.id) AS num
 						FROM videos v
 						INNER JOIN tv_info tvi ON v.id = tvi.videos_id
@@ -106,7 +109,7 @@ Class Videos
 	}
 
 	/**
-	 * Retrieves and returns a list of shows with eligible releases
+	 * Retrieves and returns a list of shows with eligible releases.
 	 *
 	 * @param        $uid
 	 * @param string $letter
@@ -129,7 +132,8 @@ Class Videos
 			$tsql .= sprintf('AND v.title LIKE %s', $this->pdo->escapeString('%' . $showname . '%'));
 		}
 
-		$qry = sprintf('
+		$qry = sprintf(
+			'
 			SELECT v.*,
 				us.id AS userseriesid
 			FROM

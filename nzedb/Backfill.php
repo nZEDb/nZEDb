@@ -7,7 +7,7 @@ use nzedb\db\DB;
 class Backfill
 {
 	/**
-	 * Instance of class Settings
+	 * Instance of class Settings.
 	 *
 	 * @var \nzedb\db\DB
 	 */
@@ -41,6 +41,7 @@ class Backfill
 	 * @var NNTP
 	 */
 	protected $_nntp;
+
 	/**
 	 * Should we use compression for headers?
 	 *
@@ -50,12 +51,14 @@ class Backfill
 
 	/**
 	 * Log and or echo debug.
+	 *
 	 * @var bool
 	 */
 	protected $_debug = false;
 
 	/**
 	 * Echo to cli?
+	 *
 	 * @var bool
 	 */
 	protected $_echoCLI;
@@ -74,6 +77,7 @@ class Backfill
 
 	/**
 	 * Should we disable the group if we have backfilled far enough?
+	 *
 	 * @var bool
 	 */
 	protected $_disableBackfillGroup;
@@ -90,7 +94,7 @@ class Backfill
 			'Logger' => null,
 			'Groups'    => null,
 			'NNTP'      => null,
-			'Settings'  => null
+			'Settings'  => null,
 		];
 		$options += $defaults;
 
@@ -98,7 +102,8 @@ class Backfill
 
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
-		$this->_nntp = ($options['NNTP'] instanceof NNTP
+		$this->_nntp = (
+			$options['NNTP'] instanceof NNTP
 			? $options['NNTP'] : new NNTP(['Settings' => $this->pdo])
 		);
 
@@ -121,9 +126,9 @@ class Backfill
 	/**
 	 * Backfill all the groups up to user specified time/date.
 	 *
-	 * @param string $groupName
+	 * @param string     $groupName
 	 * @param string|int $articles
-	 * @param string $type
+	 * @param string     $type
 	 *
 	 * @return void
 	 */
@@ -204,8 +209,8 @@ class Backfill
 	/**
 	 * Backfill single group.
 	 *
-	 * @param array $groupArr
-	 * @param int $left
+	 * @param array      $groupArr
+	 * @param int        $left
 	 * @param int|string $articles
 	 *
 	 * @return void
@@ -252,7 +257,8 @@ class Backfill
 		$postCheck = ($articles === '' ? false : true);
 
 		// Get target post based on date or user specified number.
-		$targetpost = (string)($postCheck
+		$targetpost = (string)(
+			$postCheck
 			?
 				round($groupArr['first_record'] - $articles)
 			:
@@ -315,7 +321,6 @@ class Backfill
 
 		$done = false;
 		while ($done === false) {
-
 			if ($this->_echoCLI) {
 				$this->pdo->log->doEcho(
 					$this->pdo->log->set256('Yellow') .
@@ -328,7 +333,8 @@ class Backfill
 					' group(s) left. (' .
 					(number_format($first - $targetpost)) .
 					' articles in queue).' .
-					$this->pdo->log->rsetColor(), true
+					$this->pdo->log->rsetColor(),
+					true
 				);
 			}
 
@@ -345,13 +351,15 @@ class Backfill
 			}
 
 			$this->pdo->queryExec(
-				sprintf('
+				sprintf(
+					'
 					UPDATE groups
 					SET first_record_postdate = %s, first_record = %s, last_updated = NOW()
 					WHERE id = %d',
 					$this->pdo->from_unixtime($newdate),
 					$this->pdo->escapeString($first),
-					$groupArr['id'])
+					$groupArr['id']
+				)
 			);
 			if ($first == $targetpost) {
 				$done = true;
@@ -374,7 +382,8 @@ class Backfill
 					' processed in ' .
 					number_format(microtime(true) - $startGroup, 2) .
 					' seconds.'
-				), true
+				),
+				true
 			);
 		}
 	}
@@ -390,7 +399,8 @@ class Backfill
 	public function safeBackfill($articles = '')
 	{
 		$groupname = $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT name FROM groups
 				WHERE first_record_postdate BETWEEN %s AND NOW()
 				AND backfill = 1
@@ -412,5 +422,4 @@ class Backfill
 			$this->backfillAllGroups($groupname['name'], $articles);
 		}
 	}
-
 }

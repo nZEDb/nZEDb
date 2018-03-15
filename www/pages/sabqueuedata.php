@@ -72,4 +72,4 @@ if ($json !== false) {
 	$output .= "<p style='text-align:center;'>Error retrieving queue.</p>";
 }
 
-print $output;
+echo $output;

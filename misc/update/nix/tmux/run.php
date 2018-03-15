@@ -2,8 +2,8 @@
 require_once realpath(dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use app\models\Settings;
-use nzedb\Tmux;
 use nzedb\db\DB;
+use nzedb\Tmux;
 use nzedb\utility\Misc;
 
 $pdo = new DB();
@@ -97,7 +97,6 @@ if ($seq == 1) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
  * @param string $pane
  *
  * @return string
@@ -105,7 +104,7 @@ if ($seq == 1) {
 function writelog($pane)
 {
 	$path = nZEDb_RES . 'logs';
-	$getdate = gmDate('Ymd');
+	$getdate = gmdate('Ymd');
 	$tmux = new Tmux();
 	$logs = $tmux->get()->write_logs;
 	if ($logs == 1) {

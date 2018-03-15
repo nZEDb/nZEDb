@@ -53,10 +53,10 @@ class ReleaseImage
 	public function __construct()
 	{
 		$this->audSavePath    = nZEDb_COVERS . 'audiosample' . DS; // releases    guid
-		$this->imgSavePath    = nZEDb_COVERS . 'preview'     . DS; // releases    guid
-		$this->jpgSavePath    = nZEDb_COVERS . 'sample'      . DS; // releases    guid
-		$this->movieImgSavePath = nZEDb_COVERS . 'movies'    . DS; // releases    imdbid
-		$this->vidSavePath    = nZEDb_COVERS . 'video'       . DS; // releases    guid
+		$this->imgSavePath    = nZEDb_COVERS . 'preview' . DS; // releases    guid
+		$this->jpgSavePath    = nZEDb_COVERS . 'sample' . DS; // releases    guid
+		$this->movieImgSavePath = nZEDb_COVERS . 'movies' . DS; // releases    imdbid
+		$this->vidSavePath    = nZEDb_COVERS . 'video' . DS; // releases    guid
 
 		/* For reference. *
 		$this->anidbImgPath   = nZEDb_COVERS . 'anime'       . DS; // anidb       anidbid | used in populate_anidb.php, not anidb.php
@@ -64,43 +64,7 @@ class ReleaseImage
 		$this->consoleImgPath = nZEDb_COVERS . 'console'     . DS; // consoleinfo id
 		$this->musicImgPath   = nZEDb_COVERS . 'music'       . DS; // musicinfo   id
 		$this->audioImgPath   = nZEDb_COVERS . 'audio'       . DS; // unused folder, music folder already exists.
-		**/
-	}
-
-	/**
-	 * Get a URL or file image and convert it to string.
-	 *
-	 * @param string $imgLoc URL or file location.
-	 *
-	 * @return bool|mixed|string
-	 */
-	protected function fetchImage($imgLoc)
-	{
-		$img = false;
-		if (strpos(strtolower($imgLoc), 'http:') === 0 || strpos(strtolower($imgLoc), 'https:') === 0) {
-			$img = Misc::getUrl(['url' => $imgLoc]);
-		} else if (is_file($imgLoc)) {
-			$img = @file_get_contents($imgLoc);
-		}
-		if ($img !== false) {
-			$imagick = new \Imagick();
-			$imgFail = false;
-			try {
-				$imagick->readImageBlob($img);
-			} catch (\ImagickException $imgError) {
-				echo 'Bad image data, skipping processing' . PHP_EOL;
-				$imgFail = true;
-			}
-			if ($imgFail === false) {
-				$im = $imagick->readImageBlob($img);
-				if ($im === true) {
-					$imagick->clear();
-					return $img;
-				}
-			}
-		}
-
-		return false;
+		*/
 	}
 
 	/**
@@ -162,7 +126,7 @@ class ReleaseImage
 	/**
 	 * Delete images for the release.
 	 *
-	 * @param string      $guid   The GUID of the release.
+	 * @param string $guid The GUID of the release.
 	 *
 	 * @return void
 	 */
@@ -181,5 +145,41 @@ class ReleaseImage
 
 		// Video folder.
 		@unlink($this->vidSavePath . $guid . '.ogv');
+	}
+
+	/**
+	 * Get a URL or file image and convert it to string.
+	 *
+	 * @param string $imgLoc URL or file location.
+	 *
+	 * @return bool|mixed|string
+	 */
+	protected function fetchImage($imgLoc)
+	{
+		$img = false;
+		if (strpos(strtolower($imgLoc), 'http:') === 0 || strpos(strtolower($imgLoc), 'https:') === 0) {
+			$img = Misc::getUrl(['url' => $imgLoc]);
+		} elseif (is_file($imgLoc)) {
+			$img = @file_get_contents($imgLoc);
+		}
+		if ($img !== false) {
+			$imagick = new \Imagick();
+			$imgFail = false;
+			try {
+				$imagick->readImageBlob($img);
+			} catch (\ImagickException $imgError) {
+				echo 'Bad image data, skipping processing' . PHP_EOL;
+				$imgFail = true;
+			}
+			if ($imgFail === false) {
+				$im = $imagick->readImageBlob($img);
+				if ($im === true) {
+					$imagick->clear();
+					return $img;
+				}
+			}
+		}
+
+		return false;
 	}
 }

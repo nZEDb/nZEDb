@@ -15,6 +15,7 @@
  * not, see:
  *
  * @link <http://www.gnu.org/licenses/>.
+ *
  * @author niel
  * @copyright 2015 nZEDb
  */
@@ -33,7 +34,7 @@ try {
 				echo "Move: .../www/settings.php to  .../nzedb/config/settings.php<br />\n";
 			}
 			exit();
-		} else if (is_dir('install')) {
+		} elseif (is_dir('install')) {
 			header('location: install');
 			exit();
 		}

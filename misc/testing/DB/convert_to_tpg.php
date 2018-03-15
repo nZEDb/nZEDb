@@ -3,8 +3,8 @@ require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR .
 
 use app\models\Settings;
 use nzedb\ConsoleTools;
-use nzedb\Groups;
 use nzedb\db\DB;
+use nzedb\Groups;
 
 /* This script will allow you to move from single collections/binaries/parts tables to TPG without having to run reset_truncate.
   Please STOP all update scripts before running this script.
@@ -69,7 +69,7 @@ while ($cdone < $clen['total']) {
 				print_r($collection);
 				echo sprintf("\nINSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, groups_id, collectionhash, dateadded, filecheck, filesize, releases_id) VALUES (%s)\n\n", $collection['groups_id'], implode(', ', $collection));
 			}
-			$newcid = array('collections_id' => $pdo->queryInsert(sprintf('INSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, groups_id, collectionhash, dateadded, filecheck, filesize, releases_id) VALUES (%s);', $collection['groups_id'], implode(', ', $collection))));
+			$newcid = ['collections_id' => $pdo->queryInsert(sprintf('INSERT INTO collections_%d (subject, fromname, date, xref, totalfiles, groups_id, collectionhash, dateadded, filecheck, filesize, releases_id) VALUES (%s);', $collection['groups_id'], implode(', ', $collection)))];
 			$consoletools->overWrite('Collections Completed: ' . $consoletools->percentString($ccount, $clen['total']));
 
 			//Get binaries and split to correct group tables.
@@ -86,7 +86,7 @@ while ($cdone < $clen['total']) {
 						print_r($binarynew);
 						echo sprintf("\nINSERT INTO binaries_%d (name, collections_id, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s)\n\n", $collection['groups_id'], implode(', ', $binarynew));
 					}
-					$newbid = array('binaries_id' => $pdo->queryInsert(sprintf('INSERT INTO binaries_%d (name, collections_id, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s);', $collection['groups_id'], implode(', ', $binarynew))));
+					$newbid = ['binaries_id' => $pdo->queryInsert(sprintf('INSERT INTO binaries_%d (name, collections_id, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s);', $collection['groups_id'], implode(', ', $binarynew)))];
 
 					//Get parts and split to correct group tables.
 					$parts = $pdo->queryAssoc('SELECT * FROM parts WHERE binaryID = ' . $oldbid . ';');

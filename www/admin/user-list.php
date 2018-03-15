@@ -20,7 +20,8 @@ foreach ($variables as $key => $variable) {
 	checkRequest($key);
 }
 
-$page->smarty->assign([
+$page->smarty->assign(
+	[
 		'username'          => $variables['username'],
 		'email'             => $variables['email'],
 		'host'              => $variables['host'],
@@ -34,9 +35,15 @@ $page->smarty->assign([
 			'/user-list.php?ob=' . $orderBy . $uSearch .
 			'&amp;offset=',
 		'userlist' => $page->users->getRange(
-			$offset, ITEMS_PER_PAGE, $orderBy, $variables['username'],
-			$variables['email'], $variables['host'], $variables['role'], true
-		)
+			$offset,
+			ITEMS_PER_PAGE,
+			$orderBy,
+			$variables['username'],
+			$variables['email'],
+			$variables['host'],
+			$variables['role'],
+			true
+		),
 	]
 );
 
@@ -50,7 +57,8 @@ $page->smarty->assign('pager', $page->smarty->fetch('pager.tpl'));
 $page->content = $page->smarty->fetch('user-list.tpl');
 $page->render();
 
-function checkRequest($param) {
+function checkRequest($param)
+{
 	global $uSearch, $variables;
 	if (isset($_REQUEST[$param])) {
 		$variables[$param] = $_REQUEST[$param];

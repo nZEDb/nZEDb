@@ -5,7 +5,7 @@ use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 /**
- * Tmux output functions for printing monitor data
+ * Tmux output functions for printing monitor data.
  *
  * Class TmuxOutput
  */
@@ -30,7 +30,6 @@ class TmuxOutput extends Tmux
 	 * @var array of current format masks to use.
 	 */
 	private $tmpMasks;
-
 
 	/**
 	 * @param DB $pdo
@@ -69,7 +68,8 @@ class TmuxOutput extends Tmux
 		$buffer .= $this->_getSeparator();
 
 		if ($this->runVar['settings']['backfilldays'] == '1') {
-			$buffer .= sprintf($this->tmpMasks[4],
+			$buffer .= sprintf(
+				$this->tmpMasks[4],
 				'Activated',
 				sprintf(
 					'%d(%d)',
@@ -83,7 +83,8 @@ class TmuxOutput extends Tmux
 				)
 			);
 		} else {
-			$buffer .= sprintf($this->tmpMasks[4],
+			$buffer .= sprintf(
+				$this->tmpMasks[4],
 				'Activated',
 				sprintf(
 					'%d(%d)',
@@ -119,12 +120,14 @@ class TmuxOutput extends Tmux
 		$state = ($this->runVar['settings']['is_running'] == 1) ? 'Running' : 'Disabled';
 		$version = $this->_vers->versions->git->tag;
 
-		$buffer .= sprintf($this->tmpMasks[2],
+		$buffer .= sprintf(
+			$this->tmpMasks[2],
 			"Monitor $state v$version [" . $this->runVar['constants']['sqlpatch'] . ']: ',
 			$this->relativeTime($this->runVar['timers']['timer1'])
 		);
 
-		$buffer .= sprintf($this->tmpMasks[1],
+		$buffer .= sprintf(
+			$this->tmpMasks[1],
 			'USP Connections:',
 			sprintf(
 				'%d active (%d total) - %s:%d',
@@ -136,7 +139,8 @@ class TmuxOutput extends Tmux
 		);
 
 		if ($this->runVar['constants']['alternate_nntp']) {
-			$buffer .= sprintf($this->tmpMasks[1],
+			$buffer .= sprintf(
+				$this->tmpMasks[1],
 				'USP Alternate:',
 				sprintf(
 					'%d active (%d total) - %s:%d)',
@@ -148,11 +152,13 @@ class TmuxOutput extends Tmux
 			);
 		}
 
-		$buffer .= sprintf($this->tmpMasks[1],
+		$buffer .= sprintf(
+			$this->tmpMasks[1],
 			'Newest Release:',
 			$this->runVar['timers']['newOld']['newestrelname']
 		);
-		$buffer .= sprintf($this->tmpMasks[1],
+		$buffer .= sprintf(
+			$this->tmpMasks[1],
 			'Release Added:',
 			sprintf(
 				'%s ago',
@@ -161,7 +167,8 @@ class TmuxOutput extends Tmux
 					: 0)
 			)
 		);
-		$buffer .= sprintf($this->tmpMasks[1],
+		$buffer .= sprintf(
+			$this->tmpMasks[1],
 			'Predb Updated:',
 			sprintf(
 				'%s ago',
@@ -170,7 +177,8 @@ class TmuxOutput extends Tmux
 					: 0)
 			)
 		);
-		$buffer .= sprintf($this->tmpMasks[1],
+		$buffer .= sprintf(
+			$this->tmpMasks[1],
 				sprintf(
 					'Collection Age[%d]:',
 					$this->runVar['constants']['delaytime']
@@ -182,13 +190,15 @@ class TmuxOutput extends Tmux
 						: 0)
 				)
 		);
-		$buffer .= sprintf($this->tmpMasks[1],
+		$buffer .= sprintf(
+			$this->tmpMasks[1],
 				'Parts in Repair:',
 				number_format($this->runVar['counts']['now']['missed_parts_table'])
 		);
 
 		if (($this->runVar['settings']['post'] == '1' || $this->runVar['settings']['post'] == '3') && $this->runVar['constants']['sequential'] != 2) {
-			$buffer .= sprintf($this->tmpMasks[1],
+			$buffer .= sprintf(
+				$this->tmpMasks[1],
 					'Postprocess:',
 					'stale for ' . $this->relativeTime($this->runVar['timers']['timer3'])
 			);
@@ -205,7 +215,8 @@ class TmuxOutput extends Tmux
 		$buffer .= sprintf($this->tmpMasks[3], 'PP Lists', 'Unmatched', 'Matched');
 		$buffer .= $this->_getSeparator();
 
-		$buffer .= sprintf($this->tmpMasks[4],
+		$buffer .= sprintf(
+			$this->tmpMasks[4],
 		'Nfo',
 		sprintf(
 			'%s(%s)',
@@ -218,7 +229,8 @@ class TmuxOutput extends Tmux
 			$this->runVar['counts']['percent']['nfo']
 		)
 		);
-		$buffer .= sprintf($this->tmpMasks[4],
+		$buffer .= sprintf(
+			$this->tmpMasks[4],
 			'PreDB',
 			sprintf(
 				'%s(%s)',
@@ -232,7 +244,8 @@ class TmuxOutput extends Tmux
 				$this->runVar['counts']['percent']['predb_matched']
 			)
 		);
-		$buffer .= sprintf($this->tmpMasks[4],
+		$buffer .= sprintf(
+			$this->tmpMasks[4],
 			'RequestID',
 			sprintf(
 				'%s(%s)',
@@ -245,7 +258,8 @@ class TmuxOutput extends Tmux
 				$this->runVar['counts']['percent']['requestid_matched']
 			)
 		);
-		$buffer .= sprintf($this->tmpMasks[4],
+		$buffer .= sprintf(
+			$this->tmpMasks[4],
 			'Renames',
 			sprintf(
 				'%s(%s)',
@@ -263,7 +277,8 @@ class TmuxOutput extends Tmux
 		$buffer .= sprintf($this->tmpMasks[3], 'Category', 'In Process', 'In Database');
 		$buffer .= $this->_getSeparator();
 
-		$buffer .= sprintf($this->tmpMasks[4],
+		$buffer .= sprintf(
+			$this->tmpMasks[4],
 			'Audio',
 			sprintf(
 				'%s(%s)',
@@ -276,7 +291,8 @@ class TmuxOutput extends Tmux
 				$this->runVar['counts']['percent']['audio']
 			)
 		);
-		$buffer .= sprintf($this->tmpMasks[4],
+		$buffer .= sprintf(
+			$this->tmpMasks[4],
 			'Books',
 			sprintf(
 				'%s(%s)',
@@ -289,7 +305,8 @@ class TmuxOutput extends Tmux
 				$this->runVar['counts']['percent']['books']
 			)
 		);
-		$buffer .= sprintf($this->tmpMasks[4],
+		$buffer .= sprintf(
+			$this->tmpMasks[4],
 			'Console',
 			sprintf(
 				'%s(%s)',
@@ -302,7 +319,8 @@ class TmuxOutput extends Tmux
 				$this->runVar['counts']['percent']['console']
 			)
 		);
-		$buffer .= sprintf($this->tmpMasks[4],
+		$buffer .= sprintf(
+			$this->tmpMasks[4],
 			'Misc',
 			sprintf(
 				'%s(%s)',
@@ -315,7 +333,8 @@ class TmuxOutput extends Tmux
 				$this->runVar['counts']['percent']['misc']
 			)
 		);
-		$buffer .= sprintf($this->tmpMasks[4],
+		$buffer .= sprintf(
+			$this->tmpMasks[4],
 			'Movie',
 			sprintf(
 				'%s(%s)',
@@ -328,7 +347,8 @@ class TmuxOutput extends Tmux
 				$this->runVar['counts']['percent']['movies']
 			)
 		);
-		$buffer .= sprintf($this->tmpMasks[4],
+		$buffer .= sprintf(
+			$this->tmpMasks[4],
 			'PC',
 			sprintf(
 				'%s(%s)',
@@ -341,7 +361,8 @@ class TmuxOutput extends Tmux
 				$this->runVar['counts']['percent']['pc']
 			)
 		);
-		$buffer .= sprintf($this->tmpMasks[4],
+		$buffer .= sprintf(
+			$this->tmpMasks[4],
 			'TV',
 			sprintf(
 				'%s(%s)',
@@ -354,7 +375,8 @@ class TmuxOutput extends Tmux
 				$this->runVar['counts']['percent']['tv']
 			)
 		);
-		$buffer .= sprintf($this->tmpMasks[4],
+		$buffer .= sprintf(
+			$this->tmpMasks[4],
 			'XXX',
 			sprintf(
 				'%s(%s)',
@@ -370,7 +392,8 @@ class TmuxOutput extends Tmux
 
 		$buffer .= $this->_getSeparator();
 
-		$buffer .= sprintf($this->tmpMasks[4],
+		$buffer .= sprintf(
+			$this->tmpMasks[4],
 			'Total',
 			sprintf(
 				'%s(%s)',
@@ -402,7 +425,6 @@ class TmuxOutput extends Tmux
 		if (((isset($monitor_path)) && (file_exists($monitor_path)))
 			|| ((isset($monitor_path_a)) && (file_exists($monitor_path_a)))
 				|| ((isset($monitor_path_b)) && (file_exists($monitor_path_b)))) {
-
 			$buffer .= "\n";
 			$buffer .= sprintf($this->tmpMasks[3], 'File System', 'Used', 'Free');
 			$buffer .= $this->_getSeparator();
@@ -448,7 +470,8 @@ class TmuxOutput extends Tmux
 		$buffer = PHP_EOL;
 		$buffer .= sprintf($this->tmpMasks[3], 'Query Block', 'Time', 'Cumulative');
 		$buffer .= $this->_getSeparator();
-		$buffer .= sprintf($this->tmpMasks[4],
+		$buffer .= sprintf(
+			$this->tmpMasks[4],
 			'Combined',
 			sprintf(
 				'%d %d %d %d %d %d %d',
@@ -490,7 +513,8 @@ class TmuxOutput extends Tmux
 
 	protected function _getSeparator()
 	{
-		return sprintf($this->tmpMasks[3],
+		return sprintf(
+			$this->tmpMasks[3],
 			'======================================',
 			'=========================',
 			'======================================'
@@ -501,7 +525,8 @@ class TmuxOutput extends Tmux
 	{
 		$buffer = sprintf($this->tmpMasks[3], 'Collections', 'Binaries', 'Parts');
 		$buffer .= $this->_getSeparator();
-		$buffer .= sprintf($this->tmpMasks[5],
+		$buffer .= sprintf(
+			$this->tmpMasks[5],
 			number_format($this->runVar['counts']['now']['collections_table']),
 			number_format($this->runVar['counts']['now']['binaries_table']),
 			number_format($this->runVar['counts']['now']['parts_table'])

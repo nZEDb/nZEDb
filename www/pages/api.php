@@ -1,9 +1,9 @@
 <?php
 
 use app\models\Settings;
-use nzedb\Releases;
-use nzedb\http\API;
 use nzedb\db\DB;
+use nzedb\http\API;
+use nzedb\Releases;
 use nzedb\utility\Misc;
 use nzedb\utility\Text;
 
@@ -113,12 +113,36 @@ switch ($function) {
 
 		if (isset($_GET['q'])) {
 			$relData = $releases->search(
-				$_GET['q'], -1, -1, -1, $groupName, -1, -1, 0, 0, -1, -1, $offset, $limit, '', $maxAge, $catExclusions,
-				'basic', $categoryID, $minSize
+				$_GET['q'],
+				-1,
+				-1,
+				-1,
+				$groupName,
+				-1,
+				-1,
+				0,
+				0,
+				-1,
+				-1,
+				$offset,
+				$limit,
+				'',
+				$maxAge,
+				$catExclusions,
+				'basic',
+				$categoryID,
+				$minSize
 			);
 		} else {
 			$relData = $releases->getBrowseRange(
-				$categoryID, $offset, $limit, '', $maxAge, $catExclusions, $groupName, $minSize
+				$categoryID,
+				$offset,
+				$limit,
+				'',
+				$maxAge,
+				$catExclusions,
+				$groupName,
+				$minSize
 			);
 		}
 		$api->output($relData, $params, $offset, $outputXML, 'api');
@@ -139,13 +163,13 @@ switch ($function) {
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 
 		$siteIdArr = [
-			'id'     => (isset($_GET['vid']) ? $_GET['vid'] : '0'),
-			'tvdb'   => (isset($_GET['tvdbid']) ? $_GET['tvdbid'] : '0'),
-			'trakt'  => (isset($_GET['traktid']) ? $_GET['traktid'] : '0'),
-			'tvrage' => (isset($_GET['rid']) ? $_GET['rid'] : '0'),
-			'tvmaze' => (isset($_GET['tvmazeid']) ? $_GET['tvmazeid'] : '0'),
-			'imdb'   => (isset($_GET['imdbid']) ? $_GET['imdbid'] : '0'),
-			'tmdb'   => (isset($_GET['tmdbid']) ? $_GET['tmdbid'] : '0')
+			'id'     => ($_GET['vid'] ?? '0'),
+			'tvdb'   => ($_GET['tvdbid'] ?? '0'),
+			'trakt'  => ($_GET['traktid'] ?? '0'),
+			'tvrage' => ($_GET['rid'] ?? '0'),
+			'tvmaze' => ($_GET['tvmazeid'] ?? '0'),
+			'imdb'   => ($_GET['imdbid'] ?? '0'),
+			'tmdb'   => ($_GET['tmdbid'] ?? '0'),
 		];
 
 		// Process season only queries or Season and Episode/Airdate queries
@@ -162,7 +186,7 @@ switch ($function) {
 			$episode = (!empty($_GET['ep']) ? $_GET['ep'] : '');
 		}
 
-		$name = isset($_GET['q']) ? $_GET['q'] : '';
+		$name = $_GET['q'] ?? '';
 		$relData = $releases->searchShows(
 			$siteIdArr,
 			$series,
@@ -187,20 +211,21 @@ switch ($function) {
 		$maxAge = $api->maxAge();
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 
-		$imdbId = (isset($_GET['imdbid']) ? $_GET['imdbid'] : '-1');
+		$imdbId = ($_GET['imdbid'] ?? '-1');
 
 		$relData = $releases->searchbyImdbId(
 			$imdbId,
 			$offset,
 			$api->limit(),
-			(isset($_GET['q']) ? $_GET['q'] : ''),
+			($_GET['q'] ?? ''),
 			$api->categoryID(),
 			$maxAge,
 			$minSize
 		);
 
-		$api->addCoverURL($relData,
-			function($release) {
+		$api->addCoverURL(
+			$relData,
+			function ($release) {
 				return Misc::getCoverURL(['type' => 'movies', 'id' => $release['imdbid']]);
 			}
 		);
@@ -283,7 +308,7 @@ switch ($function) {
 		$api->verifyEmptyParameter('email');
 
 		if (!in_array((int)Settings::value('..registerstatus'), [Settings::REGISTER_STATUS_OPEN,
-			Settings::REGISTER_STATUS_API_ONLY])) {
+			Settings::REGISTER_STATUS_API_ONLY, ])) {
 			Misc::showApiError(104);
 		}
 		// Check email is valid format.
@@ -301,7 +326,12 @@ switch ($function) {
 		// Register.
 		$userDefault = $page->users->getDefaultRole();
 		$uid = $page->users->signUp(
-			$username, $password, $_GET['email'], $_SERVER['REMOTE_ADDR'], $userDefault['id'], $userDefault['defaultinvites']
+			$username,
+			$password,
+			$_GET['email'],
+			$_SERVER['REMOTE_ADDR'],
+			$userDefault['id'],
+			$userDefault['defaultinvites']
 		);
 		// Check if it succeeded.
 		$userData = $page->users->getById($uid);

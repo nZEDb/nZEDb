@@ -13,19 +13,23 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2016 nZEDb
  */
-
 namespace app\tests\cases\models;
 
 use app\models\Settings;
 
-class SettingsTest extends \lithium\test\Unit {
+class SettingsTest extends \lithium\test\Unit
+{
+	public function setUp()
+	{
+	}
 
-	public function setUp() {}
-
-	public function tearDown() {}
+	public function tearDown()
+	{
+	}
 
 	public function testHasAllEntries()
 	{

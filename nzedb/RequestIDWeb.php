@@ -16,6 +16,7 @@ class RequestIDWeb extends RequestID
 
 	/**
 	 * The ID of the PRE entry the found request ID belongs to.
+	 *
 	 * @var bool|int
 	 */
 	protected $_preDbID = false;
@@ -43,7 +44,8 @@ class RequestIDWeb extends RequestID
 	protected function _getReleases()
 	{
 		$this->_releases = $this->pdo->queryDirect(
-			sprintf('
+			sprintf(
+				'
 				SELECT r.id, r.name, r.searchname, g.name AS groupname, r.groups_id, r.categories_id
 				FROM releases r
 				LEFT JOIN groups g ON r.groups_id = g.id
@@ -113,10 +115,9 @@ class RequestIDWeb extends RequestID
 
 		if ($this->_releases instanceof \PDOStatement) {
 			// Loop all the results.
-			/* @var $releases \PDOStatement[] */
+			// @var $releases \PDOStatement[]
 			$releases = &$this->_releases;
 			foreach ($releases as $release) {
-
 				$this->_release['name'] = $release['name'];
 				// Try to find a request ID for the release.
 				$requestId = $this->_siftReqId();
@@ -140,7 +141,7 @@ class RequestIDWeb extends RequestID
 					'reqid' => $requestId,
 					'ident' => $release['id'],
 					'group' => $release['groupname'],
-					'sname' => $release['searchname']
+					'sname' => $release['searchname'],
 				];
 			}
 		}
@@ -154,7 +155,8 @@ class RequestIDWeb extends RequestID
 		$requestArray[0] = ['ident' => 0, 'group' => 'none', 'reqid' => 0];
 
 		// Do a web lookup.
-		$returnXml = Misc::getUrl([
+		$returnXml = Misc::getUrl(
+			[
 				'url' => Settings::value('..request_url'),
 				'method' => 'post',
 				'postdata' => 'data=' . serialize($requestArray),
@@ -214,10 +216,10 @@ class RequestIDWeb extends RequestID
 
 				unset($requestArray[0]);
 				foreach ($requestArray as $request) {
-
 					$addDate = $this->pdo->queryOneRow(
 						sprintf(
-							'SELECT UNIX_TIMESTAMP(adddate) AS adddate FROM releases WHERE id = %d', $request['ident']
+							'SELECT UNIX_TIMESTAMP(adddate) AS adddate FROM releases WHERE id = %d',
+							$request['ident']
 						)
 					);
 
@@ -249,7 +251,8 @@ class RequestIDWeb extends RequestID
 	protected function _insertIntoPreDB()
 	{
 		$dupeCheck = $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT id AS predb_id, requestid, groups_id
 				FROM predb
 				WHERE title = %s',
@@ -259,7 +262,8 @@ class RequestIDWeb extends RequestID
 
 		if ($dupeCheck === false) {
 			$this->_preDbID = (int)$this->pdo->queryInsert(
-				sprintf('
+				sprintf(
+					'
 					INSERT INTO predb (title, source, requestid, groups_id, created)
 					VALUES (%s, %s, %d, %d, NOW())',
 					$this->pdo->escapeString($this->_newTitle['title']),
@@ -271,7 +275,8 @@ class RequestIDWeb extends RequestID
 		} else {
 			$this->_preDbID = $dupeCheck['predb_id'];
 			$this->pdo->queryExec(
-				sprintf('
+				sprintf(
+					'
 					UPDATE predb
 					SET requestid = %d, groups_id = %d
 					WHERE id = %d',
@@ -291,7 +296,8 @@ class RequestIDWeb extends RequestID
 		$determinedCategory = $this->category->determineCategory($this->_release['groups_id'], $this->_newTitle['title']);
 		$newTitle = $this->pdo->escapeString($this->_newTitle['title']);
 		$this->pdo->queryExec(
-			sprintf('
+			sprintf(
+				'
 				UPDATE releases
 				SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL, consoleinfo_id = NULL, bookinfo_id = NULL,
 				anidbid = NULL, reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s, categories_id = %d, predb_id = %d
@@ -306,14 +312,15 @@ class RequestIDWeb extends RequestID
 		$this->sphinx->updateRelease($this->_release['id'], $this->pdo);
 
 		if ($this->echoOutput) {
-			NameFixer::echoChangedReleaseName([
+			NameFixer::echoChangedReleaseName(
+				[
 					'new_name' => $this->_newTitle['title'],
 					'old_name' => $this->_release['searchname'],
 					'new_category' => $this->category->getNameByID($determinedCategory),
 					'old_category' => '',
 					'group' => $this->_release['groupname'],
 					'release_id' => $this->_release['id'],
-					'method' => 'RequestID->updateRelease<web>'
+					'method' => 'RequestID->updateRelease<web>',
 				]
 			);
 		}

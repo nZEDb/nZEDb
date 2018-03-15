@@ -15,19 +15,19 @@
  * not, see:
  *
  * @link <http://www.gnu.org/licenses/>.
+ *
  * @author niel
  * @copyright 2014 nZEDb
  */
 namespace app\extensions\console;
 
-
 class Command extends \lithium\console\Command
 {
 	protected $_classes = [
-			'response'	=> 'app\extensions\console\Response'
+			'response'	=> 'app\extensions\console\Response',
 	];
 
-	public function __construct(array $config = array())
+	public function __construct(array $config = [])
 	{
 		$defaults = ['request' => null, 'response' => [], 'classes' => $this->_classes];
 		parent::__construct($config + $defaults);

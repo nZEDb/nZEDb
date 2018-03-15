@@ -6,12 +6,13 @@ use nzedb\utility\Misc;
 
 /**
  * Export NZB's to a folder.
- * Class NZBExport
+ * Class NZBExport.
  */
 class NZBExport
 {
 	/**
 	 * Started from browser?
+	 *
 	 * @var bool
 	 * @access protected
 	 */
@@ -182,7 +183,7 @@ class NZBExport
 						}
 						continue;
 					}
-				// If not, decompress it and create a file to store it in.
+					// If not, decompress it and create a file to store it in.
 				} else {
 					$nzbContents = Misc::unzipGzipFile($nzbFile);
 					if (!$nzbContents) {
@@ -216,6 +217,7 @@ class NZBExport
 
 	/**
 	 * Return bool on CLI, string on browser.
+	 *
 	 * @return bool|string
 	 *
 	 * @access protected

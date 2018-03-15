@@ -25,16 +25,16 @@ class ReleaseExtra
 			case preg_match('#(?:^36$|HEVC)#i', $codec):
 				$codec = 'HEVC';
 			break;
-			case preg_match('#(?:^(?:7|27|H264)$|AVC)#i', $codec);
+			case preg_match('#(?:^(?:7|27|H264)$|AVC)#i', $codec):
 				$codec = 'h.264';
 			break;
 			case preg_match('#(?:^(?:20|FMP4|MP42|MP43|MPG4)$|ASP)#i', $codec):
 				$codec = 'MPEG-4';
 			break;
-			case preg_match('#^2$#i', $codec);
+			case preg_match('#^2$#i', $codec):
 				$codec = 'MPEG-2';
 			break;
-			case preg_match('#^MPEG$#', $codec);
+			case preg_match('#^MPEG$#', $codec):
 				$codec = 'MPEG-1';
 			break;
 			case preg_match('#DX50|DIVX|DIV3#i', $codec):
@@ -43,10 +43,10 @@ class ReleaseExtra
 			case preg_match('#XVID#i', $codec):
 				$codec = 'XviD';
 			break;
-			case preg_match('#(?:wmv|WVC1)#i', $codec);
+			case preg_match('#(?:wmv|WVC1)#i', $codec):
 				$codec = 'wmv';
 			break;
-			default;
+			default:
 		}
 
 		return $codec;
@@ -100,8 +100,6 @@ class ReleaseExtra
 		if (isset($arrXml['File']) && isset($arrXml['File']['track'])) {
 			foreach ($arrXml['File']['track'] as $track) {
 				if (isset($track['@attributes']) && isset($track['@attributes']['type'])) {
-
-
 					if ($track['@attributes']['type'] == 'General') {
 						if (isset($track['Format'])) {
 							$containerformat = $track['Format'];
@@ -110,12 +108,12 @@ class ReleaseExtra
 							$overallbitrate = $track['Overall_bit_rate'];
 						}
 						if (isset($track['Unique_ID'])) {
-							if(preg_match('/\(0x(?P<hash>[0-9a-f]{32})\)/i', $track['Unique_ID'], $matches)){
+							if (preg_match('/\(0x(?P<hash>[0-9a-f]{32})\)/i', $track['Unique_ID'], $matches)) {
 								$uniqueid = $matches['hash'];
 								$this->addUID($releaseID, $uniqueid);
 							}
 						}
-					} else if ($track['@attributes']['type'] == 'Video') {
+					} elseif ($track['@attributes']['type'] == 'Video') {
 						$videoduration = $videoformat = $videocodec = $videowidth = $videoheight = $videoaspect = $videoframerate = $videolibrary = '';
 						if (isset($track['Duration'])) {
 							$videoduration = $track['Duration'];
@@ -142,7 +140,7 @@ class ReleaseExtra
 							$videolibrary = $track['Writing_library'];
 						}
 						$this->addVideo($releaseID, $containerformat, $overallbitrate, $videoduration, $videoformat, $videocodec, $videowidth, $videoheight, $videoaspect, $videoframerate, $videolibrary);
-					} else if ($track['@attributes']['type'] == 'Audio') {
+					} elseif ($track['@attributes']['type'] == 'Audio') {
 						$audioID = 1;
 						$audioformat = $audiomode = $audiobitratemode = $audiobitrate = $audiochannels = $audiosamplerate = $audiolibrary = $audiolanguage = $audiotitle = '';
 						if (isset($track['@attributes']['streamid'])) {
@@ -176,7 +174,7 @@ class ReleaseExtra
 							$audiotitle = $track['Title'];
 						}
 						$this->addAudio($releaseID, $audioID, $audioformat, $audiomode, $audiobitratemode, $audiobitrate, $audiochannels, $audiosamplerate, $audiolibrary, $audiolanguage, $audiotitle);
-					} else if ($track['@attributes']['type'] == 'Text') {
+					} elseif ($track['@attributes']['type'] == 'Text') {
 						$subsID = 1;
 						$subslanguage = 'Unknown';
 						if (isset($track['@attributes']['streamid'])) {
@@ -222,7 +220,8 @@ class ReleaseExtra
 	 */
 	public function addUID($releaseID, $uniqueid)
 	{
-		$dupecheck = $this->pdo->queryOneRow("
+		$dupecheck = $this->pdo->queryOneRow(
+			"
 			SELECT releases_id
 			FROM release_unique
 			WHERE releases_id = {$releaseID}
@@ -233,7 +232,8 @@ class ReleaseExtra
 		);
 
 		if ($dupecheck === false) {
-			$this->pdo->queryExec("
+			$this->pdo->queryExec(
+				"
 				INSERT INTO release_unique (releases_id, uniqueid)
 				VALUES ({$releaseID}, UNHEX('{$uniqueid}'))"
 			);

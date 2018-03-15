@@ -91,14 +91,16 @@ truncateTable($pdo, $nZEDB_schema . '.missed_parts', $runQueries);
 
 echo "Converting from newznab to nZEDb... This will take a while...\n\n";
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'anidb',
 			 'INSERT INTO ' . $nZEDB_schema .
 			 '.anidb (airdates, anidbid, categories, characters, creators, description, enddate, episodetitles, epnos, picture, rating, related, startdate, title, type, unixtime) ' .
 			 'SELECT airdates, anidbID, categories, characters, creators, description, enddate, episodetitles, epnos, picture, rating, related, startdate, title, type, UNIX_TIMESTAMP(createddate) FROM ' .
 			 $nn_schema . '.anidb',
-			 $runQueries);
+			 $runQueries
+);
 /* we no longer have this table, so this has to be changed to match current practise.
 convertTable($pdo,
 			 $nZEDB_schema,
@@ -110,139 +112,169 @@ convertTable($pdo,
 */
 echo "Skipping binaries table: Different in nZEDb\n";
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'binaryblacklist',
 			 'INSERT INTO ' . $nZEDB_schema .
 			 '.binaryblacklist (id, groupname, regex, msgcol, optype, status, description) ' .
 			 'SELECT ID, groupname, regex, msgcol, optype, status, description FROM ' . $nn_schema .
 			 '.binaryblacklist',
-			 $runQueries);
+			 $runQueries
+);
 
 // You lose genreID and dewey.
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'bookinfo',
 			 'INSERT INTO ' . $nZEDB_schema .
 			 '.bookinfo (id, title , author, asin, isbn, ean, url, publisher, publishdate, pages, overview, cover, createddate, updateddate) ' .
 			 'SELECT ID, title , author, asin, isbn, ean, url, publisher, publishdate, pages, review, cover, createddate, updateddate FROM ' .
 			 $nn_schema . '.bookinfo GROUP BY asin',
-			 $runQueries);
+			 $runQueries
+);
 
 echo "Skipping category table: using nZEDb's version\n";
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'consoleinfo',
 			 'INSERT INTO ' . $nZEDB_schema .
 			 '.consoleinfo (asin, cover, createddate, esrb, genreid, id, platform, publisher, releasedate, review, salesrank, title, updateddate, url) ' .
 			 'SELECT asin, cover, createddate, esrb, genreID, ID, platform, publisher, releasedate, review, salesrank, title, updateddate, url FROM ' .
 			 $nn_schema . '.consoleinfo GROUP BY asin',
-			 $runQueries);
+			 $runQueries
+);
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'page_contents',
 			 'INSERT INTO ' . $nZEDB_schema .
 			 '.page_contents (id, title, url, body, metadescription, metakeywords, contenttype, showinmenu, status, ordinal, role) ' .
 			 'SELECT id, title, url, body, metadescription, metakeywords, contenttype, showinmenu, status, ordinal, role FROM ' .
 			 $nn_schema . '.content',
-			 $runQueries);
+			 $runQueries
+);
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'forum_posts',
 			 'INSERT INTO ' . $nZEDB_schema .
 			 '.forum_posts (forumid, parentid, user_id, subject, message, locked, sticky, replies, createddate, updateddate) ' .
 			 'SELECT forumID, parentID, userID, subject, message, locked, sticky, replies, createddate, updateddate FROM ' .
 			 $nn_schema . '.forumpost',
-			 $runQueries);
+			 $runQueries
+);
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'genres',
 			 'INSERT INTO ' . $nZEDB_schema . '.genres (title, type) ' .
 			 'SELECT title, type FROM ' . $nn_schema . '.genres',
-			 $runQueries);
+			 $runQueries
+);
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'groups',
 			 'INSERT INTO ' . $nZEDB_schema .
 			 '.groups (active, backfill_target, description, id, minfilestoformrelease, minsizetoformrelease, name) ' .
 			 'SELECT active, backfill_target, description, ID, minfilestoformrelease, minsizetoformrelease, name FROM ' .
 			 $nn_schema . '.groups',
-			 $runQueries);
+			 $runQueries
+);
 
 echo "Skipping menu table: menu layouts are different\n";
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'movieinfo',
 			 'INSERT INTO ' . $nZEDB_schema .
 			 '.movieinfo (actors, backdrop, cover, createddate, director, genre, id, imdbid, language, plot, rating, tagline, title, tmdbid, updateddate, year) ' .
 			 'SELECT actors, backdrop, cover, createddate, director, genre, ID, imdbID, language, plot, rating, tagline, title, tmdbID, updateddate, year FROM ' .
 			 $nn_schema . '.movieinfo',
-			 $runQueries);
+			 $runQueries
+);
 
-runQuery($pdo,
+runQuery(
+	$pdo,
 		 'ALTER TABLE ' . $nZEDB_schema . '.movieinfo MODIFY column genre varchar(255) NOT NULL',
-		 $runQueries);
+		 $runQueries
+);
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'musicinfo',
 			 'INSERT INTO ' . $nZEDB_schema .
 			 '.musicinfo (artist, asin, cover, createddate, genreid, id, publisher, releasedate, review, salesrank, title, tracks, updateddate, url, year) ' .
 			 'SELECT artist, asin, cover, createddate, genreID, ID, publisher, releasedate, review, salesrank, title, tracks, updateddate, url, year FROM ' .
 			 $nn_schema . '.musicinfo GROUP BY asin',
-			 $runQueries);
+			 $runQueries
+);
 
 echo "Skipping partrepair table: No conversion needed due to nZEDb changes\n";
 echo "Skipping parts table: No conversion needed due to nZEDb changes\n";
 echo "Skipping predb table: Not in NZEDb\n";
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'audio_data',
 			 'INSERT INTO ' . $nZEDB_schema .
 			 '.audio_data (releases_id, audioid, audioformat, audiomode, audiobitratemode, audiobitrate, audiochannels, audiosamplerate, audiolibrary, audiolanguage, audiotitle) ' .
 			 'SELECT releases_id, audioID, audioformat, audiomode, audiobitratemode, audiobitrate, audiochannels, audiosamplerate, audiolibrary, audiolanguage, audiotitle FROM ' .
 			 $nn_schema . '.releaseaudio GROUP BY releases_id',
-			 $runQueries);
+			 $runQueries
+);
 
 // You lose all spotnab additions (sourceID, gid, cid, isvisible, issynced, username).
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'release_comments',
 			 'INSERT INTO ' . $nZEDB_schema .
 			 '.release_comments (createddate, host, id, releases_id, text, user_id) ' .
 			 'SELECT createddate, host, ID, releases_id, text, userID FROM ' . $nn_schema .
 			 '.releasecomment',
-			 $runQueries);
+			 $runQueries
+);
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'releaseextrafull',
 			 'INSERT INTO ' . $nZEDB_schema . '.releaseextrafull (releases_id, mediainfo) ' .
 			 'SELECT releases_id, mediainfo FROM ' . $nn_schema . '.releaseextrafull',
-			 $runQueries);
+			 $runQueries
+);
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'release_files',
 			 'INSERT INTO ' . $nZEDB_schema .
 			 '.release_files (releases_id, name, size, createddate, passworded) ' .
 			 'SELECT releases_id, name, size, createddate, passworded FROM ' . $nn_schema .
 			 '.releasefiles group by releases_id',
-			 $runQueries);
+			 $runQueries
+);
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'release_nfos',
 			 'INSERT INTO ' . $nZEDB_schema . '.release_nfos (releases_id, nfo) ' .
 			 'SELECT releases_id, nfo FROM ' . $nn_schema . '.releasenfo group by releases_id',
-			 $runQueries);
+			 $runQueries
+);
 
 echo "Skipping releaseregex table: Not needed with nZEDb\n";
 
@@ -273,31 +305,37 @@ echo "Skipping releaseregex table: Not needed with nZEDb\n";
 //      Other                           6070/6000       6999/6000
 //      Other                           8010/8000       8050/8000
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'releases',
 			 'INSERT INTO ' . $nZEDB_schema .
 			 '.releases (adddate, anidbid, bookinfo_id, categories_id, comments, completion, consoleinfo_id, fromname, grabs, groups_id, guid, haspreview, id, imdbid, musicinfo_id, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, nzb_guid) ' .
 			 'SELECT adddate, anidbID, bookinfo_id, case categoryID when 7030 then 8020 when 7020 then 8010 when 7010 then 8030 when 6999 then 6070 when 2060 then 2050 when 2050 then 2060 when 7000 then 8000 when 6070 then 6999 when 8010 then 8050 else categoryID end, comments, completion, consoleinfo_id, fromname, grabs, group_id, guid, haspreview, ID, imdbID, musicinfo_id, name, passwordstatus, postdate, rarinnerfilecount, searchname, size, totalpart, UNHEX(gid) FROM ' .
 			 $nn_schema . '.releases',
-			 $runQueries);
+			 $runQueries
+);
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'release_subtitles',
 			 'INSERT INTO ' . $nZEDB_schema . '.release_subtitles (releases_id, subsid, subslanguage) ' .
 			 'SELECT releases_id, subsID, subslanguage FROM ' . $nn_schema . '.releasesubs',
-			 $runQueries);
+			 $runQueries
+);
 
 // You lose (definition).
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'video_data',
 			 'INSERT INTO ' . $nZEDB_schema .
 			 '.video_data (containerformat,overallbitrate,releases_id,videoaspect,videocodec,videoduration,videoformat,videoframerate,videoheight,videolibrary,videowidth) ' .
 			 'SELECT containerformat,overallbitrate,releases_id,videoaspect,videocodec,videoduration,videoformat,videoframerate, videoheight, videolibrary, videowidth FROM ' .
 			 $nn_schema . '.releasevideo group by releaseID',
-			 $runQueries);
+			 $runQueries
+);
 
 echo "Skipping rolexcat table: Not in nZEDb\n";
 
@@ -309,85 +347,105 @@ echo "Skipping spotnabsource table: Not in nZEDb\n";
 
 echo "Skipping thetvdb table: Not in nZEDb\n";
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'upcoming_releases',
 			 'INSERT INTO ' . $nZEDB_schema . '.upcoming_releases (source, typeid, info, updateddate) ' .
 			 'SELECT source, typeID, info, updateddate FROM ' . $nn_schema . '.upcoming',
-			 $runQueries);
+			 $runQueries
+);
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'users_releases',
 			 'INSERT INTO ' . $nZEDB_schema . '.users_releases (user_id, releases_id, createddate) ' .
 			 'SELECT userID, releaseID, createddate FROM ' . $nn_schema . '.usercart',
-			 $runQueries);
+			 $runQueries
+);
 
 // You lose (hosthash, releaseID).
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'user_downloads',
 			 'INSERT INTO ' . $nZEDB_schema . '.user_downloads (id, timestamp, user_id) ' .
 			 'SELECT ID, timestamp, userID FROM ' . $nn_schema . '.userdownloads',
-			 $runQueries);
+			 $runQueries
+);
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'user_excluded_categories',
 			 'INSERT INTO ' . $nZEDB_schema . '.user_excluded_categories (user_id, categories_id, createddate) ' .
 			 'SELECT userID, categoryID, createddate FROM ' . $nn_schema . '.userexcat',
-			 $runQueries);
+			 $runQueries
+);
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'invitations',
 			 'INSERT INTO ' . $nZEDB_schema . '.invitations (guid, user_id, createddate) ' .
 			 'SELECT guid, userID, createddate FROM ' . $nn_schema . '.userinvite',
-			 $runQueries);
+			 $runQueries
+);
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'user_movies',
 			 'INSERT INTO ' . $nZEDB_schema .
 			 '.user_movies (user_id, imdbid, categories, createddate) ' .
 			 'SELECT userID, imdbID, categoryID, createddate FROM ' . $nn_schema . '.usermovies',
-			 $runQueries);
+			 $runQueries
+);
 
 // You lose (hosthash).
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'user_requests',
 			 'INSERT INTO ' . $nZEDB_schema . '.user_requests (id, request, timestamp, user_id) ' .
 			 'SELECT ID, request, timestamp, userID FROM ' . $nn_schema . '.userrequests',
-			 $runQueries);
+			 $runQueries
+);
 
 // You lose (canpre).
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'user_roles',
 			 'INSERT IGNORE INTO ' . $nZEDB_schema .
 			 '.user_roles (apirequests, canpreview, defaultinvites, downloadrequests, id, isdefault, name) ' .
 			 'SELECT apirequests, canpreview, defaultinvites, downloadrequests, ID, isdefault, name FROM ' .
 			 $nn_schema . '.userroles',
-			 $runQueries);
+			 $runQueries
+);
 
 // You lose (kindleid, notes, rolechangedate, nzbvortex_api_key, nzbvortex_server_url, siteseed; and password IS reset).
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'users',
 			 'INSERT INTO ' . $nZEDB_schema .
 			 '.users (apiaccess, bookview, consoleview, createddate, email, grabs, host, id, invitedby, invites, lastlogin, movieview, musicview, password, resetguid, role, rsstoken, sabapikey, sabapikeytype, sabpriority, saburl, username) ' .
 			 'SELECT apiaccess, bookview, consoleview, createddate, email, grabs, host, ID, invitedby, invites, lastlogin, movieview, musicview, NULL, resetguid, role, rsstoken, sabapikey, sabapikeytype, sabpriority, saburl, username FROM ' .
 			 $nn_schema . '.users',
-			 $runQueries);
+			 $runQueries
+);
 
-convertTable($pdo,
+convertTable(
+	$pdo,
 			 $nZEDB_schema,
 			 'user_series',
 			 'INSERT INTO ' . $nZEDB_schema .
 			 '.user_series (user_id, rageid, categories, createddate) ' .
 			 'SELECT userID, rageID, categoryID, createddate FROM ' . $nn_schema . '.userseries',
-			 $runQueries);
+			 $runQueries
+);
 
 exit("Due to some issues moving roles we've used INSERT IGNORE... Please check your user roles in your nZEDb install\n"
 	 . "You now need to run copy_from_newznab.php to copy nzbs, covers, previews, set the nzbstatus and nzb path level\n\n"

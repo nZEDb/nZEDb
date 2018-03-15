@@ -2,8 +2,8 @@
 
 use app\models\Settings;
 use nzedb\Category;
-use nzedb\http\RSS;
 use nzedb\db\DB;
+use nzedb\http\RSS;
 use nzedb\utility\Misc;
 
 $category = new Category(['Settings' => $page->settings]);
@@ -41,9 +41,10 @@ if (!isset($_GET['t']) && !isset($_GET['show']) && !isset($_GET['anidb'])) {
 		$page->smarty->assign('anidb', 1);
 	}
 
-	$page->smarty->assign([
+	$page->smarty->assign(
+		[
 			'categorylist'       => $category->getCategories(true, $page->userdata['categoryexclusions']),
-			'parentcategorylist' => $category->getForMenu($page->userdata['categoryexclusions'])
+			'parentcategorylist' => $category->getForMenu($page->userdata['categoryexclusions']),
 		]
 	);
 
@@ -107,7 +108,7 @@ if (!isset($_GET['t']) && !isset($_GET['show']) && !isset($_GET['anidb'])) {
 			'del'      => (isset($_GET['del']) && $_GET['del'] == '1' ? '1' : '0'),
 			'extended' => 1,
 			'uid'      => $uid,
-			'token'    => $rssToken
+			'token'    => $rssToken,
 		];
 
 	if ($userCat == -3) {

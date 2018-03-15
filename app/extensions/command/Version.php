@@ -13,6 +13,7 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2016 nZEDb
  */
@@ -20,7 +21,6 @@ namespace app\extensions\command;
 
 use \app\extensions\util\Versions;
 use \lithium\console\command\Help;
-
 
 /**
  * Returns the current version (or branch) of the indexer.
@@ -120,14 +120,14 @@ class Version extends \app\extensions\console\Command
 	 * the originally invoked command. Thus the response of the Help command
 	 * becomes the response of the original one.
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	protected function _help()
 	{
 		$help = new Help([
 			'request'  => $this->request,
 			'response' => $this->response,
-			'classes'  => $this->_classes
+			'classes'  => $this->_classes,
 		]);
 
 		return $help->run(get_class($this));

@@ -17,7 +17,7 @@ if ($page->isPostBack()) {
 
 $offset = (isset($_REQUEST['offset']) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST['offset'] : 0;
 
-$results = array();
+$results = [];
 $results = $forum->getBrowseRange($offset, ITEMS_PER_PAGE);
 
 $page->smarty->assign('pagertotalitems', $forum->getBrowseCount());

@@ -12,11 +12,13 @@ $action = $_REQUEST['action'] ?? 'view';
 
 switch ($action) {
 	case 'submit':
-		$ret = $category->update($_POST['id'],
+		$ret = $category->update(
+			$_POST['id'],
 								 $_POST['status'],
 								 $_POST['description'],
 								 $_POST['disablepreview'],
-								 $_POST['minsize']);
+								 $_POST['minsize']
+		);
 		header('Location:' . WWW_TOP . '/category-list.php');
 		break;
 
@@ -31,11 +33,13 @@ switch ($action) {
 		break;
 }
 
-$page->smarty->assign('status_ids',
+$page->smarty->assign(
+	'status_ids',
 					  [
 						  Category::STATUS_ACTIVE, Category::STATUS_INACTIVE,
-						  Category::STATUS_DISABLED
-					  ]);
+						  Category::STATUS_DISABLED,
+					  ]
+);
 $page->smarty->assign('status_names', ['Yes', 'No', 'Disabled']);
 
 $page->content = $page->smarty->fetch('category-edit.tpl');

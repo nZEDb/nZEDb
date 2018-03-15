@@ -68,13 +68,14 @@ if ($categoriesDb) {
 	}
 }
 
-$page->smarty->assign([
+$page->smarty->assign(
+	[
 		'regex'          => $regex,
 		'error'          => $error,
 		'status_ids'     => [Category::STATUS_ACTIVE, Category::STATUS_INACTIVE],
 		'status_names'   => ['Yes', 'No'],
 		'category_names' => $categories['category_names'],
-		'category_ids'   => $categories['category_ids']
+		'category_ids'   => $categories['category_ids'],
 	]
 );
 

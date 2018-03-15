@@ -2,13 +2,14 @@
 require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ConsoleTools;
-use nzedb\NameFixer;
 use nzedb\db\DB;
+use nzedb\NameFixer;
 
 $pdo = new DB();
 
 if (!isset($argv[1]) || ($argv[1] != 'all' && $argv[1] != 'full' && !is_numeric($argv[1]))) {
-	exit($pdo->log->error(" This script tries to match a release name or searchname to a PreDB title by using Full Text Search Matching.\n"
+	exit($pdo->log->error(
+		" This script tries to match a release name or searchname to a PreDB title by using Full Text Search Matching.\n"
 			. "It will first parse PreDB titles to match, order by oldest to newest pre.\n\n"
 			. "php predbftmatch.php 1000 show 1000	...: to limit to 1000 presently unsearched PreDB titles ordered by oldest to newest created and show renaming offset title return by 1000.\n"
 			. "php predbftmatch.php full show		...: to run on all unmatched PreDB titles and show renaming.\n"
@@ -34,16 +35,19 @@ if (isset($argv[1]) && $argv[1] === 'all') {
 					WHERE LENGTH(title) >= 15 AND title NOT REGEXP '[\"\<\> ]'
 					ORDER BY created ASC");
 //Selects all PreDB Titles that don't have a current match in releases (slower intial query but less loop time)
-} else if (isset($argv[1]) && $argv[1] === 'full') {
+} elseif (isset($argv[1]) && $argv[1] === 'full') {
 	$titles = $pdo->queryDirect("SELECT id AS predb_id, title, source, searched FROM predb
 					WHERE LENGTH(title) >= 15 AND searched = 0
 					AND title NOT REGEXP '[\"\<\> ]' ORDER BY created ASC");
 //Selects PreDB Titles where created is greater than the past user selected number of hours
-} else if (isset($argv[1]) && is_numeric($argv[1])) {
-	$titles = $pdo->queryDirect(sprintf("SELECT id AS predb_id, title, source, searched FROM predb
+} elseif (isset($argv[1]) && is_numeric($argv[1])) {
+	$titles = $pdo->queryDirect(sprintf(
+		"SELECT id AS predb_id, title, source, searched FROM predb
 						 WHERE LENGTH(title) >= 15 AND searched = 0
 						 AND title NOT REGEXP '[\"\<\> ]' ORDER BY created ASC LIMIT %d %s",
-						 $argv[1], $offset));
+						 $argv[1],
+		$offset
+	));
 }
 
 if (isset($argv[2]) && $argv[2] === 'show') {
@@ -54,7 +58,6 @@ if (isset($argv[2]) && $argv[2] === 'show') {
 
 $total = ($titles === false ? 0 : $titles->rowCount());
 if ($total > 1) {
-
 	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	echo $pdo->log->header("\nMatching " . number_format($total) . " PreDB titles against release name or searchname.\n"
 			   . "'.' = No Match Found, '*' = Bad Match Parameters (Flood)\n\n");
@@ -85,7 +88,7 @@ if ($total > 1) {
 	}
 
 	if ($total > 0) {
-		echo $pdo->log->header("\nRenamed " . number_format($counted) . ' releases in ' . $consoletools->convertTime(TIME() - $timestart) . '.');
+		echo $pdo->log->header("\nRenamed " . number_format($counted) . ' releases in ' . $consoletools->convertTime(time() - $timestart) . '.');
 	} else {
 		echo $pdo->log->info("\nNothing to do.");
 	}

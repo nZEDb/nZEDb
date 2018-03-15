@@ -7,7 +7,6 @@
  *
  * Set this number in www/settings.php, the nZEDb_PASSWORD_HASH_COST setting.
  */
-
 if (!isset($argv[1]) || !is_numeric($argv[1]) || $argv[1] < 0.05) {
 	exit(
 		'You can pass in a target time, which will be used to determine the cost.' . PHP_EOL .

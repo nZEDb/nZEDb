@@ -1,13 +1,13 @@
 <?php
 /**
- * Lithium: the most rad php framework
+ * Lithium: the most rad php framework.
  *
  * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
 /**
- * ### Configuring backend database connections
+ * ### Configuring backend database connections.
  *
  * Lithium supports a wide variety relational and non-relational databases, and is designed to allow
  * and encourage you to take advantage of multiple database technologies, choosing the most optimal
@@ -90,7 +90,8 @@ if (DB_MOCK === true) {
 	if (defined('nZEDb_DEBUG') && nZEDb_DEBUG === true) {
 		echo 'No connection defined, using mock connection.' . PHP_EOL;
 	}
-	Connections::add('mock',
+	Connections::add(
+		'mock',
 		[
 			'type'     => 'database',
 			'adapter'  => 'Mock',
@@ -137,7 +138,8 @@ if (file_exists($installed)) {
 			$host = DB_SOCKET;
 		}
 
-		Connections::add('default',
+		Connections::add(
+			'default',
 			[
 				'type'       => 'database',
 				'adapter'    => $adapter,
@@ -159,7 +161,7 @@ if (file_exists($installed)) {
 			"No valid database adapter provided in configuration file '$config'"
 		);
 	}
-} else if (file_exists(nZEDb_CONFIGS . 'dev-config.json')) {
+} elseif (file_exists(nZEDb_CONFIGS . 'dev-config.json')) {
 	$config = json_decode(file_get_contents(nZEDb_CONFIGS . 'dev-config.json'), true);
 	$db =& $config['db'];
 
@@ -181,7 +183,8 @@ if (file_exists($installed)) {
 		$host = $db['socket'];
 	}
 
-	Connections::add('default',
+	Connections::add(
+		'default',
 		[
 			'type'       => 'database',
 			'adapter'    => $adapter,

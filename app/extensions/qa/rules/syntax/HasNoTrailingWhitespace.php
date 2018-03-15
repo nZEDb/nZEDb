@@ -15,17 +15,17 @@
  * not, see:
  *
  * @link <http://www.gnu.org/licenses/>.
+ *
  * @author niel
  * @copyright 2015 nZEDb
  */
 namespace app\extensions\qa\rules\syntax;
 
-
 use lithium\g11n\Multibyte;
 
 class HasNoTrailingWhitespace extends \li3_quality\qa\rules\syntax\HasNoTrailingWhitespace
 {
-	public function apply($testable, array $config = array())
+	public function apply($testable, array $config = [])
 	{
 		$message = 'Trailing whitespace found';
 		$lines = $testable->lines();
@@ -35,11 +35,11 @@ class HasNoTrailingWhitespace extends \li3_quality\qa\rules\syntax\HasNoTrailing
 			$length = Multibyte::strlen($line, compact('name'));
 			$lengthTrimmed = Multibyte::strlen(rtrim($line), compact('name'));
 			if ($length !== $lengthTrimmed) {
-				$this->addViolation(array(
+				$this->addViolation([
 					'message' => $message,
 					'line' => $i + 1,
-					'position' => $length
-				));
+					'position' => $length,
+				]);
 			}
 		}
 	}

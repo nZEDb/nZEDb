@@ -15,10 +15,9 @@
  * not, see:
  *
  * @link <http://www.gnu.org/licenses/>.
+ *
  * @author niel
  */
-
-
 namespace nzedb;
 
 /**

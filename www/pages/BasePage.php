@@ -3,9 +3,9 @@
 require_once nZEDb_LIB . 'utility' . DS . 'SmartyUtils.php';
 
 use app\models\Settings;
+use nzedb\db\DB;
 use nzedb\SABnzbd;
 use nzedb\Users;
-use nzedb\db\DB;
 
 class BasePage
 {
@@ -39,7 +39,7 @@ class BasePage
 	public $meta_description = '';
 
 	/**
-	 * Current page the user is browsing. ie browse
+	 * Current page the user is browsing. ie browse.
 	 *
 	 * @var string
 	 */
@@ -55,7 +55,7 @@ class BasePage
 	public $userdata = [];
 
 	/**
-	 * URL of the server. ie http://localhost/
+	 * URL of the server. ie http://localhost/.
 	 *
 	 * @var string
 	 */
@@ -83,7 +83,7 @@ class BasePage
 	public $captcha;
 
 	/**
-	 * User's theme
+	 * User's theme.
 	 *
 	 * @var string
 	 */
@@ -127,7 +127,7 @@ class BasePage
 			$this->smarty->assign('serverroot', $this->serverurl);
 		}
 
-		$this->page = (isset($_GET['page']) ? $_GET['page'] : 'content');
+		$this->page = ($_GET['page'] ?? 'content');
 
 		$this->users = new Users(['Settings' => $this->settings]);
 		if ($this->users->isLoggedIn()) {
@@ -198,13 +198,13 @@ class BasePage
 		if (strpos($setting, '.') === false) {
 			trigger_error(
 				'You should update your template to use the newer method "$page->getSettingValue()"" of fetching values from the "settings" table! This method *will* be removed in a future version.',
-				E_USER_WARNING);
+				E_USER_WARNING
+			);
 		} else {
 			return $this->getSettingValue($setting);
 		}
 
 		return $this->settings->$setting;
-
 	}
 
 	public function getSettingValue($setting)
@@ -281,7 +281,8 @@ class BasePage
 	{
 		header('HTTP/1.1 404 Not Found');
 		exit(
-			sprintf('
+			sprintf(
+				'
 				<html>
 					<head>
 						<title>404 - File not found.</title>
@@ -309,7 +310,8 @@ class BasePage
 	{
 		header('HTTP/1.1 503 Service Temporarily Unavailable');
 		exit(
-		sprintf('
+		sprintf(
+			'
 				<html>
 					<head>
 						<title>Service Unavailable.</title>

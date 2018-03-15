@@ -13,15 +13,14 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2016 nZEDb
  */
-
 namespace app\extensions\util\yenc\adapter;
 
-
 /**
- * Class Php
+ * Class Php.
  *
  * @package app\extensions\util\yenc\adapter
  */
@@ -31,9 +30,11 @@ class Php extends \lithium\core\Object
 	{
 		$crc = '';
 		// Extract the yEnc string itself.
-		if (preg_match('/=ybegin.*size=([^ $]+).*\\r\\n(.*)\\r\\n=yend.*size=([^ $\\r\\n]+)(.*)/ims',
+		if (preg_match(
+			'/=ybegin.*size=([^ $]+).*\\r\\n(.*)\\r\\n=yend.*size=([^ $\\r\\n]+)(.*)/ims',
 			$text,
-			$encoded)) {
+			$encoded
+		)) {
 			if (preg_match('/crc32=([^ $\\r\\n]+)/ims', $encoded[4], $trailer)) {
 				$crc = trim($trailer[1]);
 			}
@@ -99,7 +100,7 @@ class Php extends \lithium\core\Object
 	/**
 	 * Decode a string of text encoded with yEnc. Ignores all errors.
 	 *
-	 * @param  string $text The encoded text to decode.
+	 * @param string $text The encoded text to decode.
 	 *
 	 * @return string The decoded yEnc string, or the input string, if it's not yEnc.
 	 * @access protected
@@ -120,8 +121,10 @@ class Php extends \lithium\core\Object
 								'/(^=yPart.*\\r\\n)/im',
 								'',
 								preg_replace('/(^=yBegin.*\\r\\n)/im', '', $input[1], 1),
-								1),
-							1)
+								1
+							),
+							1
+						)
 					)
 				);
 

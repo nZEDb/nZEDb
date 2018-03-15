@@ -1,5 +1,4 @@
 <?php
-
 namespace nzedb;
 
 use nzedb\db\DB;
@@ -18,11 +17,13 @@ class DnzbFailures
 
 	/**
 	 * @var array $options Class instances.
+	 *
+	 * @param array $options
 	 */
 	public function __construct(array $options = [])
 	{
 		$defaults = [
-			'Settings' => null
+			'Settings' => null,
 		];
 		$options += $defaults;
 
@@ -40,7 +41,8 @@ class DnzbFailures
 	public function getFailedCount($relId)
 	{
 		$result = $this->pdo->query(
-			sprintf('
+			sprintf(
+				'
 				SELECT failed AS num
 				FROM dnzb_failures
 				WHERE release_id = %s',
@@ -54,11 +56,12 @@ class DnzbFailures
 	}
 
 	/**
-	 * Get a count of failed releases for pager. used in admin manage failed releases list
+	 * Get a count of failed releases for pager. used in admin manage failed releases list.
 	 */
 	public function getCount()
 	{
-		$res = $this->pdo->queryOneRow('
+		$res = $this->pdo->queryOneRow(
+			'
 			SELECT COUNT(release_id) AS num
 			FROM dnzb_failures'
 		);
@@ -66,7 +69,7 @@ class DnzbFailures
 	}
 
 	/**
-	 * Get a range of releases. used in admin manage list
+	 * Get a range of releases. used in admin manage list.
 	 *
 	 * @param $start
 	 * @param $num
@@ -81,7 +84,8 @@ class DnzbFailures
 			$limit = ' LIMIT ' . $start . ',' . $num;
 		}
 
-		return $this->pdo->query("
+		return $this->pdo->query(
+			"
 			SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name
 			FROM releases r
 			RIGHT JOIN dnzb_failures df ON df.release_id = r.id
@@ -92,16 +96,18 @@ class DnzbFailures
 	}
 
 	/**
-	 * Retrieve alternate release with same or similar searchname
+	 * Retrieve alternate release with same or similar searchname.
 	 *
 	 * @param string $guid
 	 * @param string $userid
+	 *
 	 * @return string
 	 */
 	public function getAlternate($guid, $userid)
 	{
 		$rel = $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT id, searchname, categories_id
 				FROM releases
 				WHERE guid = %s',
@@ -114,7 +120,8 @@ class DnzbFailures
 		}
 
 		$insert = $this->pdo->queryInsert(
-			sprintf('
+			sprintf(
+				'
 				INSERT IGNORE INTO dnzb_failures (release_id, userid, failed)
 				VALUES (%d, %d, 1)',
 				$rel['id'],
@@ -128,7 +135,8 @@ class DnzbFailures
 		}
 
 		$alternate = $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT r.guid
 				FROM releases r
 				LEFT JOIN dnzb_failures df ON r.id = df.release_id
@@ -161,7 +169,8 @@ class DnzbFailures
 		This comment is automatically generated.';
 
 		$check = $this->pdo->queryDirect(
-			sprintf('
+			sprintf(
+				'
 				SELECT text
 				FROM release_comments
 				WHERE releases_id = %d',

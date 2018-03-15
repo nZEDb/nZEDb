@@ -23,8 +23,10 @@ $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
 
 $groupsearch = ($gname !== '') ? 'groupname=' . $gname . '&amp;' : '';
-$page->smarty->assign('pagerquerybase',
-					  WWW_TOP . '/group-list-inactive.php?' . $groupsearch . 'offset=');
+$page->smarty->assign(
+	'pagerquerybase',
+					  WWW_TOP . '/group-list-inactive.php?' . $groupsearch . 'offset='
+);
 $pager = $page->smarty->fetch('pager.tpl');
 $page->smarty->assign('pager', $pager);
 

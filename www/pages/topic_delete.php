@@ -8,8 +8,7 @@ if (!$page->users->isLoggedIn()) {
 $forum = new Forum();
 $id = $_GET['id'] + 0;
 
-if (isset($id))
-{
+if (isset($id)) {
 	$forum->deleteParent($id);
 	header('Location:' . WWW_TOP . '/forum');
 }

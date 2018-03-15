@@ -3,15 +3,25 @@ namespace nzedb;
 
 use app\models\Settings;
 use nzedb\db\DB;
-use nzedb\utility\Misc;
 use nzedb\Groups;
+use nzedb\utility\Misc;
 
 /**
  * Import NZB files into the database.
- * Class NZBImport
+ * Class NZBImport.
  */
 class NZBImport
 {
+	/**
+	 * @var bool
+	 */
+	public $echoCLI;
+
+	/**
+	 * @var NZB
+	 */
+	public $nzb;
+
 	/**
 	 * @var \nzedb\db\DB
 	 * @access protected
@@ -50,6 +60,7 @@ class NZBImport
 
 	/**
 	 * List of all the group names/ids in the DB.
+	 *
 	 * @var array
 	 * @access protected
 	 */
@@ -57,6 +68,7 @@ class NZBImport
 
 	/**
 	 * Was this run from the browser?
+	 *
 	 * @var bool
 	 * @access protected
 	 */
@@ -64,6 +76,7 @@ class NZBImport
 
 	/**
 	 * Return value for browser.
+	 *
 	 * @var string
 	 * @access protected
 	 */
@@ -71,20 +84,11 @@ class NZBImport
 
 	/**
 	 * Guid of the current releases.
+	 *
 	 * @var string
 	 * @access protected
 	 */
 	protected $relGuid;
-
-	/**
-	 * @var bool
-	 */
-	public $echoCLI;
-
-	/**
-	 * @var NZB
-	 */
-	public $nzb;
 
 	/**
 	 * Access point to add new groups.
@@ -130,10 +134,10 @@ class NZBImport
 	}
 
 	/**
-	 * @param array $filesToProcess List of NZB files to import.
-	 * @param bool|string $useNzbName Use the NZB file name as release name?
-	 * @param bool $delete Delete the NZB when done?
-	 * @param bool $deleteFailed Delete the NZB if failed importing?
+	 * @param array       $filesToProcess List of NZB files to import.
+	 * @param bool|string $useNzbName     Use the NZB file name as release name?
+	 * @param bool        $delete         Delete the NZB when done?
+	 * @param bool        $deleteFailed   Delete the NZB if failed importing?
 	 *
 	 * @return string|bool
 	 *
@@ -217,9 +221,7 @@ class NZBImport
 						}
 						$nzbsSkipped++;
 						continue;
-
 					} else {
-
 						if ($delete) {
 							// Remove the nzb file.
 							@unlink($nzbFile);
@@ -228,7 +230,6 @@ class NZBImport
 						$nzbsImported++;
 						continue;
 					}
-
 				} else {
 					if ($deleteFailed) {
 						@unlink($nzbFile);
@@ -236,7 +237,6 @@ class NZBImport
 					$nzbsSkipped++;
 					continue;
 				}
-
 			} else {
 				$this->echoOut('ERROR: Unable to fetch: ' . $nzbFile);
 				$nzbsSkipped++;
@@ -261,8 +261,9 @@ class NZBImport
 	}
 
 	/**
-	 * @param object $nzbXML Reference of simpleXmlObject with NZB contents.
+	 * @param object      $nzbXML     Reference of simpleXmlObject with NZB contents.
 	 * @param bool|string $useNzbName Use the NZB file name as release name?
+	 *
 	 * @return bool
 	 *
 	 * @access protected
@@ -274,7 +275,6 @@ class NZBImport
 
 		// Go through the NZB, get the details, look if it's blacklisted, look if we have the groups.
 		foreach ($nzbXML->file as $file) {
-
 			$totalFiles++;
 			$groupID = -1;
 
@@ -314,7 +314,7 @@ class NZBImport
 								'first_record' => 0,
 								'last_record' => 0,
 								'active' => 0,
-								'backfill' => 0
+								'backfill' => 0,
 							]);
 							$this->allGroups[$group] = $groupID;
 
@@ -341,7 +341,6 @@ class NZBImport
 						$totalSize += (int)$segment->attributes()->bytes;
 					}
 				}
-
 			} else {
 				if ($isBlackListed) {
 					$errorMessage = 'Subject is blacklisted: ' . utf8_encode(trim($firstName));
@@ -433,7 +432,7 @@ class NZBImport
 					'isrenamed' => $renamed,
 					'reqidstatus' => 0,
 					'predb_id' => 0,
-					'nzbstatus' => NZB::NZB_ADDED
+					'nzbstatus' => NZB::NZB_ADDED,
 				]
 			);
 		} else {

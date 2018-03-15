@@ -1,10 +1,14 @@
 <?php
 /**
- * Lithium: the most rad php framework
+ * Lithium: the most rad php framework.
  *
  * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
+
+use app\models\Users;
+
+use lithium\security\Password;
 
 /**
  * This configures your session storage. The Cookie storage adapter must be connected first, since
@@ -15,10 +19,10 @@
 use lithium\storage\Session;
 
 $name = basename(LITHIUM_APP_PATH);
-Session::config(array(
+Session::config([
 	// 'cookie' => array('adapter' => 'Cookie', 'name' => $name),
-	'default' => array('adapter' => 'Php', 'session.name' => $name)
-));
+	'default' => ['adapter' => 'Php', 'session.name' => $name],
+]);
 
 /**
  * Uncomment the lines below to enable forms-based authentication. This configuration will attempt
@@ -48,21 +52,19 @@ use lithium\security\Auth;
 // 	)
 // ));
 
-use app\models\Users;
-use lithium\security\Password;
-
 Auth::config(
 	[
 		'default' => [
 			'adapter' => 'Form',
-			'model'   => 'Users'
+			'model'   => 'Users',
 		],
-	]);
+	]
+);
 
 	if (!\lithium\data\Connections::get('default')) {
-		Users::applyFilter('save',
-			function ($self, $params, $chain)
-			{
+		Users::applyFilter(
+			'save',
+			function($self, $params, $chain) {
 				if ($params['data']) {
 					$params['entity']->set($params['data']);
 					$params['data'] = [];

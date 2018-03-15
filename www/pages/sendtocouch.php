@@ -2,7 +2,7 @@
 
 use nzedb\CouchPotato;
 
-if (!$page->users->isLoggedIn()){
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 

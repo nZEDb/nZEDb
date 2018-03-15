@@ -7,7 +7,32 @@ use ReCaptcha\ReCaptcha;
 class Captcha
 {
 	/**
-	 * Smarty $page
+	 * $_POST key for the user-supplied ReCaptcha response.
+	 */
+	const RECAPTCHA_POSTKEY = 'g-recaptcha-response';
+
+	/**
+	 * Error key literals.
+	 */
+	const RECAPTCHA_ERROR_INVALID_RESPONSE = 'invalid-input-response';
+
+	const RECAPTCHA_ERROR_INVALID_SECRET   = 'invalid-input-secret';
+
+	const RECAPTCHA_ERROR_MISSING_RESPONSE = 'missing-input-response';
+
+	const RECAPTCHA_ERROR_MISSING_SECRET   = 'missing-input-secret';
+
+	/**
+	 * Settings key literals.
+	 */
+	const RECAPTCHA_SETTING_ENABLED = 'APIs.recaptcha.enabled';
+
+	const RECAPTCHA_SETTING_SECRETKEY = 'APIs.recaptcha.secretkey';
+
+	const RECAPTCHA_SETTING_SITEKEY = 'APIs.recaptcha.sitekey';
+
+	/**
+	 * Smarty $page.
 	 *
 	 * @var \Page
 	 */
@@ -43,31 +68,6 @@ class Captcha
 	 * @var string|bool
 	 */
 	private $error = false;
-
-	/**
-	 * $_POST key for the user-supplied ReCaptcha response.
-	 */
-	const RECAPTCHA_POSTKEY = 'g-recaptcha-response';
-
-	/**
-	 * Error key literals.
-	 */
-	const RECAPTCHA_ERROR_MISSING_SECRET = 'missing-input-secret';
-
-	const RECAPTCHA_ERROR_INVALID_SECRET = 'invalid-input-secret';
-
-	const RECAPTCHA_ERROR_MISSING_RESPONSE = 'missing-input-response';
-
-	const RECAPTCHA_ERROR_INVALID_RESPONSE = 'invalid-input-response';
-
-	/**
-	 * Settings key literals
-	 */
-	const RECAPTCHA_SETTING_SITEKEY = 'APIs.recaptcha.sitekey';
-
-	const RECAPTCHA_SETTING_SECRETKEY = 'APIs.recaptcha.secretkey';
-
-	const RECAPTCHA_SETTING_ENABLED = 'APIs.recaptcha.enabled';
 
 	/**
 	 * Construct and decide whether to show the captcha or not.

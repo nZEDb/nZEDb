@@ -13,14 +13,13 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2017 nZEDb
  */
 namespace app\extensions\adapter\data\source;
 
-
 use app\models\Settings;
-
 
 /**
  * The `Nntp` class provides the base-level abstraction for connecting to a Usenet Service Provider.
@@ -73,4 +72,3 @@ abstract class Nntp extends \lithium\data\Source
 		// TODO: add reporting that this is not supported.
 	}
 }
-

@@ -5,7 +5,7 @@ use app\models\Settings;
 use nzedb\utility\Misc;
 
 /**
- * Class SABnzbd
+ * Class SABnzbd.
  */
 class SABnzbd
 {
@@ -13,45 +13,56 @@ class SABnzbd
 	 * Type of site integration.
 	 */
 	const INTEGRATION_TYPE_NONE = 0; // Sab is completely disabled - no user can use it.
+
 	const INTEGRATION_TYPE_SITEWIDE = 1; // Sab is enabled, 1 remote SAB server for the whole site.
+
 	const INTEGRATION_TYPE_USER = 2; // Sab is enabled, every user can use their own SAB server.
 
 	/**
 	 * Type of SAB API key.
 	 */
 	const API_TYPE_NZB = 1;
+
 	const API_TYPE_FULL = 2;
 
 	/**
 	 * Priority to send the NZB to SAB.
 	 */
 	const PRIORITY_PAUSED = -2;
+
 	const PRIORITY_LOW = -1;
+
 	const PRIORITY_NORMAL = 0;
+
 	const PRIORITY_HIGH = 1;
+
 	const PRIORITY_FORCE = 2;
 
 	/**
 	 * URL to the SAB server.
-	 * @var string|Array|bool
+	 *
+	 * @var string|array|bool
 	 */
 	public $url = '';
 
 	/**
 	 * The SAB API key.
-	 * @var string|Array|bool
+	 *
+	 * @var string|array|bool
 	 */
 	public $apikey = '';
 
 	/**
 	 * Download priority of the sent NZB file.
-	 * @var string|Array|bool
+	 *
+	 * @var string|array|bool
 	 */
 	public $priority = '';
 
 	/**
 	 * Type of SAB API key (full/nzb).
-	 * @var string|Array|bool
+	 *
+	 * @var string|array|bool
 	 */
 	public $apikeytype = '';
 
@@ -62,24 +73,28 @@ class SABnzbd
 
 	/**
 	 * Is sab integrated into the site or not.
+	 *
 	 * @var bool
 	 */
 	public $integratedBool = false;
 
 	/**
 	 * ID of the current user, to send to SAB when downloading a NZB.
+	 *
 	 * @var string
 	 */
 	protected $uid = '';
 
 	/**
 	 * User's nZEDb API key to send to SAB when downloading a NZB.
+	 *
 	 * @var string
 	 */
 	protected $rsstoken = '';
 
 	/**
 	 * nZEDb Site URL to send to SAB to download the NZB.
+	 *
 	 * @var string
 	 */
 	protected $serverurl = '';
@@ -103,7 +118,7 @@ class SABnzbd
 					$this->apikey = $_COOKIE['sabnzbd_' . $this->uid . '__apikey'];
 					$this->priority = (isset($_COOKIE['sabnzbd_' . $this->uid . '__priority'])) ? $_COOKIE['sabnzbd_' . $this->uid . '__priority'] : 0;
 					$this->apikeytype = (isset($_COOKIE['sabnzbd_' . $this->uid . '__apitype'])) ? $_COOKIE['sabnzbd_' . $this->uid . '__apitype'] : 1;
-				} else if (!empty($page->userdata['sabapikey']) && !empty($page->userdata['saburl'])) {
+				} elseif (!empty($page->userdata['sabapikey']) && !empty($page->userdata['saburl'])) {
 					$this->url = $page->userdata['saburl'];
 					$this->apikey = $page->userdata['sabapikey'];
 					$this->priority = $page->userdata['sabpriority'];
@@ -151,7 +166,8 @@ class SABnzbd
 	 */
 	public function sendToSab($guid)
 	{
-		return Misc::getUrl([
+		return Misc::getUrl(
+			[
 				'url' => $this->url .
 					'api?mode=addurl&priority=' .
 					$this->priority .
@@ -179,9 +195,9 @@ class SABnzbd
 	 */
 	public function getQueue()
 	{
-		return Misc::getUrl([
-				'url' =>
-					$this->url .
+		return Misc::getUrl(
+			[
+				'url' => $this->url .
 					'api?mode=qstatus&output=json&apikey=' .
 					$this->apikey,
 				'verifycert' => false,
@@ -196,9 +212,9 @@ class SABnzbd
 	 */
 	public function getAdvQueue()
 	{
-		return Misc::getUrl([
-				'url' =>
-					$this->url .
+		return Misc::getUrl(
+			[
+				'url' => $this->url .
 					'api?mode=queue&start=START&limit=LIMIT&output=json&apikey=' .
 					$this->apikey,
 				'verifycert' => false,
@@ -215,9 +231,9 @@ class SABnzbd
 	 */
 	public function delFromQueue($id)
 	{
-		return Misc::getUrl([
-				'url' =>
-					$this->url .
+		return Misc::getUrl(
+			[
+				'url' => $this->url .
 					'api?mode=queue&name=delete&value=' .
 					$id .
 					'&apikey=' .
@@ -236,9 +252,9 @@ class SABnzbd
 	 */
 	public function pauseFromQueue($id)
 	{
-		return Misc::getUrl([
-				'url' =>
-					$this->url .
+		return Misc::getUrl(
+			[
+				'url' => $this->url .
 					'api?mode=queue&name=pause&value=' .
 					$id .
 					'&apikey=' .
@@ -257,9 +273,9 @@ class SABnzbd
 	 */
 	public function resumeFromQueue($id)
 	{
-		return Misc::getUrl([
-				'url' =>
-					$this->url .
+		return Misc::getUrl(
+			[
+				'url' => $this->url .
 					'api?mode=queue&name=resume&value=' .
 					$id .
 					'&apikey=' .
@@ -276,9 +292,9 @@ class SABnzbd
 	 */
 	public function pauseAll()
 	{
-		return Misc::getUrl([
-				'url' =>
-					$this->url .
+		return Misc::getUrl(
+			[
+				'url' => $this->url .
 					'api?mode=pause' .
 					'&apikey=' .
 					$this->apikey,
@@ -294,9 +310,9 @@ class SABnzbd
 	 */
 	public function resumeAll()
 	{
-		return Misc::getUrl([
-				'url' =>
-					$this->url .
+		return Misc::getUrl(
+			[
+				'url' => $this->url .
 					'api?mode=resume' .
 					'&apikey=' .
 					$this->apikey,
@@ -339,10 +355,10 @@ class SABnzbd
 	 */
 	public function setCookie($host, $apikey, $priority, $apitype)
 	{
-		setcookie('sabnzbd_' . $this->uid . '__host',     $host,     (time() + 2592000));
-		setcookie('sabnzbd_' . $this->uid . '__apikey',   $apikey,   (time() + 2592000));
+		setcookie('sabnzbd_' . $this->uid . '__host', $host, (time() + 2592000));
+		setcookie('sabnzbd_' . $this->uid . '__apikey', $apikey, (time() + 2592000));
 		setcookie('sabnzbd_' . $this->uid . '__priority', $priority, (time() + 2592000));
-		setcookie('sabnzbd_' . $this->uid . '__apitype',  $apitype,  (time() + 2592000));
+		setcookie('sabnzbd_' . $this->uid . '__apitype', $apitype, (time() + 2592000));
 	}
 
 	/**
@@ -350,9 +366,9 @@ class SABnzbd
 	 */
 	public function unsetCookie()
 	{
-		setcookie('sabnzbd_' . $this->uid . '__host',     '', (time() - 2592000));
-		setcookie('sabnzbd_' . $this->uid . '__apikey',   '', (time() - 2592000));
+		setcookie('sabnzbd_' . $this->uid . '__host', '', (time() - 2592000));
+		setcookie('sabnzbd_' . $this->uid . '__apikey', '', (time() - 2592000));
 		setcookie('sabnzbd_' . $this->uid . '__priority', '', (time() - 2592000));
-		setcookie('sabnzbd_' . $this->uid . '__apitype',  '', (time() - 2592000));
+		setcookie('sabnzbd_' . $this->uid . '__apitype', '', (time() - 2592000));
 	}
 }

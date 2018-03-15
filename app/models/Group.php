@@ -1,5 +1,4 @@
 <?php
-
 namespace app\models;
 
 class Group extends \lithium\data\Model
@@ -7,12 +6,12 @@ class Group extends \lithium\data\Model
 	public $validates = [
 		'name' => [
 			[
-				'required' => true
+				'required' => true,
 			],
 			[
 				'notEmpty',
-				'message' => 'The group\'s name is required to create a new entry.'
-			]
+				'message' => 'The group\'s name is required to create a new entry.',
+			],
 		],
 	];
 
@@ -24,7 +23,8 @@ class Group extends \lithium\data\Model
 		];
 		$options += $defaults;
 
-		$group = self::find('first',
+		$group = self::find(
+			'first',
 			[
 				'fields'     => ['id'],
 				'conditions' => ['name' => $name],

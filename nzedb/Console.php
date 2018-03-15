@@ -2,12 +2,13 @@
 namespace nzedb;
 
 use app\models\Settings;
-use nzedb\db\DB;
 use libs\AmazonProductAPI;
+use nzedb\db\DB;
 
 class Console
 {
 	const CONS_UPROC = 0; // Release has not been processed.
+
 	const CONS_NTFND = -2;
 
 	public $catWhere;
@@ -58,7 +59,8 @@ class Console
 	public $renamed;
 
 	/**
-	 * Store names of failed Amazon lookup items
+	 * Store names of failed Amazon lookup items.
+	 *
 	 * @var array
 	 */
 	public $failCache;
@@ -92,7 +94,7 @@ class Console
 		}
 		//$this->cleanconsole = (Settings::value('..lookupgames') == 2) ? 'AND isrenamed = 1' : '';
 		$this->catWhere = 'AND categories_id BETWEEN ' . Category::GAME_ROOT . ' AND ' . Category::GAME_OTHER;
-		$this->failCache = array();
+		$this->failCache = [];
 	}
 
 	/**
@@ -194,7 +196,8 @@ class Console
 		$order = $this->getConsoleOrder($orderby);
 
 		$consoles = $this->pdo->queryCalc(
-				sprintf("
+				sprintf(
+					"
 					SELECT SQL_CALC_FOUND_ROWS
 						con.id,
 						GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
@@ -214,7 +217,9 @@ class Console
 					$order[0],
 					$order[1],
 					($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
-				), true, nZEDb_CACHE_EXPIRY_MEDIUM
+				),
+			true,
+			nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 
 		$consoleIDs = $releaseIDs = false;
@@ -227,7 +232,8 @@ class Console
 		}
 
 		$return = $this->pdo->query(
-			sprintf("
+			sprintf(
+				"
 				SELECT
 					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
 					GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount,
@@ -264,10 +270,12 @@ class Console
 				$catsrch,
 				$order[0],
 				$order[1]
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
+			),
+			true,
+			nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 		if (!empty($return)) {
-			$return[0]['_totalcount'] = (isset($consoles['total']) ? $consoles['total'] : 0);
+			$return[0]['_totalcount'] = ($consoles['total'] ?? 0);
 		}
 		return $return;
 	}
@@ -387,7 +395,8 @@ class Console
 	public function update($id, $title, $asin, $url, $salesrank, $platform, $publisher, $releasedate, $esrb, $cover, $genreID, $review = 'review')
 	{
 		$this->pdo->queryExec(
-			sprintf('
+			sprintf(
+				'
 				UPDATE consoleinfo
 				SET
 					title = %s, asin = %s, url = %s, salesrank = %s, platform = %s, publisher = %s,
@@ -412,8 +421,9 @@ class Console
 	/**
 	 * @param $gameInfo
 	 *
-	 * @return false|int|string
 	 * @throws \Exception
+	 *
+	 * @return false|int|string
 	 */
 	public function updateConsoleInfo($gameInfo)
 	{
@@ -441,7 +451,6 @@ class Console
 			}
 
 			if ($this->_matchConToGameInfo($gameInfo, $con) === true) {
-
 				$con += $this->setConAfterMatch($amaz);
 				$con += $this->matchGenre($amaz);
 
@@ -472,6 +481,342 @@ class Console
 			}
 		}
 		return $consoleId;
+	}
+
+	/**
+	 * @param $title
+	 * @param $node
+	 *
+	 * @return bool|mixed
+	 */
+	public function fetchAmazonProperties($title, $node)
+	{
+		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
+		try {
+			$result = $obj->searchProducts($title, AmazonProductAPI::GAMES, 'NODE', $node);
+		} catch (\Exception $e) {
+			$result = false;
+		}
+		return $result;
+	}
+
+	/**
+	 * @throws \Exception
+	 */
+	public function processConsoleReleases()
+	{
+		$res = $this->pdo->queryDirect(
+						sprintf(
+							'
+							SELECT searchname, id
+							FROM releases
+							WHERE nzbstatus = %d %s
+							AND consoleinfo_id IS NULL %s
+							ORDER BY postdate DESC
+							LIMIT %d',
+							NZB::NZB_ADDED,
+							$this->renamed,
+							$this->catWhere,
+							$this->gameqty
+						)
+		);
+
+		if ($res instanceof \PDOStatement && $res->rowCount() > 0) {
+			if ($this->echooutput) {
+				$this->pdo->log->doEcho($this->pdo->log->header('Processing ' . $res->rowCount() . ' console release(s).'));
+			}
+
+			foreach ($res as $arr) {
+				$startTime = microtime(true);
+				$usedAmazon = false;
+				$gameId = self::CONS_NTFND;
+				$gameInfo = $this->parseTitle($arr['searchname']);
+
+				if ($gameInfo !== false) {
+					if ($this->echooutput) {
+						$this->pdo->log->doEcho(
+							$this->pdo->log->headerOver('Looking up: ') .
+							$this->pdo->log->primary(
+								$gameInfo['title'] .
+								' (' .
+								$gameInfo['platform'] . ')'
+							)
+						);
+					}
+
+					// Check for existing console entry.
+					$gameCheck = $this->getConsoleInfoByName($gameInfo['title'], $gameInfo['platform']);
+
+					if ($gameCheck === false && in_array($gameInfo['title'] . $gameInfo['platform'], $this->failCache)) {
+						// Lookup recently failed, no point trying again
+						if ($this->echooutput) {
+							$this->pdo->log->doEcho($this->pdo->log->headerOver('Cached previous failure. Skipping.') . PHP_EOL);
+						}
+						$gameId = -2;
+					} elseif ($gameCheck === false) {
+						$gameId = $this->updateConsoleInfo($gameInfo);
+						$usedAmazon = true;
+						if ($gameId === false) {
+							$gameId = -2;
+							$this->failCache[] = $gameInfo['title'] . $gameInfo['platform'];
+						}
+					} else {
+						if ($this->echooutput) {
+							$this->pdo->log->doEcho(
+									$this->pdo->log->headerOver('Found Local: ') .
+									$this->pdo->log->primary("{$gameCheck['title']} - {$gameCheck['platform']}") .
+									PHP_EOL
+							);
+						}
+						$gameId = $gameCheck['id'];
+					}
+				} elseif ($this->echooutput) {
+					echo '.';
+				}
+
+				// Update release.
+				$this->pdo->queryExec(
+							sprintf(
+								'
+								UPDATE releases
+								SET consoleinfo_id = %d
+								WHERE id = %d %s',
+								$gameId,
+								$arr['id'],
+								$this->catWhere
+							)
+				);
+
+				// Sleep to not flood amazon.
+				$diff = floor((microtime(true) - $startTime) * 1000000);
+				if ($this->sleeptime * 1000 - $diff > 0 && $usedAmazon === true) {
+					usleep($this->sleeptime * 1000 - $diff);
+				}
+			}
+		} elseif ($this->echooutput) {
+			$this->pdo->log->doEcho($this->pdo->log->header('No console releases to process.'));
+		}
+	}
+
+	/**
+	 * @param $releasename
+	 *
+	 * @return array|bool
+	 */
+	public function parseTitle($releasename)
+	{
+		$releasename = preg_replace('/\sMulti\d?\s/i', '', $releasename);
+		$result = [];
+
+		// Get name of the game from name of release.
+		if (preg_match('/^(.+((abgx360EFNet|EFNet\sFULL|FULL\sabgxEFNet|abgx\sFULL|abgxbox360EFNet)\s|illuminatenboard\sorg|Place2(hom|us)e.net|united-forums? co uk|\(\d+\)))?(?P<title>.*?)[\.\-_ ](v\.?\d\.\d|PAL|NTSC|EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI(\.?\d{1,2})?|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|PROPER|REPACK|RETAIL|DEMO|DISTRIBUTION|REGIONFREE|[\. ]RF[\. ]?|READ\.?NFO|NFOFIX|PSX(2PSP)?|PS[2-4]|PSP|PSVITA|WIIU|WII|X\-?BOX|XBLA|X360|3DS|NDS|N64|NGC)/i', $releasename, $matches)) {
+			$title = $matches['title'];
+
+			// Replace dots, underscores, or brackets with spaces.
+			$result['title'] = str_replace(['.', '_', '%20', '[', ']'], ' ', $title);
+			$result['title'] = str_replace([' RF ', '.RF.', '-RF-', '_RF_'], ' ', $result['title']);
+			//Remove format tags from release title for match
+			$result['title'] = trim(preg_replace('/PAL|MULTI(\d)?|NTSC-?J?|\(JAPAN\)/i', '', $result['title']));
+			//Remove disc tags from release title for match
+			$result['title'] = trim(preg_replace('/Dis[ck] \d.*$/i', '', $result['title']));
+
+			// Needed to add code to handle DLC Properly.
+			if (stripos('dlc', $result['title']) !== false) {
+				$result['dlc'] = '1';
+				if (stripos('Rock Band Network', $result['title']) !== false) {
+					$result['title'] = 'Rock Band';
+				} elseif (strpos('-', $result['title']) !== false) {
+					$dlc = explode('-', $result['title']);
+					$result['title'] = $dlc[0];
+				} elseif (preg_match('/(.*? .*?) /i', $result['title'], $dlc)) {
+					$result['title'] = $dlc[0];
+				}
+			}
+		} else {
+			$title = '';
+		}
+
+		// Get the platform of the release.
+		if (preg_match('/[\.\-_ ](?P<platform>XBLA|WiiWARE|N64|SNES|NES|PS[2-4]|PS 3|PSX(2PSP)?|PSP|WIIU|WII|XBOX360|XBOXONE|X\-?BOX|X360|3DS|NDS|N?GC)/i', $releasename, $matches)) {
+			$platform = $matches['platform'];
+
+			if (preg_match('/^N?GC$/i', $platform)) {
+				$platform = 'NGC';
+			}
+
+			if (stripos('PSX2PSP', $platform) === 0) {
+				$platform = 'PSX';
+			}
+
+			if (!empty($title) && stripos('XBLA', $platform) === 0) {
+				if (stripos('dlc', $title) !== false) {
+					$platform = 'XBOX360';
+				}
+			}
+
+			$browseNode = $this->getBrowseNode($platform);
+			$result['platform'] = $platform;
+			$result['node'] = $browseNode;
+		}
+		$result['release'] = $releasename;
+		array_map('trim', $result);
+
+		/* Make sure we got a title and platform otherwise the resulting lookup will probably be shit.
+		   Other option is to pass the $release->categoryID here if we don't find a platform but that
+		   would require an extra lookup to determine the name. In either case we should have a title at the minimum. */
+
+		return (isset($result['title']) && !empty($result['title']) && isset($result['platform'])) ? $result : false;
+	}
+
+	/**
+	 * @param string $platform
+	 *
+	 * @return string
+	 */
+	public function getBrowseNode($platform)
+	{
+		switch ($platform) {
+			case 'PS2':
+				$nodeId = '301712';
+				break;
+			case 'PS3':
+				$nodeId = '14210751';
+				break;
+			case 'PS4':
+				$nodeId = '6427814011';
+				break;
+			case 'PSP':
+				$nodeId = '11075221';
+				break;
+			case 'PSVITA':
+				$nodeId = '3010556011';
+				break;
+			case 'PSX':
+				$nodeId = '294940';
+				break;
+			case 'WII':
+			case 'Wii':
+				$nodeId = '14218901';
+				break;
+			case 'WIIU':
+			case 'WiiU':
+				$nodeId = '3075112011';
+				break;
+			case 'XBOX360':
+			case 'X360':
+				$nodeId = '14220161';
+				break;
+			case 'XBOXONE':
+				$nodeId = '6469269011';
+				break;
+			case 'XBOX':
+			case 'X-BOX':
+				$nodeId = '537504';
+				break;
+			case 'NDS':
+				$nodeId = '11075831';
+				break;
+			case '3DS':
+				$nodeId = '2622269011';
+				break;
+			case 'GC':
+			case 'NGC':
+				$nodeId = '541022';
+				break;
+			case 'N64':
+				$nodeId = '229763';
+				break;
+			case 'SNES':
+				$nodeId = '294945';
+				break;
+			case 'NES':
+				$nodeId = '566458';
+				break;
+			default:
+				$nodeId = '468642';
+				break;
+		}
+
+		return $nodeId;
+	}
+
+	/**
+	 * @param string $nodeName
+	 *
+	 * @return bool|string
+	 */
+	public function matchBrowseNode($nodeName)
+	{
+		$str = '';
+
+		//music nodes above mp3 download nodes
+		switch ($nodeName) {
+			case 'Action_shooter':
+			case 'Action_Games':
+			case 'Action_games':
+				$str = 'Action';
+				break;
+			case 'Action/Adventure':
+			case 'Action\Adventure':
+			case 'Adventure_games':
+				$str = 'Adventure';
+				break;
+			case 'Boxing_games':
+			case 'Sports_games':
+				$str = 'Sports';
+				break;
+			case 'Fantasy_action_games':
+				$str = 'Fantasy';
+				break;
+			case 'Fighting_action_games':
+				$str = 'Fighting';
+				break;
+			case 'Flying_simulation_games':
+				$str = 'Flying';
+				break;
+			case 'Horror_action_games':
+				$str = 'Horror';
+				break;
+			case 'Kids & Family':
+				$str = 'Family';
+				break;
+			case 'Role_playing_games':
+				$str = 'Role-Playing';
+				break;
+			case 'Shooter_action_games':
+				$str = 'Shooter';
+				break;
+			case 'Singing_games':
+				$str = 'Music';
+				break;
+			case 'Action':
+			case 'Adventure':
+			case 'Arcade':
+			case 'Board Games':
+			case 'Cards':
+			case 'Casino':
+			case 'Collections':
+			case 'Family':
+			case 'Fantasy':
+			case 'Fighting':
+			case 'Flying':
+			case 'Horror':
+			case 'Music':
+			case 'Puzzle':
+			case 'Racing':
+			case 'Rhythm':
+			case 'Role-Playing':
+			case 'Simulation':
+			case 'Shooter':
+			case 'Shooting':
+			case 'Sports':
+			case 'Strategy':
+			case 'Trivia':
+				$str = $nodeName;
+				break;
+		}
+
+		return ($str != '') ? $str : false;
 	}
 
 	/**
@@ -647,7 +992,7 @@ class Console
 	/**
 	 * @param $genreName
 	 *
-	 * @return boolean|string
+	 * @return bool|string
 	 */
 	protected function _getGenreKey($genreName)
 	{
@@ -657,7 +1002,8 @@ class Console
 			$genreKey = array_search(strtolower($genreName), $genreassoc);
 		} else {
 			$genreKey = $this->pdo->queryInsert(
-								sprintf('
+								sprintf(
+									'
 									INSERT INTO genres (title, type)
 									VALUES (%s, %d)',
 									$this->pdo->escapeString($genreName),
@@ -684,12 +1030,12 @@ class Console
 	}
 
 	/** This function sets the platform retrieved
-	 *  from the release to the Amazon equivalent
+	 *  from the release to the Amazon equivalent.
 	 *
 	 * @param string $platform
 	 *
 	 * @return string
-	 **/
+	 */
 	protected function _replacePlatform($platform)
 	{
 		switch (strtoupper($platform)) {
@@ -761,7 +1107,8 @@ class Console
 		$ri = new ReleaseImage($this->pdo);
 
 		$check = $this->pdo->queryOneRow(
-						sprintf('
+						sprintf(
+							'
 							SELECT id
 							FROM consoleinfo
 							WHERE asin = %s',
@@ -798,351 +1145,20 @@ class Console
 			}
 
 			$this->update(
-						$consoleId, $con['title'], $con['asin'], $con['url'], $con['salesrank'],
-						$con['platform'], $con['publisher'], (isset($con['releasedate']) ? $con['releasedate'] : null), $con['esrb'],
-						$con['cover'], $con['consolegenreID'], (isset($con['review']) ? $con['review'] : null)
+						$consoleId,
+				$con['title'],
+				$con['asin'],
+				$con['url'],
+				$con['salesrank'],
+						$con['platform'],
+				$con['publisher'],
+				($con['releasedate'] ?? null),
+				$con['esrb'],
+						$con['cover'],
+				$con['consolegenreID'],
+				($con['review'] ?? null)
 			);
 		}
 		return $consoleId;
 	}
-
-	/**
-	 * @param $title
-	 * @param $node
-	 *
-	 * @return bool|mixed
-	 */
-	public function fetchAmazonProperties($title, $node)
-	{
-		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
-		try {
-			$result = $obj->searchProducts($title, AmazonProductAPI::GAMES, 'NODE', $node);
-		} catch (\Exception $e) {
-			$result = false;
-		}
-		return $result;
-	}
-
-	/**
-	 * @throws \Exception
-	 */
-	public function processConsoleReleases()
-	{
-		$res = $this->pdo->queryDirect(
-						sprintf('
-							SELECT searchname, id
-							FROM releases
-							WHERE nzbstatus = %d %s
-							AND consoleinfo_id IS NULL %s
-							ORDER BY postdate DESC
-							LIMIT %d',
-							NZB::NZB_ADDED,
-							$this->renamed,
-							$this->catWhere,
-							$this->gameqty
-						)
-		);
-
-		if ($res instanceof \PDOStatement && $res->rowCount() > 0) {
-
-			if ($this->echooutput) {
-				$this->pdo->log->doEcho($this->pdo->log->header('Processing ' . $res->rowCount() . ' console release(s).'));
-			}
-
-			foreach ($res as $arr) {
-				$startTime = microtime(true);
-				$usedAmazon = false;
-				$gameId = self::CONS_NTFND;
-				$gameInfo = $this->parseTitle($arr['searchname']);
-
-				if ($gameInfo !== false) {
-						if ($this->echooutput) {
-						$this->pdo->log->doEcho(
-							$this->pdo->log->headerOver('Looking up: ') .
-							$this->pdo->log->primary(
-								$gameInfo['title'] .
-								' (' .
-								$gameInfo['platform'] . ')'
-							)
-						);
-					}
-
-					// Check for existing console entry.
-					$gameCheck = $this->getConsoleInfoByName($gameInfo['title'], $gameInfo['platform']);
-
-					if ($gameCheck === false && in_array($gameInfo['title'] . $gameInfo['platform'], $this->failCache)) {
-						// Lookup recently failed, no point trying again
-						if ($this->echooutput) {
-							$this->pdo->log->doEcho($this->pdo->log->headerOver('Cached previous failure. Skipping.') . PHP_EOL);
-						}
-						$gameId = -2;
-					} else if ($gameCheck === false) {
-						$gameId = $this->updateConsoleInfo($gameInfo);
-						$usedAmazon = true;
-						if ($gameId === false) {
-							$gameId = -2;
-							$this->failCache[] = $gameInfo['title'] . $gameInfo['platform'];
-						}
-					} else {
-						if ($this->echooutput) {
-							$this->pdo->log->doEcho(
-									$this->pdo->log->headerOver('Found Local: ') .
-									$this->pdo->log->primary("{$gameCheck['title']} - {$gameCheck['platform']}") .
-									PHP_EOL
-							);
-						}
-						$gameId = $gameCheck['id'];
-					}
-
-				} elseif ($this->echooutput) {
-					echo '.';
-				}
-
-				// Update release.
-				$this->pdo->queryExec(
-							sprintf('
-								UPDATE releases
-								SET consoleinfo_id = %d
-								WHERE id = %d %s',
-								$gameId,
-								$arr['id'],
-								$this->catWhere
-							)
-				);
-
-				// Sleep to not flood amazon.
-				$diff = floor((microtime(true) - $startTime) * 1000000);
-				if ($this->sleeptime * 1000 - $diff > 0 && $usedAmazon === true) {
-					usleep($this->sleeptime * 1000 - $diff);
-				}
-			}
-
-		} else if ($this->echooutput) {
-			$this->pdo->log->doEcho($this->pdo->log->header('No console releases to process.'));
-		}
-	}
-
-	/**
-	 * @param $releasename
-	 *
-	 * @return array|bool
-	 */
-	public function parseTitle($releasename)
-	{
-		$releasename = preg_replace('/\sMulti\d?\s/i', '', $releasename);
-		$result = [];
-
-		// Get name of the game from name of release.
-		if (preg_match('/^(.+((abgx360EFNet|EFNet\sFULL|FULL\sabgxEFNet|abgx\sFULL|abgxbox360EFNet)\s|illuminatenboard\sorg|Place2(hom|us)e.net|united-forums? co uk|\(\d+\)))?(?P<title>.*?)[\.\-_ ](v\.?\d\.\d|PAL|NTSC|EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI(\.?\d{1,2})?|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|PROPER|REPACK|RETAIL|DEMO|DISTRIBUTION|REGIONFREE|[\. ]RF[\. ]?|READ\.?NFO|NFOFIX|PSX(2PSP)?|PS[2-4]|PSP|PSVITA|WIIU|WII|X\-?BOX|XBLA|X360|3DS|NDS|N64|NGC)/i', $releasename, $matches)) {
-			$title = $matches['title'];
-
-			// Replace dots, underscores, or brackets with spaces.
-			$result['title'] = str_replace(['.', '_', '%20', '[', ']'], ' ', $title);
-			$result['title'] = str_replace([' RF ', '.RF.', '-RF-', '_RF_'], ' ', $result['title']);
-			//Remove format tags from release title for match
-			$result['title'] = trim(preg_replace('/PAL|MULTI(\d)?|NTSC-?J?|\(JAPAN\)/i', '', $result['title']));
-			//Remove disc tags from release title for match
-			$result['title'] = trim(preg_replace('/Dis[ck] \d.*$/i', '', $result['title']));
-
-			// Needed to add code to handle DLC Properly.
-			if (stripos('dlc', $result['title']) !== false) {
-				$result['dlc'] = '1';
-				if (stripos('Rock Band Network', $result['title']) !== false) {
-					$result['title'] = 'Rock Band';
-				} else if (strpos('-', $result['title']) !== false) {
-					$dlc = explode('-', $result['title']);
-					$result['title'] = $dlc[0];
-				} else if (preg_match('/(.*? .*?) /i', $result['title'], $dlc)) {
-					$result['title'] = $dlc[0];
-				}
-			}
-
-		} else {
-			$title = '';
-		}
-
-		// Get the platform of the release.
-		if (preg_match('/[\.\-_ ](?P<platform>XBLA|WiiWARE|N64|SNES|NES|PS[2-4]|PS 3|PSX(2PSP)?|PSP|WIIU|WII|XBOX360|XBOXONE|X\-?BOX|X360|3DS|NDS|N?GC)/i', $releasename, $matches)) {
-			$platform = $matches['platform'];
-
-			if (preg_match('/^N?GC$/i', $platform)) {
-				$platform = 'NGC';
-			}
-
-			if (stripos('PSX2PSP', $platform) === 0) {
-				$platform = 'PSX';
-			}
-
-			if (!empty($title) && stripos('XBLA', $platform) === 0) {
-				if (stripos('dlc', $title) !== false) {
-					$platform = 'XBOX360';
-				}
-			}
-
-			$browseNode = $this->getBrowseNode($platform);
-			$result['platform'] = $platform;
-			$result['node'] = $browseNode;
-		}
-		$result['release'] = $releasename;
-		array_map('trim', $result);
-
-		/* Make sure we got a title and platform otherwise the resulting lookup will probably be shit.
-		   Other option is to pass the $release->categoryID here if we don't find a platform but that
-		   would require an extra lookup to determine the name. In either case we should have a title at the minimum. */
-
-		return (isset($result['title']) && !empty($result['title']) && isset($result['platform'])) ? $result : false;
-	}
-
-	/**
-	 * @param string $platform
-	 *
-	 * @return string
-	 */
-	public function getBrowseNode($platform)
-	{
-		switch ($platform) {
-			case 'PS2':
-				$nodeId = '301712';
-				break;
-			case 'PS3':
-				$nodeId = '14210751';
-				break;
-			case 'PS4':
-				$nodeId = '6427814011';
-				break;
-			case 'PSP':
-				$nodeId = '11075221';
-				break;
-			case 'PSVITA':
-				$nodeId = '3010556011';
-				break;
-			case 'PSX':
-				$nodeId = '294940';
-				break;
-			case 'WII':
-			case 'Wii':
-				$nodeId = '14218901';
-				break;
-			case 'WIIU':
-			case 'WiiU':
-				$nodeId = '3075112011';
-				break;
-			case 'XBOX360':
-			case 'X360':
-				$nodeId = '14220161';
-				break;
-			case 'XBOXONE':
-				$nodeId = '6469269011';
-				break;
-			case 'XBOX':
-			case 'X-BOX':
-				$nodeId = '537504';
-				break;
-			case 'NDS':
-				$nodeId = '11075831';
-				break;
-			case '3DS':
-				$nodeId = '2622269011';
-				break;
-			case 'GC':
-			case 'NGC':
-				$nodeId = '541022';
-				break;
-			case 'N64':
-				$nodeId = '229763';
-				break;
-			case 'SNES':
-				$nodeId = '294945';
-				break;
-			case 'NES':
-				$nodeId = '566458';
-				break;
-			default:
-				$nodeId = '468642';
-				break;
-		}
-
-		return $nodeId;
-	}
-
-	/**
-	 * @param string $nodeName
-	 *
-	 * @return boolean|string
-	 */
-	public function matchBrowseNode($nodeName)
-	{
-		$str = '';
-
-		//music nodes above mp3 download nodes
-		switch ($nodeName) {
-			case 'Action_shooter':
-			case 'Action_Games':
-			case 'Action_games':
-				$str = 'Action';
-				break;
-			case 'Action/Adventure':
-			case 'Action\Adventure':
-			case 'Adventure_games':
-				$str = 'Adventure';
-				break;
-			case 'Boxing_games':
-			case 'Sports_games':
-				$str = 'Sports';
-				break;
-			case 'Fantasy_action_games':
-				$str = 'Fantasy';
-				break;
-			case 'Fighting_action_games':
-				$str = 'Fighting';
-				break;
-			case 'Flying_simulation_games':
-				$str = 'Flying';
-				break;
-			case 'Horror_action_games':
-				$str = 'Horror';
-				break;
-			case 'Kids & Family':
-				$str = 'Family';
-				break;
-			case 'Role_playing_games':
-				$str = 'Role-Playing';
-				break;
-			case 'Shooter_action_games':
-				$str = 'Shooter';
-				break;
-			case 'Singing_games':
-				$str = 'Music';
-				break;
-			case 'Action':
-			case 'Adventure':
-			case 'Arcade':
-			case 'Board Games':
-			case 'Cards':
-			case 'Casino':
-			case 'Collections':
-			case 'Family':
-			case 'Fantasy':
-			case 'Fighting':
-			case 'Flying':
-			case 'Horror':
-			case 'Music':
-			case 'Puzzle':
-			case 'Racing':
-			case 'Rhythm':
-			case 'Role-Playing':
-			case 'Simulation':
-			case 'Shooter':
-			case 'Shooting':
-			case 'Sports':
-			case 'Strategy':
-			case 'Trivia':
-				$str = $nodeName;
-				break;
-		}
-
-		return ($str != '') ? $str : false;
-	}
-
-
 }

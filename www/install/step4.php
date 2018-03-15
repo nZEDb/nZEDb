@@ -45,7 +45,7 @@ if ($page->isPostBack()) {
 	if ($pear_obj->isError($cfg->nntpCheck)) {
 		$cfg->nntpCheck->message = 'Connection error, check your server name, port and SSL: (' . $cfg->nntpCheck->getMessage() . ')';
 		$cfg->error = true;
-	} else if ($cfg->NNTP_USERNAME != '' && $cfg->NNTP_PASSWORD != '') {
+	} elseif ($cfg->NNTP_USERNAME != '' && $cfg->NNTP_PASSWORD != '') {
 		//test authentication if username and password are provided
 		$cfg->nntpCheck = $test->authenticate($cfg->NNTP_USERNAME, $cfg->NNTP_PASSWORD);
 		if ($pear_obj->isError($cfg->nntpCheck)) {

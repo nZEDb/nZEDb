@@ -13,8 +13,8 @@ if (!$page->users->isLoggedIn()) {
 $us = new UserSeries(['Settings' => $page->settings]);
 $tv = new Videos(['Settings' => $page->settings]);
 
-$action = isset($_REQUEST['id']) ? $_REQUEST['id'] : '';
-$videoId = isset($_REQUEST['subpage']) ? $_REQUEST['subpage'] : '';
+$action = $_REQUEST['id'] ?? '';
+$videoId = $_REQUEST['subpage'] ?? '';
 
 if (isset($_REQUEST['from'])) {
 	$page->smarty->assign('from', WWW_TOP . $_REQUEST['from']);
@@ -50,7 +50,7 @@ switch ($action) {
 		}
 
 		if ($action == 'doadd') {
-			$category = (isset($_REQUEST['category']) && is_array($_REQUEST['category']) && !empty($_REQUEST['category'])) ? $_REQUEST['category'] : array();
+			$category = (isset($_REQUEST['category']) && is_array($_REQUEST['category']) && !empty($_REQUEST['category'])) ? $_REQUEST['category'] : [];
 			$us->addShow($page->users->currentUserId(), $videoId, $category);
 			if (isset($_REQUEST['from'])) {
 				header('Location:' . WWW_TOP . $_REQUEST['from']);
@@ -60,7 +60,7 @@ switch ($action) {
 		} else {
 			$cat = new Category(['Settings' => $page->settings]);
 			$tmpcats = $cat->getChildren(Category::TV_ROOT);
-			$categories = array();
+			$categories = [];
 			foreach ($tmpcats as $c) {
 				// If TV WEB-DL categorization is disabled, don't include it as an option
 				if (Settings::value('indexer.categorise.catwebdl') == 0 && $c['id'] == Category::TV_WEBDL) {
@@ -71,7 +71,7 @@ switch ($action) {
 			$page->smarty->assign('type', 'add');
 			$page->smarty->assign('cat_ids', array_keys($categories));
 			$page->smarty->assign('cat_names', $categories);
-			$page->smarty->assign('cat_selected', array());
+			$page->smarty->assign('cat_selected', []);
 			$page->smarty->assign('video', $videoId);
 			$page->smarty->assign('show', $show);
 			$page->content = $page->smarty->fetch('myshows-add.tpl');
@@ -87,7 +87,7 @@ switch ($action) {
 		}
 
 		if ($action == 'doedit') {
-			$category = (isset($_REQUEST['category']) && is_array($_REQUEST['category']) && !empty($_REQUEST['category'])) ? $_REQUEST['category'] : array();
+			$category = (isset($_REQUEST['category']) && is_array($_REQUEST['category']) && !empty($_REQUEST['category'])) ? $_REQUEST['category'] : [];
 			$us->updateShow($page->users->currentUserId(), $videoId, $category);
 			if (isset($_REQUEST['from'])) {
 				header('Location:' . WWW_TOP . $_REQUEST['from']);
@@ -98,7 +98,7 @@ switch ($action) {
 			$cat = new Category(['Settings' => $page->settings]);
 
 			$tmpcats = $cat->getChildren(Category::TV_ROOT);
-			$categories = array();
+			$categories = [];
 			foreach ($tmpcats as $c) {
 				$categories[$c['id']] = $c['title'];
 			}
@@ -129,7 +129,7 @@ switch ($action) {
 		$ordering = $releases->getBrowseOrdering();
 		$orderby = isset($_REQUEST['ob']) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST['ob'] : '';
 
-		$results = array();
+		$results = [];
 		$results = $releases->getShowsRange($shows, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata['categoryexclusions']);
 
 		$page->smarty->assign('pagertotalitems', $browsecount);
@@ -164,17 +164,17 @@ switch ($action) {
 
 		$cat = new Category(['Settings' => $page->settings]);
 		$tmpcats = $cat->getChildren(Category::TV_ROOT);
-		$categories = array();
+		$categories = [];
 		foreach ($tmpcats as $c) {
 			$categories[$c['id']] = $c['title'];
 		}
 
 		$shows = $us->getShows($page->users->currentUserId());
-		$results = array();
+		$results = [];
 		foreach ($shows as $showk => $show) {
 			$showcats = explode('|', $show['categories']);
 			if (is_array($showcats) && sizeof($showcats) > 0) {
-				$catarr = array();
+				$catarr = [];
 				foreach ($showcats as $scat) {
 					if (!empty($scat)) {
 						$catarr[] = $categories[$scat];

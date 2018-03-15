@@ -25,9 +25,9 @@ class AniDB
 	}
 
 	/**
-	 * Updates stored AniDB entries in the database
+	 * Updates stored AniDB entries in the database.
 	 *
-	 * @param int $anidbID
+	 * @param int    $anidbID
 	 * @param string $type
 	 * @param string $startdate
 	 * @param string $enddate
@@ -43,7 +43,8 @@ class AniDB
 	{
 		// FIXME fix the missing variables for this query
 		$this->pdo->queryExec(
-			sprintf('
+			sprintf(
+				'
 				UPDATE anidb_titles AS at INNER JOIN anidb_info ai USING (anidbid) SET title = %s, type = %s, startdate = %s, enddate = %s,
 					related = %s, similar = %s, creators = %s, description = %s, rating = %s,
 					categories = %s, characters = %s, epnos = %s, airdates = %s,
@@ -69,14 +70,15 @@ class AniDB
 	}
 
 	/**
-	 * Deletes stored AniDB entries in the database
+	 * Deletes stored AniDB entries in the database.
 	 *
 	 * @param int $anidbID
 	 */
 	public function deleteTitle($anidbID)
 	{
 		$this->pdo->queryExec(
-			sprintf('
+			sprintf(
+				'
 				DELETE at, ai, ae
 				FROM anidb_titles AS at
 				LEFT OUTER JOIN anidb_info ai USING (anidbid)
@@ -88,10 +90,11 @@ class AniDB
 	}
 
 	/**
-	 * Retrieves a list of Anime titles, optionally filtered by starting character and title
+	 * Retrieves a list of Anime titles, optionally filtered by starting character and title.
 	 *
 	 * @param string $letter
 	 * @param string $animetitle
+	 *
 	 * @return array|bool
 	 */
 	public function getAnimeList($letter = '', $animetitle = '')
@@ -110,7 +113,8 @@ class AniDB
 		}
 
 		return $this->pdo->queryDirect(
-			sprintf('
+			sprintf(
+				'
 				SELECT at.anidbid, at.title,
 					ai.type, ai.categories, ai.rating, ai.startdate, ai.enddate
 				FROM anidb_titles at
@@ -128,11 +132,12 @@ class AniDB
 	}
 
 	/**
-	 * Retrieves a range of Anime titles for site display
+	 * Retrieves a range of Anime titles for site display.
 	 *
-	 * @param int $start
-	 * @param int $num
+	 * @param int    $start
+	 * @param int    $num
 	 * @param string $animetitle
+	 *
 	 * @return array|bool
 	 */
 	public function getAnimeRange($start, $num, $animetitle = '')
@@ -149,7 +154,8 @@ class AniDB
 		}
 
 		return $this->pdo->query(
-			sprintf("
+			sprintf(
+				"
 				SELECT at.anidbid, GROUP_CONCAT(at.title SEPARATOR ', ') AS title,
 					ai.description
 				FROM anidb_titles AS at
@@ -165,9 +171,10 @@ class AniDB
 	}
 
 	/**
-	 * Retrives the count of Anime titles for pager functions optionally filtered by title
+	 * Retrives the count of Anime titles for pager functions optionally filtered by title.
 	 *
 	 * @param string $animetitle
+	 *
 	 * @return int
 	 */
 	public function getAnimeCount($animetitle = '')
@@ -178,7 +185,8 @@ class AniDB
 		}
 
 		$res = $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT COUNT(DISTINCT at.anidbid) AS num
 				FROM anidb_titles AS at
 				LEFT JOIN anidb_info AS ai USING (anidbid)
@@ -192,15 +200,17 @@ class AniDB
 	}
 
 	/**
-	 * Retrieves all info for a specific AniDB ID
+	 * Retrieves all info for a specific AniDB ID.
 	 *
 	 * @param int $anidbID
-	 * @return array|boolean
+	 *
+	 * @return array|bool
 	 */
 	public function getAnimeInfo($anidbID)
 	{
 		$animeInfo = $this->pdo->query(
-			sprintf('
+			sprintf(
+				'
 				SELECT at.anidbid, at.lang, at.title,
 					ai.startdate, ai.enddate, ai.updated, ai.related, ai.creators, ai.description,
 					ai.rating, ai.picture, ai.categories, ai.characters, ai.type, ai.similar
@@ -211,7 +221,6 @@ class AniDB
 			)
 		);
 
-		return isset($animeInfo[0]) ? $animeInfo[0] : false;
+		return $animeInfo[0] ?? false;
 	}
-
 }

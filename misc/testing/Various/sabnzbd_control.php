@@ -34,7 +34,7 @@ if ($argv[2] === 'pause') {
 		echo $pdo->log->header('Pausing sabnzbd for ' . $argv[3] . ' minutes');
 		$response = file_get_contents($saburl . 'api?mode=config&name=set_pause&value=' . $argv[3] . '&apikey=' . $sabapikey);
 	} else {
-	echo $pdo->log->header('Pausing sabnzbd');
+		echo $pdo->log->header('Pausing sabnzbd');
 		$response = file_get_contents($saburl . 'api?mode=pause&apikey=' . $sabapikey);
 	}
 	echo $pdo->log->header($response);

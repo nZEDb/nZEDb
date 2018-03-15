@@ -1,8 +1,8 @@
 <?php
 
 use app\models\Settings;
-use nzedb\utility\Misc;
 use nzedb\Captcha;
+use nzedb\utility\Misc;
 
 if ($page->users->isLoggedIn()) {
 	header('Location: ' . WWW_TOP . '/');
@@ -10,7 +10,7 @@ if ($page->users->isLoggedIn()) {
 
 $captcha = new Captcha($page);
 $email = $sent = $confirmed = '';
-switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
+switch (($_REQUEST['action'] ?? 'view')) {
 	case 'reset':
 		if (!isset($_REQUEST['guid'])) {
 			$page->smarty->assign('error', 'No reset code provided.');
@@ -26,15 +26,18 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 			$page->users->updatePassResetGuid($ret['id'], '');
 			$newPassword = $page->users->generatePassword();
 			$page->users->updatePassword($ret['id'], $newPassword);
-			Misc::sendEmail($ret['email'], (Settings::value('site.main.title') . ' Password Reset'),
-				"Your password has been reset to $newPassword", Settings::value('site.main.email')
+			Misc::sendEmail(
+				$ret['email'],
+				(Settings::value('site.main.title') . ' Password Reset'),
+				"Your password has been reset to $newPassword",
+				Settings::value('site.main.email')
 			);
 
 			/** Provide the password in a message to so the user does not have to check their e-mail.
 			 * The theme needs to implement this for it to be seen. Using code something like:
 			 * {if $notice != ''}
 			 * <div class="alert alert-info">{$notice}</div>
-			 * {/if}
+			 * {/if}.
 			 *
 			 * We do not include it in the supplied themes, as this is a potential security problem.
 			 */
@@ -77,10 +80,11 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 		}
 		break;
 }
-$page->smarty->assign([
+$page->smarty->assign(
+	[
 		'email'     => $email,
 		'confirmed' => $confirmed,
-		'sent'      => $sent
+		'sent'      => $sent,
 	]
 );
 $page->title = 'Forgotten Password';

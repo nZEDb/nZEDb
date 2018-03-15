@@ -13,13 +13,14 @@ $offset = ($_REQUEST['offset'] ?? 0);
 $regex = $regexes->getRegex($group, ITEMS_PER_PAGE, $offset);
 $count = $regexes->getCount($group);
 
-$page->smarty->assign([
+$page->smarty->assign(
+	[
 		'group'             => $group,
 		'pagertotalitems'   => $count,
 		'pageroffset'       => $offset,
 		'pageritemsperpage' => ITEMS_PER_PAGE,
 		'regex'             => $regex,
-		'pagerquerybase'    => (WWW_TOP . '/category_regexes-list.php?' . $group . 'offset=')
+		'pagerquerybase'    => (WWW_TOP . '/category_regexes-list.php?' . $group . 'offset='),
 	]
 );
 $page->smarty->assign('pager', $page->smarty->fetch('pager.tpl'));

@@ -32,9 +32,9 @@ function reCategorize($argv)
 	$update = true;
 	if (isset($argv[1]) && is_numeric($argv[1])) {
 		$where = ' AND groups_id = ' . $argv[1];
-	} else if (isset($argv[1]) && preg_match('/\([\d, ]+\)/', $argv[1])) {
+	} elseif (isset($argv[1]) && preg_match('/\([\d, ]+\)/', $argv[1])) {
 		$where = ' AND groups_id IN ' . $argv[1];
-	} else if (isset($argv[1]) && $argv[1] === 'misc') {
+	} elseif (isset($argv[1]) && $argv[1] === 'misc') {
 		$where = sprintf(' AND categories_id IN (%s)', $othercats);
 	}
 	if (isset($argv[2]) && $argv[2] === 'test') {
@@ -43,19 +43,19 @@ function reCategorize($argv)
 
 	if (isset($argv[1]) && (is_numeric($argv[1]) || preg_match('/\([\d, ]+\)/', $argv[1]))) {
 		echo $pdo->log->header("Categorizing all releases in ${argv[1]} using searchname. This can take a while, be patient.");
-	} else if (isset($argv[1]) && $argv[1] == 'misc') {
+	} elseif (isset($argv[1]) && $argv[1] == 'misc') {
 		echo $pdo->log->header('Categorizing all releases in misc categories using searchname. This can take a while, be patient.');
 	} else {
 		echo $pdo->log->header('Categorizing all releases using searchname. This can take a while, be patient.');
 	}
-	$timestart = TIME();
+	$timestart = time();
 	if (isset($argv[1]) && (is_numeric($argv[1] || preg_match('/\([\d, ]+\)/', $argv[1])) || $argv[1] === 'misc')) {
 		$chgcount = categorizeRelease(str_replace(' AND', 'WHERE', $where), $update, true);
 	} else {
 		$chgcount = categorizeRelease('', $update, true);
 	}
 	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
-	$time = $consoletools->convertTime(TIME() - $timestart);
+	$time = $consoletools->convertTime(time() - $timestart);
 	if ($update === true) {
 		echo $pdo->log->header('Finished re-categorizing ' . number_format($chgcount) . ' releases in ' . $time . " , using the searchname.\n");
 	} else {
@@ -82,7 +82,8 @@ function categorizeRelease($where, $update = true, $echooutput = false)
 			if ($rowrel['categories_id'] != $catId) {
 				if ($update === true) {
 					$pdo->queryExec(
-						sprintf('
+						sprintf(
+							'
 							UPDATE releases
 							SET iscategorized = 1,
 								videos_id = 0,

@@ -1,9 +1,9 @@
 <?php
 require_once './config.php';
 
+use nzedb\Category;
 use nzedb\Games;
 use nzedb\Genres;
-use nzedb\Category;
 
 $page   = new AdminPage();
 $games  = new Games(['Settings' => $page->settings]);
@@ -36,7 +36,8 @@ if (isset($_REQUEST['id'])) {
 			$_POST['cover']       = (file_exists($coverLoc)) ? 1 : 0;
 			$_POST['releasedate'] = (empty($_POST['releasedate']) || !strtotime($_POST['releasedate'])) ? $game['releasedate'] : date('Y-m-d H:i:s', strtotime($_POST['releasedate']));
 
-			$games->update($gameID,
+			$games->update(
+				$gameID,
 						   $_POST['title'],
 						   $_POST['asin'],
 						   $_POST['url'],
@@ -45,7 +46,8 @@ if (isset($_REQUEST['id'])) {
 						   $_POST['esrb'],
 						   $_POST['cover'],
 						   $_POST['trailerurl'],
-						   $_POST['genre']);
+						   $_POST['genre']
+			);
 
 			header('Location:' . WWW_TOP . '/game-list.php');
 			die();

@@ -7,6 +7,7 @@ class SphinxSearch
 {
 	/**
 	 * SphinxQL connection.
+	 *
 	 * @var \nzedb\db\DB
 	 */
 	public $sphinxQL = null;
@@ -41,6 +42,7 @@ class SphinxSearch
 
 	/**
 	 * Insert release into Sphinx RT table.
+	 *
 	 * @param $parameters
 	 */
 	public function insertRelease($parameters)
@@ -61,7 +63,8 @@ class SphinxSearch
 
 	/**
 	 * Delete release from Sphinx RT tables.
-	 * @param array $identifiers ['g' => Release GUID(mandatory), 'id' => ReleaseID(optional, pass false)]
+	 *
+	 * @param array        $identifiers ['g' => Release GUID(mandatory), 'id' => ReleaseID(optional, pass false)]
 	 * @param \nzedb\db\DB $pdo
 	 */
 	public function deleteRelease($identifiers, DB $pdo)
@@ -85,13 +88,13 @@ class SphinxSearch
 	{
 		$from = [
 			'\\', '(', ')', '|', '---', '--', '-', '!', '@', '~', '"', '&', '/', '^', '$', '=', "'",
-			"\x00", "\n", "\r", "\x1a"
+			"\x00", "\n", "\r", "\x1a",
 		];
 		$to = [
 			'\\\\\\\\', '\\\\\\\\(', '\\\\\\\\)', '\\\\\\\\|', '-', '-', '\\\\\\\\-', '\\\\\\\\!',
 			'\\\\\\\\@', '\\\\\\\\~',
 			'\\\\\\\\"', '\\\\\\\\&', '\\\\\\\\/', '\\\\\\\\^', '\\\\\\\\$', '\\\\\\\\=', "\\'",
-			'\\x00', '\\n', '\\r', '\\x1a'
+			'\\x00', '\\n', '\\r', '\\x1a',
 		];
 
 		return str_replace($from, $to, $string);
@@ -100,14 +103,15 @@ class SphinxSearch
 	/**
 	 * Update Sphinx Releases index for given releaseid.
 	 *
-	 * @param int $releaseID
+	 * @param int          $releaseID
 	 * @param \nzedb\db\DB $pdo
 	 */
 	public function updateRelease($releaseID, DB $pdo)
 	{
 		if (!is_null($this->sphinxQL)) {
 			$new = $pdo->queryOneRow(
-						sprintf('
+						sprintf(
+							'
 							SELECT r.id, r.name, r.searchname, r.fromname, IFNULL(GROUP_CONCAT(rf.name SEPARATOR " "),"") filename
 							FROM releases r
 							LEFT JOIN release_files rf ON (r.id=rf.releases_id)
@@ -124,6 +128,7 @@ class SphinxSearch
 
 	/**
 	 * Truncate a RT index.
+	 *
 	 * @param string $indexName
 	 */
 	public function truncateRTIndex($indexName)
@@ -135,6 +140,7 @@ class SphinxSearch
 
 	/**
 	 * Optimize a RT index.
+	 *
 	 * @param string $indexName
 	 */
 	public function optimizeRTIndex($indexName)

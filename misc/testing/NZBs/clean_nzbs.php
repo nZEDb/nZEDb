@@ -3,10 +3,10 @@ require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR .
 
 use app\models\Settings;
 use nzedb\ConsoleTools;
+use nzedb\db\DB;
 use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
-use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 $pdo = new DB();

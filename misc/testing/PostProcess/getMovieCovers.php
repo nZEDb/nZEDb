@@ -2,12 +2,12 @@
 //This script will update all records in the movieinfo table where there is no cover
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use nzedb\Movie;
 use nzedb\db\DB;
+use nzedb\Movie;
 
 $pdo = new DB();
 
-$movie = new Movie(array('Echo' => true, 'Settings' => $pdo));
+$movie = new Movie(['Echo' => true, 'Settings' => $pdo]);
 
 $movies = $pdo->queryDirect('SELECT imdbid FROM movieinfo WHERE cover = 0 ORDER BY year ASC, id DESC');
 if ($movies instanceof \PDOStatement) {

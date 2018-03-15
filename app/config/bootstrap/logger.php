@@ -13,19 +13,19 @@
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2017 nZEDb
  */
-
 use lithium\analysis\Logger;
 
 Logger::config([
 	'default' => [
 		'adapter'	=> 'File',
 		'path' 		=> nZEDb_LOGS,
-		'priority'	=> ['debug','emergency', 'alert', 'critical', 'error']
+		'priority'	=> ['debug', 'emergency', 'alert', 'critical', 'error'],
 	],
-	'system' => ['adapter' => 'Syslog']
+	'system' => ['adapter' => 'Syslog'],
 ]);
 
 

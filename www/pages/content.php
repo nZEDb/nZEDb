@@ -41,8 +41,8 @@ if ($contentid == 0 && $request == 'content') {
 	$page->meta_title = 'Contents page';
 	$page->meta_keywords = 'contents';
 	$page->meta_description = 'This is the contents page.';
-} else if ($contentid != 0 && $request !== false) {
-	$content = array($contents->getByID($contentid, $role));
+} elseif ($contentid != 0 && $request !== false) {
+	$content = [$contents->getByID($contentid, $role)];
 	$page->smarty->assign('front', false);
 	$page->meta_title = 'Contents page';
 	$page->meta_keywords = 'contents';

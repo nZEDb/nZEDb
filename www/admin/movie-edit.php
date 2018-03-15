@@ -54,7 +54,7 @@ if (isset($_REQUEST['id'])) {
 				'rating'   => $_POST['rating'],
 				'tagline'  => $_POST['tagline'],
 				'title'    => $_POST['title'],
-				'year'     => $_POST['year']
+				'year'     => $_POST['year'],
 			]);
 
 			header('Location:' . WWW_TOP . '/movie-list.php');

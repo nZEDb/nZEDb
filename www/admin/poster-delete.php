@@ -6,8 +6,7 @@ use app\models\MultigroupPosters;
 
 $page = new AdminPage();
 
-if (isset($_GET['id']))
-{
+if (isset($_GET['id'])) {
 	MultigroupPosters::remove(['id' => $_GET['id']]);
 }
 

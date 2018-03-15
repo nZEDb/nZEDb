@@ -2,8 +2,8 @@
 require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\Backfill;
-use nzedb\NNTP;
 use nzedb\db\DB;
+use nzedb\NNTP;
 
 $pdo = new DB();
 
@@ -16,19 +16,19 @@ if ($nntp->doConnect() !== true) {
 if (isset($argv[1]) && $argv[1] == 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && !isset($argv[2])) {
 	$backfill = new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]);
 	$backfill->backfillAllGroups();
-} else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && !isset($argv[2])) {
+} elseif (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && !isset($argv[2])) {
 	$backfill = new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]);
 	$backfill->backfillAllGroups($argv[1]);
-} else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
+} elseif (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
 	$backfill = new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]);
 	$backfill->backfillAllGroups($argv[1], $argv[2]);
-} else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] == 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
+} elseif (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] == 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
 	$backfill = new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]);
 	$backfill->backfillAllGroups('', $argv[2], 'normal');
-} else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] == 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
+} elseif (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] == 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
 	$backfill = new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]);
 	$backfill->backfillAllGroups('', $argv[2], 'date');
-} else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] == 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
+} elseif (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] == 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
 	$backfill = new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]);
 	$backfill->safeBackfill($argv[2]);
 } else {

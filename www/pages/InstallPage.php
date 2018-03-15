@@ -4,8 +4,11 @@
 class InstallPage
 {
 	public $title = '';
+
 	public $content = '';
+
 	public $head = '';
+
 	public $page_template = '';
 
 	/**
@@ -15,7 +18,7 @@ class InstallPage
 
 	public $error = false;
 
-	public function  __construct()
+	public function __construct()
 	{
 		@session_start();
 

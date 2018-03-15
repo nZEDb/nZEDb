@@ -31,7 +31,7 @@ switch (($_REQUEST['action'] ?? 'view')) {
 			'musicview'   => '1',
 			'consoleview' => '1',
 			'gameview'    => '1',
-			'bookview'    => '1'
+			'bookview'    => '1',
 		];
 		break;
 
@@ -44,15 +44,32 @@ switch (($_REQUEST['action'] ?? 'view')) {
 				}
 			}
 			$ret = $page->users->signUp(
-				$_POST['username'], $_POST['firstname'], $_POST['lastname'], $_POST['password'],
-				$_POST['email'], '', $_POST['role'], $invites, '', true
+				$_POST['username'],
+				$_POST['firstname'],
+				$_POST['lastname'],
+				$_POST['password'],
+				$_POST['email'],
+				'',
+				$_POST['role'],
+				$invites,
+				'',
+				true
 			);
 		} else {
 			$ret = $page->users->update(
-				$_POST['id'], $_POST['username'], $_POST['firstname'], $_POST['lastname'], $_POST['email'],
-				$_POST['grabs'], $_POST['role'], $_POST['invites'], (isset($_POST['movieview']) ? '1' : '0'),
-				(isset($_POST['xxxview']) ? '1' : '0'), (isset($_POST['musicview']) ? '1' : '0'),
-				(isset($_POST['consoleview']) ? '1' : '0'), (isset($_POST['gameview']) ? '1' : '0'),
+				$_POST['id'],
+				$_POST['username'],
+				$_POST['firstname'],
+				$_POST['lastname'],
+				$_POST['email'],
+				$_POST['grabs'],
+				$_POST['role'],
+				$_POST['invites'],
+				(isset($_POST['movieview']) ? '1' : '0'),
+				(isset($_POST['xxxview']) ? '1' : '0'),
+				(isset($_POST['musicview']) ? '1' : '0'),
+				(isset($_POST['consoleview']) ? '1' : '0'),
+				(isset($_POST['gameview']) ? '1' : '0'),
 				(isset($_POST['bookview']) ? '1' : '0')
 			);
 			if ($_POST['password'] !== '') {
@@ -98,7 +115,7 @@ switch (($_REQUEST['action'] ?? 'view')) {
 				'grabs'     => ($_POST['grabs'] ?? '0'),
 				'role'      => $_POST['role'],
 				'invites'   => ($_POST['invites'] ?? '0'),
-				'movieview' => $_POST['movieview']
+				'movieview' => $_POST['movieview'],
 			];
 		}
 		break;

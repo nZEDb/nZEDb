@@ -36,7 +36,7 @@ switch (($_REQUEST['action'] ?? 'view')) {
 				'groupname' => $_GET['groupname'],
 				'regex' => $_GET['regex'],
 				'ordinal' => '1',
-				'status'    => '1'
+				'status'    => '1',
 			];
 		}
 		break;
@@ -51,13 +51,14 @@ switch (($_REQUEST['action'] ?? 'view')) {
 			$regex += [
 				'status' => 1,
 				'optype' => 1,
-				'msgcol' => 1
+				'msgcol' => 1,
 			];
 		}
 		break;
 }
 
-$page->smarty->assign([
+$page->smarty->assign(
+	[
 		'error'        => $error,
 		'regex'        => $regex,
 		'status_ids'   => [Category::STATUS_ACTIVE, Category::STATUS_INACTIVE],
@@ -67,9 +68,9 @@ $page->smarty->assign([
 		'msgcol_ids'   => [
 			Binaries::BLACKLIST_FIELD_SUBJECT,
 			Binaries::BLACKLIST_FIELD_FROM,
-			Binaries::BLACKLIST_FIELD_MESSAGEID
+			Binaries::BLACKLIST_FIELD_MESSAGEID,
 		],
-		'msgcol_names' => ['Subject', 'Poster', 'MessageId']
+		'msgcol_names' => ['Subject', 'Poster', 'MessageId'],
 	]
 );
 

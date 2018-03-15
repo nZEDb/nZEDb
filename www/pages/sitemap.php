@@ -5,7 +5,7 @@ use nzedb\Contents;
 use nzedb\SiteMap;
 
 $te = $page->smarty;
-$arPages = array();
+$arPages = [];
 $arPages[] = buildURL('Home', 'Home Page', '/', 'daily', '1.0');
 
 $role = 0;
@@ -53,9 +53,10 @@ if ($page->userdata != null) {
 
 // Echo appropriate site map.
 asort($arPages);
-$page->smarty->assign([
+$page->smarty->assign(
+	[
 		'sitemaps' => $arPages,
-		'last_type' => ''
+		'last_type' => '',
 	]
 );
 

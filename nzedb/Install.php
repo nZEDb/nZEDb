@@ -4,93 +4,171 @@ namespace nzedb;
 class Install
 {
 	public $DB_SYSTEM;
+
 	public $DB_TYPE;
+
 	public $DB_HOST = '127.0.0.1';
+
 	public $DB_PORT;
+
 	public $DB_SOCKET;
+
 	public $DB_USER;
+
 	public $DB_PASSWORD;
+
 	public $DB_NAME = 'nzedb';
+
 	public $NNTP_USERNAME;
+
 	public $NNTP_PASSWORD;
+
 	public $NNTP_SERVER;
+
 	public $NNTP_PORT;
+
 	public $NNTP_SSLENABLED;
+
 	public $NNTP_SOCKET_TIMEOUT;
+
 	public $NNTP_USERNAME_A;
+
 	public $NNTP_PASSWORD_A;
+
 	public $NNTP_SERVER_A;
+
 	public $NNTP_PORT_A;
+
 	public $NNTP_SSLENABLED_A;
+
 	public $NNTP_SOCKET_TIMEOUT_A;
+
 	public $COVERS_PATH;
+
 	public $CONFIG_PATH;
+
 	public $coverPathCheck = false;
+
 	public $SMARTY_DIR;
+
 	public $DB_DIR;
+
 	public $INSTALL_DIR;
+
 	public $ADMIN_USER;
+
 	public $ADMIN_FNAME;
+
 	public $ADMIN_LNAME;
+
 	public $ADMIN_PASS;
+
 	public $ADMIN_EMAIL;
+
 	public $NZB_PATH;
+
 	public $TMP_PATH;
+
 	public $UNRAR_PATH;
+
 	public $WWW_TOP;
+
 	public $COMPILED_CONFIG;
+
 	public $doCheck = false;
+
 	public $sha1Check;
+
 	public $cryptCheck;
+
 	public $iconvCheck;
+
 	public $PDOCheck;
+
 	public $gdCheck;
+
 	public $curlCheck;
+
 	public $cacheCheck;
+
 	public $animeCoversCheck;
+
 	public $audioCoversCheck;
+
 	public $audiosampleCoversCheck;
+
 	public $bookCoversCheck;
+
 	public $consoleCoversCheck;
+
 	public $movieCoversCheck;
+
 	public $musicCoversCheck;
+
 	public $previewCoversCheck;
+
 	public $sampleCoversCheck;
+
 	public $videoCoversCheck;
+
 	public $configCheck;
+
 	public $lockCheck;
+
 	public $pearCheck;
+
 	public $schemaCheck;
+
 	public $SMARTY_COMPILED_TEMPLATES;
 
 	/**
 	 * @var bool Is the PHP version higher than nZEDb_MINIMUM_PHP_VERSION?
 	 */
 	public $phpCheck;
+
 	public $minPhpVersion = nZEDb_MINIMUM_PHP_VERSION;
 
 	public $timelimitCheck;
+
 	public $memlimitCheck;
+
 	public $rewriteCheck;
+
 	public $opensslCheck;
+
 	public $exifCheck;
+
 	public $timezoneCheck;
+
 	public $dbConnCheck;
+
 	public $dbNameCheck;
+
 	public $dbCreateCheck;
+
 	public $emessage;
+
 	public $nntpCheck;
+
 	public $adminCheck;
+
 	public $nzbPathCheck;
+
 	public $saveConfigCheck;
+
 	public $saveLockCheck;
+
 	public $error = false;
 
 	// Step 3 (openssl) properties.
 	public $nZEDb_SSL_CAFILE;
+
 	public $nZEDb_SSL_CAPATH;
+
 	public $nZEDb_SSL_VERIFY_PEER;
+
 	public $nZEDb_SSL_VERIFY_HOST;
+
 	public $nZEDb_SSL_ALLOW_SELF_SIGNED;
 
 	// Does the sessions save path have RW permissions?
@@ -182,5 +260,4 @@ class Install
 	{
 		return @file_put_contents($this->CONFIG_PATH . DS . 'install.lock', '', LOCK_EX);
 	}
-
 }

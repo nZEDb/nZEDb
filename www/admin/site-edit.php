@@ -3,8 +3,8 @@ require_once './config.php';
 
 use app\models\Settings;
 use nzedb\Category;
-use nzedb\SABnzbd;
 use nzedb\db\DB;
+use nzedb\SABnzbd;
 use nzedb\utility\Misc;
 
 // new to get information on books groups
@@ -100,20 +100,24 @@ $page->smarty->assign('yesno_names', ['Yes', 'No']);
 $page->smarty->assign('passwd_ids', [1, 0]);
 $page->smarty->assign('passwd_names', ['Deep (requires unrar)', 'None']);
 
-/*0 = English, 2 = Danish, 3 = French, 1 = German*/
+// 0 = English, 2 = Danish, 3 = French, 1 = German
 $page->smarty->assign('langlist_ids', [0, 2, 3, 1]);
 $page->smarty->assign('langlist_names', ['English', 'Danish', 'French', 'German']);
 
-$page->smarty->assign('imdblang_ids',
+$page->smarty->assign(
+	'imdblang_ids',
 					  [
 						  'en', 'da', 'nl', 'fi', 'fr', 'de', 'it', 'tlh', 'no', 'po', 'ru', 'es',
-						  'sv'
-					  ]);
-$page->smarty->assign('imdblang_names',
+						  'sv',
+					  ]
+);
+$page->smarty->assign(
+	'imdblang_names',
 					  [
 						  'English', 'Danish', 'Dutch', 'Finnish', 'French', 'German', 'Italian',
-						  'Klingon', 'Norwegian', 'Polish', 'Russian', 'Spanish', 'Swedish'
-					  ]);
+						  'Klingon', 'Norwegian', 'Polish', 'Russian', 'Spanish', 'Swedish',
+					  ]
+);
 
 $page->smarty->assign('imdb_urls', [0, 1]);
 $page->smarty->assign('imdburl_names', ['imdb.com', 'akas.imdb.com']);
@@ -121,36 +125,42 @@ $page->smarty->assign('imdburl_names', ['imdb.com', 'akas.imdb.com']);
 $page->smarty->assign('menupos_ids', [0, 1, 2]);
 $page->smarty->assign('menupos_names', ['Right', 'Left', 'Top']);
 
-$page->smarty->assign('sabintegrationtype_ids',
+$page->smarty->assign(
+	'sabintegrationtype_ids',
 					  [
 						  SABnzbd::INTEGRATION_TYPE_USER, SABnzbd::INTEGRATION_TYPE_SITEWIDE,
-						  SABnzbd::INTEGRATION_TYPE_NONE
-					  ]);
+						  SABnzbd::INTEGRATION_TYPE_NONE,
+					  ]
+);
 $page->smarty->assign('sabintegrationtype_names', ['User', 'Site-wide', 'None (Off)']);
 
 $page->smarty->assign('sabapikeytype_ids', [SABnzbd::API_TYPE_NZB, SABnzbd::API_TYPE_FULL]);
 $page->smarty->assign('sabapikeytype_names', ['Nzb Api Key', 'Full Api Key']);
 
-$page->smarty->assign('sabpriority_ids',
+$page->smarty->assign(
+	'sabpriority_ids',
 					  [
 						  SABnzbd::PRIORITY_FORCE, SABnzbd::PRIORITY_HIGH, SABnzbd::PRIORITY_NORMAL,
-						  SABnzbd::PRIORITY_LOW
-					  ]);
+						  SABnzbd::PRIORITY_LOW,
+					  ]
+);
 $page->smarty->assign('sabpriority_names', ['Force', 'High', 'Normal', 'Low']);
 
 $page->smarty->assign('newgroupscan_names', ['Days', 'Posts']);
-$page->smarty->assign('registerstatus_ids',
+$page->smarty->assign(
+	'registerstatus_ids',
 					  [
 						  Settings::REGISTER_STATUS_API_ONLY, Settings::REGISTER_STATUS_OPEN,
-						  Settings::REGISTER_STATUS_INVITE, Settings::REGISTER_STATUS_CLOSED
-					  ]);
+						  Settings::REGISTER_STATUS_INVITE, Settings::REGISTER_STATUS_CLOSED,
+					  ]
+);
 $page->smarty->assign('registerstatus_names', ['API Only', 'Open', 'Invite', 'Closed']);
 $page->smarty->assign('passworded_ids', [0, 2, 1, 10]);
 $page->smarty->assign('passworded_names', [
 	'Hide passworded or potentially passworded (*yes)',
 	'Hide passworded or potentially passworded (*no)',
 	'Show non-passworded and potentially passworded (*no)',
-	'Show everything (*no)'
+	'Show everything (*no)',
 ]);
 
 //$page->smarty->assign('grabnzbs_ids', array(0,1,2));
@@ -160,27 +170,37 @@ $page->smarty->assign('missed_parts_ids', [0, 1, 2]);
 $page->smarty->assign('missed_parts_names', ['Disabled', 'Part Repair', 'Part Repair Threaded']);
 
 $page->smarty->assign('lookupbooks_ids', [0, 1, 2]);
-$page->smarty->assign('lookupbooks_names',
-					  ['Disabled', 'Lookup All Books', 'Lookup Renamed Books']);
+$page->smarty->assign(
+	'lookupbooks_names',
+					  ['Disabled', 'Lookup All Books', 'Lookup Renamed Books']
+);
 
 $page->smarty->assign('lookupgames_ids', [0, 1, 2]);
-$page->smarty->assign('lookupgames_names',
-					  ['Disabled', 'Lookup All Consoles', 'Lookup Renamed Consoles']);
+$page->smarty->assign(
+	'lookupgames_names',
+					  ['Disabled', 'Lookup All Consoles', 'Lookup Renamed Consoles']
+);
 
 $page->smarty->assign('lookupmusic_ids', [0, 1, 2]);
-$page->smarty->assign('lookupmusic_names',
-					  ['Disabled', 'Lookup All Music', 'Lookup Renamed Music']);
+$page->smarty->assign(
+	'lookupmusic_names',
+					  ['Disabled', 'Lookup All Music', 'Lookup Renamed Music']
+);
 
 $page->smarty->assign('lookupmovies_ids', [0, 1, 2]);
-$page->smarty->assign('lookupmovies_names',
-					  ['Disabled', 'Lookup All Movies', 'Lookup Renamed Movies']);
+$page->smarty->assign(
+	'lookupmovies_names',
+					  ['Disabled', 'Lookup All Movies', 'Lookup Renamed Movies']
+);
 
 $page->smarty->assign('lookuptv_ids', [0, 1, 2]);
 $page->smarty->assign('lookuptv_names', ['Disabled', 'Lookup All TV', 'Lookup Renamed TV']);
 
 $page->smarty->assign('lookup_reqids_ids', [0, 1, 2]);
-$page->smarty->assign('lookup_reqids_names',
-					  ['Disabled', 'Lookup Request IDs', 'Lookup Request IDs Threaded']);
+$page->smarty->assign(
+	'lookup_reqids_names',
+					  ['Disabled', 'Lookup Request IDs', 'Lookup Request IDs Threaded']
+);
 
 $page->smarty->assign('coversPath', nZEDb_COVERS);
 
@@ -197,8 +217,7 @@ foreach ($result as $bookcategory) {
 
 // convert from a string array to an int array as we want to use int
 $bookReqidsIDs = array_map(
-	function($value)
-	{
+	function ($value) {
 		return (int)$value;
 	},
 	$bookReqidsIDs
@@ -211,8 +230,7 @@ $booksSelected = explode(',', Settings::value('..book_reqids'));
 
 // convert from a string array to an int array
 $booksSelected = array_map(
-	function($value)
-	{
+	function ($value) {
 		return (int)$value;
 	},
 	$booksSelected
@@ -220,8 +238,10 @@ $booksSelected = array_map(
 $page->smarty->assign('book_reqids_selected', $booksSelected);
 
 $page->smarty->assign('loggingopt_ids', [0, 1, 2, 3]);
-$page->smarty->assign('loggingopt_names',
-					  ['Disabled', 'Log in DB only', 'Log both DB and file', 'Log only in file']);
+$page->smarty->assign(
+	'loggingopt_names',
+					  ['Disabled', 'Log in DB only', 'Log both DB and file', 'Log only in file']
+);
 
 $page->smarty->assign('themelist', Misc::getThemesList());
 

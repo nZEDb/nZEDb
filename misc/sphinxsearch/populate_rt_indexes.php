@@ -1,13 +1,13 @@
 <?php
 require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use nzedb\db\DB;
 use nzedb\ReleaseSearch;
 use nzedb\SphinxSearch;
-use nzedb\db\DB;
 
 if (nZEDb_RELEASE_SEARCH_TYPE != ReleaseSearch::SPHINX) {
 	exit('Error, nZEDb_RELEASE_SEARCH_TYPE in nzedb/config/settings.php must be set to SPHINX!' . PHP_EOL);
-} else if (!isset($argv[1]) || !in_array($argv[1], ['releases_rt'])) {
+} elseif (!isset($argv[1]) || !in_array($argv[1], ['releases_rt'])) {
 	exit(
 		"Argument 1 is the index name, releases_rt are the only supported ones currently.\n" .
 		"Argument 2 is optional, max number of rows to send to sphinx at a time, 10,000 is the default if not set.\n" .
@@ -55,7 +55,6 @@ function populate_rt($table, $max)
 	$lastId = $minId - 1;
 	echo "[Starting to populate sphinx RT index $table with $total releases.]\n";
 	for ($i = $minId; $i <= ($total + $max + $minId); $i += $max) {
-
 		$rows = $pdo->queryDirect(sprintf($query, $lastId, $max));
 		if (!$rows) {
 			continue;

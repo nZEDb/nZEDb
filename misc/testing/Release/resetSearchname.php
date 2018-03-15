@@ -4,11 +4,11 @@
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ConsoleTools;
+use nzedb\db\DB;
 use nzedb\NameFixer;
 use nzedb\processing\ProcessReleases;
 use nzedb\ReleaseCleaning;
 use nzedb\SphinxSearch;
-use nzedb\db\DB;
 
 $pdo = new DB();
 $sphinx = new SphinxSearch();
@@ -55,14 +55,14 @@ if (isset($argv[1]) && $argv[1] == 'full') {
 	} else {
 		exit($pdo->log->info('You have no releases in the DB.'));
 	}
-} else if (isset($argv[1]) && $argv[1] == 'limited') {
+} elseif (isset($argv[1]) && $argv[1] == 'limited') {
 	$pdo = new DB();
 	$res = $pdo->query('SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.groups_id = groups.id WHERE isrenamed = 0');
 
 	if (count($res) > 0) {
 		echo $pdo->log->header('Going to recreate search names that have not been fixed with namefixer, recategorize them, and fix them with namefixer, this can take a while.');
 		$done = 0;
-		$timestart = TIME();
+		$timestart = time();
 		$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 		$rc = new ReleaseCleaning($pdo);
 		foreach ($res as $row) {
@@ -93,7 +93,7 @@ if (isset($argv[1]) && $argv[1] == 'full') {
 	} else {
 		exit($pdo->log->info('You have no releases in the DB.'));
 	}
-} else if (isset($argv[1]) && $argv[1] == 'reset') {
+} elseif (isset($argv[1]) && $argv[1] == 'reset') {
 	$pdo = new DB();
 	$res = $pdo->query('SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.groups_id = groups.id');
 
@@ -114,7 +114,7 @@ if (isset($argv[1]) && $argv[1] == 'full') {
 			$done++;
 			$consoletools->overWritePrimary('Renaming:' . $consoletools->percentString($done, count($res)));
 		}
-		$timenc = $consoletools->convertTime(TIME() - $timestart);
+		$timenc = $consoletools->convertTime(time() - $timestart);
 		echo $pdo->log->header($done . ' releases renamed in ' . $timenc);
 	}
 } else {

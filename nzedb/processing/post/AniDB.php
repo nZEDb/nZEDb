@@ -1,15 +1,15 @@
 <?php
-
 namespace nzedb\processing\post;
 
 use app\models\Settings;
 use nzedb\Category;
-use nzedb\NZB;
 use nzedb\db\DB;
+use nzedb\NZB;
 
 class AniDB
 {
 	const PROC_EXTFAIL = -1; // Release Anime title/episode # could not be extracted from searchname
+
 	const PROC_NOMATCH = -2; // AniDB ID was not found in anidb table using extracted title/episode #
 
 	const REGEX_NOFORN = 'English|Japanese|German|Danish|Flemish|Dutch|French|Swe(dish|sub)|Deutsch|Norwegian';
@@ -42,7 +42,7 @@ class AniDB
 	/**
 	 * @param array $options Class instances / Echo to cli.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		$defaults = [
 			'Echo'     => false,
@@ -60,12 +60,13 @@ class AniDB
 	}
 
 	/**
-	 * Queues anime releases for processing
+	 * Queues anime releases for processing.
 	 */
 	public function processAnimeReleases()
 	{
 		$results = $this->pdo->queryDirect(
-			sprintf('
+			sprintf(
+				'
 				SELECT searchname, id
 				FROM releases
 				WHERE nzbstatus = %d
@@ -80,13 +81,12 @@ class AniDB
 		);
 
 		if ($results instanceof \PDOStatement) {
-
 			$this->doRandomSleep();
 
 			$this->padb = new \nzedb\db\populate\AniDB(
 				[
 					'Echo'     => $this->echooutput,
-					'Settings' => $this->pdo
+					'Settings' => $this->pdo,
 				]
 			);
 
@@ -94,7 +94,8 @@ class AniDB
 				$matched = $this->matchAnimeRelease($release);
 				if ($matched === false) {
 					$this->pdo->queryExec(
-						sprintf('
+						sprintf(
+							'
 							UPDATE releases
 							SET anidbid = %d
 							WHERE id = %d',
@@ -110,7 +111,7 @@ class AniDB
 	}
 
 	/**
-	 * Selects episode info for a local match
+	 * Selects episode info for a local match.
 	 *
 	 * @param int $anidbId
 	 * @param int $episode
@@ -120,7 +121,8 @@ class AniDB
 	private function checkAniDBInfo($anidbId, $episode = -1)
 	{
 		return $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT ae.anidbid, ae.episode_no,
 					ae.airdate, ae.episode_title
 				FROM anidb_episodes ae
@@ -133,7 +135,7 @@ class AniDB
 	}
 
 	/**
-	 * Sleeps between 10 and 15 seconds for AniDB API cooldown
+	 * Sleeps between 10 and 15 seconds for AniDB API cooldown.
 	 */
 	private function doRandomSleep()
 	{
@@ -141,7 +143,7 @@ class AniDB
 	}
 
 	/**
-	 * Extracts anime title and episode info from release searchname
+	 * Extracts anime title and episode info from release searchname.
 	 *
 	 * @param string $cleanName
 	 *
@@ -151,17 +153,21 @@ class AniDB
 	{
 		$cleanName = str_replace('_', ' ', $cleanName);
 
-		if (preg_match('/(^|.*\")(\[[a-zA-Z\.\!?-]+\][\s_]*)?(\[BD\][\s_]*)?(\[\d{3,4}[ip]\][\s_]*)?(?P<title>[\w\s_.+!?\'-\(\)]+)(New Edit|(Blu-?ray)?( ?Box)?( ?Set)?)?([ _]-[ _]|([ ._-]Epi?(sode)?[ ._-]?0?)?[ ._-]?|[ ._-]Vol\.|[ ._-]E)(?P<epno>\d{1,3}|Movie|OVA|Complete Series)(v\d|-\d+)?[-_. ].*[\[\(\"]/i',
+		if (preg_match(
+			'/(^|.*\")(\[[a-zA-Z\.\!?-]+\][\s_]*)?(\[BD\][\s_]*)?(\[\d{3,4}[ip]\][\s_]*)?(?P<title>[\w\s_.+!?\'-\(\)]+)(New Edit|(Blu-?ray)?( ?Box)?( ?Set)?)?([ _]-[ _]|([ ._-]Epi?(sode)?[ ._-]?0?)?[ ._-]?|[ ._-]Vol\.|[ ._-]E)(?P<epno>\d{1,3}|Movie|OVA|Complete Series)(v\d|-\d+)?[-_. ].*[\[\(\"]/i',
 				$cleanName,
-				$matches)
+				$matches
+		)
 		) {
 			$matches['epno'] = (int)$matches['epno'];
 			if (in_array($matches['epno'], ['Movie', 'OVA'])) {
 				$matches['epno'] = 1;
 			}
-		} else if (preg_match('/^(\[[a-zA-Z\.\-!?]+\][\s_]*)?(\[BD\])?(\[\d{3,4}[ip]\])?(?P<title>[\w\s_.+!?\'-\(\)]+)(New Edit|(Blu-?ray)?( ?Box)?( ?Set)?)?\s*[\(\[](BD|\d{3,4}[ipx])/i',
+		} elseif (preg_match(
+			'/^(\[[a-zA-Z\.\-!?]+\][\s_]*)?(\[BD\])?(\[\d{3,4}[ip]\])?(?P<title>[\w\s_.+!?\'-\(\)]+)(New Edit|(Blu-?ray)?( ?Box)?( ?Set)?)?\s*[\(\[](BD|\d{3,4}[ipx])/i',
 			$cleanName,
-			$matches)
+			$matches
+		)
 		) {
 			$matches['epno'] = 1;
 		} else {
@@ -182,7 +188,7 @@ class AniDB
 	}
 
 	/**
-	 * Retrieves AniDB Info using a cleaned name
+	 * Retrieves AniDB Info using a cleaned name.
 	 *
 	 * @param string $searchName
 	 *
@@ -191,7 +197,8 @@ class AniDB
 	private function getAnidbByName($searchName = '')
 	{
 		return $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT at.anidbid, at.title
 				FROM anidb_titles AS at
 				WHERE at.title %s',
@@ -202,13 +209,13 @@ class AniDB
 
 	/**
 	 * Matches the anime release to AniDB Info
-	 * If no info is available locally the AniDB API is invoked
+	 * If no info is available locally the AniDB API is invoked.
 	 *
 	 * @param array $release
 	 *
 	 * @return bool
 	 */
-	private function matchAnimeRelease($release = array())
+	private function matchAnimeRelease($release = [])
 	{
 		$matched = false;
 		$type    = 'Local';
@@ -217,7 +224,6 @@ class AniDB
 		$cleanArr = $this->extractTitleEpisode($release['searchname']);
 
 		if (is_array($cleanArr) && isset($cleanArr['title']) && is_numeric($cleanArr['epno'])) {
-
 			echo $this->pdo->log->header(PHP_EOL . 'Looking Up: ') .
 				$this->pdo->log->primary("   Title: {$cleanArr['title']}" . PHP_EOL .
 				"   Episode: {$cleanArr['epno']}");
@@ -231,7 +237,6 @@ class AniDB
 			}
 
 			if (!empty($anidbId) && is_numeric($anidbId['anidbid']) && $anidbId['anidbid'] > 0) {
-
 				$updatedAni = $this->checkAniDBInfo($anidbId['anidbid'], $cleanArr['epno']);
 
 				if ($updatedAni === false) {
@@ -282,7 +287,8 @@ class AniDB
 	private function updateRelease($anidbId, $relId)
 	{
 		$this->pdo->queryExec(
-			sprintf('
+			sprintf(
+				'
 				UPDATE releases
 				SET anidbid = %d
 				WHERE id = %d',
@@ -293,7 +299,7 @@ class AniDB
 	}
 
 	/**
-	 * Checks a specific Anime title's last update time
+	 * Checks a specific Anime title's last update time.
 	 *
 	 * @param int $anidbId
 	 *
@@ -302,7 +308,8 @@ class AniDB
 	private function updateTimeCheck($anidbId)
 	{
 		return $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT anidbid
 				FROM anidb_info ai
 				WHERE ai.updated < (NOW() - INTERVAL 7 DAY)

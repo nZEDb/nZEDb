@@ -11,6 +11,14 @@ use nzedb\db\DB;
 class Sharing
 {
 	/**
+	 * Group to work in.
+	 *
+	 * @const
+	 * @access public
+	 */
+	const group = 'alt.binaries.zines';
+
+	/**
 	 *      --------------------------------------------
 	 *      sharing_sites table (contains remote sites):
 	 *      --------------------------------------------
@@ -58,17 +66,11 @@ class Sharing
 
 	/**
 	 * Array containing site settings.
+	 *
 	 * @var array|bool
 	 * @access protected
 	 */
 	protected $siteSettings = [];
-
-	/**
-	 * Group to work in.
-	 * @const
-	 * @access public
-	 */
-	const group = 'alt.binaries.zines';
 
 	/**
 	 * Construct.
@@ -152,7 +154,8 @@ class Sharing
 		$this->pdo->queryExec('TRUNCATE TABLE sharing');
 		$siteName = uniqid('nZEDb_', true);
 		$this->pdo->queryExec(
-			sprintf('
+			sprintf(
+				'
 				INSERT INTO sharing
 				(site_name, site_guid, max_push, max_pull, hide_users, start_position, auto_enable, fetching, max_download)
 				VALUES (%s, %s, 40 , 20000, 1, 1, 1, 1, 150)',
@@ -231,7 +234,7 @@ class Sharing
 						'TIME'  => $row['unix_time'],
 						'SID'   => $sid,
 						'RID'   => $row['nzb_guid'],
-						'BODY'  => $row['text']
+						'BODY'  => $row['text'],
 					]
 				),
 				'<anon@anon.com>'
@@ -242,7 +245,8 @@ class Sharing
 
 				// Update DB to say we posted the article.
 				$this->pdo->queryExec(
-					sprintf('
+					sprintf(
+						'
 						UPDATE release_comments
 						SET shared = 1, shareid = %s
 						WHERE id = %d',
@@ -267,7 +271,8 @@ class Sharing
 	 */
 	protected function matchComments()
 	{
-		$res = $this->pdo->query('
+		$res = $this->pdo->query(
+			'
 			SELECT r.id
 			FROM release_comments rc
 			INNER JOIN releases r USING (nzb_guid)
@@ -277,7 +282,8 @@ class Sharing
 		if ($found > 0) {
 			foreach ($res as $row) {
 				$this->pdo->queryExec(
-					sprintf('
+					sprintf(
+						'
 						UPDATE release_comments rc
 						INNER JOIN releases r USING (nzb_guid)
 						SET rc.releases_id = %d, r.comments = r.comments + 1
@@ -295,7 +301,8 @@ class Sharing
 
 		// Update first time seen.
 		$this->pdo->queryExec(
-			sprintf("
+			sprintf(
+				"
 					UPDATE sharing_sites ss
 					INNER JOIN
 						(SELECT siteid, createddate
@@ -395,7 +402,8 @@ class Sharing
 
 				// Check if we already have the comment.
 				$check = $this->pdo->queryOneRow(
-					sprintf('SELECT id FROM release_comments WHERE shareid = %s',
+					sprintf(
+						'SELECT id FROM release_comments WHERE shareid = %s',
 						$this->pdo->escapeString($matches['sid'])
 					)
 				);
@@ -405,7 +413,8 @@ class Sharing
 
 					// Check if we have the site and if it is enabled.
 					$check = $this->pdo->queryOneRow(
-						sprintf('SELECT enabled FROM sharing_sites WHERE site_guid = %s',
+						sprintf(
+							'SELECT enabled FROM sharing_sites WHERE site_guid = %s',
 							$this->pdo->escapeString($matches['guid'])
 						)
 					);
@@ -415,7 +424,8 @@ class Sharing
 						if ($this->siteSettings['auto_enable'] === false) {
 							// Insert the site so the admin can enable it later on.
 							$this->pdo->queryExec(
-								sprintf('
+								sprintf(
+									'
 									INSERT INTO sharing_sites
 									(site_name, site_guid, last_time, first_time, enabled, comments)
 									VALUES (%s, %s, NOW(), NOW(), 0, 0)',
@@ -427,7 +437,8 @@ class Sharing
 						} else {
 							// Insert the site as enabled since the user has auto enabled on.
 							$this->pdo->queryExec(
-								sprintf('
+								sprintf(
+									'
 									INSERT INTO sharing_sites
 									(site_name, site_guid, last_time, first_time, enabled, comments)
 									VALUES (%s, %s, NOW(), NOW(), 1, 0)',
@@ -446,7 +457,8 @@ class Sharing
 					// Insert the comment, if we got it, update the site to increment comment count.
 					if ($this->insertNewComment($header['Message-ID'], $matches['guid'])) {
 						$this->pdo->queryExec(
-							sprintf('
+							sprintf(
+								'
 								UPDATE sharing_sites SET comments = comments + 1, last_time = NOW(), site_name = %s WHERE site_guid = %s',
 								$this->pdo->escapeString($matches['site']),
 								$this->pdo->escapeString($matches['guid'])
@@ -524,7 +536,8 @@ class Sharing
 
 		// Insert the comment.
 		if ($this->pdo->queryExec(
-			sprintf('
+			sprintf(
+				'
 				INSERT IGNORE INTO release_comments
 				(text, createddate, shareid, nzb_guid, siteid, username, user_id, releases_id, shared, host)
 				VALUES (%s, %s, %s, UNHEX(%s), %s, %s, 0, 0, 2, "")',
@@ -540,5 +553,4 @@ class Sharing
 		}
 		return false;
 	}
-
 }

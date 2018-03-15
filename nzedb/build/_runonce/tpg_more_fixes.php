@@ -15,10 +15,10 @@
  * not, see:
  *
  * @link <http://www.gnu.org/licenses/>.
+ *
  * @author niel / kevin
  * @copyright 2014 nZEDb
  */
-
 use nzedb\db\Settings;
 
 if (! isset($argv[1]) || ! $argv[1] !== '1') {
@@ -41,8 +41,7 @@ $groups = $pdo->queryDirect('SELECT id FROM groups WHERE active = 1 OR backfill 
 if ($groups === false) {
 	echo "No active groups. Fix not needed.\n";
 } else {
-
-	$queries = array();
+	$queries = [];
 
 	switch ($argv[1]) {
 		case 1:

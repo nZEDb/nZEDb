@@ -1,13 +1,11 @@
 <?php
 namespace nzedb;
 
-
 /**
- * Class ConsoleTools
+ * Class ConsoleTools.
  */
 class ConsoleTools
 {
-
 	/**
 	 * @var \nzedb\ColorCLI
 	 */
@@ -24,7 +22,7 @@ class ConsoleTools
 	public function __construct(array $options = [])
 	{
 		$defaults = [
-			'ColorCLI' => null
+			'ColorCLI' => null,
 		];
 		$options += $defaults;
 
@@ -37,7 +35,7 @@ class ConsoleTools
 	 * @param string $message
 	 * @param bool   $reset
 	 */
-	public function overWriteHeader($message, $reset = False)
+	public function overWriteHeader($message, $reset = false)
 	{
 		if ($reset) {
 			$this->lastMessageLength = 0;
@@ -55,7 +53,7 @@ class ConsoleTools
 	 * @param string $message
 	 * @param bool   $reset
 	 */
-	public function overWritePrimary($message, $reset = False)
+	public function overWritePrimary($message, $reset = false)
 	{
 		if ($reset) {
 			$this->lastMessageLength = 0;
@@ -73,7 +71,7 @@ class ConsoleTools
 	 * @param string $message
 	 * @param bool   $reset
 	 */
-	public function overWrite($message, $reset = False)
+	public function overWrite($message, $reset = false)
 	{
 		if ($reset) {
 			$this->lastMessageLength = 0;
@@ -133,10 +131,9 @@ class ConsoleTools
 	 */
 	public function convertTime($seconds)
 	{
-
 		if ($seconds > 3600) {
 			return round($seconds / 3600) . ' hour(s)';
-		} else if ($seconds > 60) {
+		} elseif ($seconds > 60) {
 			return round($seconds / 60) . ' minute(s)';
 		} else {
 			return $seconds . ' second(s)';
@@ -144,7 +141,7 @@ class ConsoleTools
 	}
 
 	/**
-	 * Convert seconds to a timer, 00h:00m:00s
+	 * Convert seconds to a timer, 00h:00m:00s.
 	 *
 	 * @param int $seconds
 	 *

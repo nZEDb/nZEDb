@@ -25,13 +25,13 @@ if (count($argv) !== 6) {
 if (!is_dir($argv[1])) {
 	exit('Error: arg1 must be a path (you might not have read access to this path)' . $n);
 }
-if (!in_array($argv[2], array('true', 'false'))) {
+if (!in_array($argv[2], ['true', 'false'])) {
 	exit('Error: arg2 must be true or false' . $n);
 }
-if (!in_array($argv[3], array('true', 'false'))) {
+if (!in_array($argv[3], ['true', 'false'])) {
 	exit('Error: arg3 must be true or false' . $n);
 }
-if (!in_array($argv[4], array('true', 'false'))) {
+if (!in_array($argv[4], ['true', 'false'])) {
 	exit('Error: arg4 must be true or false' . $n);
 }
 if (!is_numeric($argv[5])) {
@@ -56,7 +56,7 @@ $files = new \RegexIterator(
 );
 
 $i = 1;
-$nzbFiles = array();
+$nzbFiles = [];
 foreach ($files as $file) {
 	$nzbFiles[] = $file[0];
 	if ($i++ >= $argv[5]) {
@@ -65,7 +65,6 @@ foreach ($files as $file) {
 }
 
 if ($i > 1) {
-
 	unset($files);
 
 	// Check these user argument values, convert them to bool.

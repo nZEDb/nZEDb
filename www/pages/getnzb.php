@@ -1,9 +1,9 @@
 <?php
 
 use app\models\Settings;
-use nzedb\Releases;
-use nzedb\NZB;
 use nzedb\db\DB;
+use nzedb\NZB;
+use nzedb\Releases;
 use nzedb\utility\Misc;
 
 $uid = 0;
@@ -100,7 +100,7 @@ ob_start();
 // De-gzip the NZB and store it in the output buffer.
 readgzfile($nzbPath);
 
-$cleanName = str_replace(array(',', ' ', '/'), '_', $relData['searchname']);
+$cleanName = str_replace([',', ' ', '/'], '_', $relData['searchname']);
 
 // Set the NZB file name.
 header('Content-Disposition: attachment; filename=' . $cleanName . '.nzb');
@@ -114,7 +114,7 @@ header('X-DNZB-Category: ' . $relData['category_name']);
 header('X-DNZB-Details: ' . $page->serverurl . 'details/' . $_GET['id']);
 if (!empty($relData['imdbid']) && $relData['imdbid'] > 0) {
 	header('X-DNZB-MoreInfo: http://www.imdb.com/title/tt' . $relData['imdbid']);
-} else if (!empty($relData['tvdb']) && $relData['tvdb'] > 0) {
+} elseif (!empty($relData['tvdb']) && $relData['tvdb'] > 0) {
 	header('X-DNZB-MoreInfo: http://www.thetvdb.com/?tab=series&id=' . $relData['tvdb']);
 }
 header('X-DNZB-Name: ' . $cleanName);

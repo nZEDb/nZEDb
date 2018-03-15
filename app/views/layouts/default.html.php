@@ -1,6 +1,6 @@
 <?php
 /**
- * Lithium: the most rad php framework
+ * Lithium: the most rad php framework.
  *
  * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
@@ -9,12 +9,12 @@
 <!doctype html>
 <html>
 <head>
-	<?php echo $this->html->charset();?>
+	<?php echo $this->html->charset(); ?>
 	<title>Application &gt; <?php echo $this->title(); ?></title>
-	<?php echo $this->html->style(array('bootstrap.min', 'lithified')); ?>
+	<?php echo $this->html->style(['bootstrap.min', 'lithified']); ?>
 	<?php echo $this->scripts(); ?>
 	<?php echo $this->styles(); ?>
-	<?php echo $this->html->link('Icon', null, array('type' => 'icon')); ?>
+	<?php echo $this->html->link('Icon', null, ['type' => 'icon']); ?>
 </head>
 <body class="lithified">
 	<div class="container-narrow">

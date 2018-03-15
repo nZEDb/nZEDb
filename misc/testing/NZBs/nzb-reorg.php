@@ -2,8 +2,8 @@
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ConsoleTools;
-use nzedb\NZB;
 use nzedb\db\DB;
+use nzedb\NZB;
 
 if (!isset($argv[1]) || !isset($argv[2])) {
 	exit("ERROR: You must supply the level you want to reorganize it to, and the source directory  (You would use: 3 .../nZEDb/resources/nzb/ to move it to 3 levels deep)\n");
@@ -19,7 +19,7 @@ $objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($sourc
 
 $filestoprocess = [];
 $iFilesProcessed = $iFilesCounted = 0;
-$time = TIME();
+$time = time();
 
 echo "\nReorganizing files to Level $newLevel from: $sourcePath This could take a while...\n";
 //$consoleTools = new \ConsoleTools();
@@ -28,9 +28,11 @@ foreach ($objects as $filestoprocess => $nzbFile) {
 		continue;
 	}
 
-	$newFileName = $nzb->getNZBPath(str_replace('.nzb.gz', '', $nzbFile->getBasename()),
+	$newFileName = $nzb->getNZBPath(
+		str_replace('.nzb.gz', '', $nzbFile->getBasename()),
 									$newLevel,
-									true);
+									true
+	);
 	if ($newFileName != $nzbFile) {
 		rename($nzbFile, $newFileName);
 		chmod($newFileName, 0777);
@@ -47,17 +49,17 @@ $consoleTools->overWrite("Processed $iFilesProcessed nzbs in " . relativeTime($t
 
 function relativeTime($_time)
 {
-	$d = array();
-	$d[0] = array(1, 'sec');
-	$d[1] = array(60, 'min');
-	$d[2] = array(3600, 'hr');
-	$d[3] = array(86400, 'day');
-	$d[4] = array(31104000, 'yr');
+	$d = [];
+	$d[0] = [1, 'sec'];
+	$d[1] = [60, 'min'];
+	$d[2] = [3600, 'hr'];
+	$d[3] = [86400, 'day'];
+	$d[4] = [31104000, 'yr'];
 
-	$w = array();
+	$w = [];
 
 	$return      = '';
-	$now         = TIME();
+	$now         = time();
 	$diff        = ($now - $_time);
 	$secondsLeft = $diff;
 

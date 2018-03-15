@@ -14,7 +14,7 @@ if (!$page->users->isLoggedIn()) {
 $category = new Category(['Settings' => $page->settings]);
 $sab = new SABnzbd($page);
 $nzbGet = new NZBGet($page);
-$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
+$action = $_REQUEST['action'] ?? 'view';
 
 $userid = $page->users->currentUserId();
 $data = $page->users->getById($userid);
@@ -43,13 +43,13 @@ switch ($action) {
 
 		if (!$page->users->isValidUsername($data['username'])) {
 			$errorStr = 'Your username must be at least 3 characters. Contact an administrator to get it changed.';
-		} else if ($_POST['password'] != '' && $_POST['password'] != $_POST['confirmpassword']) {
+		} elseif ($_POST['password'] != '' && $_POST['password'] != $_POST['confirmpassword']) {
 			$errorStr = 'Password Mismatch';
-		} else if ($_POST['password'] != '' && !$page->users->isValidPassword($_POST['password'])) {
+		} elseif ($_POST['password'] != '' && !$page->users->isValidPassword($_POST['password'])) {
 			$errorStr = 'Your password must be at least 6 characters.';
-		} else if (!empty($_POST['nzbgeturl']) && $nzbGet->verifyURL($_POST['nzbgeturl']) === false) {
+		} elseif (!empty($_POST['nzbgeturl']) && $nzbGet->verifyURL($_POST['nzbgeturl']) === false) {
 			$errorStr = 'The NZBGet URL you entered is invalid!';
-		} else if (!$page->users->isValidEmail($_POST['email'])) {
+		} elseif (!$page->users->isValidEmail($_POST['email'])) {
 			$errorStr = 'Your email is not a valid format.';
 		} else {
 			$res = $page->users->getByEmail($_POST['email']);
@@ -82,16 +82,16 @@ switch ($action) {
 					$_POST['cp_api'],
 					$_POST['style'],
 					$_POST['queuetypeids'],
-					(isset($_POST['nzbgeturl']) ? $_POST['nzbgeturl'] : ''),
-					(isset($_POST['nzbgetusername']) ? $_POST['nzbgetusername'] : ''),
-					(isset($_POST['nzbgetpassword']) ? $_POST['nzbgetpassword'] : ''),
+					($_POST['nzbgeturl'] ?? ''),
+					($_POST['nzbgetusername'] ?? ''),
+					($_POST['nzbgetpassword'] ?? ''),
 					(isset($_POST['saburl']) ? Text::trailingSlash($_POST['saburl']) : ''),
-					(isset($_POST['sabapikey']) ? $_POST['sabapikey'] : ''),
-					(isset($_POST['sabpriority']) ? $_POST['sabpriority'] : ''),
-					(isset($_POST['sabapikeytype']) ? $_POST['sabapikeytype'] : '')
+					($_POST['sabapikey'] ?? ''),
+					($_POST['sabpriority'] ?? ''),
+					($_POST['sabapikeytype'] ?? '')
 				);
 
-				$_POST['exccat'] = (!isset($_POST['exccat']) || !is_array($_POST['exccat'])) ? array() : $_POST['exccat'];
+				$_POST['exccat'] = (!isset($_POST['exccat']) || !is_array($_POST['exccat'])) ? [] : $_POST['exccat'];
 				$page->users->addCategoryExclusions($userid, $_POST['exccat']);
 
 				if ($_POST['password'] != '') {
@@ -119,34 +119,35 @@ $page->smarty->assign('userexccat', $page->users->getCategoryExclusion($userid))
 $page->smarty->assign('saburl_selected', $sab->url);
 $page->smarty->assign('sabapikey_selected', $sab->apikey);
 
-$page->smarty->assign('sabapikeytype_ids', array(SABnzbd::API_TYPE_NZB, SABnzbd::API_TYPE_FULL));
-$page->smarty->assign('sabapikeytype_names', array('Nzb Api Key', 'Full Api Key'));
+$page->smarty->assign('sabapikeytype_ids', [SABnzbd::API_TYPE_NZB, SABnzbd::API_TYPE_FULL]);
+$page->smarty->assign('sabapikeytype_names', ['Nzb Api Key', 'Full Api Key']);
 $page->smarty->assign('sabapikeytype_selected', ($sab->apikeytype == '') ? SABnzbd::API_TYPE_NZB : $sab->apikeytype);
 
-$page->smarty->assign('sabpriority_ids', array(SABnzbd::PRIORITY_FORCE, SABnzbd::PRIORITY_HIGH, SABnzbd::PRIORITY_NORMAL, SABnzbd::PRIORITY_LOW, SABnzbd::PRIORITY_PAUSED));
-$page->smarty->assign('sabpriority_names', array('Force', 'High', 'Normal', 'Low', 'Paused'));
+$page->smarty->assign('sabpriority_ids', [SABnzbd::PRIORITY_FORCE, SABnzbd::PRIORITY_HIGH, SABnzbd::PRIORITY_NORMAL, SABnzbd::PRIORITY_LOW, SABnzbd::PRIORITY_PAUSED]);
+$page->smarty->assign('sabpriority_names', ['Force', 'High', 'Normal', 'Low', 'Paused']);
 $page->smarty->assign('sabpriority_selected', ($sab->priority == '') ? SABnzbd::PRIORITY_NORMAL : $sab->priority);
 
-$page->smarty->assign('sabsetting_ids', array(1, 2));
-$page->smarty->assign('sabsetting_names', array('Site', 'Cookie'));
+$page->smarty->assign('sabsetting_ids', [1, 2]);
+$page->smarty->assign('sabsetting_names', ['Site', 'Cookie']);
 $page->smarty->assign('sabsetting_selected', ($sab->checkCookie() === true ? 2 : 1));
 
 switch ($sab->integrated) {
 	case SABnzbd::INTEGRATION_TYPE_USER:
-		$queueTypes = array('None', 'Sabnzbd', 'NZBGet');
-		$queueTypeIDs = array(Users::QUEUE_NONE, Users::QUEUE_SABNZBD, Users::QUEUE_NZBGET);
+		$queueTypes = ['None', 'Sabnzbd', 'NZBGet'];
+		$queueTypeIDs = [Users::QUEUE_NONE, Users::QUEUE_SABNZBD, Users::QUEUE_NZBGET];
 		break;
 	case SABnzbd::INTEGRATION_TYPE_SITEWIDE:
 	case SABnzbd::INTEGRATION_TYPE_NONE:
-		$queueTypes = array('None', 'NZBGet');
-		$queueTypeIDs = array(Users::QUEUE_NONE, Users::QUEUE_NZBGET);
+		$queueTypes = ['None', 'NZBGet'];
+		$queueTypeIDs = [Users::QUEUE_NONE, Users::QUEUE_NZBGET];
 		break;
 }
 
-$page->smarty->assign(array(
+$page->smarty->assign(
+	[
 		'queuetypes' => $queueTypes,
-		'queuetypeids' => $queueTypeIDs
-	)
+		'queuetypeids' => $queueTypeIDs,
+	]
 );
 
 $page->meta_title = 'Edit User Profile';

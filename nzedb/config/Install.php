@@ -10,14 +10,14 @@
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with this program (see LICENSE.txt in the base directory.  If
- * not, see:
+ * not, see:.
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2018 nZEDb
  */
 namespace nzedb\config;
-
 
 class Install
 {
@@ -41,7 +41,6 @@ class Install
 
 	//const WWW_TOP = nZEDb_WWW;
 
-
 	public function __construct(array $config)
 	{
 		parent::__construct($config);
@@ -51,7 +50,6 @@ class Install
 	{
 		return (file_exists(self::LOCK_FILE) ? true : false);
 	}
-
 }
 
 ?>

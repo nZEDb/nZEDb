@@ -1,18 +1,17 @@
 <?php
-/* Deletes releases in categories you have disabled here : http://localhost/admin/category-list.php */
+// Deletes releases in categories you have disabled here : http://localhost/admin/category-list.php
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\Category;
+use nzedb\db\DB;
 use nzedb\NZB;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
-use nzedb\db\DB;
 
 $pdo = new DB();
 
 if (isset($argv[1]) && $argv[1] == 'true') {
-
-	$timestart = TIME();
+	$timestart = time();
 	$releases = new Releases(['Settings' => $pdo]);
 	$category = new Category(['Settings' => $pdo]);
 	$nzb = new NZB($pdo);
@@ -30,7 +29,7 @@ if (isset($argv[1]) && $argv[1] == 'true') {
 			}
 		}
 	}
-	$time = TIME() - $timestart;
+	$time = time() - $timestart;
 	if ($relsdeleted > 0) {
 		echo $pdo->log->header($relsdeleted . ' releases deleted in ' . $time . ' seconds.');
 	} else {

@@ -5,16 +5,10 @@ use app\models\Settings;
 use nzedb\db\DB;
 
 /**
- * Logs/Reports stuff
+ * Logs/Reports stuff.
  */
 class Logging
 {
-	/**
-	 * @var string If windows "\r\n" if unix "\n".
-	 * @access private
-	 */
-	private $newLine;
-
 	/**
 	 * @var object DB Class instance.
 	 * @access public
@@ -26,6 +20,12 @@ class Logging
 	 * @access public
 	 */
 	public $colorCLI;
+
+	/**
+	 * @var string If windows "\r\n" if unix "\n".
+	 * @access private
+	 */
+	private $newLine;
 
 	/**
 	 * Constructor.
@@ -72,17 +72,23 @@ class Logging
 		$loggingOpt = Settings::value('site.main.loggingopt');
 		$logFile = Settings::value('site.main.logfile');
 		if ($loggingOpt == '1') {
-			$this->pdo->queryInsert(sprintf('INSERT INTO logging (time, username, host) VALUES (NOW(), %s, %s)',
-				$this->pdo->escapeString($username), $this->pdo->escapeString($host)));
-		} else if ($loggingOpt == '2') {
-			$this->pdo->queryInsert(sprintf('INSERT INTO logging (time, username, host) VALUES (NOW(), %s, %s)',
-				$this->pdo->escapeString($username), $this->pdo->escapeString($host)));
+			$this->pdo->queryInsert(sprintf(
+				'INSERT INTO logging (time, username, host) VALUES (NOW(), %s, %s)',
+				$this->pdo->escapeString($username),
+				$this->pdo->escapeString($host)
+			));
+		} elseif ($loggingOpt == '2') {
+			$this->pdo->queryInsert(sprintf(
+				'INSERT INTO logging (time, username, host) VALUES (NOW(), %s, %s)',
+				$this->pdo->escapeString($username),
+				$this->pdo->escapeString($host)
+			));
 			$logData = date('M d H:i:s ') . 'Login Failed for ' . $username . ' from ' . $host . '.' .
 				$this->newLine;
 			if (isset($logFile) && $logFile != '') {
 				file_put_contents($logFile, $logData, FILE_APPEND);
 			}
-		} else if ($loggingOpt == '3') {
+		} elseif ($loggingOpt == '3') {
 			$logData = date('M d H:i:s ') . 'Login Failed for ' . $username . ' from ' . $host . '.' . $this->newLine;
 			if (isset($logFile) && $logFile != '') {
 				file_put_contents($logFile, $logData, FILE_APPEND);

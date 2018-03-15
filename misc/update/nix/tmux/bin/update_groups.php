@@ -2,10 +2,10 @@
 require_once realpath(dirname(dirname(dirname(dirname(dirname(__DIR__))))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ConsoleTools;
-use nzedb\NNTP;
 use nzedb\db\DB;
+use nzedb\NNTP;
 
-$start = TIME();
+$start = time();
 $pdo = new DB();
 $consoleTools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 
@@ -34,7 +34,7 @@ foreach ($data as $newgroup) {
 		echo $pdo->log->primary('Updated ' . $newgroup['group']);
 	}
 }
-echo $pdo->log->header('Running time: ' . $consoleTools->convertTimer(TIME() - $start));
+echo $pdo->log->header('Running time: ' . $consoleTools->convertTimer(time() - $start));
 
 function myInArray($array, $value, $key)
 {

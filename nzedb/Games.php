@@ -2,8 +2,8 @@
 namespace nzedb;
 
 use app\models\Settings;
-use DBorsatto\GiantBomb\Config;
 use DBorsatto\GiantBomb\Client;
+use DBorsatto\GiantBomb\Config;
 use nzedb\db\DB;
 
 class Games
@@ -138,7 +138,7 @@ class Games
 		}
 		$this->catWhere = 'AND categories_id = ' . Category::PC_GAMES;
 		//$this->cleangames = (Settings::value('..lookupgames') == 2) ? 'AND isrenamed = 1' : '';
-		if($this->publicKey !== '') {
+		if ($this->publicKey !== '') {
 			$this->config = new Config($this->publicKey);
 			$this->giantbomb = new Client($this->config);
 		}
@@ -152,7 +152,8 @@ class Games
 	public function getGamesInfo($id)
 	{
 		return $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT gamesinfo.*, genres.title AS genres
 				FROM gamesinfo
 				LEFT OUTER JOIN genres ON genres.id = gamesinfo.genre_id
@@ -175,7 +176,8 @@ class Games
 			return $bestMatch;
 		}
 
-		$results = $this->pdo->queryDirect("
+		$results = $this->pdo->queryDirect(
+			"
 			SELECT *
 			FROM gamesinfo
 			WHERE MATCH(title) AGAINST({$this->pdo->escapeString($title)})
@@ -264,7 +266,8 @@ class Games
 		$order = $this->getGamesOrder($orderby);
 
 		$games = $this->pdo->queryCalc(
-			sprintf("
+			sprintf(
+				"
 				SELECT SQL_CALC_FOUND_ROWS gi.id,
 					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
 				FROM gamesinfo gi
@@ -284,7 +287,9 @@ class Games
 				$order[0],
 				$order[1],
 				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
+			),
+			true,
+			nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 
 		$gameIDs = $releaseIDs = false;
@@ -297,7 +302,8 @@ class Games
 		}
 
 		$return = $this->pdo->query(
-			sprintf("
+			sprintf(
+				"
 				SELECT
 					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
 					GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount,
@@ -330,10 +336,12 @@ class Games
 				$catsrch,
 				$order[0],
 				$order[1]
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
+			),
+			true,
+			nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 		if (!empty($return)) {
-			$return[0]['_totalcount'] = (isset($games['total']) ? $games['total'] : 0);
+			$return[0]['_totalcount'] = ($games['total'] ?? 0);
 		}
 		return $return;
 	}
@@ -395,7 +403,7 @@ class Games
 			'releasedate_asc',
 			'releasedate_desc',
 			'genre_asc',
-			'genre_desc'
+			'genre_desc',
 		];
 	}
 
@@ -457,7 +465,7 @@ class Games
 	}
 
 	/**
-	 * Updates the game for game-edit.php
+	 * Updates the game for game-edit.php.
 	 *
 	 * @param $id
 	 * @param $title
@@ -472,9 +480,9 @@ class Games
 	 */
 	public function update($id, $title, $asin, $url, $publisher, $releasedate, $esrb, $cover, $trailerurl, $genreID)
 	{
-
 		$this->pdo->queryExec(
-			sprintf('
+			sprintf(
+				'
 				UPDATE gamesinfo
 				SET title = %s, asin = %s, url = %s, publisher = %s,
 					releasedate = %s, esrb = %s, cover = %d, trailer = %s, genre_id = %d, updateddate = NOW()
@@ -494,13 +502,14 @@ class Games
 	}
 
 	/**
-	 * Process each game, updating game information from Steam and Giantbomb
+	 * Process each game, updating game information from Steam and Giantbomb.
 	 *
 	 * @param $gameInfo
 	 *
-	 * @return int|false
 	 * @throws \RuntimeException
 	 * @throws \InvalidArgumentException
+	 *
+	 * @return int|false
 	 */
 	public function updateGamesInfo($gameInfo)
 	{
@@ -568,7 +577,7 @@ class Games
 			}
 		}
 
-		if($this->publicKey !== '') {
+		if ($this->publicKey !== '') {
 			if ($steamGameID === false || $this->_gameResults === false) {
 				$bestMatch = false;
 				$this->_classUsed = 'GiantBomb';
@@ -663,14 +672,14 @@ class Games
 		if (empty($game['title'])) {
 			$game['title'] = $gameInfo['title'];
 		}
-		if(!isset($game['releasedate'])){
+		if (!isset($game['releasedate'])) {
 			$game['releasedate'] = '';
 		}
 
 		if ($game['releasedate'] === '') {
 			$game['releasedate'] = '';
 		}
-		if(!isset($game['review'])){
+		if (!isset($game['review'])) {
 			$game['review'] = 'No Review';
 		}
 		$game['classused'] = $this->_classUsed;
@@ -683,7 +692,8 @@ class Games
 			$genreKey = array_search(strtolower($genreName), $genreAssoc, false);
 		} else {
 			$genreKey = $this->pdo->queryInsert(
-				sprintf('
+				sprintf(
+					'
 					INSERT INTO genres (title, type)
 					VALUES (%s, %d)',
 					$this->pdo->escapeString($genreName),
@@ -696,7 +706,8 @@ class Games
 		$game['gamesgenreID'] = $genreKey;
 
 		$check = $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(
+				'
 				SELECT id
 				FROM gamesinfo
 				WHERE asin = %s',
@@ -705,7 +716,8 @@ class Games
 		);
 		if ($check === false) {
 			$gamesId = $this->pdo->queryInsert(
-				sprintf('
+				sprintf(
+					'
 					INSERT INTO gamesinfo
 						(title, asin, url, publisher, genre_id, esrb, releasedate, review, cover, backdrop, trailer, classused, createddate, updateddate)
 					VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s, %s, NOW(), NOW())',
@@ -726,7 +738,8 @@ class Games
 		} else {
 			$gamesId = $check['id'];
 			$this->pdo->queryExec(
-				sprintf('
+				sprintf(
+					'
 					UPDATE gamesinfo
 					SET
 						title = %s, asin = %s, url = %s, publisher = %s, genre_id = %s,
@@ -755,21 +768,21 @@ class Games
 					ColorCLI::header('Added/updated game: ') .
 					ColorCLI::alternateOver('   Title:    ') .
 					ColorCLI::primary($game['title']) .
-					ColorCLI::alternateOver( '   Source:   ') .
+					ColorCLI::alternateOver('   Source:   ') .
 					ColorCLI::primary($this->_classUsed)
 				);
 			}
-			if($game['cover'] === 1){
+			if ($game['cover'] === 1) {
 				$game['cover'] = $ri->saveImage($gamesId, $game['coverurl'], $this->imgSavePath, 250, 250);
 			}
-			if($game['backdrop'] === 1){
+			if ($game['backdrop'] === 1) {
 				$game['backdrop'] = $ri->saveImage($gamesId . '-backdrop', $game['backdropurl'], $this->imgSavePath, 1920, 1024);
 			}
 		} else {
 			if ($this->echoOutput) {
 				ColorCLI::doEcho(
 					ColorCLI::headerOver('Nothing to update: ') .
-					ColorCLI::primary($game['title'] . ' (PC)' )
+					ColorCLI::primary($game['title'] . ' (PC)')
 				);
 			}
 		}
@@ -778,12 +791,13 @@ class Games
 	}
 
 	/**
-	 * Main function for retrieving and processing PC games titles
+	 * Main function for retrieving and processing PC games titles.
 	 */
 	public function processGamesReleases()
 	{
 		$res = $this->pdo->queryDirect(
-			sprintf('
+			sprintf(
+				'
 				SELECT searchname, id
 				FROM releases
 				WHERE nzbstatus = 1 %s
@@ -808,7 +822,6 @@ class Games
 				$usedgb = false;
 				$gameInfo = $this->parseTitle($arr['searchname']);
 				if ($gameInfo !== false) {
-
 					if ($this->echoOutput) {
 						$this->pdo->log->doEcho(
 							$this->pdo->log->headerOver('Looking up: ') .
@@ -825,12 +838,11 @@ class Games
 						if ($gameId === false) {
 							$gameId = -2;
 
-						// Leave gamesinfo_id 0 to parse again
+							// Leave gamesinfo_id 0 to parse again
 							if ($this->maxHitRequest === true) {
 								$gameId = 0;
 							}
 						}
-
 					} else {
 						$gameId = $gameCheck['id'];
 					}
@@ -860,7 +872,7 @@ class Games
 	}
 
 	/**
-	 * Parse the game release title
+	 * Parse the game release title.
 	 *
 	 * @param string $releaseName
 	 *
@@ -892,7 +904,7 @@ class Games
 	}
 
 	/**
-	 * See if genre name exists
+	 * See if genre name exists.
 	 *
 	 * @param $nodeName
 	 *
@@ -927,7 +939,7 @@ class Games
 	}
 
 	/**
-	 * Matches Genres
+	 * Matches Genres.
 	 *
 	 * @param string $genre
 	 *
