@@ -6,7 +6,7 @@ use nzedb\db\DB;
 class Groups
 {
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 
@@ -226,7 +226,7 @@ class Groups
 	/**
 	 * Gets all groups and associated release counts
 	 *
-	 * @param bool|int $start     The offset of the query or false for no offset
+	 * @param int|false $start    The offset of the query or false for no offset
 	 * @param int      $num       The limit of the query
 	 * @param string   $groupname The groupname we want if any
 	 * @param int      $active    The status of the group we want if any
@@ -403,7 +403,7 @@ class Groups
 	/**
 	 * Reset a group.
 	 *
-	 * @param string|int $id The group ID.
+	 * @param int $id The group ID.
 	 *
 	 * @return bool
 	 */
@@ -466,7 +466,7 @@ class Groups
 	/**
 	 * Purge a single group or all groups.
 	 *
-	 * @param int|string|bool $id The group ID. If false, purge all groups.
+	 * @param int|false $id The group ID. If false, purge all groups.
 	 */
 	public function purge($id = false)
 	{

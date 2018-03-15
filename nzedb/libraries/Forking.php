@@ -500,12 +500,12 @@ class Forking extends \fork_daemon
 	{
 		$this->register_child_run([0 => $this, 1 => 'fixRelNamesChildWorker']);
 
-		$threads = Settings::value('..fixnamethreads');
-		$maxperrun = Settings::value('..fixnamesperrun');
+		$threads = (int)Settings::value('..fixnamethreads');
+		$maxperrun = (int)Settings::value('..fixnamesperrun');
 
 		if ($threads > 16) {
 			$threads = 16;
-		} else if ($threads == 0) {
+		} else if ($threads === 0) {
 			$threads = 1;
 		}
 

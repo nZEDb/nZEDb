@@ -64,7 +64,7 @@ class API extends Capabilities {
 	 */
 	public function addLanguage(&$releases)
 	{
-		if ($releases && count($releases)) {
+		if (! empty($releases) && \count($releases)) {
 			foreach ($releases as $key => $release) {
 				if (isset($release['id'])) {
 					$language = $this->pdo->queryOneRow("

@@ -157,7 +157,7 @@ class Categorize extends Category
 				case $group === 'alt.binaries.audio.warez':
 					$this->tmpCat = Category::PC_0DAY;
 					break;
-				case preg_match('/alt\.binaries\.(multimedia\.erotica\.|cartoons\.french\.|dvd\.|multimedia\.)?anime(\.highspeed|\.repost|s-fansub|\.german)?/', $group):
+				case preg_match('/alt\.binaries\.(multimedia\.erotica\.|cartoons\.french\.|dvd\.|multimedia\.)?anime(\.highspeed|\.repost|s-fansub|\.german)?/', $group) > 0:
 					$this->tmpCat = Category::TV_ANIME;
 					break;
 				case $group === 'alt.binaries.b4e.erotica':
@@ -210,7 +210,7 @@ class Categorize extends Category
 				case $group === 'alt.binaries.classic.tv.shows':
 					$this->tmpCat = Category::TV_SD;
 					break;
-				case preg_match('/alt\.binaries\.(comics\.dcp|pictures\.comics\.(complete|dcp|reposts?))/', $group):
+				case preg_match('/alt\.binaries\.(comics\.dcp|pictures\.comics\.(complete|dcp|reposts?))/', $group) > 0:
 					if ($this->categorizeForeign && $this->isBookForeign()) {
 						break;
 					}
@@ -228,7 +228,7 @@ class Categorize extends Category
 					}
 
 					return false;
-				case preg_match('/alt\.binaries(\.(19\d0s|country|sounds?(\.country|\.19\d0s)?))?\.mp3(\.[a-z]+)?/i', $group):
+				case preg_match('/alt\.binaries(\.(19\d0s|country|sounds?(\.country|\.19\d0s)?))?\.mp3(\.[a-z]+)?/i', $group) > 0:
 					switch (true) {
 						case $this->isMusic():
 						case $this->isXxx():
@@ -238,13 +238,13 @@ class Categorize extends Category
 							break;
 					}
 					break;
-				case preg_match('/alt\.binaries\.dvd(\-?r)?(\.(movies|))?$/i', $group):
+				case preg_match('/alt\.binaries\.dvd(\-?r)?(\.(movies|))?$/i', $group) > 0:
 					if ($this->isMovie()) {
 						break;
 					}
 					$this->tmpCat = Category::OTHER_MISC;
 					break;
-				case preg_match('/alt\.binaries\.(dvdnordic\.org|nordic\.(dvdr?|xvid))|dk\.(binaer|binaries)\.film(\.divx)?/', $group):
+				case preg_match('/alt\.binaries\.(dvdnordic\.org|nordic\.(dvdr?|xvid))|dk\.(binaer|binaries)\.film(\.divx)?/', $group) > 0:
 					if ($this->categorizeForeign && $this->isMovieForeign()) {
 						break;
 					}
@@ -259,7 +259,7 @@ class Categorize extends Category
 				case $group === 'alt.binaries.dreamcast':
 					$this->tmpCat = Category::GAME_OTHER;
 					break;
-				case preg_match('/alt\.binaries\.e\-?books?((\.|\-)(technical|textbooks))/', $group):
+				case preg_match('/alt\.binaries\.e\-?books?((\.|\-)(technical|textbooks))/', $group) > 0:
 					if ($this->categorizeForeign && $this->isBookForeign()) {
 						break;
 					}
@@ -291,7 +291,7 @@ class Categorize extends Category
 						case $this->isBook():
 						case $this->categorizeForeign && $this->isBookForeign():
 							break;
-						case preg_match('/[a-z0-9 \',]+ - \[? ?[a-z0-9 \']+ ?\]? - [a-z0-9 \']+/i', $this->releaseName):
+						case preg_match('/[a-z0-9 \',]+ - \[? ?[a-z0-9 \']+ ?\]? - [a-z0-9 \']+/i', $this->releaseName) > 0:
 							$this->tmpCat = Category::BOOKS_EBOOK;
 							break;
 						default:
@@ -299,7 +299,7 @@ class Categorize extends Category
 							break;
 					}
 					break;
-				case preg_match('/alt\.binaries\..*(erotica|ijsklontje|xxx)/', $group):
+				case preg_match('/alt\.binaries\..*(erotica|ijsklontje|xxx)/', $group) > 0:
 					if ($this->isXxx()) {
 						break;
 					}
@@ -309,7 +309,7 @@ class Categorize extends Category
 				case $group === 'alt.binaries.gamecube':
 					$this->tmpCat = Category::GAME_OTHER;
 					break;
-				case preg_match('/alt.binaries.games/', $group):
+				case preg_match('/alt.binaries.games/', $group) > 0:
 					switch (true) {
 						case $this->isPCGame():
 						case $this->is0day():
@@ -320,7 +320,7 @@ class Categorize extends Category
 							break;
 					}
 					break;
-				case preg_match('/alt.binaries.games.(dox|adventures)/', $group):
+				case preg_match('/alt.binaries.games.(dox|adventures)/', $group) > 0:
 					switch (true) {
 						case $this->isPCGame():
 						case $this->is0day():
@@ -331,7 +331,7 @@ class Categorize extends Category
 							break;
 					}
 					break;
-				case preg_match('/alt.binaries.cd.images?.games/', $group):
+				case preg_match('/alt.binaries.cd.images?.games/', $group) > 0:
 					switch (true) {
 						case $this->is0day():
 						case $this->isConsole():
@@ -359,7 +359,7 @@ class Categorize extends Category
 					}
 					$this->tmpCat = Category::GAME_3DS;
 					break;
-				case preg_match('/alt\.binaries\.(games|emulators)?\.?nintendo[\.-]?ds/', $group):
+				case preg_match('/alt\.binaries\.(games|emulators)?\.?nintendo[\.-]?ds/', $group) > 0:
 					if ($this->isGame3DS()) {
 						break;
 					}
@@ -400,7 +400,7 @@ class Categorize extends Category
 					switch (true) {
 						case $this->isMusic():
 							break;
-						case preg_match('/-+(19|20)\d\d-\(?(album.*?|back|cover|front)\)?-+/i', $this->releaseName):
+						case preg_match('/-+(19|20)\d\d-\(?(album.*?|back|cover|front)\)?-+/i', $this->releaseName) > 0:
 						case preg_match('/(19|20)\d\d$/', $this->releaseName) && ctype_lower(preg_replace('/[^a-z]/i', '', $this->releaseName)):
 							$this->tmpCat = Category::MUSIC_OTHER;
 							break;
@@ -408,7 +408,7 @@ class Categorize extends Category
 							return false;
 					}
 					break;
-				case preg_match('/alt\.binaries\.ipod\.videos\.tvshows/', $group):
+				case preg_match('/alt\.binaries\.ipod\.videos\.tvshows/', $group) > 0:
 					$this->tmpCat = Category::TV_OTHER;
 					break;
 				case $group === 'alt.binaries.mac':
@@ -444,7 +444,7 @@ class Categorize extends Category
 				case $group === 'alt.binaries.multimedia.documentaries':
 					$this->tmpCat = Category::TV_DOCUMENTARY;
 					break;
-				case preg_match('/alt\.binaries\.multimedia\.sports(\.boxing)?/', $group):
+				case preg_match('/alt\.binaries\.multimedia\.sports(\.boxing)?/', $group) > 0:
 					$this->tmpCat = Category::TV_SPORT;
 					break;
 				case $group === 'alt.binaries.music.opera':
@@ -459,7 +459,7 @@ class Categorize extends Category
 							break;
 					}
 					break;
-				case preg_match('/alt\.binaries\.music/', $group):
+				case preg_match('/alt\.binaries\.music/', $group) > 0:
 					switch (true) {
 						case $this->categorizeForeign && $this->isMusicForeign():
 						case $this->isMusic():
@@ -469,7 +469,7 @@ class Categorize extends Category
 							break;
 					}
 					break;
-				case preg_match('/audiobook/', $group):
+				case preg_match('/audiobook/', $group) > 0:
 					if ($this->categorizeForeign && $this->isMusicForeign()) {
 						break;
 					}

@@ -68,7 +68,7 @@ class ProcessReleases
 	public $echoCLI;
 
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 

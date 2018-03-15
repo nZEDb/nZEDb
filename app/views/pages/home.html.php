@@ -49,7 +49,7 @@ $compiled = function($flag) {
 
 $checks = array(
 	'resourcesWritable' => function() use ($notify) {
-		if (is_writable($path = Libraries::get(true, 'resources'))) {
+		if (is_writable(/** @scrutinizer ignore-type */ $path = Libraries::get(true, 'resources'))) {
 			return $notify('success', 'Resources directory is writable');
 		}
 		$app = basename(LITHIUM_APP_PATH);
@@ -155,7 +155,9 @@ $checks = array(
 		$list = array();
 
 		foreach ($paths as $path) {
-			$list = array_merge($list, Libraries::locate($path, null, array('recursive' => false)));
+			$list = array_merge($list,
+				/** @scrutinizer ignore-type */ Libraries::locate($path, null, array('recursive' => false))
+            );
 		}
 		$list = array_filter($list, function($class) {
 		        return method_exists($class, 'enabled');

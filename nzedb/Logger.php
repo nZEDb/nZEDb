@@ -585,7 +585,7 @@ class Logger
 		$logs = glob(str_replace('.log', '', $this->logPath) . '.[0-9]*.gz');
 
 		// If there are no old logs or less than maxLogs return false.
-		if (!$logs || (count($logs) < $this->maxLogs)) {
+		if (empty($logs) || \count($logs) < $this->maxLogs) {
 			return;
 		}
 
@@ -635,7 +635,8 @@ class Logger
 			$this->severity .
 
 			// Average system load.
-			(($this->showCPULoad && !$this->isWindows) ? ' [' . $this->getSystemLoad() . ']' : '') .
+			(($this->showCPULoad && !$this->isWindows)
+				? ' [' . /** @scrutinizer ignore-type */ $this->getSystemLoad() . ']' : '') .
 
 			// Script running time.
 			($this->showRunningTime ? ' [' . $this->formatTimeString(time() - $this->timeStart) . ']' : '') .
@@ -644,7 +645,8 @@ class Logger
 			($this->showMemoryUsage ? ' [MEM:' . $this->showMemUsage(0, true) . ']' : '') .
 
 			// Resource usage (user time, system time, major page faults, memory swaps).
-			(($this->showResourceUsage && !$this->isWindows) ? ' [' . $this->getResUsage() . ']' : '') .
+			(($this->showResourceUsage && !$this->isWindows)
+				? ' [' . /** @scrutinizer ignore-type */ $this->getResUsage() . ']' : '') .
 
 			// Running process ID.
 			($pid ? ' [PID:' . $pid . ']' : '') .

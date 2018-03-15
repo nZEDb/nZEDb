@@ -444,18 +444,18 @@ class Releases
 
 	/**
 	 * Cache of concatenated category ID's used in queries.
-	 * @var null|array
+	 * @var string|null
 	 */
-	private $concatenatedCategoryIDsCache = null;
+	private $concatenatedCategoryIDsCache;
 
 	/**
 	 * Gets / sets a string of concatenated category ID's used in queries.
 	 *
-	 * @return array|null
+	 * @return string|null
 	 */
 	public function getConcatenatedCategoryIDs()
 	{
-		if (is_null($this->concatenatedCategoryIDsCache)) {
+		if ($this->concatenatedCategoryIDsCache === null) {
 			$result = $this->pdo->query("
 				SELECT CONCAT(cp.id, ',', c.id) AS category_ids
 				FROM categories c

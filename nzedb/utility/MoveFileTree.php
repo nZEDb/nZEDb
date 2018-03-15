@@ -33,18 +33,15 @@ class MoveFileTree
 	private $rItIt;
 
 	/**
-	 *
-	 *
-	 * @param type $source A filepath to a valid directory, or an array of valid
-	 *                     filepaths (not neccessarily in the same directory).
-	 * @param type $target A valid directory that the files and directories will
-	 *                     be moved to.
+	 * @param string|array $source A filepath to a valid directory, or an array of valid
+	 *                             filepaths (not neccessarily in the same directory).
+	 * @param string $target       A valid directory that the files and directories will be moved
+	 *                             to.
 	 * @param bool $moveSourceBase
 	 *
 	 * @throws \UnexpectedValueException
-	 *
 	 */
-	function __construct($source, $target, $moveSourceBase = true)
+	public function __construct($source, $target, $moveSourceBase = true)
 	{
 		if (empty($source)) {
 			throw  new \UnexpectedValueException('Source value cannot be empty! Source is not a path to a directory.');

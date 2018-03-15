@@ -55,14 +55,14 @@ abstract class IRCClient
 
 	/**
 	 * Time in seconds to timeout on connect.
-	 * @var int|string
+	 * @var int
 	 * @access protected
 	 */
 	protected $_remote_connection_timeout = 30;
 
 	/**
 	 * Time in seconds before we timeout when sending/receiving a command.
-	 * @var int|string
+	 * @var int
 	 * @access protected
 	 */
 	protected $_socket_timeout = 180;
@@ -76,7 +76,7 @@ abstract class IRCClient
 
 	/**
 	 * Seconds to delay when reconnecting fails.
-	 * @var int|string
+	 * @var int
 	 * @access protected
 	 */
 	protected $_reconnectDelay = 5;
@@ -306,10 +306,9 @@ abstract class IRCClient
 	 * @param string      $nickName The nick name - visible in the channel.
 	 * @param string      $userName The user name - visible in the host name.
 	 * @param string      $realName The real name - visible in the WhoIs.
-	 * @param null|string $password The password  - some servers require a password.
+	 * @param string|null $password The password  - some servers require a password.
 	 *
 	 * @return bool
-	 *
 	 * @access public
 	 */
 	public function login($nickName, $userName, $realName, $password = null)
@@ -605,9 +604,9 @@ abstract class IRCClient
 	/**
 	 * Write a single character to the socket.
 	 *
-	 * @param string (char) $character A single character.
+	 * @param string     $character A single character.
 	 *
-	 * @return int|bool Number of bytes written or false.
+	 * @return int|false Number of bytes written or false.
 	 */
 	protected function _writeSocketChar($character)
 	{

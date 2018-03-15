@@ -24,7 +24,7 @@ ini_set('highlight.htm', '#FFFFFF');
 
 $stack = Debugger::trace(array('format' => 'array', 'trace' => $exception->getTrace()));
 
-array_unshift($stack, array(
+array_unshift(/** @scrutinizer ignore-type */$stack, array(
 	'functionRef' => '[exception]',
 	'file' => $exception->getFile(),
 	'line' => $exception->getLine()

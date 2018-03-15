@@ -326,8 +326,8 @@ class AmazonProductAPI
 	 *
 	 * @param mixed $response xml response to check
 	 *
-	 * @return bool|mixed false if the xml is invalid, mixed if the xml response if it is valid
-	 * @throws exception if we could not connect to Amazon
+	 * @return \SimpleXMLElement|false False if the xml is invalid, mixed if the xml response if it is valid
+	 * @throws \Exception if we could not connect to Amazon
 	 */
 	private function verifyXmlResponse($response)
 	{
@@ -361,7 +361,7 @@ class AmazonProductAPI
 		} else {
 			if (isset($response->Items->Item->ItemAttributes->Title)) {
 				$this->resetVars();
-				return ($response);
+				return $response;
 			} else {
 				$this->resetVars();
 				throw new \Exception("Invalid xml response.");
