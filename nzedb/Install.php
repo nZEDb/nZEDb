@@ -61,6 +61,7 @@ class Install
 	public $lockCheck;
 	public $pearCheck;
 	public $schemaCheck;
+	public $SMARTY_COMPILED_TEMPLATES;
 
 	/**
 	 * @var bool Is the PHP version higher than nZEDb_MINIMUM_PHP_VERSION?
