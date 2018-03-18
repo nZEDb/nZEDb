@@ -34,187 +34,11 @@ class ProcessAdditional
 	public $pdo;
 
 	/**
-	 * @var bool
-	 */
-	protected $echoDebug;
-
-	/**
-	 * Releases to work on.
-	 *
-	 * @var array
-	 */
-	protected $releases;
-
-	/**
-	 * Count of releases to work on.
+	 * Number of file information added to DB (from rar/zip/par2 contents).
 	 *
 	 * @var int
 	 */
-	protected $totalReleases;
-
-	/**
-	 * Current release we are working on.
-	 *
-	 * @var array
-	 */
-	protected $release;
-
-	/**
-	 * @var \nzedb\NZB
-	 */
-	protected $nzb;
-
-	/**
-	 * List of files with sizes/etc contained in the NZB.
-	 *
-	 * @var array
-	 */
-	protected $nzbContents;
-
-	/**
-	 * @var \nzedb\Groups
-	 */
-	protected $groups;
-
-	/**
-	 * @var \Par2Info
-	 */
-	protected $par2Info;
-
-	/**
-	 * @var \ArchiveInfo
-	 */
-	protected $archiveInfo;
-
-	/**
-	 * @var array
-	 */
-	protected $innerFileBlacklist;
-
-	/**
-	 * @var int
-	 */
-	protected $maxNestedLevels;
-
-	/**
-	 * @var string
-	 */
-	protected $path7zip;
-
-	/**
-	 * @var string
-	 */
-	protected $pathUnrar;
-
-	/**
-	 * @var string
-	 */
-	protected $killString;
-
-	/**
-	 * @var bool|string
-	 */
-	protected $showCLIReleaseID;
-
-	/**
-	 * @var int
-	 */
-	protected $queryLimit;
-
-	/**
-	 * @var int
-	 */
-	protected $segmentsToDownload;
-
-	/**
-	 * @var int
-	 */
-	protected $maximumRarSegments;
-
-	/**
-	 * @var int
-	 */
-	protected $maximumRarPasswordChecks;
-
-	/**
-	 * @var string
-	 */
-	protected $maxSize;
-
-	/**
-	 * @var string
-	 */
-	protected $minSize;
-
-	/**
-	 * @var bool
-	 */
-	protected $processThumbnails;
-
-	/**
-	 * @var string
-	 */
-	protected $audioSavePath;
-
-	/**
-	 * @var string
-	 */
-	protected $supportFileRegex;
-
-	/**
-	 * @var bool
-	 */
-	protected $echoCLI;
-
-	/**
-	 * @var \nzedb\NNTP
-	 */
-	protected $nntp;
-
-	/**
-	 * @var \nzedb\ReleaseFiles
-	 */
-	protected $releaseFiles;
-
-	/**
-	 * @var \nzedb\Categorize
-	 */
-	protected $categorize;
-
-	/**
-	 * @var \nzedb\NameFixer
-	 */
-	protected $nameFixer;
-
-	/**
-	 * @var \nzedb\ReleaseExtra
-	 */
-	protected $releaseExtra;
-
-	/**
-	 * @var \nzedb\ReleaseImage
-	 */
-	protected $releaseImage;
-
-	/**
-	 * @var \nzedb\Nfo
-	 */
-	protected $nfo;
-
-	/**
-	 * @var bool
-	 */
-	protected $extractUsingRarInfo;
-
-	/**
-	 * @var bool
-	 */
-	protected $alternateNNTP;
-
-	/**
-	 * @var int
-	 */
-	protected $ffMPEGDuration;
+	protected $addedFileInfo;
 
 	/**
 	 * @var bool
@@ -224,32 +48,12 @@ class ProcessAdditional
 	/**
 	 * @var bool
 	 */
-	protected $processVideo;
+	protected $alternateNNTP;
 
 	/**
-	 * @var bool
+	 * @var \ArchiveInfo
 	 */
-	protected $processJPGSample;
-
-	/**
-	 * @var bool
-	 */
-	protected $processAudioSample;
-
-	/**
-	 * @var bool
-	 */
-	protected $processMediaInfo;
-
-	/**
-	 * @var bool
-	 */
-	protected $processAudioInfo;
-
-	/**
-	 * @var bool
-	 */
-	protected $processPasswords;
+	protected $archiveInfo;
 
 	/**
 	 * @var string
@@ -257,28 +61,64 @@ class ProcessAdditional
 	protected $audioFileRegex;
 
 	/**
+	 * Extension of the found audio file (MP3/FLAC/etc).
+	 *
 	 * @var string
 	 */
-	protected $ignoreBookRegex;
+	protected $audioInfoExtension;
+
+	protected $audioInfoMessageIDs;
 
 	/**
 	 * @var string
 	 */
-	protected $videoFileRegex;
+	protected $audioSavePath;
 
 	/**
-	 * Have we created a video file for the current release?
+	 * @var \nzedb\Categorize
+	 */
+	protected $categorize;
+
+	/**
+	 * How many compressed (rar/zip) files have we checked.
+	 *
+	 * @var int
+	 */
+	protected $compressedFilesChecked;
+
+	/**
+	 * Current file we are working on inside a NZB.
+	 *
+	 * @var array
+	 */
+	protected $currentNZBFile;
+
+	/**
+	 * @var bool
+	 */
+	protected $echoCLI;
+
+	/**
+	 * @var bool
+	 */
+	protected $echoDebug;
+
+	/**
+	 * @var bool
+	 */
+	protected $extractUsingRarInfo;
+
+	/**
+	 * Should we download the last rar?
 	 *
 	 * @var bool
 	 */
-	protected $foundVideo;
+	protected $fetchLastFiles;
 
 	/**
-	 * Have we found MediaInfo data for a Video for the current release?
-	 *
-	 * @var bool
+	 * @var int
 	 */
-	protected $foundMediaInfo;
+	protected $ffMPEGDuration;
 
 	/**
 	 * Have we found MediaInfo data for a Audio file for the current release?
@@ -295,13 +135,6 @@ class ProcessAdditional
 	protected $foundAudioSample;
 
 	/**
-	 * Extension of the found audio file (MP3/FLAC/etc).
-	 *
-	 * @var string
-	 */
-	protected $AudioInfoExtension;
-
-	/**
 	 * Have we downloaded a JPG file for the current release?
 	 *
 	 * @var bool
@@ -309,11 +142,11 @@ class ProcessAdditional
 	protected $foundJPGSample;
 
 	/**
-	 * Have we created a Video JPG image sample for the current release?
+	 * Have we found MediaInfo data for a Video for the current release?
 	 *
 	 * @var bool
 	 */
-	protected $foundSample;
+	protected $foundMediaInfo;
 
 	/**
 	 * Have we found PAR2 info on this release?
@@ -323,19 +156,111 @@ class ProcessAdditional
 	protected $foundPAR2Info;
 
 	/**
-	 * Message ID's for found content to download.
+	 * Have we created a Video JPG image sample for the current release?
 	 *
+	 * @var bool
+	 */
+	protected $foundSample;
+
+	/**
+	 * Have we created a video file for the current release?
+	 *
+	 * @var bool
+	 */
+	protected $foundVideo;
+
+	/**
+	 * @var \nzedb\Groups
+	 */
+	protected $groups;
+
+	/**
+	 * @var string
+	 */
+	protected $ignoreBookRegex;
+
+	/**
 	 * @var array
 	 */
-	protected $sampleMessageIDs;
+	protected $innerFileBlacklist;
 
 	protected $jpgMessageIDs;
 
+	/**
+	 * @var string
+	 */
+	protected $killString;
+
+	/**
+	 * @var string Main temp path to work on.
+	 */
+	protected $mainTmpPath;
+
+	/**
+	 * @var int
+	 */
+	protected $maxNestedLevels;
+
+	/**
+	 * @var string
+	 */
+	protected $maxSize;
+
+	/**
+	 * @var int
+	 */
+	protected $maximumRarPasswordChecks;
+
+	/**
+	 * @var int
+	 */
+	protected $maximumRarSegments;
+
 	protected $mediaInfoMessageIDs;
 
-	protected $audioInfoMessageIDs;
+	/**
+	 * @var string
+	 */
+	protected $minSize;
 
-	protected $rarFileMessageIDs;
+	/**
+	 * @var \nzedb\NameFixer
+	 */
+	protected $nameFixer;
+
+	/**
+	 * @var \nzedb\Nfo
+	 */
+	protected $nfo;
+
+	/**
+	 * @var \nzedb\NNTP
+	 */
+	protected $nntp;
+
+	/**
+	 * @var \nzedb\NZB
+	 */
+	protected $nzb;
+
+	/**
+	 * List of files with sizes/etc contained in the NZB.
+	 *
+	 * @var array
+	 */
+	protected $nzbContents;
+
+	/**
+	 * Does the current NZB contain a compressed (RAR/ZIP) file?
+	 *
+	 * @var bool
+	 */
+	protected $nzbHasCompressedFile;
+
+	/**
+	 * @var \Par2Info
+	 */
+	protected $par2Info;
 
 	/**
 	 * Password status of the current release.
@@ -345,18 +270,73 @@ class ProcessAdditional
 	protected $passwordStatus;
 
 	/**
-	 * Does the current release have a password?
-	 *
-	 * @var bool
+	 * @var string
 	 */
-	protected $releaseHasPassword;
+	protected $path7zip;
 
 	/**
-	 * Does the current release have an NFO file?
-	 *
+	 * @var string
+	 */
+	protected $pathUnrar;
+
+	/**
 	 * @var bool
 	 */
-	protected $releaseHasNoNFO;
+	protected $processAudioInfo;
+
+	/**
+	 * @var bool
+	 */
+	protected $processAudioSample;
+
+	/**
+	 * @var bool
+	 */
+	protected $processJPGSample;
+
+	/**
+	 * @var bool
+	 */
+	protected $processMediaInfo;
+
+	/**
+	 * @var bool
+	 */
+	protected $processPasswords;
+
+	/**
+	 * @var bool
+	 */
+	protected $processThumbnails;
+
+	/**
+	 * @var bool
+	 */
+	protected $processVideo;
+
+	/**
+	 * @var int
+	 */
+	protected $queryLimit;
+
+	protected $rarFileMessageIDs;
+
+	/**
+	 * Current release we are working on.
+	 *
+	 * @var array
+	 */
+	protected $release;
+
+	/**
+	 * @var \nzedb\ReleaseExtra
+	 */
+	protected $releaseExtra;
+
+	/**
+	 * @var \nzedb\ReleaseFiles
+	 */
+	protected $releaseFiles;
 
 	/**
 	 * Name of the current release's usenet group.
@@ -366,11 +346,64 @@ class ProcessAdditional
 	protected $releaseGroupName;
 
 	/**
-	 * Number of file information added to DB (from rar/zip/par2 contents).
+	 * Does the current release have an NFO file?
 	 *
+	 * @var bool
+	 */
+	protected $releaseHasNoNFO;
+
+	/**
+	 * Does the current release have a password?
+	 *
+	 * @var bool
+	 */
+	protected $releaseHasPassword;
+
+	/**
+	 * @var \nzedb\ReleaseImage
+	 */
+	protected $releaseImage;
+
+	/**
+	 * Releases to work on.
+	 *
+	 * @var array
+	 */
+	protected $releases;
+
+	/**
+	 * Are we downloading the last rar?
+	 *
+	 * @var bool
+	 */
+	protected $reverse;
+
+	/**
+	 * Message ID's for found content to download.
+	 *
+	 * @var array
+	 */
+	protected $sampleMessageIDs;
+
+	/**
 	 * @var int
 	 */
-	protected $addedFileInfo;
+	protected $segmentsToDownload;
+
+	/**
+	 * @var bool|string
+	 */
+	protected $showCLIReleaseID;
+
+	/**
+	 * @var string
+	 */
+	protected $supportFileRegex;
+
+	/**
+	 * @var string Temp path for current release.
+	 */
+	protected $tmpPath;
 
 	/**
 	 * Number of file information we found from RAR/ZIP.
@@ -381,49 +414,11 @@ class ProcessAdditional
 	protected $totalFileInfo;
 
 	/**
-	 * How many compressed (rar/zip) files have we checked.
+	 * Count of releases to work on.
 	 *
 	 * @var int
 	 */
-	protected $compressedFilesChecked;
-
-	/**
-	 * Should we download the last rar?
-	 *
-	 * @var bool
-	 */
-	protected $fetchLastFiles;
-
-	/**
-	 * Are we downloading the last rar?
-	 *
-	 * @var bool
-	 */
-	protected $reverse;
-
-	/**
-	 * @var string Main temp path to work on.
-	 */
-	protected $mainTmpPath;
-
-	/**
-	 * @var string Temp path for current release.
-	 */
-	protected $tmpPath;
-
-	/**
-	 * Current file we are working on inside a NZB.
-	 *
-	 * @var array
-	 */
-	protected $currentNZBFile;
-
-	/**
-	 * Does the current NZB contain a compressed (RAR/ZIP) file?
-	 *
-	 * @var bool
-	 */
-	protected $nzbHasCompressedFile;
+	protected $totalReleases;
 
 	/**
 	 * List of message-id's we have tried for rar/zip files.
@@ -431,6 +426,11 @@ class ProcessAdditional
 	 * @var array
 	 */
 	protected $triedCompressedMids = [];
+
+	/**
+	 * @var string
+	 */
+	protected $videoFileRegex;
 
 	/**
 	 * @param array $options Class instances / echo to cli.
@@ -977,7 +977,7 @@ class ProcessAdditional
 			) {
 				if (isset($this->currentNZBFile['segments'])) {
 					// Get the extension.
-					$this->AudioInfoExtension = $type[1];
+					$this->audioInfoExtension = $type[1];
 					$this->audioInfoMessageIDs = (string)$this->currentNZBFile['segments'][0];
 				}
 			}
@@ -1579,12 +1579,12 @@ class ProcessAdditional
 						$this->_echo('(aB)', 'primaryOver', false);
 					}
 
-					$fileLocation = $this->tmpPath . 'audio.' . $this->AudioInfoExtension;
+					$fileLocation = $this->tmpPath . 'audio.' . $this->audioInfoExtension;
 					// Create a file with it.
 					@file_put_contents($fileLocation, $audioBinary);
 
 					// Try to get media info / sample of the audio file.
-					$this->_getAudioInfo($fileLocation, $this->AudioInfoExtension);
+					$this->_getAudioInfo($fileLocation, $this->audioInfoExtension);
 				} elseif ($this->echoCLI) {
 					$this->_echo('f', 'warningOver', false);
 				}
@@ -2552,7 +2552,7 @@ class ProcessAdditional
 
 		$this->sampleMessageIDs = $this->jpgMessageIDs = $this->mediaInfoMessageIDs = [];
 		$this->audioInfoMessageIDs = $this->rarFileMessageIDs = [];
-		$this->AudioInfoExtension = '';
+		$this->audioInfoExtension = '';
 
 		$this->addedFileInfo = 0;
 		$this->totalFileInfo = 0;
