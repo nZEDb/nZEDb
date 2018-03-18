@@ -623,13 +623,13 @@ class ProcessAdditional
 
 		if (!is_dir($this->_mainTmpPath)) {
 			$old = umask(0777);
-			@mkdir($this->_mainTmpPath, 0777, true);
+			if (!mkdir($this->_mainTmpPath, 0777, true) && !is_dir($this->_mainTmpPath)) {
+				throw new ProcessAdditionalException('Could not create the tmpunrar folder (' .
+					$this->_mainTmpPath .
+					')');
+			}
 			@chmod($this->_mainTmpPath, 0777);
 			@umask($old);
-		}
-
-		if (!is_dir($this->_mainTmpPath)) {
-			throw new ProcessAdditionalException('Could not create the tmpunrar folder (' . $this->_mainTmpPath . ')');
 		}
 
 		$this->_clearMainTmpPath();
