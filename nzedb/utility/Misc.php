@@ -9,6 +9,7 @@ use GuzzleHttp\Cookie\SetCookie;
 use GuzzleHttp\Exception\RequestException;
 use nzedb\ColorCLI;
 use nzedb\db\DB;
+use PHPMailer\PHPMailer\PHPMailer;
 
 /*
  * General util functions.
@@ -192,7 +193,7 @@ class Misc
 	 *
 	 * @param array $options See details below.
 	 *
-	 * @return bool|mixed
+	 * @return mixed|false
 	 * @access public
 	 * @static
 	 */
@@ -823,7 +824,7 @@ class Misc
 		$body .= '</html>' . $CRLF;
 
 		if (defined('PHPMAILER_ENABLED') && PHPMAILER_ENABLED == true) {
-			$mail = new PHPMailer\PHPMailer\PHPMailer;
+			$mail = new PHPMailer();
 		} else {
 			$mail = null;
 		}
