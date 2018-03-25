@@ -461,7 +461,7 @@ class Tmux
 	 * @param string $ppmax
 	 * @param string $ppmin
 	 *
-	 * @return bool|string
+	 * @return string|false
 	 */
 	public function proc_query($qry, $bookreqids, $request_hours, $db_name, $ppmax = '', $ppmin = '')
 	{

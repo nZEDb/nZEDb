@@ -807,7 +807,7 @@ class Users
 	 *
 	 * @param string $password
 	 *
-	 * @return string|bool
+	 * @return string|false
 	 */
 	public function hashPassword($password)
 	{

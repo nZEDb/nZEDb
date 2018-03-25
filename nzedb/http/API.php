@@ -126,7 +126,7 @@ class API extends Capabilities
 	/**
 	 * Verify groupName parameter.
 	 *
-	 * @return mixed
+	 * @return string|int
 	 */
 	public function group()
 	{

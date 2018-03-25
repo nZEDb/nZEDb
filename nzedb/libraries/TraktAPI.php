@@ -244,7 +244,7 @@ class TraktAPI
 	 *
 	 * @see    http://docs.trakt.apiary.io/#reference/search/get-text-query-results
 	 *
-	 * @return bool|array|string
+	 * @return array|false
 	 *
 	 * @access public
 	 */

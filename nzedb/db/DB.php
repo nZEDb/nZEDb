@@ -147,7 +147,9 @@ class DB extends \PDO
 	private $tz_server;
 
 	/**
-	 * @var timezone of the database connection. Changed during connection to the PHP set timezone.
+	 * timezone of the database connection. Changed during connection to the PHP set timezone.
+	 *
+	 * @var string
 	 */
 	private $tz_session;
 
@@ -409,7 +411,7 @@ class DB extends \PDO
 	 */
 	public function escapeString($str)
 	{
-		if (is_null($str)) {
+		if ($str === null) {
 			return 'NULL';
 		}
 
@@ -656,6 +658,7 @@ class DB extends \PDO
 			case 'mysql':
 				return version_compare(SELF::MINIMUM_VERSION_MYSQL, $this->version, '<=');
 				break;
+			default:
 		}
 
 		throw new \RuntimeException("No valid DB vendor set!\n'{$this->vendor}'", 4);

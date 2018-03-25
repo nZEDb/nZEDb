@@ -53,7 +53,7 @@ class AniDB
 	/**
 	 * The number of days between full AniDB updates.
 	 *
-	 * @var string
+	 * @var int
 	 */
 	private $updateInterval;
 
@@ -77,8 +77,8 @@ class AniDB
 		$this->imgSavePath = nZEDb_COVERS . 'anime' . DS;
 		$this->apiKey      = Settings::value('APIs..anidbkey');
 
-		$this->updateInterval = $anidbupdint ?? '7';
-		$this->lastUpdate     = $lastupdated ?? '0';
+		$this->updateInterval = $anidbupdint ?? 7;
+		$this->lastUpdate     = $lastupdated ?? 0;
 		$this->banned         = false;
 	}
 

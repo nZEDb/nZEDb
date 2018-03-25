@@ -84,11 +84,9 @@ class NZBGet
 	 * Construct.
 	 * Set up full URL.
 	 *
-	 * @var \BasePage $page
+	 * @param \BasePage $page Reference to BasePage object.
 	 *
 	 * @access public
-	 *
-	 * @param & $page
 	 */
 	public function __construct(&$page)
 	{
