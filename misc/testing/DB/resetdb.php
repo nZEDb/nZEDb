@@ -28,7 +28,7 @@ echo $pdo->log->header("Thank you, continuing...\n\n");
 
 $timestart = time();
 $relcount = 0;
-$ri = new ReleaseImage($pdo);
+$ri = new ReleaseImage();
 $nzb = new NZB($pdo);
 $consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 

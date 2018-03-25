@@ -23,7 +23,7 @@ $crosspostt = $argv[1];
 $releases = new Releases(['Settings' => $pdo]);
 $count = $total = $all = 0;
 $nzb = new NZB($pdo);
-$ri = new ReleaseImage($pdo);
+$ri = new ReleaseImage();
 $consoleTools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 $size = ' size ';
 if ($argv[2] === 'near') {

@@ -43,7 +43,7 @@ function create_guids($live, $delete = false)
 		echo $pdo->log->header('Creating nzb_guids for ' . number_format($total) . ' releases.');
 		$releases = new Releases(['Settings' => $pdo]);
 		$nzb = new NZB($pdo);
-		$releaseImage = new ReleaseImage($pdo);
+		$releaseImage = new ReleaseImage();
 		$reccnt = 0;
 		if ($relrecs instanceof \Traversable) {
 			foreach ($relrecs as $relrec) {
