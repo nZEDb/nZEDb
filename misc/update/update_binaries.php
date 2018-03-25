@@ -12,7 +12,7 @@ use nzedb\NNTP;
 
 $pdo = new DB();
 
-$maxHeaders = Settings::value('max.headers.iteration') ?: 1000000;
+$maxHeaders = (int)Settings::value('max.headers.iteration') ?: 1000000;
 
 // Create the connection here and pass
 $nntp = new NNTP(['Settings' => $pdo]);

@@ -41,7 +41,7 @@ class SABnzbd
 	/**
 	 * URL to the SAB server.
 	 *
-	 * @var string|array|bool
+	 * @var string|bool
 	 */
 	public $url = '';
 
@@ -162,11 +162,11 @@ class SABnzbd
 	 *
 	 * @param string $guid Release identifier.
 	 *
-	 * @return bool|mixed
+	 * @return mixed/false
 	 */
 	public function sendToSab($guid)
 	{
-		return Misc::getUrl(
+		$result = Misc::getUrl(
 			[
 				'url' => $this->url .
 					'api?mode=addurl&priority=' .
@@ -186,6 +186,12 @@ class SABnzbd
 				'verifycert' => false,
 			]
 		);
+
+		if ($result !== false) {
+			$result = trim($result);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -195,7 +201,7 @@ class SABnzbd
 	 */
 	public function getQueue()
 	{
-		return Misc::getUrl(
+		$result = Misc::getUrl(
 			[
 				'url' => $this->url .
 					'api?mode=qstatus&output=json&apikey=' .
@@ -203,6 +209,12 @@ class SABnzbd
 				'verifycert' => false,
 			]
 		);
+
+		if ($result !== false) {
+			$result = trim($result);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -212,7 +224,7 @@ class SABnzbd
 	 */
 	public function getAdvQueue()
 	{
-		return Misc::getUrl(
+		$result = Misc::getUrl(
 			[
 				'url' => $this->url .
 					'api?mode=queue&start=START&limit=LIMIT&output=json&apikey=' .
@@ -220,6 +232,12 @@ class SABnzbd
 				'verifycert' => false,
 			]
 		);
+
+		if ($result !== false) {
+			$result = trim($result);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -231,7 +249,7 @@ class SABnzbd
 	 */
 	public function delFromQueue($id)
 	{
-		return Misc::getUrl(
+		$result = Misc::getUrl(
 			[
 				'url' => $this->url .
 					'api?mode=queue&name=delete&value=' .
@@ -241,6 +259,12 @@ class SABnzbd
 				'verifycert' => false,
 			]
 		);
+
+		if ($result !== false) {
+			$result = trim($result);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -252,7 +276,7 @@ class SABnzbd
 	 */
 	public function pauseFromQueue($id)
 	{
-		return Misc::getUrl(
+		$result = Misc::getUrl(
 			[
 				'url' => $this->url .
 					'api?mode=queue&name=pause&value=' .
@@ -262,6 +286,12 @@ class SABnzbd
 				'verifycert' => false,
 			]
 		);
+
+		if ($result !== false) {
+			$result = trim($result);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -273,7 +303,7 @@ class SABnzbd
 	 */
 	public function resumeFromQueue($id)
 	{
-		return Misc::getUrl(
+		$result = Misc::getUrl(
 			[
 				'url' => $this->url .
 					'api?mode=queue&name=resume&value=' .
@@ -283,6 +313,12 @@ class SABnzbd
 				'verifycert' => false,
 			]
 		);
+
+		if ($result !== false) {
+			$result = trim($result);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -292,7 +328,7 @@ class SABnzbd
 	 */
 	public function pauseAll()
 	{
-		return Misc::getUrl(
+		$result = Misc::getUrl(
 			[
 				'url' => $this->url .
 					'api?mode=pause' .
@@ -301,6 +337,12 @@ class SABnzbd
 				'verifycert' => false,
 			]
 		);
+
+		if ($result !== false) {
+			$result = trim($result);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -310,7 +352,7 @@ class SABnzbd
 	 */
 	public function resumeAll()
 	{
-		return Misc::getUrl(
+		$result = Misc::getUrl(
 			[
 				'url' => $this->url .
 					'api?mode=resume' .
@@ -319,6 +361,12 @@ class SABnzbd
 				'verifycert' => false,
 			]
 		);
+
+		if ($result !== false) {
+			$result = trim($result);
+		}
+
+		return $result;
 	}
 
 	/**
