@@ -358,7 +358,7 @@ class Movie
 
 		$movieIDs = $releaseIDs = false;
 
-		if (is_array($movies['result'])) {
+		if (\is_array($movies['result'])) {
 			foreach ($movies['result'] as $movie => $id) {
 				$movieIDs[] = $id['imdbid'];
 				$releaseIDs[] = $id['grp_release_id'];
@@ -397,8 +397,8 @@ class Movie
 			AND r.id IN (%s) %s
 			GROUP BY m.imdbid
 			ORDER BY %s %s",
-				(is_array($movieIDs) ? implode(',', $movieIDs) : -1),
-				(is_array($releaseIDs) ? implode(',', $releaseIDs) : -1),
+				(\is_array($movieIDs) ? implode(',', $movieIDs) : -1),
+				(\is_array($releaseIDs) ? implode(',', $releaseIDs) : -1),
 				(!empty($catsrch) ? $catsrch : ''),
 				$order[0],
 				$order[1]

@@ -901,8 +901,10 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Returns a multidimensional array of result of the query function return and the count of found rows
-	 * Note: Query passed to this function SHOULD include SQL_CALC_FOUND_ROWS
+	 * Returns a multidimensional array of result of the query function return and the count of
+	 * found rows.
+	 *
+	 * Note: Query passed to this function MUST include SQL_CALC_FOUND_ROWS to work correctly.
 	 * Optional: Pass true to cache the result with a cache server.
 	 *
 	 * @param string $query       SQL to execute.

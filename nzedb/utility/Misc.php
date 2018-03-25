@@ -11,6 +11,7 @@ use nzedb\ColorCLI;
 use nzedb\db\DB;
 use PHPMailer\PHPMailer\PHPMailer;
 
+
 /*
  * General util functions.
  * Class Util
@@ -30,7 +31,6 @@ class Misc
 	 * @todo Make this recursive with a switch to only check end point.
 	 *
 	 * @param $dir *nix path to directory or file
-	 * @param mixed $path
 	 *
 	 * @return bool|string True is successful, otherwise the part of the path that failed testing.
 	 */
@@ -96,7 +96,7 @@ class Misc
 		return $options;
 	}
 
-	public static function getCoverURL(array $options = [])
+	public static function  getCoverURL(array $options = [])
 	{
 		$defaults = [
 			'id' => null,
@@ -107,10 +107,8 @@ class Misc
 		$fileSpecTemplate = '%s/%s%s';
 		$fileSpec = '';
 
-		if (!empty($options['id']) && in_array(
-			$options['type'],
-		   ['anime', 'audio', 'audiosample', 'book', 'console', 'games', 'movies', 'music', 'preview', 'sample', 'tvrage', 'video', 'xxx']
-		)) {
+		if (!empty($options['id']) && in_array($options['type'],
+		   ['anime', 'audio', 'audiosample', 'book', 'console', 'games', 'movies', 'music', 'preview', 'sample', 'tvrage', 'video', 'xxx'])) {
 			$fileSpec = sprintf($fileSpecTemplate, $options['type'], $options['id'], $options['suffix']);
 			$fileSpec = file_exists(nZEDb_COVERS . $fileSpec) ? $fileSpec : sprintf($fileSpecTemplate, $options['type'], 'no', $options['suffix']);
 		}
@@ -118,16 +116,17 @@ class Misc
 		return $fileSpec;
 	}
 
+
 	/**
 	 * Get list of files/directories from supplied directory.
 	 *
 	 * @param array $options
-	 *                       'dir'        => boolean, include directory paths
-	 *                       'ext'        => file suffix, no full stop (period) separator should be used.
-	 *                       'path'    => The path to list from. If left empty it will use whatever the current working directory is.
-	 *                       'regex'    => Regular expressions that the full path must match to be included,
+	 *        'dir'        => boolean, include directory paths
+	 *        'ext'        => file suffix, no full stop (period) separator should be used.
+	 *        'path'    => The path to list from. If left empty it will use whatever the current working directory is.
+	 *        'regex'    => Regular expressions that the full path must match to be included,
 	 *
-	 * @return array Always returns array of path-names in unix format (even on Windows).
+	 * @return array    Always returns array of path-names in unix format (even on Windows).
 	 */
 	public static function getDirFiles(array $options = null)
 	{
@@ -157,7 +156,7 @@ class Misc
 			switch (true) {
 				case !$options['dir'] && $fileInfo->isDir():
 					break;
-				case !empty($options['ext']) && $fileInfo->getExtension() != $options['ext']:
+				case !empty($options['ext']) && $fileInfo->getExtension() != $options['ext'];
 					break;
 				case (empty($options['regex']) || !preg_match($options['regex'], $file)):
 					break;
@@ -176,7 +175,7 @@ class Misc
 		$themes = scandir(nZEDb_THEMES);
 		$themelist = ['None'];
 		foreach ($themes as $theme) {
-			if (strpos($theme, '.') === false &&
+			if (strpos($theme, ".") === false &&
 				is_dir(nZEDb_THEMES . $theme) &&
 				ucfirst($theme) === $theme
 			) {
@@ -188,7 +187,8 @@ class Misc
 		return $themelist;
 	}
 
-	/**
+
+/**
 	 * Use cURL To download a web page into a string.
 	 *
 	 * @param array $options See details below.
@@ -208,10 +208,10 @@ class Misc
 			'useragent'      => '',    // String ; User agent string.
 			'cookie'         => '',    // String ; Cookie string.
 			'requestheaders' => [],    // Array  ; List of request headers.
-									   //          Example: ["Content-Type: application/json", "DNT: 1"]
+			                           //          Example: ["Content-Type: application/json", "DNT: 1"]
 			'verifycert'     => true,  // Boolean; Verify certificate authenticity?
-									   //          Since curl does not have a verify self signed certs option,
-									   //          you should use this instead if your cert is self signed.
+			                           //          Since curl does not have a verify self signed certs option,
+			                           //          you should use this instead if your cert is self signed.
 		];
 
 		$options += $defaults;
@@ -223,24 +223,24 @@ class Misc
 		switch ($options['language']) {
 			case 'fr':
 			case 'fr-fr':
-				$options['language'] = 'fr-fr';
+				$options['language'] = "fr-fr";
 				break;
 			case 'de':
 			case 'de-de':
-				$options['language'] = 'de-de';
+				$options['language'] = "de-de";
 				break;
 			case 'en-us':
-				$options['language'] = 'en-us';
+				$options['language'] = "en-us";
 				break;
 			case 'en-gb':
-				$options['language'] = 'en-gb';
+				$options['language'] = "en-gb";
 				break;
 			case '':
 			case 'en':
 			default:
 				$options['language'] = 'en';
 		}
-		$header = ['Accept-Language: ' . $options['language']];
+		$header = ["Accept-Language: " . $options['language']];
 		if (is_array($options['requestheaders'])) {
 			$header += $options['requestheaders'];
 		}
@@ -252,7 +252,7 @@ class Misc
 			CURLOPT_HTTPHEADER     => $header,
 			CURLOPT_RETURNTRANSFER => 1,
 			CURLOPT_FOLLOWLOCATION => 1,
-			CURLOPT_TIMEOUT        => 15,
+			CURLOPT_TIMEOUT        => 15
 		];
 		$context += self::curlSslContextOptions($options['verifycert']);
 		if (!empty($options['useragent'])) {
@@ -264,7 +264,7 @@ class Misc
 		if ($options['method'] === 'post') {
 			$context += [
 				CURLOPT_POST       => 1,
-				CURLOPT_POSTFIELDS => $options['postdata'],
+				CURLOPT_POSTFIELDS => $options['postdata']
 			];
 		}
 		if ($options['debug']) {
@@ -272,7 +272,7 @@ class Misc
 				CURLOPT_HEADER      => true,
 				CURLINFO_HEADER_OUT => true,
 				CURLOPT_NOPROGRESS  => false,
-				CURLOPT_VERBOSE     => true,
+				CURLOPT_VERBOSE     => true
 			];
 		}
 		curl_setopt_array($ch, $context);
@@ -289,9 +289,9 @@ class Misc
 	}
 
 	/**
-	 * Get raw html from site URL for scraping.
+	 * Get raw html from site URL for scraping
 	 *
-	 * @param string       $url
+	 * @param string $url
 	 * @param false|string $cookie
 	 *
 	 * @return bool|string
@@ -311,9 +311,9 @@ class Misc
 			$response = $client->get($url)->getBody()->getContents();
 		} catch (RequestException $e) {
 			if ($e->hasResponse()) {
-				if ($e->getCode() === 404) {
+				if($e->getCode() === 404) {
 					ColorCLI::doEcho(ColorCLI::notice('Data not available on server'));
-				} elseif ($e->getCode() === 503) {
+				} else if ($e->getCode() === 503) {
 					ColorCLI::doEcho(ColorCLI::notice('Service unavailable'));
 				} else {
 					ColorCLI::doEcho(ColorCLI::notice('Unable to fetch data from server, http error reported: ' . $e->getCode()));
@@ -350,7 +350,7 @@ class Misc
 	}
 
 	/**
-	 * Check for availability of which command.
+	 * Check for availability of which command
 	 */
 	public static function hasWhich()
 	{
@@ -413,29 +413,21 @@ class Misc
 
 	public static function setCoversConstant($path)
 	{
-		if (! \defined('nZEDb_COVERS')) {
-			$fullpath = nZEDb_RES . 'covers' . DS;
-			if (\strlen($path) > 1) {
-				switch (true) {
-					case (
-						$path[0] === '/' ||
-						$path[0] === '\\'):
-						$path[1] === ':' ||
-						$fullpath = Text::trailingSlash($path);
-						break;
-					case (
-						\strlen($path) > 0 &&
-						$path[0] !== '/' &&
-						$path[1] !== ':' &&
-						$path[0] !== '\\'):
-						$fullpath = Text::trailingSlash($path);
-						break;
-					case empty($path): // Default to resources location.
-					default:
-						$fullpath = nZEDb_RES . 'covers' . DS;
-				}
+		if (!defined('nZEDb_COVERS')) {
+			switch (true) {
+				case (substr($path, 0, 1) == '/' ||
+					substr($path, 1, 1) == ':' ||
+					substr($path, 0, 1) == '\\'):
+					define('nZEDb_COVERS', Text::trailingSlash($path));
+					break;
+				case (strlen($path) > 0 && substr($path, 0, 1) != '/' && substr($path, 1, 1) != ':' &&
+					substr($path, 0, 1) != '\\'):
+					define('nZEDb_COVERS', realpath(nZEDb_ROOT . Text::trailingSlash($path)));
+					break;
+				case empty($path): // Default to resources location.
+				default:
+					define('nZEDb_COVERS', nZEDb_RES . 'covers' . DS);
 			}
-			\define('nZEDb_COVERS', $fullpath);
 		}
 	}
 
@@ -596,11 +588,9 @@ class Misc
 			case 'g':
 				$val *= 1024;
 			// Multiply again for each that matches.
-			// no break
 			case 'm':
 				$val *= 1024;
 			// Multiply again for each that matches.
-			// no break
 			case 'k':
 				$val *= 1024;
 		}
@@ -626,8 +616,9 @@ class Misc
 		return round($bytes / pow(1024, ($index = floor(log($bytes, 1024)))), $precision) . $unit[(int)$index];
 	}
 
+
 	/**
-	 * Fetches an embeddable video to a IMDB trailer from http://www.traileraddict.com.
+	 * Fetches an embeddable video to a IMDB trailer from http://www.traileraddict.com
 	 *
 	 * @param $imdbID
 	 *
@@ -647,14 +638,12 @@ class Misc
 	/**
 	 * Check if MAINTENANCE_MODE_ENABLED constant is set. Return appropriate HTML or XML response
 	 * with status code 503 if it is.
-	 *
-	 * @param mixed $outputMessage
 	 */
 	public static function maintainanceCheck($outputMessage = true)
 	{
 		if (defined('MAINTENANCE_MODE_ENABLED') && MAINTENANCE_MODE_ENABLED === true) {
-			if (!in_array($_SERVER['REMOTE_ADDR'], MAINTENANCE_MODE_IP_EXCEPTIONS)) {
-				$page = ($_GET['page'] ?? 'content');
+			if (!in_array($_SERVER['REMOTE_ADDR'], MAINTENANCE_MODE_IP_EXCEPTIONS) ) {
+				$page = (isset($_GET['page']) ? $_GET['page'] : 'content');
 				switch ($page) {
 					case 'api':
 					case 'failed':
@@ -703,40 +692,36 @@ class Misc
 	}
 
 	/**
-	 * Converts XML to an associative array with namespace preservation -- use if intending to JSON encode.
-	 *
+	 * Converts XML to an associative array with namespace preservation -- use if intending to JSON encode
 	 * @author Tamlyn from Outlandish.com
 	 *
-	 * @param \SimpleXMLElement $xml     The SimpleXML parsed XML string data
+	 * @param \SimpleXMLElement $xml The SimpleXML parsed XML string data
 	 * @param array             $options
 	 *
-	 * @return array The associate array of the XML namespaced file
+	 * @return array            The associate array of the XML namespaced file
 	 */
-	public static function xmlToArray(\SimpleXMLElement $xml, $options = [])
-	{
-		$defaults = [
-			'namespaceSeparator' => ':', //you may want this to be something other than a colon
+	public static function xmlToArray(\SimpleXMLElement $xml, $options = array()) {
+		$defaults = array(
+			'namespaceSeparator' => ':',//you may want this to be something other than a colon
 			'attributePrefix' => '@',   //to distinguish between attributes and nodes with the same name
-			'alwaysArray' => [],   //array of xml tag names which should always become arrays
+			'alwaysArray' => array(),   //array of xml tag names which should always become arrays
 			'autoArray' => true,        //only create arrays for tags which appear more than once
 			'textContent' => '$',       //key used for the text content of elements
 			'autoText' => true,         //skip textContent key if node has no attributes or child nodes
 			'keySearch' => false,       //optional search and replace on tag and attribute names
-			'keyReplace' => false,       //replace values for above search values (as passed to str_replace())
-		];
+			'keyReplace' => false       //replace values for above search values (as passed to str_replace())
+		);
 		$options = array_merge($defaults, $options);
 		$namespaces = $xml->getDocNamespaces();
 		$namespaces[''] = null; //add base (empty) namespace
 
-		$attributesArray = $tagsArray = [];
+		$attributesArray = $tagsArray = array();
 		foreach ($namespaces as $prefix => $namespace) {
 			//get attributes from all namespaces
 			foreach ($xml->attributes($namespace) as $attributeName => $attribute) {
 				//replace characters in attribute name
-				if ($options['keySearch']) {
-					$attributeName =
+				if ($options['keySearch']) $attributeName =
 					str_replace($options['keySearch'], $options['keyReplace'], $attributeName);
-				}
 				$attributeKey = $options['attributePrefix']
 					. ($prefix ? $prefix . $options['namespaceSeparator'] : '')
 					. $attributeName;
@@ -745,29 +730,21 @@ class Misc
 			//get child nodes from all namespaces
 			foreach ($xml->children($namespace) as $childXml) {
 				//recurse into child nodes
-				/*
 				$childArray = self::xmlToArray($childXml, $options);
 				list($childTagName, $childProperties) = each($childArray);
-				*/
-				$childTagName = $childXml->getName();
-				$childProperties = current(self::xmlToArray($childXml, $options));
 
 				//replace characters in tag name
-				if ($options['keySearch']) {
-					$childTagName =
+				if ($options['keySearch']) $childTagName =
 					str_replace($options['keySearch'], $options['keyReplace'], $childTagName);
-				}
 				//add namespace prefix, if any
-				if ($prefix) {
-					$childTagName = $prefix . $options['namespaceSeparator'] . $childTagName;
-				}
+				if ($prefix) $childTagName = $prefix . $options['namespaceSeparator'] . $childTagName;
 
 				if (!isset($tagsArray[$childTagName])) {
 					//only entry with this key
 					//test if tags of this type should always be arrays, no matter the element count
 					$tagsArray[$childTagName] =
 						in_array($childTagName, $options['alwaysArray']) || !$options['autoArray']
-							? [$childProperties] : $childProperties;
+							? array($childProperties) : $childProperties;
 				} elseif (
 					is_array($tagsArray[$childTagName]) && array_keys($tagsArray[$childTagName])
 					=== range(0, count($tagsArray[$childTagName]) - 1)
@@ -776,26 +753,24 @@ class Misc
 					$tagsArray[$childTagName][] = $childProperties;
 				} else {
 					//key exists so convert to integer indexed array with previous value in position 0
-					$tagsArray[$childTagName] = [$tagsArray[$childTagName], $childProperties];
+					$tagsArray[$childTagName] = array($tagsArray[$childTagName], $childProperties);
 				}
 			}
 		}
 
 		//get text content of node
-		$textContentArray = [];
+		$textContentArray = array();
 		$plainText = trim((string)$xml);
-		if ($plainText !== '') {
-			$textContentArray[$options['textContent']] = $plainText;
-		}
+		if ($plainText !== '') $textContentArray[$options['textContent']] = $plainText;
 
 		//stick it all together
 		$propertiesArray = !$options['autoText'] || $attributesArray || $tagsArray || ($plainText === '')
 			? array_merge($attributesArray, $tagsArray, $textContentArray) : $plainText;
 
 		//return node as array
-		return [
-			$xml->getName() => $propertiesArray,
-		];
+		return array(
+			$xml->getName() => $propertiesArray
+		);
 	}
 
 	/**
@@ -806,10 +781,9 @@ class Misc
 	 * @param string $contents
 	 * @param string $from
 	 *
+	 * @return boolean
 	 * @throws \Exception
 	 * @throws \phpmailerException
-	 *
-	 * @return bool
 	 */
 	public static function sendEmail($to, $subject, $contents, $from)
 	{
@@ -973,7 +947,7 @@ class Misc
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
 			'<error code="' . $status . '" description="' . $message . "\"/>\n";
 		header('Content-type: text/xml');
-		header('Content-Length: ' . strlen($response));
+		header('Content-Length: ' . strlen($response) );
 		header('X-nZEDb: API ERROR [' . $status . '] ' . $message);
 		http_response_code($status);
 
