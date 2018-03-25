@@ -333,7 +333,8 @@ class Movie
 					$order[0],
 					$order[1],
 					($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
-				), true, nZEDb_CACHE_EXPIRY_MEDIUM
+				),
+			false, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 
 		$movieIDs = $releaseIDs = false;
@@ -382,7 +383,7 @@ class Movie
 				$order[0],
 				$order[1]
 		);
-		$return = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
+		$return = $this->pdo->query($sql, false, nZEDb_CACHE_EXPIRY_MEDIUM);
 		if (!empty($return)) {
 			$return[0]['_totalcount'] = ($movies['total'] ?? 0);
 		}
