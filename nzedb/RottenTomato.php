@@ -41,7 +41,7 @@ class RottenTomato
 	 */
 	public function getBoxOffice($limit = 10, $country = 'us')
 	{
-		return $this->_makeCall(
+		return $this->makeCall(
 			'lists/movies/box_office.json',
 			[
 				'limit'   => $limit,
@@ -62,7 +62,7 @@ class RottenTomato
 	 */
 	public function getInTheaters($limit = 16, $page = 1, $country = 'us')
 	{
-		return $this->_makeCall(
+		return $this->makeCall(
 			'lists/movies/in_theaters.json',
 			[
 				'page_limit' => $limit,
@@ -83,7 +83,7 @@ class RottenTomato
 	 */
 	public function getOpening($limit = 16, $country = 'us')
 	{
-		return $this->_makeCall(
+		return $this->makeCall(
 			'lists/movies/opening.json',
 			[
 				'limit'   => $limit,
@@ -104,7 +104,7 @@ class RottenTomato
 	 */
 	public function getUpcoming($limit = 16, $page = 1, $country = 'us')
 	{
-		return $this->_makeCall(
+		return $this->makeCall(
 			'lists/movies/upcoming.json',
 			[
 				'page_limit' => $limit,
@@ -121,7 +121,7 @@ class RottenTomato
 	 */
 	public function getDVDReleases()
 	{
-		return $this->_makeCall('lists/dvds/new_releases.json');
+		return $this->makeCall('lists/dvds/new_releases.json');
 	}
 
 	/**
@@ -135,7 +135,7 @@ class RottenTomato
 	 */
 	public function searchMovie($title, $limit = 50, $page = 1)
 	{
-		return $this->_makeCall(
+		return $this->makeCall(
 			'movies.json',
 			[
 				'q'          => $title,
@@ -155,7 +155,7 @@ class RottenTomato
 	 */
 	public function getMovie($ID)
 	{
-		return $this->_makeCall('movies/' . $ID . '.json');
+		return $this->makeCall('movies/' . $ID . '.json');
 	}
 
 	/**
@@ -177,7 +177,7 @@ class RottenTomato
 	 */
 	public function getReviews($ID, $type = 'top_critic', $limit = 20, $page = 1, $country = 'us')
 	{
-		return $this->_makeCall(
+		return $this->makeCall(
 			'movies/' . $ID . '/reviews.json',
 			[
 				'review_type' => $type,
@@ -197,7 +197,7 @@ class RottenTomato
 	 */
 	public function getCast($ID)
 	{
-		return $this->_makeCall('movies/' . $ID . '/cast.json');
+		return $this->makeCall('movies/' . $ID . '/cast.json');
 	}
 
 	/**
@@ -216,22 +216,26 @@ class RottenTomato
 	 * @param string $function The type of request.
 	 * @param array  $params   Extra HTTP parameters.
 	 *
-	 * @return string JSON data from RT.
+	 * @return string|false JSON data from RT.
 	 */
-	private function _makeCall($function, $params = [])
+	private function makeCall($function, array $params = [])
 	{
-		return trim(
-			Misc::getUrl(
-				[
-					'url' => RottenTomato::API_URL .
-						$function .
-						'?limit=' .
-						mt_rand(15, 20) .
-						'&apikey=' .
-						$this->_apikey .
-						(!empty($params) ? ('&' . http_build_query($params)) : ''),
-				]
-			)
+		$result = Misc::getUrl(
+			[
+				'url' => RottenTomato::API_URL .
+					$function .
+					'?limit=' .
+					mt_rand(15, 20) .
+					'&apikey=' .
+					$this->_apikey .
+					(!empty($params) ? ('&' . http_build_query($params)) : ''),
+			]
 		);
+
+		if ($result !== false) {
+			$result = trim($result);
+		}
+
+		return $result;
 	}
 }

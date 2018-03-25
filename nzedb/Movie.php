@@ -325,33 +325,33 @@ class Movie
 		$order = $this->getMovieOrder($orderBy);
 
 		$movies = $this->pdo->queryCalc(
-				sprintf(
-					"
-					SELECT SQL_CALC_FOUND_ROWS
-						m.imdbid,
-						GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
-					FROM movieinfo m
-					LEFT JOIN releases r USING (imdbid)
-					WHERE r.nzbstatus = 1
-					AND m.title != ''
-					AND m.imdbid != '0000000'
-					AND r.passwordstatus %s
-					%s %s %s %s
-					GROUP BY m.imdbid
-					ORDER BY %s %s %s",
-					$this->showPasswords,
-					$this->getBrowseBy(),
-					(!empty($catsrch) ? $catsrch : ''),
-					(
-						$maxAge > 0
-							? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
-							: ''
-					),
-					(count($excludedCats) > 0 ? ' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')' : ''),
-					$order[0],
-					$order[1],
-					($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
+			sprintf(
+				"
+				SELECT SQL_CALC_FOUND_ROWS
+					m.imdbid,
+					GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
+				FROM movieinfo m
+				LEFT JOIN releases r USING (imdbid)
+				WHERE r.nzbstatus = 1
+				AND m.title != ''
+				AND m.imdbid != '0000000'
+				AND r.passwordstatus %s
+				%s %s %s %s
+				GROUP BY m.imdbid
+				ORDER BY %s %s %s",
+				$this->showPasswords,
+				$this->getBrowseBy(),
+				(!empty($catsrch) ? $catsrch : ''),
+				(
+					$maxAge > 0
+						? 'AND r.postdate > NOW() - INTERVAL ' . $maxAge . 'DAY '
+						: ''
 				),
+				(count($excludedCats) > 0 ? ' AND r.categories_id NOT IN (' . implode(',', $excludedCats) . ')' : ''),
+				$order[0],
+				$order[1],
+				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
+			),
 			true,
 			nZEDb_CACHE_EXPIRY_MEDIUM
 		);
