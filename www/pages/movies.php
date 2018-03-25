@@ -81,6 +81,11 @@ $page->smarty->assign(
 	'pagertotalitems',
 		$results[0]['_totalcount'] ?? 0
 );
+
+if ($results[0]['_totalcount'] < 2) {
+	(new \nzedb\Logger())->log(null, null, 'Movie page returned "1" for _totalcount');
+}
+
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_COVER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP . '/movies?t=' . $category . $browseby_link . '&amp;ob=' . $orderby . '&amp;offset=');
