@@ -236,10 +236,6 @@ $checks = [
 		$dashboard = $self->html->link('test dashboard', [
 			'controller' => 'lithium\test\Controller',
 		]);
-		$ticket = $self->html->link(
-			'file a ticket',
-			'https://github.com/UnionOfRAD/lithium/issues'
-		);
 
 		return $support(
 			'Run the tests',

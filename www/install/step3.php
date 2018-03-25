@@ -42,9 +42,9 @@ if ($page->isPostBack()) {
 	if ($cfg->nZEDb_SSL_CAFILE != '') {
 		if (!checkPathsReadable($cfg->nZEDb_SSL_CAFILE)) {
 			$cfg->error = 'Invalid ca file path or it is not readable or the folders up to it are not readable.';
-		} elseif (1) {
 		}
 	}
+
 	if ($cfg->nZEDb_SSL_CAPATH != '' && !checkPathsReadable($cfg->nZEDb_SSL_CAPATH)) {
 		$cfg->error = 'Invalid ca folder path or it is not readable or the folders up to it are not readable.';
 	}

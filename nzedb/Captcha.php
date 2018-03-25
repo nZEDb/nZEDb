@@ -76,12 +76,8 @@ class Captcha
 	 *
 	 * @param \Page $page
 	 */
-	public function __construct(&$page)
+	public function __construct(\Page &$page)
 	{
-		if (!$page instanceof \Page) {
-			throw new \InvalidArgumentException('Invalid Page variable provided');
-		}
-
 		$this->page = $page;
 
 		if ($this->shouldDisplay()) {

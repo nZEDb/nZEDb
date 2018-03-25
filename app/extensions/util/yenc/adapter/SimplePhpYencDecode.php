@@ -23,7 +23,7 @@ use app\extensions\util\Yenc;
 
 class SimplePhpYencDecode extends \lithium\core\Object
 {
-	public static function decode(&$text, $ignore = false)
+	public static function decode(&$text)
 	{
 		return \simple_yenc_decode($text);
 	}

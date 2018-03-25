@@ -41,7 +41,6 @@ $user = $pdo->queryOneRow(
 if ($user !== false) {
 	$users = new Users(['Settings' => $pdo]);
 	$hash = $users->hashPassword($password);
-	$result = false;
 	if ($hash !== false) {
 		$hash = $pdo->queryExec(
 			sprintf(
@@ -52,7 +51,7 @@ if ($user !== false) {
 		);
 	}
 
-	if ($result === false || $hash === false) {
+	if ($hash === false) {
 		echo $pdo->log->error('An error occured during update attempt.' . PHP_EOL . implode("\n", $pdo->errorInfo()));
 	} else {
 		echo $pdo->log->headerOver("Updated {$user['username']}'s password hash to: ") . $pdo->log->primary("$hash");
