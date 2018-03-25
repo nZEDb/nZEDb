@@ -157,7 +157,7 @@ function preName($argv, $argc)
 				if ($cleanName != $row['name'] && $cleanName != $row['searchname']) {
 					if (strlen(utf8_decode($cleanName)) > 3) {
 						$determinedcat = $category->determineCategory($row['groups_id'], $cleanName);
-						if ($propername == true) {
+						if ($propername === true) {
 							$pdo->queryExec(
 								sprintf(
 									'UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL, consoleinfo_id = NULL, bookinfo_id = NULL, anidbid = NULL, '
