@@ -28,13 +28,26 @@ use lithium\data\Entity;
  */
 class Model extends \lithium\data\Model
 {
-	public static function isModified($preEntry)
+	/**
+	 * The number of rows found by the last query.
+	 *
+	 * @return int
+	 */
+	public static function foundRows()
+	{
+		$result = static::Find('first', ['fields' => 'FOUND_ROWS() AS found']);
+
+		return $result->data()['found'];
+	}
+
+	public static function isModified($preEntry) : bool
 	{
 		if (!($preEntry instanceof Entity)) {
 			$test = get_class($preEntry);
 			$test = $test ?: 'non-object';
 			throw new \InvalidArgumentException('$preEntry must be an object derived from the Lithium Entity class, a "' . $test . '" was passed instead.');
 		}
+
 		$modified = false;
 		foreach ($preEntry->modified() as $field => $value) {
 			if ($value) {
