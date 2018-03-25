@@ -338,7 +338,7 @@ class Movie
 
 		$movieIDs = $releaseIDs = false;
 
-		if (is_array($movies['result'])) {
+		if (\is_array($movies['result'])) {
 			foreach ($movies['result'] as $movie => $id) {
 				$movieIDs[] = $id['imdbid'];
 				$releaseIDs[] = $id['grp_release_id'];
@@ -376,15 +376,15 @@ class Movie
 			AND r.id IN (%s) %s
 			GROUP BY m.imdbid
 			ORDER BY %s %s",
-				(is_array($movieIDs) ? implode(',', $movieIDs) : -1),
-				(is_array($releaseIDs) ? implode(',', $releaseIDs) : -1),
+				(\is_array($movieIDs) ? implode(',', $movieIDs) : -1),
+				(\is_array($releaseIDs) ? implode(',', $releaseIDs) : -1),
 				(!empty($catsrch) ? $catsrch : ''),
 				$order[0],
 				$order[1]
 		);
 		$return = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 		if (!empty($return)) {
-			$return[0]['_totalcount'] = (isset($movies['total']) ? $movies['total'] : 0);
+			$return[0]['_totalcount'] = ($movies['total'] ?? 0);
 		}
 
 		return $return;
