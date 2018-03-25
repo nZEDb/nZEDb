@@ -472,7 +472,7 @@ class Binaries
 		}
 
 		// This is how many articles we are going to get.
-		$total = ($groupLast - $first);
+		$total = $groupLast - $first;
 		// This is how many articles are available (without $leaveOver).
 		$realTotal = ($groupNNTP['last'] - $first);
 
@@ -481,7 +481,7 @@ class Binaries
 			if ($maxHeaders < ($groupLast - $first)) {
 				$groupLast = $last = (string)($first + $maxHeaders);
 			}
-			$total = (string)($groupLast - $first);
+			$total = $groupLast - $first;
 		}
 
 		// If total is bigger than 0 it means we have new parts in the newsgroup.
@@ -1154,7 +1154,7 @@ class Binaries
 		$wantedArticle = (int)round(($data['last'] + $data['first']) / 2);
 		$aMax = $data['last'];
 		$aMin = $data['first'];
-		$reallyOldArticle = $oldArticle = $articleTime = null;
+		$oldArticle = $articleTime = null;
 
 		while (true) {
 			// Article exists outside of available range, this shouldn't happen
@@ -1786,9 +1786,9 @@ class Binaries
 	 *
 	 * @return float
 	 */
-	private function daysOld($timestamp)
+	private function daysOld(int $timestamp)
 	{
-		return round((time() - (!is_numeric($timestamp) ? strtotime($timestamp) : $timestamp)) / 86400, 1);
+		return round((time() - $timestamp) / 86400, 1);
 	}
 
 	/**

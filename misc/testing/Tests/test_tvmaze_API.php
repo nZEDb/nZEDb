@@ -30,9 +30,7 @@ if (isset($argv[1]) && !empty($argv[1]) && isset($argv[2]) && is_numeric($argv[2
 			}
 		} elseif ($season == 0 && $episode == 0) {
 			$episodeObj = $tvmaze->client->getEpisodesByShowID($series[0]->id);
-			if (is_array($episodeObj)) {
-				print_r($episodeObj);
-			}
+			print_r($episodeObj);
 		} elseif (preg_match('#^(19|20)\d{2}\/\d{2}\/\d{2}$#', $season . '/' . $episode . '/' . $day, $airdate)) {
 			$episodeObj = $tvmaze->client->getEpisodesByAirdate($series[0]->id, (string)$airdate[0]);
 			if ($episodeObj) {

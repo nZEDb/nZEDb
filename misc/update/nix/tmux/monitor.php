@@ -130,12 +130,14 @@ while ($runVar['counts']['iterations'] > 0) {
 		echo $pdo->log->info("\nThe numbers(queries) above are currently being refreshed. \nNo pane(script) can be (re)started until these have completed.\n");
 		$timer02 = time();
 
-		$splitqry = $newOldqry = '';
+		$newOldqry = '';
 
 		$splitqry = $tRun->proc_query(4, null, null, $db_name);
 		$newOldqry = $tRun->proc_query(6, null, null, null);
 
-		$splitres = $pdo->queryOneRow($splitqry, false);
+		if ($splitqry !== false) {
+			$splitres = $pdo->queryOneRow($splitqry, false);
+		}
 		$runVar['timers']['newOld'] = $pdo->queryOneRow($newOldqry, false);
 
 		//assign split query results to main var

@@ -21,22 +21,22 @@ class Books
 	public $echooutput;
 
 	/**
-	 * @var array|bool|string
+	 * @var string|null
 	 */
 	public $pubkey;
 
 	/**
-	 * @var array|bool|string
+	 * @var string|null
 	 */
 	public $privkey;
 
 	/**
-	 * @var array|bool|string
+	 * @var string|null
 	 */
 	public $asstag;
 
 	/**
-	 * @var array|bool|int|string
+	 * @var int|string
 	 */
 	public $bookqty;
 
@@ -51,7 +51,7 @@ class Books
 	public $imgSavePath;
 
 	/**
-	 * @var array|bool|int|string
+	 * @var string|null
 	 */
 	public $bookreqids;
 
@@ -228,7 +228,7 @@ class Books
 
 		$bookIDs = $releaseIDs = false;
 
-		if (is_array($books['result'])) {
+		if (\is_array($books['result'])) {
 			foreach ($books['result'] as $book => $id) {
 				$bookIDs[] = $id['id'];
 				$releaseIDs[] = $id['grp_release_id'];
@@ -266,8 +266,8 @@ class Books
 			%s
 			GROUP BY boo.id
 			ORDER BY %s %s",
-			(is_array($bookIDs) ? implode(',', $bookIDs) : -1),
-			(is_array($releaseIDs) ? implode(',', $releaseIDs) : -1),
+			$bookIDs !== false ? implode(',', $bookIDs) : -1,
+			$releaseIDs !== false ? implode(',', $releaseIDs) : -1,
 			$catsrch,
 			$order[0],
 			$order[1]
@@ -397,13 +397,17 @@ class Books
 				$this->processBookReleasesHelper(
 					$this->pdo->queryDirect(
 						sprintf('
-						SELECT searchname, id, categories_id
-						FROM releases
-						WHERE nzbstatus = 1 %s
-						AND bookinfo_id IS NULL
-						AND categories_id in (%s)
-						ORDER BY postdate
-						DESC LIMIT %d', $this->renamed, $bookids[$i], $this->bookqty)
+							SELECT searchname, id, categories_id
+							FROM releases
+							WHERE nzbstatus = 1 %s
+							AND bookinfo_id IS NULL
+							AND categories_id in (%s)
+							ORDER BY postdate
+							DESC LIMIT %d',
+							$this->renamed,
+							$bookids[$i],
+							$this->bookqty
+						)
 					),
 					$bookids[$i]
 				);
@@ -472,7 +476,7 @@ class Books
 	 */
 	public function updateBookInfo($bookInfo = '', $amazdata = null)
 	{
-		$ri = new ReleaseImage($this->pdo);
+		$ri = new ReleaseImage();
 
 		$book = [];
 
