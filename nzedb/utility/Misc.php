@@ -408,7 +408,7 @@ class Misc
 
 	public static function isWin()
 	{
-		return (strtolower(substr(PHP_OS, 0, 3)) === 'win');
+		return (\strtolower(substr(PHP_OS, 0, 3)) === 'win');
 	}
 
 	public static function setCoversConstant($path)
@@ -783,9 +783,8 @@ class Misc
 	 *
 	 * @return boolean
 	 * @throws \Exception
-	 * @throws \phpmailerException
 	 */
-	public static function sendEmail($to, $subject, $contents, $from)
+	public static function sendEmail($to, $subject, $contents, $from) : bool
 	{
 		// Email *always* uses CRLF for line endings unless the mail agent is broken, like qmail
 		$CRLF = "\r\n";
@@ -797,42 +796,67 @@ class Misc
 		$body .= '</body>' . $CRLF;
 		$body .= '</html>' . $CRLF;
 
-		if (defined('PHPMAILER_ENABLED') && PHPMAILER_ENABLED == true) {
-			$mail = new PHPMailer();
+		if (\defined('PHPMAILER_ENABLED') && PHPMAILER_ENABLED === true) {
+			//$mail = new PHPMailer();
+			$result = self::sendEmailViaPHPMailer($to, $subject, $body, $from);
 		} else {
-			$mail = null;
+			//$mail = null;
+			$result = self::sendEmailViaPHP($to, $subject, $body, $from);
 		}
 
-		// If the mailer couldn't instantiate there's a good chance the user has an incomplete update & we should fallback to php mail()
-		// @todo Log this failure.
-		if (!defined('PHPMAILER_ENABLED') || PHPMAILER_ENABLED !== true || !($mail instanceof PHPMailer\PHPMailer\PHPMailer)) {
-			$headers = 'From: ' . $from . $CRLF;
-			$headers .= 'Reply-To: ' . $from . $CRLF;
-			$headers .= 'Return-Path: ' . $from . $CRLF;
-			$headers .= 'X-Mailer: nZEDb' . $CRLF;
-			$headers .= 'MIME-Version: 1.0' . $CRLF;
-			$headers .= 'Content-type: text/html; charset=iso-8859-1' . $CRLF;
-			$headers .= $CRLF;
+		return $result;
+	}
 
-			return mail($to, $subject, $body, $headers);
-		}
+	/**
+	 * @param $to
+	 * @param $subject
+	 * @param $body
+	 * @param $from
+	 *
+	 * @return bool
+	 */
+	public static function sendEmailViaPHP($to, $subject, $body, $from) : bool
+	{
+		$CRLF = "\r\n";
 
+		$headers = 'From: ' . $from . $CRLF;
+		$headers .= 'Reply-To: ' . $from . $CRLF;
+		$headers .= 'Return-Path: ' . $from . $CRLF;
+		$headers .= 'X-Mailer: nZEDb' . $CRLF;
+		$headers .= 'MIME-Version: 1.0' . $CRLF;
+		$headers .= 'Content-type: text/html; charset=iso-8859-1' . $CRLF;
+		$headers .= $CRLF;
+
+		return mail($to, $subject, $body, $headers);
+	}
+
+	/**
+	 * @param $to
+	 * @param $subject
+	 * @param $body
+	 * @param $from
+	 *
+	 * @return bool
+	 * @throws \PHPMailer\PHPMailer\Exception
+	 */
+	public static function sendEmailViaPHPMailer($to, $subject, $body, $from): bool
+	{
 		// Check to make sure the user has their settings correct.
-		if (PHPMAILER_USE_SMTP == true) {
-			if ((!defined('PHPMAILER_SMTP_HOST') || PHPMAILER_SMTP_HOST === '') ||
-				(!defined('PHPMAILER_SMTP_PORT') || PHPMAILER_SMTP_PORT === '')
+		if (PHPMAILER_USE_SMTP === true) {
+			if ((! \defined('PHPMAILER_SMTP_HOST') || PHPMAILER_SMTP_HOST === '') ||
+				(! \defined('PHPMAILER_SMTP_PORT') || PHPMAILER_SMTP_PORT === '')
 			) {
-				throw new \phpmailerException(
+				throw new \PHPMailer\PHPMailer\Exception(
 					'You opted to use SMTP but the PHPMAILER_SMTP_HOST and/or PHPMAILER_SMTP_PORT is/are not defined correctly! Either fix the missing/incorrect values or change PHPMAILER_USE_SMTP to false in the www/settings.php'
 				);
 			}
 
 			// If the user enabled SMTP & Auth but did not setup credentials, throw an exception.
-			if (defined('PHPMAILER_SMTP_AUTH') && PHPMAILER_SMTP_AUTH == true) {
-				if ((!defined('PHPMAILER_SMTP_USER') || PHPMAILER_SMTP_USER === '') ||
-					(!defined('PHPMAILER_SMTP_PASSWORD') || PHPMAILER_SMTP_PASSWORD === '')
+			if (\defined('PHPMAILER_SMTP_AUTH') && PHPMAILER_SMTP_AUTH === true) {
+				if ((! \defined('PHPMAILER_SMTP_USER') || PHPMAILER_SMTP_USER === '') ||
+					(! \defined('PHPMAILER_SMTP_PASSWORD') || PHPMAILER_SMTP_PASSWORD === '')
 				) {
-					throw new PHPMailer\PHPMailer\Exception(
+					throw new \PHPMailer\PHPMailer\Exception(
 						'You opted to use SMTP and SMTP Auth but the PHPMAILER_SMTP_USER and/or PHPMAILER_SMTP_PASSWORD is/are not defined correctly. Please set them in www/settings.php'
 					);
 				}
@@ -857,11 +881,11 @@ class Misc
 			}
 		}
 
-		$fromEmail = (PHPMAILER_FROM_EMAIL == '') ? Settings::value('site.main.email') : PHPMAILER_FROM_EMAIL;
-		$fromName  = (PHPMAILER_FROM_NAME == '') ? Settings::value('site.main.title') : PHPMAILER_FROM_NAME;
-		$replyTo   = (PHPMAILER_REPLYTO == '') ? $from : PHPMAILER_REPLYTO;
+		$fromEmail = (PHPMAILER_FROM_EMAIL === '') ? Settings::value('site.main.email') : PHPMAILER_FROM_EMAIL;
+		$fromName = (PHPMAILER_FROM_NAME === '') ? Settings::value('site.main.title') : PHPMAILER_FROM_NAME;
+		$replyTo = !empty($from) ? $from : PHPMAILER_REPLYTO;
 
-		if (PHPMAILER_BCC != '') {
+		if (PHPMAILER_BCC !== '') {
 			$mail->addBCC(PHPMAILER_BCC);
 		}
 
@@ -869,14 +893,15 @@ class Misc
 		$mail->addAddress($to);
 		$mail->addReplyTo($replyTo);
 		$mail->Subject = $subject;
-		$mail->Body    = $body;
+		$mail->Body = $body;
 		$mail->AltBody = $mail->html2text($body, true);
 
 		$sent = $mail->send();
 
 		if (!$sent) {
 			//@todo Log failed email send attempt.
-			throw new \phpmailerException('Unable to send mail. Error: ' . $mail->ErrorInfo);
+			throw new \PHPMailer\PHPMailer\Exception('Unable to send mail. Error: ' .
+				$mail->ErrorInfo);
 		}
 
 		return $sent;
@@ -947,7 +972,7 @@ class Misc
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
 			'<error code="' . $status . '" description="' . $message . "\"/>\n";
 		header('Content-type: text/xml');
-		header('Content-Length: ' . strlen($response) );
+		header('Content-Length: ' . \strlen($response) );
 		header('X-nZEDb: API ERROR [' . $status . '] ' . $message);
 		http_response_code($status);
 
