@@ -10,6 +10,14 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-04-02 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.5.0
+
+
+2018-03-23 niel
+	Fix: Namespace issue for PHPMailer class.
+	Chg: Refactored Misc::sendEmail() to use provided $from address as the 'reply-to' field (and to
+		make reading it easier.
 2018-03-05 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.4.0
 
