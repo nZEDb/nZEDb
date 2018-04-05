@@ -6,6 +6,7 @@ ChangeLog file which list *when* changes are made to the dev branches.
 Fixed:
 	* PHPMailer 'Call to a member function isHTML() on null' error.
 
+
 0.8.5.0 2018-04-02
 Fixed:
 	* PHPMailer namespace issue causing it to not be found.
