@@ -8,7 +8,7 @@ use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\SetCookie;
 use GuzzleHttp\Exception\RequestException;
 use nzedb\ColorCLI;
-use nzedb\db\DB;
+use PHPMailer\PHPMailer\Exception as PHPMailerException;
 use PHPMailer\PHPMailer\PHPMailer;
 
 
@@ -846,7 +846,7 @@ class Misc
 			if ((! \defined('PHPMAILER_SMTP_HOST') || PHPMAILER_SMTP_HOST === '') ||
 				(! \defined('PHPMAILER_SMTP_PORT') || PHPMAILER_SMTP_PORT === '')
 			) {
-				throw new \PHPMailer\PHPMailer\Exception(
+				throw new PHPMailerException(
 					'You opted to use SMTP but the PHPMAILER_SMTP_HOST and/or PHPMAILER_SMTP_PORT is/are not defined correctly! Either fix the missing/incorrect values or change PHPMAILER_USE_SMTP to false in the www/settings.php'
 				);
 			}
@@ -856,55 +856,67 @@ class Misc
 				if ((! \defined('PHPMAILER_SMTP_USER') || PHPMAILER_SMTP_USER === '') ||
 					(! \defined('PHPMAILER_SMTP_PASSWORD') || PHPMAILER_SMTP_PASSWORD === '')
 				) {
-					throw new \PHPMailer\PHPMailer\Exception(
+					throw new PHPMailerException(
 						'You opted to use SMTP and SMTP Auth but the PHPMAILER_SMTP_USER and/or PHPMAILER_SMTP_PASSWORD is/are not defined correctly. Please set them in www/settings.php'
 					);
 				}
 			}
 		}
 
-		//Finally we can send the mail.
-		$mail->isHTML(true);
+		//Finally we can instantiate and send the mail.
+		$mail = new PHPMailer();
 
-		if (PHPMAILER_USE_SMTP) {
-			$mail->isSMTP();
+		/* If the mailer couldn't instantiate there's a good chance the user has an incomplete
+		 * update and we should fallback to php's mail().
+		 *
+		 * @todo Log this failure.
+		 */
+		if (! $mail instanceof PHPMailer\PHPMailer\PHPMailer) {
+			$result = self::sendEmailViaPHP($to, $subject, $body, $from);
+		} else {
+			$mail->isHTML(true);
 
-			$mail->Host = PHPMAILER_SMTP_HOST;
-			$mail->Port = PHPMAILER_SMTP_PORT;
+			if (PHPMAILER_USE_SMTP) {
+				$mail->isSMTP();
 
-			$mail->SMTPSecure = PHPMAILER_SMTP_SECURE;
+				$mail->Host = PHPMAILER_SMTP_HOST;
+				$mail->Port = PHPMAILER_SMTP_PORT;
 
-			if (PHPMAILER_SMTP_AUTH) {
-				$mail->SMTPAuth = true;
-				$mail->Username = PHPMAILER_SMTP_USER;
-				$mail->Password = PHPMAILER_SMTP_PASSWORD;
+				$mail->SMTPSecure = PHPMAILER_SMTP_SECURE;
+
+				if (PHPMAILER_SMTP_AUTH) {
+					$mail->SMTPAuth = true;
+					$mail->Username = PHPMAILER_SMTP_USER;
+					$mail->Password = PHPMAILER_SMTP_PASSWORD;
+				}
+			}
+
+			$fromEmail = (PHPMAILER_FROM_EMAIL === '') ? Settings::value('site.main.email') :
+				PHPMAILER_FROM_EMAIL;
+			$fromName = (PHPMAILER_FROM_NAME === '') ? Settings::value('site.main.title') :
+				PHPMAILER_FROM_NAME;
+			$replyTo = !empty($from) ? $from : PHPMAILER_REPLYTO;
+
+			if (PHPMAILER_BCC !== '') {
+				$mail->addBCC(PHPMAILER_BCC);
+			}
+
+			$mail->setFrom($fromEmail, $fromName);
+			$mail->addAddress($to);
+			$mail->addReplyTo($replyTo);
+			$mail->Subject = $subject;
+			$mail->Body = $body;
+			$mail->AltBody = $mail->html2text($body, true);
+
+			$result = $mail->send();
+
+			if (! $result) {
+				//@todo Log failed email send attempt.
+				throw new PHPMailerException('Unable to send mail. Error: ' . $mail->ErrorInfo);
 			}
 		}
 
-		$fromEmail = (PHPMAILER_FROM_EMAIL === '') ? Settings::value('site.main.email') : PHPMAILER_FROM_EMAIL;
-		$fromName = (PHPMAILER_FROM_NAME === '') ? Settings::value('site.main.title') : PHPMAILER_FROM_NAME;
-		$replyTo = !empty($from) ? $from : PHPMAILER_REPLYTO;
-
-		if (PHPMAILER_BCC !== '') {
-			$mail->addBCC(PHPMAILER_BCC);
-		}
-
-		$mail->setFrom($fromEmail, $fromName);
-		$mail->addAddress($to);
-		$mail->addReplyTo($replyTo);
-		$mail->Subject = $subject;
-		$mail->Body = $body;
-		$mail->AltBody = $mail->html2text($body, true);
-
-		$sent = $mail->send();
-
-		if (!$sent) {
-			//@todo Log failed email send attempt.
-			throw new \PHPMailer\PHPMailer\Exception('Unable to send mail. Error: ' .
-				$mail->ErrorInfo);
-		}
-
-		return $sent;
+		return $result;
 	}
 
 	/**
