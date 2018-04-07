@@ -834,12 +834,12 @@ class Misc
 	 * @param $to
 	 * @param $subject
 	 * @param $body
-	 * @param $from
+	 * @param $from		Also used for the 'reply-to' field of email if set.
 	 *
 	 * @return bool
 	 * @throws \PHPMailer\PHPMailer\Exception
 	 */
-	public static function sendEmailViaPHPMailer($to, $subject, $body, $from): bool
+	public static function sendEmailViaPHPMailer($to, $subject, $body, $from = null) : bool
 	{
 		// Check to make sure the user has their settings correct.
 		if (PHPMAILER_USE_SMTP === true) {
@@ -863,7 +863,7 @@ class Misc
 			}
 		}
 
-		//Finally we can instantiate and send the mail.
+		// Finally we can instantiate and send the mail.
 		$mail = new PHPMailer();
 
 		/* If the mailer couldn't instantiate there's a good chance the user has an incomplete
@@ -871,7 +871,7 @@ class Misc
 		 *
 		 * @todo Log this failure.
 		 */
-		if (! $mail instanceof PHPMailer\PHPMailer\PHPMailer) {
+		if (! ($mail instanceof \PHPMailer\PHPMailer\PHPMailer)) {
 			$result = self::sendEmailViaPHP($to, $subject, $body, $from);
 		} else {
 			$mail->isHTML(true);
@@ -895,7 +895,7 @@ class Misc
 				PHPMAILER_FROM_EMAIL;
 			$fromName = (PHPMAILER_FROM_NAME === '') ? Settings::value('site.main.title') :
 				PHPMAILER_FROM_NAME;
-			$replyTo = !empty($from) ? $from : PHPMAILER_REPLYTO;
+			$replyTo = ! empty($from) ? $from : PHPMAILER_REPLYTO;
 
 			if (PHPMAILER_BCC !== '') {
 				$mail->addBCC(PHPMAILER_BCC);
