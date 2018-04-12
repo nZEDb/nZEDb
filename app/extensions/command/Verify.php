@@ -37,9 +37,7 @@ use lithium\core\ClassNotFoundException;
  *                  See this page for a quick guide on setting up your permissions in linux:
  *                      https://github.com/nZEDb/nZEDb/wiki/Setting-permissions-on-linux
  * * table <list>   Run checks against specific table(sets).
- *                  <list> is a series of options in the form [ --settings | --cpb[=fix] ]
- *                  The option alone (i.e. --cpb) means to check the table(set) but perform no
- *                  other action. Optional actions follow an equals sign.
+ *                  <list> is a series of table names
  *                  - cpb: Collection, Parts, Binary sets of tables.
  *                  - Settings: Check that settings in the 10~settings.tsv file exist in your Db.
  */
