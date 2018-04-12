@@ -36,7 +36,6 @@ use lithium\core\ClassNotFoundException;
  *                      sudo -u www-data ./zed verify permissions
  *                  See this page for a quick guide on setting up your permissions in linux:
  *                      https://github.com/nZEDb/nZEDb/wiki/Setting-permissions-on-linux
- * * settings_table Checks that all settings in the 10~settings.tsv exist in your Db.
  * * table <list>   Run checks against specific table(sets).
  *                  <list> is a series of options in the form [ --settings | --cpb[=fix] ]
  *                  The option alone (i.e. --cpb) means to check the table(set) but perform no
@@ -64,7 +63,9 @@ class Verify extends \app\extensions\console\Command
 	public function run()
 	{
 		if ($this->request->args() === null) {
-			var_dump($this->request);
+			if (nZEDb_DEBUG || nZEDb_LOGGING) {
+				var_dump($this->request);
+			}
 			return $this->_help();
 		}
 
