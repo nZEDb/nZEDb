@@ -20,7 +20,7 @@ class Groups
 	 *
 	 * @var array
 	 */
-	protected $cbpm;
+	protected static $cbpm = ['binaries', 'collections', 'missed_parts', 'parts'];
 
 	/**
 	 * @var array
@@ -42,7 +42,6 @@ class Groups
 
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->colorCLI = ($options['ColorCLI'] instanceof ColorCLI ? $options['ColorCLI'] : new ColorCLI());
-		$this->cbpm = ['collections', 'binaries', 'parts', 'missed_parts'];
 	}
 
 	/**
@@ -564,7 +563,7 @@ class Groups
 	 *
 	 * @return string
 	 */
-	public function updateGroupStatus($id, $column, $status = 0)
+	public function updateStatus($id, $column, $status = 0)
 	{
 		$this->pdo->queryExec("
 			UPDATE groups
@@ -638,7 +637,7 @@ class Groups
 	 */
 	public function disableIfNotExist($id)
 	{
-		$this->updateGroupStatus($id, 'active', 0);
+		$this->updateStatus($id, 'active', 0);
 		$this->colorCLI->doEcho(
 			$this->colorCLI->error(
 				'Group does not exist on server, disabling'
