@@ -10,6 +10,10 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-04-16 niel
+	Mrg: dev-console-command-verify branch. This adds the 'tpg' option (to './zed verify tables'
+		sub-command), which checks for missing tables of active groups. It does not delete tables of
+		inactive groups.
 2018-04-05 niel
 	Fix: Missing PHPMailer object creation.
 2018-04-02 niel
