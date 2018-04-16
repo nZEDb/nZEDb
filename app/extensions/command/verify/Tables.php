@@ -22,8 +22,9 @@ namespace app\extensions\command\verify;
 
 use app\models\Group;
 use app\models\Settings;
+use app\models\Tables as Schema;
 use lithium\data\Connections;
-
+use nzedb\Groups;
 
 class Tables extends \app\extensions\console\Command
 {
@@ -67,9 +68,9 @@ class Tables extends \app\extensions\console\Command
 	 * Check the table set of collections, binaries, parts, and missed parts for enabled groups
 	 * without corresponding table(s).
 	 *
-	 * @return void
+	 * @return array All group IDs that had problems, empty if no problems were discovered.
 	 */
-	protected function tableSetCPB()
+	protected function tableSetCPB() : array
 	{
 		$active = Group::find('all',
 			[
@@ -87,9 +88,38 @@ class Tables extends \app\extensions\console\Command
 		if (\count($active->data()) < 1) {
 			$this->out('No active groups found to verify!');
 		} else {
-			// TODO grab list of binaries_*, collections_*, and parts_* tables
-			;
-			// TODO compare list of group IDs against existing tables. Create any missing tables.
+			$groups = Group::find('all',
+				[
+					'fields'     => 'id',
+					'conditions' => ['active' => true],
+				])->data();
+			/* @var $groups string[][] */
+			foreach ($groups as $group) {
+				$ids[] = $group['id'];
+			}
+
+			$binaries = Schema::tpg('binaries');
+			$collections = Schema::tpg('collections');
+			$parts = Schema::tpg('parts');
+
+			$errors = [];
+			$groups = new Groups();
+			/* @var $ids string[][] */
+			foreach ($ids as $groupID) {
+				if (! \in_array('binaries_' . $groupID, $binaries, false) ||
+					! \in_array('collections_' . $groupID, $collections, false) ||
+					! \in_array('parts_' . $groupID, $parts, false)
+				) {
+					echo "Creating missing tables for group id: $groupID" . PHP_EOL;
+					$errors[] = $groupID;
+					$groups->createNewTPGTables($groupID);
+
+				} else {
+					echo "Group id '$groupID' has all its tables." . PHP_EOL;
+				}
+			}
+
+			return $errors;
 		}
 	}
 
