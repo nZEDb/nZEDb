@@ -36,12 +36,8 @@ use lithium\core\ClassNotFoundException;
  *                      sudo -u www-data ./zed verify permissions
  *                  See this page for a quick guide on setting up your permissions in linux:
  *                      https://github.com/nZEDb/nZEDb/wiki/Setting-permissions-on-linux
- * * settings_table Checks that all settings in the 10~settings.tsv exist in your Db.
  * * table <list>   Run checks against specific table(sets).
- *                  <list> is a series of options in the form [ --settings | --cpb[=fix] ]
- *                  The option alone (i.e. --cpb) means to check the table(set) but perform no
- *                  other action. Optional actions follow an equals sign.
- *                  - cpb: Collection, Parts, Binary sets of tables.
+ *                  - tpg: Collections, Parts, Binaries set of tables.
  *                  - Settings: Check that settings in the 10~settings.tsv file exist in your Db.
  */
 class Verify extends \app\extensions\console\Command
