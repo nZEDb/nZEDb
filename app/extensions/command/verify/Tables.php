@@ -65,7 +65,7 @@ class Tables extends \app\extensions\console\Command
 	}
 
 	/**
-	 * Check the table set of collections, binaries, parts, and missed parts for enabled groups
+	 * Check the set of tables: collections, binaries, parts, and missed parts for enabled groups
 	 * without corresponding table(s).
 	 *
 	 * @return array All group IDs that had problems, empty if no problems were discovered.

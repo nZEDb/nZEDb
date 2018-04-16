@@ -37,8 +37,7 @@ use lithium\core\ClassNotFoundException;
  *                  See this page for a quick guide on setting up your permissions in linux:
  *                      https://github.com/nZEDb/nZEDb/wiki/Setting-permissions-on-linux
  * * table <list>   Run checks against specific table(sets).
- *                  <list> is a series of table names
- *                  - cpb: Collection, Parts, Binary sets of tables.
+ *                  - tpg: Collections, Parts, Binaries set of tables.
  *                  - Settings: Check that settings in the 10~settings.tsv file exist in your Db.
  */
 class Verify extends \app\extensions\console\Command
@@ -61,9 +60,7 @@ class Verify extends \app\extensions\console\Command
 	public function run()
 	{
 		if ($this->request->args() === null) {
-			if (nZEDb_DEBUG || nZEDb_LOGGING) {
-				var_dump($this->request);
-			}
+			var_dump($this->request);
 			return $this->_help();
 		}
 
