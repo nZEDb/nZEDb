@@ -141,6 +141,35 @@ class Group extends \lithium\data\Model
 
 		return $group === null ? null : $group->id;
 	}
+
+	/**
+	 * @param        $id     id of group to update.
+	 * @param string $column 'active' or 'backfill'
+	 * @param int    $status
+	 *
+	 * @return string
+	 *
+	 * @throws \InvalidArgumentException if column is not one of the two permitted.
+	 */
+	public static function updateStatus($id, string $column, int $status = 0) : string
+	{
+		if (! \in_array($column, ['active', 'backfill'])) {
+			throw new \InvalidArgumentException("Only 'active' and 'backfill' status can be updated.");
+		}
+
+		$group = static::find('first',
+			[
+				'conditions' => ['id' => $id],
+				'fields'	=> ['id', $column]
+			]
+		);
+
+		$group->$column = $status;
+		$group->save();
+
+		$text = $status == 0 ? 'deactivated' : 'activated';
+		return "Group $id: $column has been $text";
+	}
 }
 
 ?>
