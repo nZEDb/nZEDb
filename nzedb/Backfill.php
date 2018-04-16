@@ -276,7 +276,7 @@ class Backfill
 			}
 
 			if ($this->_disableBackfillGroup) {
-				$this->_groups->updateGroupStatus($groupArr['id'], 'backfill', 0);
+				$this->_groups->updateStatus($groupArr['id'], 'backfill', 0);
 			}
 
 			if ($this->_echoCLI) {
