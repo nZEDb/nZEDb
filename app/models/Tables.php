@@ -24,46 +24,54 @@ use lithium\data\Connections;
 
 class Tables extends \app\extensions\data\Model
 {
+	public $validates = [];
+
 	protected $_meta = [
 		'connection' => 'information_schema',
 		'key'        => null,
 		'source'     => 'TABLES',
 	];
 
-	public $validates = [];
+	private static $tpgTables = ['binaries', 'collections', 'missed_parts', 'parts'];
 
-	public static function cpb(string $base): array
+
+	public static function tpg(string $prefix) : array
 	{
-		if (!in_array($base, ['binaries', 'collections', 'missed_parts', 'parts'])) {
+		if (! \in_array($prefix, self::tpgTables, false)) {
 			throw new \InvalidArgumentException("Argument must be one of: 'binaries', 'collections', 'missed_parts', or 'parts'");
 		};
 
-		$tables = self::find('tpg', ['base' => $base]);
+		$tables = self::find('tpg', ['prefix' => $prefix])->data();
 		$list = [];
+		/* @var $tables string[][] */
 		foreach ($tables as $table) {
-			$list[] = $table->data()['table_name'];
+			$list[] = $table['TABLE_NAME'];
 		}
-		natsort($list);
+		usort($list, 'strnatcmp');
 
 		return $list;
 	}
+
 
 	public static function init()
 	{
 		static::finder('tpg',
 			function ($params, $next) {
+				if (! isset($params['options']['prefix'])) {
+					throw new \InvalidArgumentException('The option "prefix" is required for the TPG finder');
+				}
 				$params = [
 					'type'    => 'all',
 					'options' => [
 						'conditions' => [
-							'table_name'   => [
-								'LIKE' => "{$params['options']['base']}_%"
+							'TABLE_NAME'   => [
+								'LIKE' => "{$params['options']['prefix']}_%"
 							],
-							'table_schema' => Connections::get('default',
+							'TABLE_SCHEMA' => Connections::get('default',
 								['config' => true])['database'],
 						],
 						'fields'     => [
-							'table_name'
+							'TABLE_NAME'
 						],
 					],
 				];
