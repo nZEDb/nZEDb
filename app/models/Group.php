@@ -24,16 +24,96 @@ class Group extends \lithium\data\Model
 {
 	public $validates = [
 		'name' => [
-			[
-				'required' => true
-			],
-			[
-				'notEmpty',
-				'message' => 'The group\'s name is required to create a new entry.'
-			]
+			'require' =>
+				[ 'required' => true ],
+				[
+					'notEmpty',
+					'message' => 'The group\'s name is required to create a new entry.'
+				],
 		],
+		'backfill_target' => [
+			'number' => [ 'numeric' ],
+		],
+		'first_record' => [
+			'number' => [ 'numeric' ],
+		],
+		'last_record' => [
+			'number' => [ 'numeric' ],
+		],
+		'minfilestoformrelease' => [
+			'number' => [ 'numeric' ],
+		],
+		'minsizetoformrelease' => [
+			'number' => [' numeric' ],
+		],
+		'active' => [
+			'bool' => [ 'boolean' ]
+		],
+		'backfill' => [
+			'bool' => ['boolean' ]
+		],
+		'description' => [
+			'require' =>
+				['required' => true],
+				[
+					'notEmpty',
+					'message' => "The group's name is required to create a new entry."
+				],
+		],
+		'id' => [
+			'index' => ['numeric']
+		]
 	];
 
+	/**
+	 * Create a new Group entry.
+	 *
+	 * @param array $data	Column names/value pairs. Valid columns are:
+	 * 						id
+	 * 						name
+	 * 						backfill_target
+	 * 						first_record
+	 * 						first_record_postdate
+	 * 						last_record
+	 * 						last_record_postdate
+	 * 						last_updated
+	 * 						minfilestoformrelease
+	 * 						minsizetoformrelease
+	 * 						active
+	 * 						backfill
+	 * 						description
+	 *                        Warning: setting 'id' is allowed, but not recommended unless you can
+	 *                      be certain that the id is available.
+	 * @param array $options
+	 *
+	 * @return object
+	 */
+	public static function create(array $data = [], array $options = [])
+	{
+		$defaults = [
+			'active'          => false,
+			'backfill'        => false,
+			'backfill_target' => 1,
+			'description'     => 'Auto-created by Group::' . __METHOD__,
+		];
+		$data += $defaults;
+
+		if (!isset($data['name'])) {
+			throw new \InvalidArgumentException("The group's name is required to create a new entry.");
+		}
+
+		return parent::create($data, $options);
+	}
+
+	/**
+	 * Finds a groups' entry using its name. Optionally creates the group entry if it does not
+	 * exist.
+	 *
+	 * @param       $name
+	 * @param array $options
+	 *
+	 * @return int|null
+	 */
 	public static function findIdFromName($name, array $options = [])
 	{
 		$defaults = [
@@ -50,35 +130,16 @@ class Group extends \lithium\data\Model
 		);
 
 		if ($group === null && $options['create'] === true) {
-			$group = static::createMissing(
+			$group = static::create(
 				[
-					'description'	=> $options['description'],
-					'name'			=> $name,
+					'name' => $name,
+					'description' => $options['description']
 				]
 			);
+			$group->save();
 		}
 
-		return $group;
-	}
-
-	protected static function createMissing(array $data)
-	{
-		$defaults = [
-			'active'   => false,
-			'backfill' => false,
-			'description' => 'Auto-created by Group::' . __METHOD__,
-		];
-		$data += $defaults;
-
-		if (!isset($data['name'])) {
-			throw new \InvalidArgumentException("");
-		}
-
-		$group = static::create($data);
-
-		$group->save();
-
-		return $group;
+		return $group === null ? null : $group->id;
 	}
 }
 
