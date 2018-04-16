@@ -491,7 +491,7 @@ class IRCScraper extends IRCClient
 			if ($group === null) {
 				$this->_groupList[$groupName] = false;
 			} else {
-				$this->_groupList[$groupName] = $group->id;
+				$this->_groupList[$groupName] = $group;
 			}
 		}
 
