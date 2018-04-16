@@ -87,6 +87,7 @@ try {
 	$itr = new \RecursiveIteratorIterator($dirItr, \RecursiveIteratorIterator::LEAVES_ONLY);
 	foreach ($itr as $filePath) {
 		if (basename($filePath) != '.gitignore' && basename($filePath) != 'no-cover.jpg' && basename($filePath) != 'no-backdrop.jpg') {
+			/** @scrutinizer ignore-unhandled */
 			@unlink($filePath);
 		}
 	}

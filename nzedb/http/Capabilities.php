@@ -34,7 +34,7 @@ use nzedb\db\DB;
 abstract class Capabilities
 {
 	/**
-	 * @var Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 

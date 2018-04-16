@@ -78,7 +78,7 @@ class Version extends \app\extensions\console\Command
 	/**
 	 * Fetch git tag for latest version.
 	 *
-	 * @param null $path Optional path to the versions XML file.
+	 * @param string|null $path Optional path to the versions XML file.
 	 */
 	protected function git()
 	{
@@ -92,8 +92,6 @@ class Version extends \app\extensions\console\Command
 
 	/**
 	 * Fetch SQL latest patch version.
-	 *
-	 * @param null $path Optional path to the versions XML file.
 	 */
 	protected function sql()
 	{

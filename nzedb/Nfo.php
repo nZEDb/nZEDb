@@ -369,7 +369,7 @@ class Nfo
 				if ($fetchedBinary !== false) {
 					// Insert nfo into database.
 					$cp = 'COMPRESS(%s)';
-					$nc = $this->pdo->escapeString($fetchedBinary);
+					$nc = $this->pdo->escapeString(/** @scrutinizer ignore-type */ $fetchedBinary);
 
 					$ckreleaseid = $this->pdo->queryOneRow(sprintf('SELECT releases_id FROM release_nfos WHERE releases_id = %d', $arr['id']));
 					if (!isset($ckreleaseid['releases_id'])) {
@@ -377,7 +377,10 @@ class Nfo
 					}
 					$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = %d WHERE id = %d', self::NFO_FOUND, $arr['id']));
 					$ret++;
-					$movie->doMovieUpdate($fetchedBinary, 'nfo', $arr['id'], $processImdb);
+					$movie->doMovieUpdate(/** @scrutinizer ignore-type */ $fetchedBinary,
+						'nfo',
+						$arr['id'], $processImdb
+					);
 
 					// If set scan for tv info.
 					if ($processTv == 1) {

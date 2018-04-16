@@ -161,11 +161,11 @@ class Update extends \app\extensions\console\Command
 	public function run($command = null)
 	{
 		if (!$command || ($this->request->args() === null)) {
-			return $this->_help($command);
+			return $this->_help();
 		}
 
 		if (!$command) {
-			return $this->_help($command);
+			return $this->_help();
 		}
 
 		if ($this->_execute($command)) {

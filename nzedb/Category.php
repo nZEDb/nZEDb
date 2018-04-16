@@ -86,7 +86,7 @@ class Category
 	const STATUS_DISABLED = 2;
 
 	/**
-	 * @var Settings
+	 * @var DB
 	 */
 	public $pdo;
 

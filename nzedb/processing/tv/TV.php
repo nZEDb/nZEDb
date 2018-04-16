@@ -64,7 +64,7 @@ abstract class TV extends Videos
 		$this->catWhere = 'categories_id BETWEEN ' . Category::TV_ROOT . ' AND ' . Category::TV_OTHER . ' AND categories_id  NOT IN (' . Category::TV_ANIME . ')';
 
 		$value = Settings::value('..maxrageprocessed');
-		$this->tvqty = ($value != '') ? $value : 75;
+		$this->tvqty = ($value != '') ? (int)$value : 75;
 		$this->imgSavePath = nZEDb_COVERS . 'tvshows' . DS;
 		$this->siteColumns = ['tvdb', 'trakt', 'tvrage', 'tvmaze', 'imdb', 'tmdb'];
 	}

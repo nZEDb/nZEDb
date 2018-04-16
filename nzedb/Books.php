@@ -534,7 +534,7 @@ class Books
 
 	/**
 	 * @param string $bookInfo
-	 * @param null   $amazdata
+	 * @param \SimpleXMLElement|null   $amazdata
 	 *
 	 * @return false|int|string
 	 */
