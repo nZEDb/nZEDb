@@ -670,7 +670,7 @@ class ProcessReleases
 						if (preg_match_all('#(\S+):\S+#', $collection['xref'], $matches)) {
 							foreach ($matches[1] as $grp) {
 								//check if the group name is in a valid format
-								$grpTmp = $this->groups->isValidGroup($grp);
+								$grpTmp = Group::isValidGroup($grp);
 								if ($grpTmp !== false) {
 									//check if the group already exists in database
 									$xrefGrpID = $this->groups->getIDByName($grpTmp);
