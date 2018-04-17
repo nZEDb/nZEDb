@@ -132,7 +132,7 @@ class Tables extends \app\extensions\data\Model
 
 	public static function tpg(string $prefix): array
 	{
-		if (! \in_array($prefix, self::tpgTables, false)) {
+		if (! \in_array($prefix, static::$tpgTables, false)) {
 			throw new \InvalidArgumentException("Argument must be one of: 'binaries', 'collections', 'missed_parts', or 'parts'");
 		};
 
