@@ -303,7 +303,7 @@ class Binaries
 	 */
 	public function updateAllGroups($maxHeaders = 100000)
 	{
-		$groups = $this->_groups->getActive();
+		$groups = Group::getActive()->data();
 
 		$groupCount = count($groups);
 		if ($groupCount > 0) {
