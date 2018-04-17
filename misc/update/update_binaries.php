@@ -26,7 +26,7 @@ if (isset($argv[1]) && !is_numeric($argv[1])) {
 	$groupName = $argv[1];
 	echo $pdo->log->header("Updating group: $groupName");
 
-	$group = Group::getByName($groupName);
+	$group = Group::getAllByName($groupName);
 	if (is_array($group)) {
 		$binaries->updateGroup($group,
 			(isset($argv[2]) && is_numeric($argv[2]) && $argv[2] > 0 ? $argv[2] : $maxHeaders));

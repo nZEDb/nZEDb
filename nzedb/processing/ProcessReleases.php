@@ -174,8 +174,9 @@ class ProcessReleases
 		$groupID = '';
 
 		if (!empty($groupName) && $groupName !== 'mgr') {
-			$groupInfo = $this->groups->getByName($groupName);
-			$groupID = $groupInfo['id'];
+			//$groupInfo = $this->groups->getAllByName($groupName);
+			//$groupID = $groupInfo['id'];
+			$groupID = $this->groups->getIDByName($groupName);
 		}
 
 		$processReleases = microtime(true);
@@ -415,7 +416,7 @@ class ProcessReleases
 
 			$groupMinSizeSetting = $groupMinFilesSetting = 0;
 
-			$groupMinimums = Group::getByID($groupID['id']);
+			$groupMinimums = Group::getAllByID($groupID['id']);
 			if ($groupMinimums !== false) {
 				if (!empty($groupMinimums['minsizetoformrelease']) && $groupMinimums['minsizetoformrelease'] > 0) {
 					$groupMinSizeSetting = (int)$groupMinimums['minsizetoformrelease'];

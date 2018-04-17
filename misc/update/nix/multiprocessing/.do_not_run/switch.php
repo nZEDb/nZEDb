@@ -68,7 +68,7 @@ switch ($options[1]) {
 	case 'get_range':
 		$nntp = nntp($pdo);
 		$groups = new Groups(['Settings' => $pdo]);
-		$groupMySQL = Group::getByName($options[3]);
+		$groupMySQL = Group::getAllByName($options[3]);
 		if ($nntp->isError($nntp->selectGroup($groupMySQL['name']))) {
 			if ($nntp->isError($nntp->dataError($nntp, $groupMySQL['name']))) {
 				return;
@@ -136,7 +136,7 @@ switch ($options[1]) {
 	 */
 	case 'part_repair':
 		$groups = new Groups(['Settings' => $pdo]);
-		$groupMySQL = Group::getByName($options[2]);
+		$groupMySQL = Group::getAllByName($options[2]);
 		$nntp = nntp($pdo);
 		// Select group, here, only once
 		$data = $nntp->selectGroup($groupMySQL['name']);
@@ -192,7 +192,7 @@ switch ($options[1]) {
 	case 'update_group_headers':
 		$nntp = nntp($pdo);
 		$groups = new Groups(['Settings' => $pdo]);
-		$groupMySQL = Group::getByName($options[2]);
+		$groupMySQL = Group::getAllByName($options[2]);
 		(new Binaries(['NNTP' => $nntp, 'Groups' => $groups, 'Settings' => $pdo]))->updateGroup($groupMySQL);
 		break;
 
