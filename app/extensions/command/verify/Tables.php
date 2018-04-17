@@ -103,7 +103,7 @@ class Tables extends \app\extensions\console\Command
 			$parts = Schema::tpg('parts');
 
 			$errors = [];
-			$groups = new Groups();
+			//$groups = new Groups();
 			/* @var $ids string[][] */
 			foreach ($ids as $groupID) {
 				if (! \in_array('binaries_' . $groupID, $binaries, false) ||
