@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use app\models\Groups as Group;
 use app\models\Settings;
 use nzedb\db\DB;
 
@@ -136,7 +137,7 @@ class Backfill
 				$res = [$grp];
 			}
 		} else {
-			$res = $this->_groups->getActiveBackfill($type);
+			$res = Group::getBackfilling($type);
 		}
 
 		$groupCount = count($res);
