@@ -150,6 +150,23 @@ class Groups extends \lithium\data\Model
 	}
 
 	/**
+	 * Checks group name is standard and replaces the shorthand prefix if is exists.
+	 *
+	 * @param string $name The full name of the usenet group being evaluated
+	 *
+	 * @return string|bool The name of the group replacing shorthand prefix or false if groupname was malformed
+	 */
+	public static function isValidName(string $name)
+	{
+		if (preg_match('/^([\w-]+\.)+[\w-]+$/i', $name)) {
+
+			return preg_replace('/^a\.b\./i', 'alt.binaries.', $name, 1);
+		}
+
+		return false;
+	}
+
+	/**
 	 * @param        $id     id of group to update.
 	 * @param string $column 'active' or 'backfill'
 	 * @param int    $status
