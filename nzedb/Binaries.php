@@ -2,6 +2,7 @@
 namespace nzedb;
 
 use app\models\Settings;
+use app\models\Tables;
 use nzedb\db\DB;
 use nzedb\processing\ProcessReleasesMultiGroup;
 
@@ -622,7 +623,7 @@ class Binaries
 		$this->notYEnc = $this->headersBlackListed = 0;
 
 		// Check if MySQL tables exist, create if they do not, get their names at the same time.
-		$this->tableNames = $this->_groups->getCBPTableNames($this->groupMySQL['id']);
+		$this->tableNames = Tables::getTPGNamesFromId($this->groupMySQL['id']);
 
 		$mgrPosters = $this->getMultiGroupPosters();
 
@@ -795,7 +796,7 @@ class Binaries
 
 		// Standard headers go second so we can switch tableNames back and do part repair to standard group tables
 		if (isset($stdHeaders) && count($stdHeaders) > 0) {
-			$this->tableNames = $this->_groups->getCBPTableNames($this->groupMySQL['id']);
+			$this->tableNames = Tables::getTPGNamesFromId($this->groupMySQL['id']);
 			$this->storeHeaders($stdHeaders, false);
 		}
 		unset($stdHeaders);
@@ -1163,7 +1164,7 @@ class Binaries
 		$tableNames = $tables;
 
 		if ($tableNames === null) {
-			$tableNames = $this->_groups->getCBPTableNames($groupArr['id']);
+			$tableNames = Tables::getTPGNamesFromId($groupArr['id']);
 		}
 
 		// Get all parts in partrepair table.
@@ -1301,7 +1302,7 @@ class Binaries
 		$groupID = $this->_groups->getIDByName($groupData['group']);
 		$group = [];
 		if ($groupID !== '') {
-			$group = $this->_groups->getCBPTableNames($groupID);
+			$group = Tables::getTPGNamesFromId($groupID);
 		}
 
 		$currentPost = $post;
