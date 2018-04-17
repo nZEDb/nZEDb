@@ -307,7 +307,7 @@ class NZBImport
 							$groupName = $group;
 						}
 					} else {
-						$group = $this->groups->isValidGroup($group);
+						$group = Group::isValidGroup($group);
 						if ($group !== false) {
 							/*$groupID = $this->groups->add([
 								'name' => $group,
