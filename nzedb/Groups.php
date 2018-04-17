@@ -67,97 +67,6 @@ class Groups
 	}
 
 	/**
-	 * Get all properties of a single group by its ID
-	 *
-	 * @param $id
-	 *
-	 * @return array|bool
-	 */
-	public function getByID($id)
-	{
-		return $this->pdo->queryOneRow("
-			SELECT g.*
-			FROM groups g
-			WHERE g.id = {$id}"
-		);
-	}
-
-	/**
-	 * Get all properties of all groups ordered by name ascending
-	 *
-	 * @return array
-	 */
-	public function getActive()
-	{
-		return $this->pdo->query(
-			"SELECT g.* FROM groups g WHERE g.active = 1 ORDER BY g.name ASC",
-			true,
-			nZEDb_CACHE_EXPIRY_SHORT
-		);
-	}
-
-	/**
-	 * Get active backfill groups ordered by name ascending
-	 *
-	 * @param string $order The type of operation designating the order
-	 *
-	 * @return array
-	 */
-	public function getActiveBackfill($order)
-	{
-		switch ($order) {
-			case '':
-			case 'normal':
-				$orderBy = "g.name ASC";
-				break;
-			case 'date':
-				$orderBy = "g.first_record_postdate DESC";
-				break;
-			default:
-				return array();
-		}
-
-		return $this->pdo->query(
-			"SELECT g.* FROM groups g WHERE g.backfill = 1 AND g.last_record != 0 ORDER BY {$orderBy}",
-			true,
-			nZEDb_CACHE_EXPIRY_SHORT
-		);
-	}
-
-	/**
-	 * Get all active group IDs
-	 *
-	 * @return array
-	 */
-	public function getActiveIDs()
-	{
-		return $this->pdo->query("
-			SELECT g.id
-			FROM groups g
-			WHERE g.active = 1
-			ORDER BY g.name ASC",
-			true,
-			nZEDb_CACHE_EXPIRY_SHORT
-		);
-	}
-
-	/**
-	 * Get all group columns by Name
-	 *
-	 * @param $grp
-	 *
-	 * @return array|bool
-	 */
-	public function getByName($grp)
-	{
-		return $this->pdo->queryOneRow("
-			SELECT g.*
-			FROM groups g
-			WHERE g.name = {$this->pdo->escapeString($grp)}"
-		);
-	}
-
-	/**
 	 * Get a group name using its ID.
 	 *
 	 * @param int|string $id The group ID.
@@ -191,36 +100,6 @@ class Groups
 		);
 
 		return ($res === false ? '' : $res["id"]);
-	}
-
-	/**
-	 * Gets a count of all groups in the table limited by parameters
-	 *
-	 * @param string $groupname Constrain query to specific group name
-	 * @param int    $active    Constrain query to active status
-	 *
-	 * @return mixed
-	 */
-	public function getCount($groupname = "", $active = -1)
-	{
-		$res = $this->pdo->query(
-			sprintf("
-				SELECT COUNT(g.id) AS num
-				FROM groups g
-				WHERE 1=1 %s %s",
-				($groupname !== ''
-					?
-					sprintf(
-						"AND g.name %s",
-						$this->pdo->likeString($groupname, true, true)
-					)
-					: ''
-				),
-				($active > -1 ? "AND g.active = {$active}" : '')
-			), true, nZEDb_CACHE_EXPIRY_MEDIUM
-		);
-
-		return (empty($res) ? 0 : $res[0]["num"]);
 	}
 
 	/**
@@ -573,62 +452,6 @@ class Groups
 		);
 
 		return "Group {$id}: {$column} has been " . (($status == 0) ? 'deactivated' : 'activated') . '.';
-	}
-
-	/**
-	 * Get the names of the collections/binaries/parts/part repair tables.
-	 * If TPG is on, try to create new tables for the groups_id, if we fail, log the error and exit.
-	 *
-	 * @param int  $groupID    ID of the group.
-	 *
-	 * @return array The table names.
-	 */
-	public function getCBPTableNames($groupID)
-	{
-		$groupKey = $groupID;
-
-		// Check if buffered and return. Prevents re-querying MySQL when TPG is on.
-		if (isset($this->cbppTableNames[$groupKey])) {
-			return $this->cbppTableNames[$groupKey];
-		}
-
-		if (nZEDb_ECHOCLI && $this->createNewTPGTables($groupID) === false) {
-			exit('There is a problem creating new TPG tables for this group ID: ' . $groupID . PHP_EOL);
-		}
-
-		$tables           = [];
-		$tables['cname']  = 'collections_' . $groupID;
-		$tables['bname']  = 'binaries_' . $groupID;
-		$tables['pname']  = 'parts_' . $groupID;
-		$tables['prname'] = 'missed_parts_' . $groupID;
-
-		// Buffer.
-		$this->cbppTableNames[$groupKey] = $tables;
-
-		return $tables;
-	}
-
-	/**
-	 * Check if the tables exist for the groups_id, make new tables for table per group.
-	 *
-	 * @param int $groupID
-	 *
-	 * @return bool
-	 */
-	public function createNewTPGTables($groupID)
-	{
-		foreach ($this->cbpm as $tablePrefix) {
-			if ($this->pdo->queryExec(
-					"CREATE TABLE IF NOT EXISTS {$tablePrefix}_{$groupID} LIKE {$tablePrefix}",
-					true
-				) === false
-			) {
-
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	/**
