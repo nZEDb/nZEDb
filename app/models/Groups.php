@@ -89,6 +89,7 @@ class Groups extends \lithium\data\Model
 	 * @param array $options
 	 *
 	 * @return object
+	 * @throws \InvalidArgumentException if the groups' name is omitted.
 	 */
 	public static function create(array $data = [], array $options = [])
 	{
@@ -96,7 +97,9 @@ class Groups extends \lithium\data\Model
 			'active'          => false,
 			'backfill'        => false,
 			'backfill_target' => 1,
-			'description'     => 'Auto-created by Group::' . __METHOD__,
+			'description'     => 'Auto-created by Groups::' . __METHOD__,
+			'first_record'    => 0,
+			'last_record'     => 0,
 		];
 		$data += $defaults;
 
