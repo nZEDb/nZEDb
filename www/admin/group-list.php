@@ -8,11 +8,12 @@ $groups = new Groups(['Settings' => $page->settings]);
 
 $groupName = (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname']) ? $_REQUEST['groupname'] : '');
 $offset    = (isset($_REQUEST['offset']) ? $_REQUEST['offset'] : 0);
+$groupCount = Group::count(['conditions' => ['name' => ['LIKE' => "%$groupName%"]]]);
 
 $page->smarty->assign(
 	[
 		'groupname' => $groupName,
-		'pagertotalitems' => $groups->getCount($groupName, -1),
+		'pagertotalitems' => $groupCount,
 		'pageroffset' => $offset,
 		'pageritemsperpage' => ITEMS_PER_PAGE,
 		'pagerquerybase' =>
