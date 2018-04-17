@@ -415,7 +415,7 @@ class ProcessReleases
 
 			$groupMinSizeSetting = $groupMinFilesSetting = 0;
 
-			$groupMinimums = $this->groups->getByID($groupID['id']);
+			$groupMinimums = Group::getByID($groupID['id']);
 			if ($groupMinimums !== false) {
 				if (!empty($groupMinimums['minsizetoformrelease']) && $groupMinimums['minsizetoformrelease'] > 0) {
 					$groupMinSizeSetting = (int)$groupMinimums['minsizetoformrelease'];

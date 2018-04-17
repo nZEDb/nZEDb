@@ -222,6 +222,32 @@ class Groups extends \lithium\data\Model
 		);
 	}
 
+	public static function getByID($id)
+	{
+		$active = static::find('all',
+			[
+				'fields'     => [
+					'id',
+					'name',
+					'backfill_target',
+					'first_record',
+					'first_record_postdate',
+					'last_record',
+					'last_record_postdate',
+					'last_updated',
+					'minfilestoformrelease',
+					'minsizetoformrelease',
+					'active',
+					'backfill',
+					'description',
+				],
+				'conditions' => ['id' => $id],
+			]
+		);
+
+		return array_shift($active->data());
+	}
+
 	/**
 	 * Checks group name is standard and replaces the shorthand prefix if is exists.
 	 *

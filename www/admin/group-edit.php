@@ -33,7 +33,7 @@ switch ($action) {
 		if (isset($_GET["id"])) {
 			$page->title = "Newsgroup Edit";
 			$id          = $_GET["id"];
-			$group       = $groups->getByID($id);
+			$group       = Group::getByID($id);
 		} else {
 			$page->title = "Newsgroup Add";
 			$group = [
