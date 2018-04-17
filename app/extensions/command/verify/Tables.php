@@ -20,7 +20,7 @@
  */
 namespace app\extensions\command\verify;
 
-use app\models\Group;
+use app\models\Groups as Group;
 use app\models\Settings;
 use app\models\Tables as Schema;
 use lithium\data\Connections;

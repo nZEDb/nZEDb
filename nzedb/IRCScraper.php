@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use app\models\Group;
+use app\models\Groups as Group;
 use app\models\Predb as PredbModel;
 use lithium\data\Connections;
 use nzedb\db\DB;
