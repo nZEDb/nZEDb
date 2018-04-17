@@ -149,6 +149,32 @@ class Groups extends \lithium\data\Model
 		return $group === null ? null : $group->id;
 	}
 
+	public static function getActive()
+	{
+		return static::find('all',
+			[
+				'fields' => [
+					'id',
+					'name',
+					'backfill_target',
+					'first_record',
+					'first_record_postdate',
+					'last_record',
+					'last_record_postdate',
+					'last_updated',
+					'minfilestoformrelease',
+					'minsizetoformrelease',
+					'active',
+					'backfill',
+					'description',
+				],
+				'conditions' => ['active' => true],
+			]
+		);
+
+		return $active;
+	}
+
 	/**
 	 * Checks group name is standard and replaces the shorthand prefix if is exists.
 	 *

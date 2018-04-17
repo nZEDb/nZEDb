@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use app\models\Groups as Group;
 use nzedb\db\DB;
 
 class Groups
@@ -51,7 +52,7 @@ class Groups
 	 */
 	public function getGroupsForSelect()
 	{
-		$groups = $this->getActive();
+		$groups = Group::getActive()->data();
 		$temp_array = [];
 
 		$temp_array[-1] = "--Please Select--";
