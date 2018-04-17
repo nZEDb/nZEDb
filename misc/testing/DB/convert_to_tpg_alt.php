@@ -1,6 +1,7 @@
 <?php
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use app\models\Tables;
 use nzedb\ConsoleTools;
 use nzedb\Groups;
 use nzedb\db\DB;
@@ -25,7 +26,7 @@ foreach ($actgroups as $group) {
 	$pdo->queryExec("DROP TABLE IF EXISTS collections_" . $group['groups_id']);
 	$pdo->queryExec("DROP TABLE IF EXISTS binaries_" . $group['groups_id']);
 	$pdo->queryExec("DROP TABLE IF EXISTS parts_" . $group['groups_id']);
-	if ($groups->createNewTPGTables($group['groups_id']) === false) {
+	if ((Tables::createTPGTablesForId($group['groups_id']) === false)) {
 		exit($pdo->log->error("\nThere is a problem creating new parts/files tables for group ${group['name']}.\n"));
 	}
 }
