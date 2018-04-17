@@ -2,6 +2,7 @@
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use app\models\Settings;
+use app\models\Tables;
 use nzedb\ConsoleTools;
 use nzedb\Groups;
 use nzedb\db\DB;
@@ -40,7 +41,7 @@ $begintime = time();
 echo "Creating new collections, binaries, and parts tables for each active group...\n";
 
 foreach ($actgroups as $group) {
-	if ($groups->createNewTPGTables($group['id']) === false) {
+	if (Tables::createTPGTablesForId($group['id']) === false) {
 		exit($pdo->log->error("There is a problem creating new parts/files tables for group ${group['name']}."));
 	}
 	$consoletools->overWrite("Tables Created: " . $consoletools->percentString($gdone * 3, $newtables));
