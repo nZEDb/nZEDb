@@ -132,7 +132,7 @@ class Backfill
 	{
 		$res = [];
 		if ($groupName !== '') {
-			$grp = Group::getByName($groupName);
+			$grp = Group::getAllByName($groupName);
 			if ($grp) {
 				$res = [$grp];
 			}

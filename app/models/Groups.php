@@ -169,6 +169,7 @@ class Groups extends \lithium\data\Model
 					'description',
 				],
 				'conditions' => ['active' => true],
+				'order'      => 'name',
 			]
 		);
 
@@ -183,6 +184,58 @@ class Groups extends \lithium\data\Model
 				'conditions' => ['active' => true],
 			]
 		);
+	}
+
+	public static function getAllByID($id)
+	{
+		$active = static::find('first',
+			[
+				'fields'     => [
+					'id',
+					'name',
+					'backfill_target',
+					'first_record',
+					'first_record_postdate',
+					'last_record',
+					'last_record_postdate',
+					'last_updated',
+					'minfilestoformrelease',
+					'minsizetoformrelease',
+					'active',
+					'backfill',
+					'description',
+				],
+				'conditions' => ['id' => $id],
+			]
+		);
+
+		return $active->data();
+	}
+
+	public static function getAllByName($name)
+	{
+		$active = static::find('first',
+			[
+				'fields'     => [
+					'id',
+					'name',
+					'backfill_target',
+					'first_record',
+					'first_record_postdate',
+					'last_record',
+					'last_record_postdate',
+					'last_updated',
+					'minfilestoformrelease',
+					'minsizetoformrelease',
+					'active',
+					'backfill',
+					'description',
+				],
+				'conditions' => ['name' => $name],
+			]
+		);
+
+		return $active->data();
 	}
 
 	public static function getBackfilling(string $order)
@@ -220,58 +273,6 @@ class Groups extends \lithium\data\Model
 				'order'      => $order
 			]
 		);
-	}
-
-	public static function getByID($id)
-	{
-		$active = static::find('first',
-			[
-				'fields'     => [
-					'id',
-					'name',
-					'backfill_target',
-					'first_record',
-					'first_record_postdate',
-					'last_record',
-					'last_record_postdate',
-					'last_updated',
-					'minfilestoformrelease',
-					'minsizetoformrelease',
-					'active',
-					'backfill',
-					'description',
-				],
-				'conditions' => ['id' => $id],
-			]
-		);
-
-		return $active->data();
-	}
-
-	public static function getByName($name)
-	{
-		$active = static::find('first',
-			[
-				'fields'     => [
-					'id',
-					'name',
-					'backfill_target',
-					'first_record',
-					'first_record_postdate',
-					'last_record',
-					'last_record_postdate',
-					'last_updated',
-					'minfilestoformrelease',
-					'minsizetoformrelease',
-					'active',
-					'backfill',
-					'description',
-				],
-				'conditions' => ['name' => $name],
-			]
-		);
-
-		return $active->data();
 	}
 
 	/**
