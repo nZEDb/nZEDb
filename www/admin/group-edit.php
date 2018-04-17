@@ -1,6 +1,7 @@
 <?php
 require_once './config.php';
 
+use app\models\Groups as Group;
 use nzedb\Groups;
 
 $page   = new AdminPage();
@@ -12,11 +13,13 @@ $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
 switch ($action) {
 	case 'submit':
-		if ($_POST["id"] == "") {
+		if (empty($_POST['id'])) {
 			// Add a new group.
-			$_POST["name"] = $groups->isValidGroup($_POST["name"]);
-			if ($_POST["name"] !== false) {
-				$groups->add($_POST);
+			if ($_POST['name'] = Group::isValidName($_POST['name'])) {
+				// Only allow entries whose keys are valid columns.
+				$data = array_intersect_key($_POST, Group::schema()->fields());
+				$newGroup = Group::create($data);
+				$newGroup->save();
 			}
 		} else {
 			// Update an existing group.

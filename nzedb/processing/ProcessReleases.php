@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing;
 
+use app\models\Groups as Group;
 use app\models\MultigroupPosters;
 use app\models\ReleasesGroups;
 use app\models\Settings;
@@ -674,19 +675,14 @@ class ProcessReleases
 									//check if the group already exists in database
 									$xrefGrpID = $this->groups->getIDByName($grpTmp);
 									if ($xrefGrpID === '') {
-										$xrefGrpID = $this->groups->add(
+										$newGroup = Group::create(
 											[
-												'name'                  => $grpTmp,
-												'description'           => 'Added by Release processing',
-												'backfill_target'       => 1,
-												'first_record'          => 0,
-												'last_record'           => 0,
-												'active'                => 0,
-												'backfill'              => 0,
-												'minfilestoformrelease' => '',
-												'minsizetoformrelease'  => ''
+												'name'        => $grpTmp,
+												'description' => 'Added by Release processing',
 											]
 										);
+										$newGroup->save();
+										$xrefGrpID = $newGroup->id;
 									}
 
 									$relGroupsChk = ReleasesGroups::find('first',
