@@ -25,46 +25,46 @@ class Groups extends \lithium\data\Model
 	public $belongsTo = ['Releases', 'ReleasesGroups'];
 
 	public $validates = [
-		'name' => [
-			'require' =>
-				[ 'required' => true ],
-				[
-					'notEmpty',
-					'message' => 'The group\'s name is required to create a new entry.'
-				],
+		'active'   => [
+			'bool' => ['boolean']
+		],
+		'backfill' => [
+			'bool' => ['boolean']
 		],
 		'backfill_target' => [
 			'number' => [ 'numeric' ],
 		],
-		'first_record' => [
-			'number' => [ 'numeric' ],
-		],
-		'last_record' => [
-			'number' => [ 'numeric' ],
-		],
-		'minfilestoformrelease' => [
-			'number' => [ 'numeric' ],
-		],
-		'minsizetoformrelease' => [
-			'number' => [' numeric' ],
-		],
-		'active' => [
-			'bool' => [ 'boolean' ]
-		],
-		'backfill' => [
-			'bool' => ['boolean' ]
-		],
 		'description' => [
 			'require' =>
 				['required' => true],
-				[
-					'notEmpty',
-					'message' => "The group's name is required to create a new entry."
-				],
+			[
+				'notEmpty',
+				'message' => "The group's name is required to create a new entry."
+			],
 		],
-		'id' => [
-			'index' => ['numeric']
-		]
+		'first_record' => [
+			'number' => [ 'numeric' ],
+		],
+		//'id' => [
+		//	'index' => ['numeric']
+		//]
+		'last_record' => [
+			'number' => [ 'numeric' ],
+		],
+		//'minfilestoformrelease' => [
+		//	'number' => [ 'numeric' ],
+		//],
+		//'minsizetoformrelease' => [
+		//	'number' => [' numeric' ],
+		//],
+		'name' => [
+			'require' =>
+				['required' => true],
+			[
+				'notEmpty',
+				'message' => 'The group\'s name is required to create a new entry.'
+			],
+		],
 	];
 
 	/**
@@ -88,7 +88,7 @@ class Groups extends \lithium\data\Model
 	 *                      be certain that the id is available.
 	 * @param array $options
 	 *
-	 * @return object
+	 * @return \lithium\data\entity\Entity
 	 * @throws \InvalidArgumentException if the groups' name is omitted.
 	 */
 	public static function create(array $data = [], array $options = [])
@@ -100,6 +100,8 @@ class Groups extends \lithium\data\Model
 			'description'     => 'Auto-created by Groups::' . __METHOD__,
 			'first_record'    => 0,
 			'last_record'     => 0,
+			//'minfilestoformrelease' => 0,
+			//'minsizetoformrelease'  => 0,
 		];
 		$data += $defaults;
 
