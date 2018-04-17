@@ -20,6 +20,7 @@ namespace app\models;
 
 
 use lithium\data\Connections;
+use lithium\storage\Cache;
 
 
 class Tables extends \app\extensions\data\Model
@@ -27,31 +28,36 @@ class Tables extends \app\extensions\data\Model
 	public $validates = [];
 
 	protected $_meta = [
-		'connection' => 'information_schema',
+		//'connection' => 'information_schema',
+		'connection' => 'default',
 		'key'        => null,
 		'source'     => 'TABLES',
 	];
 
+	protected $pdo;
+
 	private static $tpgTables = ['binaries', 'collections', 'missed_parts', 'parts'];
 
 
-	public static function tpg(string $prefix) : array
+	public static function createTPGTablesForId(int $groupId)
 	{
-		if (! \in_array($prefix, self::tpgTables, false)) {
-			throw new \InvalidArgumentException("Argument must be one of: 'binaries', 'collections', 'missed_parts', or 'parts'");
-		};
+		$source = static::connection();
+		$pdo = $source->connection;
 
-		$tables = self::find('tpg', ['prefix' => $prefix])->data();
-		$list = [];
-		/* @var $tables string[][] */
-		foreach ($tables as $table) {
-			$list[] = $table['TABLE_NAME'];
+		$tpgTables =& static::$tpgTables;
+		$result = true;
+		/* @var $tpgTables string[][] */
+		foreach($tpgTables as $prefix) {
+			$result = $pdo->exec("CREATE TABLE IF NOT EXISTS {$prefix}_{$groupId} LIKE {$prefix}");
+			if ($result === false) {
+				//echo "Problem encountered creating '{$prefix}_{$groupId}''\n";
+				break;
+			}
+			//echo "Created {$prefix}_{$groupId}\n";
 		}
-		usort($list, 'strnatcmp');
 
-		return $list;
+		return $result !== false;
 	}
-
 
 	public static function init()
 	{
@@ -87,6 +93,58 @@ class Tables extends \app\extensions\data\Model
 				return $result;
 			}
 		);
+	}
+
+	/**
+	 * Get the names of the collections/binaries/parts/missed_part tables.
+	 * Try to create new tables for the groups_id if they are missing. If we fail, log the error and
+	 * exit.
+	 *
+	 * @param int|string $groupId
+	 *
+	 * @return array The table names.
+	 */
+	public static function getTPGNamesFromId($groupId) : array
+	{
+		// Try cache first.
+		$names = Cache::read('default', ['tpgNames' => $groupId]);
+		if ($names !== null) {
+			return $names;
+		}
+
+		if (nZEDb_ECHOCLI && static::createTPGTablesForId($groupID) === false) {
+			throw new \RuntimeException(
+				"There was a problem creating new TPG tables for this group ID: '$groupID'"
+			);
+		}
+
+		$tables = [
+			'cname' => 'collections_' . $groupID,
+			'bname' => 'binaries_' . $groupID,
+			'pname' => 'parts_' . $groupID,
+			'prname'=> 'missed_parts_' . $groupID
+		];
+
+		Cache::write('default', ['tpgNames' => $groupID], $tables);
+
+		return $tables;
+	}
+
+	public static function tpg(string $prefix): array
+	{
+		if (! \in_array($prefix, self::tpgTables, false)) {
+			throw new \InvalidArgumentException("Argument must be one of: 'binaries', 'collections', 'missed_parts', or 'parts'");
+		};
+
+		$tables = self::find('tpg', ['prefix' => $prefix])->data();
+		$list = [];
+		/* @var $tables string[][] */
+		foreach ($tables as $table) {
+			$list[] = $table['TABLE_NAME'];
+		}
+		usort($list, 'strnatcmp');
+
+		return $list;
 	}
 }
 
