@@ -400,7 +400,7 @@ class ProcessReleases
 		}
 
 		if ($groupID == '') {
-			$groupIDs = $this->groups->getActiveIDs();
+			$groupIDs = Group::getActiveIDs()->data();
 		} else {
 			$groupIDs = [['id' => $groupID]];
 		}
@@ -1166,7 +1166,7 @@ class ProcessReleases
 		}
 
 		if ($groupID == '') {
-			$groupIDs = $this->groups->getActiveIDs();
+			$groupIDs = Group::getActiveIDs()->data();
 		} else {
 			$groupIDs = [['id' => $groupID]];
 		}

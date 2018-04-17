@@ -175,6 +175,16 @@ class Groups extends \lithium\data\Model
 		return $active;
 	}
 
+	public static function getActiveIDs()
+	{
+		return static::find('all',
+			[
+				'fields'     => ['id'],
+				'conditions' => ['active' => true],
+			]
+		);
+	}
+
 	public static function getBackfilling(string $order)
 	{
 		switch (\strtolower($order)) {
