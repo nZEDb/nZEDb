@@ -4,6 +4,7 @@ namespace nzedb\processing;
 use app\models\MultigroupPosters;
 use app\models\ReleasesGroups;
 use app\models\Settings;
+use app\models\Tables;
 use nzedb\Categorize;
 use nzedb\Category;
 use nzedb\ConsoleTools;
@@ -524,7 +525,7 @@ class ProcessReleases
 	 */
 	protected function initiateTableNames($groupID)
 	{
-		$this->tables = $this->groups->getCBPTableNames($groupID);
+		$this->tables = Tables::getTPGNamesFromId($groupID);
 	}
 
 	/**

@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use app\models\Tables;
 use nzedb\db\DB;
 
 class Regexes
@@ -177,7 +178,7 @@ class Regexes
 			return [];
 		}
 
-		$tableNames = $groups->getCBPTableNames($groupID);
+		$tableNames = Tables::getTPGNamesFromId($groupID);
 
 		$rows = $this->pdo->query(
 			sprintf(

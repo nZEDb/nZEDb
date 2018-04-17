@@ -112,8 +112,8 @@ class Tables extends \app\extensions\console\Command
 				) {
 					echo "Creating missing tables for group id: $groupID" . PHP_EOL;
 					$errors[] = $groupID;
-					$groups->createNewTPGTables($groupID);
-
+					//$groups->createNewTPGTables($groupID);
+					Schema::createTPGTablesForId($groupID);
 				} else {
 					echo "Group id '$groupID' has all its tables." . PHP_EOL;
 				}
