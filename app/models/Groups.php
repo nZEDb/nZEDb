@@ -224,7 +224,7 @@ class Groups extends \lithium\data\Model
 
 	public static function getByID($id)
 	{
-		$active = static::find('all',
+		$active = static::find('first',
 			[
 				'fields'     => [
 					'id',
@@ -245,7 +245,33 @@ class Groups extends \lithium\data\Model
 			]
 		);
 
-		return array_shift($active->data());
+		return $active->data();
+	}
+
+	public static function getByName($name)
+	{
+		$active = static::find('first',
+			[
+				'fields'     => [
+					'id',
+					'name',
+					'backfill_target',
+					'first_record',
+					'first_record_postdate',
+					'last_record',
+					'last_record_postdate',
+					'last_updated',
+					'minfilestoformrelease',
+					'minsizetoformrelease',
+					'active',
+					'backfill',
+					'description',
+				],
+				'conditions' => ['name' => $name],
+			]
+		);
+
+		return $active->data();
 	}
 
 	/**
