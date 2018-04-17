@@ -35,24 +35,6 @@ class Tables extends \app\extensions\data\Model
 	private static $tpgTables = ['binaries', 'collections', 'missed_parts', 'parts'];
 
 
-	public static function tpg(string $prefix) : array
-	{
-		if (! \in_array($prefix, self::$tpgTables, false)) {
-			throw new \InvalidArgumentException("Argument must be one of: 'binaries', 'collections', 'missed_parts', or 'parts'");
-		};
-
-		$tables = self::find('tpg', ['prefix' => $prefix])->data();
-		$list = [];
-		/* @var $tables string[][] */
-		foreach ($tables as $table) {
-			$list[] = $table['TABLE_NAME'];
-		}
-		usort($list, 'strnatcmp');
-
-		return $list;
-	}
-
-
 	public static function init()
 	{
 		static::finder('tpg',
@@ -87,6 +69,23 @@ class Tables extends \app\extensions\data\Model
 				return $result;
 			}
 		);
+	}
+
+	public static function tpg(string $prefix): array
+	{
+		if (!\in_array($prefix, self::$tpgTables, false)) {
+			throw new \InvalidArgumentException("Argument must be one of: 'binaries', 'collections', 'missed_parts', or 'parts'");
+		};
+
+		$tables = self::find('tpg', ['prefix' => $prefix])->data();
+		$list = [];
+		/* @var $tables string[][] */
+		foreach ($tables as $table) {
+			$list[] = $table['TABLE_NAME'];
+		}
+		usort($list, 'strnatcmp');
+
+		return $list;
 	}
 }
 
