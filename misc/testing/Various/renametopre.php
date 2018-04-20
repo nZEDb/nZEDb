@@ -2,6 +2,7 @@
 // TODO: bunch of if/elses need converting to switches
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use app\models\Groups as Group;
 use nzedb\Categorize;
 use nzedb\Category;
 use nzedb\ColorCLI;
@@ -103,7 +104,7 @@ function preName($argv, $argc)
 	if ($total > 0) {
 		$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 		foreach ($res as $row) {
-			$groupname = $groups->getNameByID($row['groups_id']);
+			$groupname = Group::getNameByID($row['groups_id']);
 			$cleanerName = releaseCleaner($row['name'], $row['fromname'], $row['size'], $groupname, $usepre);
 			$preid = 0;
 			$predb = $predbfile = $increment = false;
