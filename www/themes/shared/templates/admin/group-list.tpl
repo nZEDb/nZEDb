@@ -79,6 +79,6 @@
 			</div>
 		</div>
 	{else}
-		<p>No groups available (eg. none have been added).</p>
+		<p>No groups available (e.g. none have been added).</p>
 	{/if}
 </div>
