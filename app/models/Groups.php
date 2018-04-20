@@ -257,6 +257,26 @@ class Groups extends \lithium\data\Model
 		return $entry !== null ? $entry->data()['id'] : '';
 	}
 
+	/**
+	 * Get a group name using its ID.
+	 *
+	 * @param int|string $id The group ID.
+	 *
+	 * @return string Empty string on failure, group name on success.
+	 */
+	public static function getNameByID($id) : string
+	{
+		$entry = static::find('first',
+			[
+				'fields'     => ['name'],
+				'conditions' => ['id' => $id],
+			]
+		);
+
+		return $entry !== null ? $entry->data()['name'] : '';
+	}
+
+
 	public static function getBackfilling(string $order)
 	{
 		switch (\strtolower($order)) {
