@@ -176,7 +176,7 @@ class ProcessReleases
 		if (!empty($groupName) && $groupName !== 'mgr') {
 			//$groupInfo = $this->groups->getAllByName($groupName);
 			//$groupID = $groupInfo['id'];
-			$groupID = $this->groups->getIDByName($groupName);
+			$groupID = Group::getIDByName($groupName);
 		}
 
 		$processReleases = microtime(true);
@@ -674,7 +674,7 @@ class ProcessReleases
 								$grpTmp = Group::isValidGroup($grp);
 								if ($grpTmp !== false) {
 									//check if the group already exists in database
-									$xrefGrpID = $this->groups->getIDByName($grpTmp);
+									$xrefGrpID = Group::getIDByName($grpTmp);
 									if ($xrefGrpID === '') {
 										$newGroup = Group::create(
 											[

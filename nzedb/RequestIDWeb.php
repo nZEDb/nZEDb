@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use app\models\Groups as Group;
 use app\models\Settings;
 use nzedb\utility\Misc;
 
@@ -181,7 +182,7 @@ class RequestIDWeb extends RequestID
 						if (isset($groupIDarray[$this->_release['groupname']])) {
 							$this->_release['groups_id'] = $groupIDArray[$this->_release['groupname']];
 						} else {
-							$this->_release['groups_id'] = $this->groups->getIDByName($this->_release['groupname']);
+							$this->_release['groups_id'] = Group::getIDByName($this->_release['groupname']);
 							$groupIDArray[$this->_release['groupname']] = $this->_release['groups_id'];
 						}
 						$this->_release['gid'] = $this->_release['groups_id'];
