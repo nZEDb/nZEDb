@@ -238,6 +238,43 @@ class Groups extends \lithium\data\Model
 		return $active->data();
 	}
 
+	public static function getBackfilling(string $order)
+	{
+		switch (\strtolower($order)) {
+			case '':
+			case 'normal':
+				$order = 'name ASC';
+				break;
+			case 'date':
+				$order = 'first_record_postdate DESC';
+				break;
+			default:
+				throw new \InvalidArgumentException("Order must be 'normal' or 'date'");
+		}
+
+		return static::find('all',
+			[
+				'fields'     => [
+					'id',
+					'name',
+					'backfill_target',
+					'first_record',
+					'first_record_postdate',
+					'last_record',
+					'last_record_postdate',
+					'last_updated',
+					'minfilestoformrelease',
+					'minsizetoformrelease',
+					'active',
+					'backfill',
+					'description',
+				],
+				'conditions' => ['active' => true],
+				'order'      => $order
+			]
+		);
+	}
+
 	/**
 	 * Get a group ID using its name.
 	 *
@@ -277,42 +314,6 @@ class Groups extends \lithium\data\Model
 	}
 
 
-	public static function getBackfilling(string $order)
-	{
-		switch (\strtolower($order)) {
-			case '':
-			case 'normal':
-				$order = 'name ASC';
-				break;
-			case 'date':
-				$order = 'first_record_postdate DESC';
-				break;
-			default:
-				throw new \InvalidArgumentException("Order must be 'normal' or 'date'");
-		}
-
-		return static::find('all',
-			[
-				'fields'     => [
-					'id',
-					'name',
-					'backfill_target',
-					'first_record',
-					'first_record_postdate',
-					'last_record',
-					'last_record_postdate',
-					'last_updated',
-					'minfilestoformrelease',
-					'minsizetoformrelease',
-					'active',
-					'backfill',
-					'description',
-				],
-				'conditions' => ['active' => true],
-				'order'      => $order
-			]
-		);
-	}
 
 	/**
 	 * Checks group name is standard and replaces the shorthand prefix if is exists.
