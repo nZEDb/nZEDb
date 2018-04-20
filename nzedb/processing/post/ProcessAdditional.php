@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing\post;
 
+use app\models\Groups as Group;
 use app\models\Settings;
 use lithium\analysis\Logger;
 use nzedb\Categorize;
@@ -2540,7 +2541,7 @@ class ProcessAdditional
 		$this->_passwordStatus = [Releases::PASSWD_NONE];
 		$this->_releaseHasPassword = false;
 
-		$this->_releaseGroupName = $this->_groups->getNameByID($this->_release['groups_id']);
+		$this->_releaseGroupName = Group::getNameByID($this->_release['groups_id']);
 
 		$this->_releaseHasNoNFO = false;
 		// Make sure we don't already have an nfo.

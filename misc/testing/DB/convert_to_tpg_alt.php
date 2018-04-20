@@ -1,6 +1,7 @@
 <?php
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use app\models\Groups as Group;
 use app\models\Tables;
 use nzedb\ConsoleTools;
 use nzedb\Groups;
@@ -39,7 +40,7 @@ $parts_count = $pdo->queryOneRow("SELECT COUNT(*) AS cnt FROM parts");
 $i = 0;
 if ($collections_rows instanceof \Traversable) {
 	foreach ($collections_rows as $row) {
-		$groupName = $groups->getNameByID($row['groups_id']);
+		$groupName = Group::getNameByID($row['groups_id']);
 		echo $pdo->log->header("Processing ${groupName}");
 		//collection
 		$pdo->queryExec("INSERT IGNORE INTO collections_" . $row['groups_id'] . " (subject, fromname, date, xref, totalfiles, groups_id, collectionhash, dateadded, filecheck, filesize, releases_id) "
