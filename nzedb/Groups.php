@@ -85,24 +85,6 @@ class Groups
 	}
 
 	/**
-	 * Get a group ID using its name.
-	 *
-	 * @param string $name The group name.
-	 *
-	 * @return string Empty string on failure, groups_id on success.
-	 */
-	public function getIDByName($name)
-	{
-		$res = $this->pdo->queryOneRow("
-			SELECT g.id
-			FROM groups g
-			WHERE g.name = {$this->pdo->escapeString($name)}"
-		);
-
-		return ($res === false ? '' : $res["id"]);
-	}
-
-	/**
 	 * Gets all groups and associated release counts
 	 *
 	 * @param bool|int $start     The offset of the query or false for no offset
