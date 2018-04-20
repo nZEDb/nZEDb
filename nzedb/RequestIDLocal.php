@@ -1,6 +1,8 @@
 <?php
 namespace nzedb;
 
+use app\models\Groups as Group;
+
 /**
  * Attempts to find a PRE name for a release using a request ID from our local pre database,
  * or internet request id database using a Standalone -- more intensive methods
@@ -233,7 +235,7 @@ class RequestIDLocal extends RequestID
 		if (isset($this->groupIDCache[$groupName])) {
 			$groupID = $this->groupIDCache[$groupName];
 		} else {
-			$groupID = $this->groups->getIDByName($groupName);
+			$groupID = Group::getIDByName($groupName);
 		}
 		$check = $this->pdo->queryOneRow(
 			sprintf("

@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use app\models\Groups as Group;
 use app\models\Settings;
 use app\models\Tables;
 use nzedb\db\DB;
@@ -1300,7 +1301,7 @@ class Binaries
 	public function postdate($post, array $groupData)
 	{
 		// Set table names
-		$groupID = $this->_groups->getIDByName($groupData['group']);
+		$groupID = Group::getIDByName($groupData['group']);
 		$group = [];
 		if ($groupID !== '') {
 			$group = Tables::getTPGNamesFromId($groupID);

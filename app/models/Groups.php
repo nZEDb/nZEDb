@@ -212,7 +212,7 @@ class Groups extends \lithium\data\Model
 		return $active->data();
 	}
 
-	public static function getAllByName($name)
+	public static function getAllByName(string $name)
 	{
 		$active = static::find('first',
 			[
@@ -236,6 +236,25 @@ class Groups extends \lithium\data\Model
 		);
 
 		return $active->data();
+	}
+
+	/**
+	 * Get a group ID using its name.
+	 *
+	 * @param string $name
+	 *
+	 * @return string Empty string on failure, groups_id on success.
+	 */
+	public static function getIDByName(string $name) : string
+	{
+		$entry = static::find('first',
+			[
+				'fields'     => ['id'],
+				'conditions' => ['name' => $name],
+			]
+		);
+
+		return $entry !== null ? $entry->data()['id'] : '';
 	}
 
 	public static function getBackfilling(string $order)
