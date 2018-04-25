@@ -313,7 +313,39 @@ class Groups extends \lithium\data\Model
 		return $entry !== null ? $entry->data()['name'] : '';
 	}
 
+	public static function getRange($pageno = 1, $number = [], $groupname = '', $active = null)
+	{
+		$conditions = empty($groupname) ? [] : ['name' => ['LIKE' => '%$groupname%']];
+		$conditions += empty($active) ? [] : ['active' => $active];
+		$limit = empty($number) ? [] : ['limit' => $number];
+		$page = empty($number) ? [] : ['page' => $pageno];
 
+		$results = static::find('all',
+			[
+				'fields' => [
+					'id',
+					'name',
+					'backfill_target',
+					'first_record',
+					'first_record_postdate',
+					'last_record',
+					'last_record_postdate',
+					'last_updated',
+					'minfilestoformrelease',
+					'minsizetoformrelease',
+					'active',
+					'backfill',
+					'description',
+				],
+				'conditions' => $conditions,
+				$limit,
+				'order' => 'name ASC',
+				$page,
+			]
+		);
+
+		return $results->data();
+	}
 
 	/**
 	 * Checks group name is standard and replaces the shorthand prefix if is exists.
