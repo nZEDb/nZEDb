@@ -10,6 +10,9 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-05-02 niel
+	Fix: Added statement termination (';') to Tmux main window update strings. Prevents the shell
+		from interpreting them as one statement.
 2018-04-23 niel
 	Chg: Remove 'releases' column from groups listing and browse group.
 2018-04-16 niel
