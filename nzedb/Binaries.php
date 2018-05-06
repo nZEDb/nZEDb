@@ -739,10 +739,14 @@ class Binaries
 			 * (?!"Usenet Index Post) ignores these types of articles, they are useless.
 			 * (.+) Fetches the subject.
 			 * \s+ Trims trailing space after the subject.
+			 * \s+(?'yenc'yEnc|) - Force the regex to use the 'yEnc' if it exists. Prevents loss
+			 * 						of headers that have (x/y) before the parts.
 			 * \((\d+)\/(\d+)\) Gets the part count.
 			 * No ending ($) as there are cases of subjects with extra data after the part count.
 			 */
-			if (preg_match('/^\s*(?!"Usenet Index Post)(.+)\s+\((\d+)\/(\d+)\)/', $header['Subject'], $header['matches'])) {
+			if (preg_match("/^\s*(?!\"Usenet Index Post)(.+)\s+(?'yenc'yEnc|)\s+\((\d+)\/(\d+)\)/",
+				$header['Subject'],
+				$header['matches'])) {
 				// Add yEnc to subjects that do not have them, but have the part number at the end of the header.
 				if (!stristr($header['Subject'], 'yEnc')) {
 					$header['matches'][1] .= ' yEnc';
