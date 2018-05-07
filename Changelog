@@ -10,6 +10,10 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-05-07 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.6.0
+
+
 2018-05-03 niel
 	Chg: Remove unnecessary '\n' from start of 'release have been disabled/terminated by Releases'
 2018-05-02 niel
