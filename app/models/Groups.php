@@ -20,7 +20,7 @@
 
 namespace app\models;
 
-class Groups extends \lithium\data\Model
+class Groups extends \app\extensions\data\Model
 {
 	public $belongsTo = ['Releases', 'ReleasesGroups'];
 
