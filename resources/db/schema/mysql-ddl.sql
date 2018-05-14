@@ -207,7 +207,7 @@ CREATE TABLE         collections (
   subject               VARCHAR(255)        NOT NULL DEFAULT '',
   fromname              VARCHAR(255)        NOT NULL DEFAULT '',
   date                  DATETIME            DEFAULT NULL,
-  xref                  VARCHAR(255)        NOT NULL DEFAULT '',
+  xref                  VARCHAR(510)        NOT NULL DEFAULT '',
   totalfiles            INT(11) UNSIGNED    NOT NULL DEFAULT '0',
   groups_id             INT(11) UNSIGNED    NOT NULL DEFAULT '0',
   collectionhash        VARCHAR(255)        NOT NULL DEFAULT '0',

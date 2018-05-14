@@ -749,7 +749,8 @@ class Binaries
 				if (!stristr($header['Subject'], 'yEnc')) {
 					$header['matches'][1] .= ' yEnc';
 				}
-			} else {
+			} else { // It failed to match, so no parts data. Log the Subject IF option is
+				// enabled AND it's not prefixed by '"Usenet Index Post'
 				if ($this->_showDroppedYEncParts === true && strpos($header['Subject'], '"Usenet Index Post') !== 0) {
 					file_put_contents(
 						nZEDb_LOGS . 'not_yenc' . $this->groupMySQL['name'] . '.dropped.log',
