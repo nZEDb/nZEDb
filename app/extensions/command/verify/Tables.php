@@ -33,6 +33,18 @@ class Tables extends \app\extensions\console\Command
 		parent::__construct($config);
 	}
 
+	public static function getCBPTables(string $prefix): array
+	{
+		$tables = [];
+		$data = static::find('tpg', ['prefix' => $prefix])->data();
+		/* @var $data string[][] */
+		foreach ($data as $table) {
+			$tables[] = $table['TABLE_NAME'];
+		}
+
+		return $tables;
+	}
+
 	public function run()
 	{
 		if (empty($this->request)) {
