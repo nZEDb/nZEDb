@@ -753,8 +753,9 @@ class Binaries
 				// enabled AND it's not prefixed by '"Usenet Index Post'
 				if ($this->_showDroppedYEncParts === true && strpos($header['Subject'], '"Usenet Index Post') !== 0) {
 					file_put_contents(
-						nZEDb_LOGS . 'not_yenc' . $this->groupMySQL['name'] . '.dropped.log',
-						$header['Subject'] . PHP_EOL, FILE_APPEND
+						nZEDb_LOGS . 'dropped.no_yenc.' . $this->groupMySQL['name'] . '.log',
+						$header['from'] . "\t" . $header['Subject'] . PHP_EOL,
+						FILE_APPEND
 					);
 				}
 				$this->notYEnc++;
@@ -883,12 +884,17 @@ class Binaries
 				}
 
 				// Attempt to find the file count. If it is not found, set it to 0.
-				if (!$whitelistMatch && !preg_match('/[[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[])\s$:]/i', $this->header['matches'][1], $fileCount)) {
+				if (!$whitelistMatch &&
+					!preg_match(
+						'/[[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[])\s$:]/i',
+						$this->header['matches'][1],
+						$fileCount)) {
 					$fileCount[1] = $fileCount[3] = 0;
 					if ($this->_showDroppedYEncParts === true) {
 						file_put_contents(
-							nZEDb_LOGS . 'no_files' . $this->groupMySQL['name'] . '.log',
-							$this->header['Subject'] . PHP_EOL, FILE_APPEND
+							nZEDb_LOGS . 'dropped.no_files' . $this->groupMySQL['name'] . '.log',
+							$this->header['From'] . "\t" . $this->header['Subject'] . PHP_EOL,
+							FILE_APPEND
 						);
 					}
 				}
