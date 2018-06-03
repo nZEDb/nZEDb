@@ -15,7 +15,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2018-05-25
-	Fix: Replacing last use of each() in nZEDb code. Note two libraries (forkdaemon and
+	Fix: Replacing last use of each() in nZEDb code. Note that two libraries (forkdaemon and
 		guzzlehttp/promises) still use it however.
 2018-05-08 niel
 	Chg: Increase size of 'xref' column in collections' tables due to some larger sizes reported.
