@@ -698,7 +698,7 @@ class Misc
 	 * @param \SimpleXMLElement $xml The SimpleXML parsed XML string data
 	 * @param array             $options
 	 *
-	 * @return array            The associate array of the XML namespaced file
+	 * @return array            The associative array of the XML namespaced file
 	 */
 	public static function xmlToArray(\SimpleXMLElement $xml, $options = array()) {
 		$defaults = array(
@@ -731,7 +731,8 @@ class Misc
 			foreach ($xml->children($namespace) as $childXml) {
 				//recurse into child nodes
 				$childArray = self::xmlToArray($childXml, $options);
-				list($childTagName, $childProperties) = each($childArray);
+				$childTagName = key($childArray);
+				$childProperties = current($childArray);
 
 				//replace characters in tag name
 				if ($options['keySearch']) $childTagName =
