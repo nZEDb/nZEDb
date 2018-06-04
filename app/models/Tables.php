@@ -103,29 +103,30 @@ class Tables extends \app\extensions\data\Model
 	 * @param int|string $groupId
 	 *
 	 * @return array The table names.
+	 * @throws \RuntimeException If a new table could not be created.
 	 */
 	public static function getTPGNamesFromId($groupId) : array
 	{
 		// Try cache first.
 		$names = Cache::read('default', ['tpgNames' => $groupId]);
-		if ($names !== null) {
+		if (!empty($names)) {
 			return $names;
 		}
 
-		if (nZEDb_ECHOCLI && static::createTPGTablesForId($groupID) === false) {
+		if (nZEDb_ECHOCLI && static::createTPGTablesForId($groupId) === false) {
 			throw new \RuntimeException(
-				"There was a problem creating new TPG tables for this group ID: '$groupID'"
+				"There was a problem creating new TPG tables for this group ID: '$groupId'"
 			);
 		}
 
 		$tables = [
-			'cname' => 'collections_' . $groupID,
-			'bname' => 'binaries_' . $groupID,
-			'pname' => 'parts_' . $groupID,
-			'prname'=> 'missed_parts_' . $groupID
+			'cname' => 'collections_' . $groupId,
+			'bname' => 'binaries_' . $groupId,
+			'pname' => 'parts_' . $groupId,
+			'prname'=> 'missed_parts_' . $groupId
 		];
 
-		Cache::write('default', ['tpgNames' => $groupID], $tables);
+		Cache::write('default', ['tpgNames' => $groupId], $tables);
 
 		return $tables;
 	}
