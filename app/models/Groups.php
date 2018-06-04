@@ -93,7 +93,7 @@ class Groups extends \app\extensions\data\Model
 	 */
 	public static function create(array $data = [], array $options = [])
 	{
-		if (!isset($data['name'])) {
+		if (!empty($data) && !isset($data['name'])) {
 			throw new \InvalidArgumentException("To create a new group entry, you *must* supply the new group's name!");
 		}
 
