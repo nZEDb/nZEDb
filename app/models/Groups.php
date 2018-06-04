@@ -89,25 +89,25 @@ class Groups extends \app\extensions\data\Model
 	 * @param array $options
 	 *
 	 * @return \lithium\data\entity\Entity
-	 * @throws \InvalidArgumentException if the groups' name is omitted.
+	 * @throws \InvalidArgumentException if the new group's name is omitted.
 	 */
 	public static function create(array $data = [], array $options = [])
 	{
+		if (!isset($data['name'])) {
+			throw new \InvalidArgumentException("To create a new group entry, you *must* supply the new group's name!");
+		}
+
 		$defaults = [
 			'active'          => false,
 			'backfill'        => false,
 			'backfill_target' => 1,
-			'description'     => 'Auto-created by Groups::' . __METHOD__,
+			'description'     => 'Auto-created by ' . __CLASS__ . '::' . __METHOD__,
 			'first_record'    => 0,
 			'last_record'     => 0,
 			//'minfilestoformrelease' => 0,
 			//'minsizetoformrelease'  => 0,
 		];
 		$data += $defaults;
-
-		if (!isset($data['name'])) {
-			throw new \InvalidArgumentException("The group's name is required to create a new entry.");
-		}
 
 		return parent::create($data, $options);
 	}
@@ -120,12 +120,14 @@ class Groups extends \app\extensions\data\Model
 	 * @param array $options
 	 *
 	 * @return int|null
+	 *
+	 * @throws \InvalidArgumentException if a new entry must be created but the 'name' is not set.
 	 */
 	public static function findIdFromName($name, array $options = [])
 	{
 		$defaults = [
 			'create'      => false,
-			'description' => 'Auto-created by Group::' . __METHOD__ . ' model',
+			'description' => 'Auto-created by ' . __CLASS__ . '::' . __METHOD__,
 		];
 		$options += $defaults;
 
@@ -137,12 +139,16 @@ class Groups extends \app\extensions\data\Model
 		);
 
 		if ($group === null && $options['create'] === true) {
-			$group = static::create(
-				[
-					'name' => $name,
-					'description' => $options['description']
-				]
-			);
+			try {
+				$group = static::create(
+					[
+						'name'        => $name,
+						'description' => $options['description']
+					]
+				);
+			} catch (\InvalidArgumentException $e) {
+				throw new \InvalidArgumentException($e->getMessage() . PHP_EOL . 'Thrown in \app\models\Groups.php');
+			}
 			$group->save();
 		}
 
