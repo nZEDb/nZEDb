@@ -138,7 +138,7 @@ class Sites
 	/**
 	 * Retrieve one or all settings from the Db as a string or an array;
 	 *
-	 * @param null $setting	Name of setting to retrieve, or null for all settings
+	 * @param string|null $setting	Name of setting to retrieve, or null for all settings
 	 *
 	 * @return string|array|bool
 	 */

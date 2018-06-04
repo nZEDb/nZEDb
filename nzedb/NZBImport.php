@@ -123,7 +123,7 @@ class NZBImport
 		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['settings' => $this->pdo]));
 
 		$dummy = Settings::value('..crossposttime');
-		$this->crossPostt = ($dummy != '') ? $dummy : 2;
+		$this->crossPostt = ($dummy != '') ? (int)$dummy : 2;
 		$this->browser = $options['Browser'];
 		$this->retVal = '';
 		$this->groups = new Groups(['Settings' => $this->pdo]);

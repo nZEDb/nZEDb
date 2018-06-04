@@ -35,7 +35,7 @@ class AniDB
 	private $aniqty;
 
 	/**
-	 * @var int The status of the release being processed
+	 * @var int|string The status of the release being processed
 	 */
 	private $status;
 
@@ -54,7 +54,7 @@ class AniDB
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 
 		$qty = Settings::value('..maxanidbprocessed');
-		$this->aniqty = !empty($qty) ? $qty : 100;
+		$this->aniqty = !empty($qty) ? (int)$qty : 100;
 
 		$this->status = 'NULL';
 	}

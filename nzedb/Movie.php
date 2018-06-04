@@ -22,7 +22,7 @@ class Movie
 	const SRC_DVD = 5;
 
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 
@@ -39,7 +39,7 @@ class Movie
 
 	/**
 	 * Current year of parsed search name.
-	 * @var string
+	 * @var string|false
 	 */
 	protected $currentYear = '';
 
@@ -338,7 +338,7 @@ class Movie
 
 		$movieIDs = $releaseIDs = false;
 
-		if (is_array($movies['result'])) {
+		if (\is_array($movies['result'])) {
 			foreach ($movies['result'] as $movie => $id) {
 				$movieIDs[] = $id['imdbid'];
 				$releaseIDs[] = $id['grp_release_id'];
@@ -376,15 +376,15 @@ class Movie
 			AND r.id IN (%s) %s
 			GROUP BY m.imdbid
 			ORDER BY %s %s",
-				(is_array($movieIDs) ? implode(',', $movieIDs) : -1),
-				(is_array($releaseIDs) ? implode(',', $releaseIDs) : -1),
+				(\is_array($movieIDs) ? implode(',', $movieIDs) : -1),
+				(\is_array($releaseIDs) ? implode(',', $releaseIDs) : -1),
 				(!empty($catsrch) ? $catsrch : ''),
 				$order[0],
 				$order[1]
 		);
 		$return = $this->pdo->query($sql, true, nZEDb_CACHE_EXPIRY_MEDIUM);
 		if (!empty($return)) {
-			$return[0]['_totalcount'] = (isset($movies['total']) ? $movies['total'] : 0);
+			$return[0]['_totalcount'] = ($movies['total'] ?? 0);
 		}
 
 		return $return;
@@ -1321,7 +1321,7 @@ class Movie
 								urlencode(
 									$this->currentTitle .
 									' ' .
-									$this->currentYear
+									/** @scrutinizer ignore-type */ $this->currentYear
 								) .
 								'&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=' .
 								urlencode('www.imdb.com/title/') .
@@ -1359,8 +1359,8 @@ class Movie
 							'("' .
 							$this->currentTitle .
 							'" and "' .
-							$this->currentYear .
-							'") site:www.imdb.com/title/'
+							/** @scrutinizer ignore-type */
+							$this->currentYear . '") site:www.imdb.com/title/'
 						) .
 						'&qs=n&form=QBLH&filt=all'
 			]
@@ -1404,7 +1404,7 @@ class Movie
 							)
 						) .
 						'+' .
-						$this->currentYear
+						/** @scrutinizer ignore-type */ $this->currentYear
 					) .
 					'&vs=' .
 					urlencode('www.imdb.com/title/')

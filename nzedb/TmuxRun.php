@@ -554,7 +554,7 @@ class TmuxRun extends Tmux
 
 			switch ($runVar['settings']['binaries_run']) {
 				case 0:
-					$binaries = 'echo "\nbinaries has been disabled/terminated by Binaries"';
+					$binaries = 'echo "Binaries has been disabled/terminated by tmux settings";';
 					break;
 				case 1:
 				case 2:
@@ -601,7 +601,7 @@ class TmuxRun extends Tmux
 
 			switch ($runVar['settings']['releases_run']) {
 				case 0:
-					$releases = 'echo "\nreleases have been disabled/terminated by Releases"';
+					$releases = 'echo "Releases have been disabled/terminated by tmux settings";';
 					break;
 				case 1:
 					$releases = sprintf(

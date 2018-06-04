@@ -8,7 +8,8 @@ use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\SetCookie;
 use GuzzleHttp\Exception\RequestException;
 use nzedb\ColorCLI;
-use nzedb\db\DB;
+use PHPMailer\PHPMailer\Exception as PHPMailerException;
+use PHPMailer\PHPMailer\PHPMailer;
 
 
 /*
@@ -28,17 +29,18 @@ class Misc
 	 * Checks all levels of the supplied path are readable and executable by current user.
 	 *
 	 * @todo Make this recursive with a switch to only check end point.
-	 * @param $path	*nix path to directory or file
+	 *
+	 * @param $dir *nix path to directory or file
 	 *
 	 * @return bool|string True is successful, otherwise the part of the path that failed testing.
 	 */
 	public static function canExecuteRead($path)
 	{
-		$paths = preg_split('#/#', $path);
+		$dirs = preg_split('#/#', $path);
 		$fullPath = DS;
-		foreach ($paths as $path) {
-			if ($path !== '') {
-				$fullPath .= $path . DS;
+		foreach ($dirs as $dir) {
+			if ($dir !== '') {
+				$fullPath .= $dir . DS;
 				if (!is_readable($fullPath) || !is_executable($fullPath)) {
 					return "The '$fullPath' directory must be readable and executable by all ." .
 					PHP_EOL;
@@ -171,7 +173,7 @@ class Misc
 	public static function getThemesList()
 	{
 		$themes = scandir(nZEDb_THEMES);
-		$themelist[] = 'None';
+		$themelist = ['None'];
 		foreach ($themes as $theme) {
 			if (strpos($theme, ".") === false &&
 				is_dir(nZEDb_THEMES . $theme) &&
@@ -191,7 +193,7 @@ class Misc
 	 *
 	 * @param array $options See details below.
 	 *
-	 * @return bool|mixed
+	 * @return mixed|false
 	 * @access public
 	 * @static
 	 */
@@ -238,7 +240,7 @@ class Misc
 			default:
 				$options['language'] = 'en';
 		}
-		$header[] = "Accept-Language: " . $options['language'];
+		$header = ["Accept-Language: " . $options['language']];
 		if (is_array($options['requestheaders'])) {
 			$header += $options['requestheaders'];
 		}
@@ -290,7 +292,7 @@ class Misc
 	 * Get raw html from site URL for scraping
 	 *
 	 * @param string $url
-	 * @param bool|string $cookie
+	 * @param false|string $cookie
 	 *
 	 * @return bool|string
 	 */
@@ -299,10 +301,12 @@ class Misc
 		$response = false;
 		$cookiejar = new CookieJar();
 		$client = new Client();
+
 		if ($cookie !== false) {
 			$cookieJar = $cookiejar->setCookie(SetCookie::fromString($cookie));
 			$client = new Client(['cookies' => $cookieJar]);
 		}
+
 		try {
 			$response = $client->get($url)->getBody()->getContents();
 		} catch (RequestException $e) {
@@ -404,7 +408,7 @@ class Misc
 
 	public static function isWin()
 	{
-		return (strtolower(substr(PHP_OS, 0, 3)) === 'win');
+		return (\strtolower(substr(PHP_OS, 0, 3)) === 'win');
 	}
 
 	public static function setCoversConstant($path)
@@ -479,9 +483,10 @@ class Misc
 			return false;
 		}*/
 
-		$string = '';
+		$string = false;
 		$gzFile = @gzopen($filePath, 'rb', 0);
-		if ($gzFile) {
+		if ($gzFile !== false) {
+			$string = '';
 			while (!gzeof($gzFile)) {
 				$temp = gzread($gzFile, 1024);
 				// Check for empty string.
@@ -494,7 +499,7 @@ class Misc
 			}
 			gzclose($gzFile);
 		}
-		return ($string === '' ? false : $string);
+		return $string;
 	}
 
 	/**
@@ -512,20 +517,16 @@ class Misc
 			$magicSwitch = empty($magicPath) ? '' : " -m $magicPath";
 			$output = self::runCmd('file' . $magicSwitch . ' -b "' . $path . '"');
 
-			if (is_array($output)) {
-				switch (count($output)) {
-					case 0:
-						$output = '';
-						break;
-					case 1:
-						$output = $output[0];
-						break;
-					default:
-						$output = implode(' ', $output);
-						break;
-				}
-			} else {
-				$output = '';
+			switch (count($output)) {
+				case 0:
+					$output = '';
+					break;
+				case 1:
+					$output = $output[0];
+					break;
+				default:
+					$output = implode(' ', $output);
+					break;
 			}
 		} else {
 			$fileInfo = empty($magicPath) ? finfo_open(FILEINFO_RAW) : finfo_open(FILEINFO_RAW, $magicPath);
@@ -556,6 +557,7 @@ class Misc
 
 		$output = [];
 		$status = 1;
+		/** @scrutinizer ignore-unhandled */
 		@exec($command, $output, $status);
 
 		if ($debug) {
@@ -585,8 +587,10 @@ class Misc
 			// The 'G' modifier is available since PHP 5.1.0
 			case 'g':
 				$val *= 1024;
+			// Multiply again for each that matches.
 			case 'm':
 				$val *= 1024;
+			// Multiply again for each that matches.
 			case 'k':
 				$val *= 1024;
 		}
@@ -694,7 +698,7 @@ class Misc
 	 * @param \SimpleXMLElement $xml The SimpleXML parsed XML string data
 	 * @param array             $options
 	 *
-	 * @return array            The associate array of the XML namespaced file
+	 * @return array            The associative array of the XML namespaced file
 	 */
 	public static function xmlToArray(\SimpleXMLElement $xml, $options = array()) {
 		$defaults = array(
@@ -727,7 +731,8 @@ class Misc
 			foreach ($xml->children($namespace) as $childXml) {
 				//recurse into child nodes
 				$childArray = self::xmlToArray($childXml, $options);
-				list($childTagName, $childProperties) = each($childArray);
+				$childTagName = key($childArray);
+				$childProperties = current($childArray);
 
 				//replace characters in tag name
 				if ($options['keySearch']) $childTagName =
@@ -779,9 +784,8 @@ class Misc
 	 *
 	 * @return boolean
 	 * @throws \Exception
-	 * @throws \phpmailerException
 	 */
-	public static function sendEmail($to, $subject, $contents, $from)
+	public static function sendEmail($to, $subject, $contents, $from) : bool
 	{
 		// Email *always* uses CRLF for line endings unless the mail agent is broken, like qmail
 		$CRLF = "\r\n";
@@ -793,89 +797,127 @@ class Misc
 		$body .= '</body>' . $CRLF;
 		$body .= '</html>' . $CRLF;
 
-		if (defined('PHPMAILER_ENABLED') && PHPMAILER_ENABLED == true) {
-			$mail = new \PHPMailer;
+		if (\defined('PHPMAILER_ENABLED') && PHPMAILER_ENABLED === true) {
+			//$mail = new PHPMailer();
+			$result = self::sendEmailViaPHPMailer($to, $subject, $body, $from);
 		} else {
-			$mail = null;
+			//$mail = null;
+			$result = self::sendEmailViaPHP($to, $subject, $body, $from);
 		}
 
-		// If the mailer couldn't instantiate there's a good chance the user has an incomplete update & we should fallback to php mail()
-		// @todo Log this failure.
-		if (!defined('PHPMAILER_ENABLED') || PHPMAILER_ENABLED !== true || !($mail instanceof \PHPMailer)) {
-			$headers = 'From: ' . $from . $CRLF;
-			$headers .= 'Reply-To: ' . $from . $CRLF;
-			$headers .= 'Return-Path: ' . $from . $CRLF;
-			$headers .= 'X-Mailer: nZEDb' . $CRLF;
-			$headers .= 'MIME-Version: 1.0' . $CRLF;
-			$headers .= 'Content-type: text/html; charset=iso-8859-1' . $CRLF;
-			$headers .= $CRLF;
+		return $result;
+	}
 
-			return mail($to, $subject, $body, $headers);
-		}
+	/**
+	 * @param $to
+	 * @param $subject
+	 * @param $body
+	 * @param $from
+	 *
+	 * @return bool
+	 */
+	public static function sendEmailViaPHP($to, $subject, $body, $from) : bool
+	{
+		$CRLF = "\r\n";
 
+		$headers = 'From: ' . $from . $CRLF;
+		$headers .= 'Reply-To: ' . $from . $CRLF;
+		$headers .= 'Return-Path: ' . $from . $CRLF;
+		$headers .= 'X-Mailer: nZEDb' . $CRLF;
+		$headers .= 'MIME-Version: 1.0' . $CRLF;
+		$headers .= 'Content-type: text/html; charset=iso-8859-1' . $CRLF;
+		$headers .= $CRLF;
+
+		return mail($to, $subject, $body, $headers);
+	}
+
+	/**
+	 * @param $to
+	 * @param $subject
+	 * @param $body
+	 * @param $from		Also used for the 'reply-to' field of email if set.
+	 *
+	 * @return bool
+	 * @throws \PHPMailer\PHPMailer\Exception
+	 */
+	public static function sendEmailViaPHPMailer($to, $subject, $body, $from = null) : bool
+	{
 		// Check to make sure the user has their settings correct.
-		if (PHPMAILER_USE_SMTP == true) {
-			if ((!defined('PHPMAILER_SMTP_HOST') || PHPMAILER_SMTP_HOST === '') ||
-				(!defined('PHPMAILER_SMTP_PORT') || PHPMAILER_SMTP_PORT === '')
+		if (PHPMAILER_USE_SMTP === true) {
+			if ((! \defined('PHPMAILER_SMTP_HOST') || PHPMAILER_SMTP_HOST === '') ||
+				(! \defined('PHPMAILER_SMTP_PORT') || PHPMAILER_SMTP_PORT === '')
 			) {
-				throw new \phpmailerException(
+				throw new PHPMailerException(
 					'You opted to use SMTP but the PHPMAILER_SMTP_HOST and/or PHPMAILER_SMTP_PORT is/are not defined correctly! Either fix the missing/incorrect values or change PHPMAILER_USE_SMTP to false in the www/settings.php'
 				);
 			}
 
 			// If the user enabled SMTP & Auth but did not setup credentials, throw an exception.
-			if (defined('PHPMAILER_SMTP_AUTH') && PHPMAILER_SMTP_AUTH == true) {
-				if ((!defined('PHPMAILER_SMTP_USER') || PHPMAILER_SMTP_USER === '') ||
-					(!defined('PHPMAILER_SMTP_PASSWORD') || PHPMAILER_SMTP_PASSWORD === '')
+			if (\defined('PHPMAILER_SMTP_AUTH') && PHPMAILER_SMTP_AUTH === true) {
+				if ((! \defined('PHPMAILER_SMTP_USER') || PHPMAILER_SMTP_USER === '') ||
+					(! \defined('PHPMAILER_SMTP_PASSWORD') || PHPMAILER_SMTP_PASSWORD === '')
 				) {
-					throw new \phpmailerException(
+					throw new PHPMailerException(
 						'You opted to use SMTP and SMTP Auth but the PHPMAILER_SMTP_USER and/or PHPMAILER_SMTP_PASSWORD is/are not defined correctly. Please set them in www/settings.php'
 					);
 				}
 			}
 		}
 
-		//Finally we can send the mail.
-		$mail->isHTML(true);
+		// Finally we can instantiate and send the mail.
+		$mail = new PHPMailer();
 
-		if (PHPMAILER_USE_SMTP) {
-			$mail->isSMTP();
+		/* If the mailer couldn't instantiate there's a good chance the user has an incomplete
+		 * update and we should fallback to php's mail().
+		 *
+		 * @todo Log this failure.
+		 */
+		if (! ($mail instanceof \PHPMailer\PHPMailer\PHPMailer)) {
+			$result = self::sendEmailViaPHP($to, $subject, $body, $from);
+		} else {
+			$mail->isHTML(true);
 
-			$mail->Host = PHPMAILER_SMTP_HOST;
-			$mail->Port = PHPMAILER_SMTP_PORT;
+			if (PHPMAILER_USE_SMTP) {
+				$mail->isSMTP();
 
-			$mail->SMTPSecure = PHPMAILER_SMTP_SECURE;
+				$mail->Host = PHPMAILER_SMTP_HOST;
+				$mail->Port = PHPMAILER_SMTP_PORT;
 
-			if (PHPMAILER_SMTP_AUTH) {
-				$mail->SMTPAuth = true;
-				$mail->Username = PHPMAILER_SMTP_USER;
-				$mail->Password = PHPMAILER_SMTP_PASSWORD;
+				$mail->SMTPSecure = PHPMAILER_SMTP_SECURE;
+
+				if (PHPMAILER_SMTP_AUTH) {
+					$mail->SMTPAuth = true;
+					$mail->Username = PHPMAILER_SMTP_USER;
+					$mail->Password = PHPMAILER_SMTP_PASSWORD;
+				}
+			}
+
+			$fromEmail = (PHPMAILER_FROM_EMAIL === '') ? Settings::value('site.main.email') :
+				PHPMAILER_FROM_EMAIL;
+			$fromName = (PHPMAILER_FROM_NAME === '') ? Settings::value('site.main.title') :
+				PHPMAILER_FROM_NAME;
+			$replyTo = ! empty($from) ? $from : PHPMAILER_REPLYTO;
+
+			if (PHPMAILER_BCC !== '') {
+				$mail->addBCC(PHPMAILER_BCC);
+			}
+
+			$mail->setFrom($fromEmail, $fromName);
+			$mail->addAddress($to);
+			$mail->addReplyTo($replyTo);
+			$mail->Subject = $subject;
+			$mail->Body = $body;
+			$mail->AltBody = $mail->html2text($body, true);
+
+			$result = $mail->send();
+
+			if (! $result) {
+				//@todo Log failed email send attempt.
+				throw new PHPMailerException('Unable to send mail. Error: ' . $mail->ErrorInfo);
 			}
 		}
 
-		$fromEmail = (PHPMAILER_FROM_EMAIL == '') ? Settings::value('site.main.email') : PHPMAILER_FROM_EMAIL;
-		$fromName  = (PHPMAILER_FROM_NAME == '') ? Settings::value('site.main.title') : PHPMAILER_FROM_NAME;
-		$replyTo   = (PHPMAILER_REPLYTO == '') ? $from : PHPMAILER_REPLYTO;
-
-		if (PHPMAILER_BCC != '') {
-			$mail->addBCC(PHPMAILER_BCC);
-		}
-
-		$mail->setFrom($fromEmail, $fromName);
-		$mail->addAddress($to);
-		$mail->addReplyTo($replyTo);
-		$mail->Subject = $subject;
-		$mail->Body    = $body;
-		$mail->AltBody = $mail->html2text($body, true);
-
-		$sent = $mail->send();
-
-		if (!$sent) {
-			//@todo Log failed email send attempt.
-			throw new \phpmailerException('Unable to send mail. Error: ' . $mail->ErrorInfo);
-		}
-
-		return $sent;
+		return $result;
 	}
 
 	/**
@@ -943,7 +985,7 @@ class Misc
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
 			'<error code="' . $status . '" description="' . $message . "\"/>\n";
 		header('Content-type: text/xml');
-		header('Content-Length: ' . strlen($response) );
+		header('Content-Length: ' . \strlen($response) );
 		header('X-nZEDb: API ERROR [' . $status . '] ' . $message);
 		http_response_code($status);
 

@@ -275,12 +275,12 @@ class Binaries
 		}
 
 		$this->messageBuffer = (Settings::value('..maxmssgs') != '') ?
-			Settings::value('..maxmssgs') : 20000;
+			(int)Settings::value('..maxmssgs') : 20000;
 		$this->_compressedHeaders = (Settings::value('..compressedheaders') == 1 ? true : false);
 		$this->_partRepair = (Settings::value('..partrepair') == 0 ? false : true);
 		$this->_newGroupScanByDays = (Settings::value('..newgroupscanmethod') == 1 ? true : false);
 		$this->_newGroupMessagesToScan = (Settings::value('..newgroupmsgstoscan') != '') ?
-			Settings::value('..newgroupmsgstoscan') : 50000;
+			(int)Settings::value('..newgroupmsgstoscan') : 50000;
 		$this->_newGroupDaysToScan = (Settings::value('..newgroupdaystoscan') != '') ?
 			(int)Settings::value('..newgroupdaystoscan') : 3;
 		$this->_partRepairLimit = (Settings::value('..maxpartrepair') != '') ?
@@ -747,7 +747,8 @@ class Binaries
 				if (!stristr($header['Subject'], 'yEnc')) {
 					$header['matches'][1] .= ' yEnc';
 				}
-			} else {
+			} else { // It failed to match, so no parts data. Log the Subject IF option is
+				// enabled AND it's not prefixed by '"Usenet Index Post'
 				if ($this->_showDroppedYEncParts === true && strpos($header['Subject'], '"Usenet Index Post') !== 0) {
 					file_put_contents(
 						nZEDb_LOGS . 'not_yenc' . $this->groupMySQL['name'] . '.dropped.log',

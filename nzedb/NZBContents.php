@@ -275,7 +275,7 @@ class NZBContents
 	 *
 	 * @param string $guid Release guid.
 	 *
-	 * @return bool|\SimpleXMLElement
+	 * @return \SimpleXMLElement|false
 	 *
 	 * @access public
 	 */

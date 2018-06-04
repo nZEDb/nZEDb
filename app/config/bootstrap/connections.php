@@ -151,6 +151,20 @@ if (file_exists($installed)) {
 			]
 		);
 
+		Connections::add('information_schema',
+			[
+				'type'       => 'database',
+				'adapter'    => $adapter,
+				'host'       => $host,
+				'login'      => DB_USER,
+				'password'   => DB_PASSWORD,
+				'database'   => 'information_schema',
+				'encoding'   => 'UTF-8',
+				'persistent' => false,
+				'timezone'   => ini_get('date.timezone'),
+			]
+		);
+
 		\nzedb\utility\Misc::setCoversConstant(
 			\app\models\Settings::value('site.main.coverspath')
 		);

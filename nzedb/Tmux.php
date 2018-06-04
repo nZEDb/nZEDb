@@ -13,7 +13,7 @@ use nzedb\db\DB;
 class Tmux
 {
 	/**
-	 * @var \nzedb\db\Settings
+	 * @var \nzedb\db\DB
 	 */
 	public $pdo;
 
