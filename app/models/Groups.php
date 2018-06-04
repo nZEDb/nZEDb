@@ -97,17 +97,19 @@ class Groups extends \app\extensions\data\Model
 			throw new \InvalidArgumentException("To create a new group entry, you *must* supply the new group's name!");
 		}
 
-		$defaults = [
-			'active'          => false,
-			'backfill'        => false,
-			'backfill_target' => 1,
-			'description'     => 'Auto-created by ' . __CLASS__ . '::' . __METHOD__,
-			'first_record'    => 0,
-			'last_record'     => 0,
-			//'minfilestoformrelease' => 0,
-			//'minsizetoformrelease'  => 0,
-		];
-		$data += $defaults;
+		if (!empty($data)) {
+			$defaults = [
+				'active'          => false,
+				'backfill'        => false,
+				'backfill_target' => 1,
+				'description'     => 'Auto-created by ' . __CLASS__ . '::' . __METHOD__,
+				'first_record'    => 0,
+				'last_record'     => 0,
+				//'minfilestoformrelease' => 0,
+				//'minsizetoformrelease'  => 0,
+			];
+			$data += $defaults;
+		}
 
 		return parent::create($data, $options);
 	}
