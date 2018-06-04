@@ -10,6 +10,13 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-06-04 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.7.0
+
+
+2018-05-25
+	Fix: Replacing last use of each() in nZEDb code. Note that two libraries (forkdaemon and
+		guzzlehttp/promises) still use it however.
 2018-05-08 niel
 	Chg: Increase size of 'xref' column in collections' tables due to some larger sizes reported.
 2018-05-07 niel

@@ -36,7 +36,8 @@ use lithium\core\ClassNotFoundException;
  *                      sudo -u www-data ./zed verify permissions
  *                  See this page for a quick guide on setting up your permissions in linux:
  *                      https://github.com/nZEDb/nZEDb/wiki/Setting-permissions-on-linux
- * * table <list>   Run checks against specific table(sets).
+ * * table <list>   Run checks against specific table(sets). <list> is a series of table names (case
+ * 					sensitive) or sets.
  *                  - tpg: Collections, Parts, Binaries set of tables.
  *                  - Settings: Check that settings in the 10~settings.tsv file exist in your Db.
  */
