@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use app\models\Groups as Group;
+use app\models\Groups;
 use app\models\Predb as PredbModel;
 use lithium\data\Connections;
 use nzedb\db\DB;
@@ -477,13 +477,13 @@ class IRCScraper extends IRCClient
 	 * @param string $groupName
 	 *
 	 * @return mixed
-	 *
 	 * @access protected
+	 * @throws \InvalidArgumentException if a new entry must be created but the 'name' is not set.
 	 */
 	protected function _getGroupID($groupName)
 	{
 		if (!isset($this->_groupList[$groupName])) {
-			$group = Group::findIdFromName($groupName, [
+			$group = Groups::findIdFromName($groupName, [
 				'create'	=> true,
 				'description'	=> 'Added by IRCScraper.',
 			]);
