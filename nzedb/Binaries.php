@@ -1163,11 +1163,14 @@ class Binaries
 	 */
 	public function partRepair($groupArr, array $tables = null)
 	{
+		/*
 		$tableNames = $tables;
 
 		if ($tableNames === null) {
 			$tableNames = Tables::getTPGNamesFromId($groupArr['id']);
 		}
+		*/
+		$tableNames = $tables ?: Tables::getTPGNamesFromId($groupArr['id']);
 
 		// Get all parts in partrepair table.
 		$missingParts = $this->_pdo->query(
