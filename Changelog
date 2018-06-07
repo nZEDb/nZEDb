@@ -10,6 +10,12 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-06-07 niel
+	Mrg: dev-groups This branch brings changes to how the groups table is used. A new Groups Model
+		is now the default way to access it. The older methods still work but are deprecated and
+		will be removed in the future.
+2018-04-23 niel
+	Chg: Remove 'releases' column from groups listing and browse group.
 2018-06-04 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.7.0
 

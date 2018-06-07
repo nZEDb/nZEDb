@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use app\models\Group;
+use app\models\Groups as Group;
 use app\models\Predb as PredbModel;
 use lithium\data\Connections;
 use nzedb\db\DB;
@@ -491,7 +491,7 @@ class IRCScraper extends IRCClient
 			if ($group === null) {
 				$this->_groupList[$groupName] = false;
 			} else {
-				$this->_groupList[$groupName] = $group->id;
+				$this->_groupList[$groupName] = $group;
 			}
 		}
 

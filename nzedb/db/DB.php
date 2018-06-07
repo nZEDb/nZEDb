@@ -806,7 +806,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Returns an array of result (empty array if no results or an error occurs)
+	 * Returns an array of results (empty array if no results or an error occurs)
 	 * Optional: Pass true to cache the result with a cache server.
 	 *
 	 * @param string $query       SQL to execute.

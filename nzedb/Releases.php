@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use app\models\Groups as Group;
 use app\models\Settings;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
@@ -58,7 +59,8 @@ class Releases
 		$options += $defaults;
 
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
-		$this->groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$this->groups = ($options['Groups'] instanceof \nzedb\Groups ? $options['Groups'] :
+			new \nzedb\Groups(['Settings' => $this->pdo]));
 		$this->updategrabs = (Settings::value('..grabstatus') == '0' ? false : true);
 		$this->passwordStatus = (Settings::value('..checkpasswordedrar') == 1 ? -1 : 0);
 		$this->sphinxSearch = new SphinxSearch();
@@ -849,7 +851,8 @@ class Releases
 			$this->showPasswords,
 			NZB::NZB_ADDED,
 			($maxAge > 0 ? sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $maxAge) : ''),
-			($groupName != -1 ? sprintf(' AND r.groups_id = %d ', $this->groups->getIDByName($groupName)) : ''),
+			($groupName != -1 ? sprintf(' AND r.groups_id = %d ', Group::getIDByName($groupName)
+			) : ''),
 			(array_key_exists($sizeFrom, $sizeRange) ? ' AND r.size > ' . (string)(104857600 * (int)$sizeRange[$sizeFrom]) . ' ' : ''),
 			(array_key_exists($sizeTo, $sizeRange) ? ' AND r.size < ' . (string)(104857600 * (int)$sizeRange[$sizeTo]) . ' ' : ''),
 			($hasNfo != 0 ? ' AND r.nfostatus = 1 ' : ''),

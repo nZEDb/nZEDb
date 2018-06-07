@@ -116,8 +116,8 @@ abstract class RequestID
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->category = ($options['Categorize'] instanceof Categorize ?
 			$options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
-		$this->groups = ($options['Groups'] instanceof Groups ? $options['Groups'] :
-			new Groups(['Settings' => $this->pdo]));
+		$this->groups = ($options['Groups'] instanceof \nzedb\Groups ? $options['Groups'] :
+			new \nzedb\Groups(['Settings' => $this->pdo]));
 		$this->consoleTools = ($options['ConsoleTools'] instanceof ConsoleTools ?
 			$options['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->pdo->log]));
 		$this->sphinx = ($options['SphinxSearch'] instanceof SphinxSearch ?

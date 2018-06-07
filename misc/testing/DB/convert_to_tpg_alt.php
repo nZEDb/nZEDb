@@ -1,6 +1,8 @@
 <?php
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use app\models\Groups as Group;
+use app\models\Tables;
 use nzedb\ConsoleTools;
 use nzedb\Groups;
 use nzedb\db\DB;
@@ -25,7 +27,7 @@ foreach ($actgroups as $group) {
 	$pdo->queryExec("DROP TABLE IF EXISTS collections_" . $group['groups_id']);
 	$pdo->queryExec("DROP TABLE IF EXISTS binaries_" . $group['groups_id']);
 	$pdo->queryExec("DROP TABLE IF EXISTS parts_" . $group['groups_id']);
-	if ($groups->createNewTPGTables($group['groups_id']) === false) {
+	if ((Tables::createTPGTablesForId($group['groups_id']) === false)) {
 		exit($pdo->log->error("\nThere is a problem creating new parts/files tables for group ${group['name']}.\n"));
 	}
 }
@@ -38,7 +40,7 @@ $parts_count = $pdo->queryOneRow("SELECT COUNT(*) AS cnt FROM parts");
 $i = 0;
 if ($collections_rows instanceof \Traversable) {
 	foreach ($collections_rows as $row) {
-		$groupName = $groups->getNameByID($row['groups_id']);
+		$groupName = Group::getNameByID($row['groups_id']);
 		echo $pdo->log->header("Processing ${groupName}");
 		//collection
 		$pdo->queryExec("INSERT IGNORE INTO collections_" . $row['groups_id'] . " (subject, fromname, date, xref, totalfiles, groups_id, collectionhash, dateadded, filecheck, filesize, releases_id) "

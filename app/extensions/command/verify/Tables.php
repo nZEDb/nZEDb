@@ -20,7 +20,7 @@
  */
 namespace app\extensions\command\verify;
 
-use app\models\Group;
+use app\models\Groups as Group;
 use app\models\Settings;
 use app\models\Tables as Schema;
 use lithium\data\Connections;
@@ -31,6 +31,18 @@ class Tables extends \app\extensions\console\Command
 	public function __construct(array $config = [])
 	{
 		parent::__construct($config);
+	}
+
+	public static function getCBPTables(string $prefix): array
+	{
+		$tables = [];
+		$data = static::find('tpg', ['prefix' => $prefix])->data();
+		/* @var $data string[][] */
+		foreach ($data as $table) {
+			$tables[] = $table['TABLE_NAME'];
+		}
+
+		return $tables;
 	}
 
 	public function run()
@@ -103,7 +115,7 @@ class Tables extends \app\extensions\console\Command
 			$parts = Schema::tpg('parts');
 
 			$errors = [];
-			$groups = new Groups();
+			//$groups = new Groups();
 			/* @var $ids string[][] */
 			foreach ($ids as $groupID) {
 				if (! \in_array('binaries_' . $groupID, $binaries, false) ||
@@ -112,8 +124,8 @@ class Tables extends \app\extensions\console\Command
 				) {
 					echo "Creating missing tables for group id: $groupID" . PHP_EOL;
 					$errors[] = $groupID;
-					$groups->createNewTPGTables($groupID);
-
+					//$groups->createNewTPGTables($groupID);
+					Schema::createTPGTablesForId($groupID);
 				} else {
 					echo "Group id '$groupID' has all its tables." . PHP_EOL;
 				}

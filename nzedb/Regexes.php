@@ -1,6 +1,8 @@
 <?php
 namespace nzedb;
 
+use app\models\Groups as Group;
+use app\models\Tables;
 use nzedb\db\DB;
 
 class Regexes
@@ -170,14 +172,13 @@ class Regexes
 	 */
 	public function testCollectionRegex($groupName, $regex, $limit)
 	{
-		$groups = new Groups(['Settings' => $this->pdo]);
-		$groupID = $groups->getIDByName($groupName);
+		$groupID = Group::getIDByName($groupName);
 
-		if (!$groupID) {
+		if (empty($groupID)) {
 			return [];
 		}
 
-		$tableNames = $groups->getCBPTableNames($groupID);
+		$tableNames = Tables::getTPGNamesFromId($groupID);
 
 		$rows = $this->pdo->query(
 			sprintf(
@@ -241,10 +242,9 @@ class Regexes
 	 */
 	public function testReleaseNamingRegex($groupName, $regex, $displayLimit, $queryLimit)
 	{
-		$groups = new Groups(['Settings' => $this->pdo]);
-		$groupID = $groups->getIDByName($groupName);
+		$groupID = Group::getIDByName($groupName);
 
-		if (!$groupID) {
+		if (empty($groupID)) {
 			return [];
 		}
 
