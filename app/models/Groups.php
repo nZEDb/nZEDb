@@ -37,10 +37,6 @@ class Groups extends \app\extensions\data\Model
 		'description' => [
 			'require' =>
 				['required' => true],
-			[
-				'notEmpty',
-				'message' => "The group's name is required to create a new entry."
-			],
 		],
 		'first_record' => [
 			'number' => [ 'numeric' ],
@@ -58,9 +54,8 @@ class Groups extends \app\extensions\data\Model
 		//	'number' => [' numeric' ],
 		//],
 		'name' => [
-			'require' =>
-				['required' => true],
 			[
+				'required' => true,
 				'notEmpty',
 				'message' => 'The group\'s name is required to create a new entry.'
 			],
@@ -93,11 +88,14 @@ class Groups extends \app\extensions\data\Model
 	 */
 	public static function create(array $data = [], array $options = [])
 	{
-		if (!empty($data) && !isset($data['name'])) {
-			throw new \InvalidArgumentException("To create a new group entry, you *must* supply the new group's name!");
+		// TODO reinstate validation of name field once all lithium's edge cases are resolved.
+		/*
+		if ((!empty($data) && !isset($data['name']) || )) {
+			throw new \InvalidArgumentException("To create a new group entry, you *must* supply the new group's name!\n" . print_r($data, true));
 		}
+		*/
 
-		if (!empty($data)) {
+		if (!empty($data) && \count($data) > 1) {
 			$defaults = [
 				'active'          => false,
 				'backfill'        => false,
