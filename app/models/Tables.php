@@ -50,10 +50,8 @@ class Tables extends \app\extensions\data\Model
 		foreach($tpgTables as $prefix) {
 			$result = $pdo->exec("CREATE TABLE IF NOT EXISTS {$prefix}_{$groupId} LIKE {$prefix}");
 			if ($result === false) {
-				//echo "Problem encountered creating '{$prefix}_{$groupId}''\n";
 				break;
 			}
-			//echo "Created {$prefix}_{$groupId}\n";
 		}
 
 		return $result !== false;
