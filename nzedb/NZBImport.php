@@ -2,11 +2,10 @@
 namespace nzedb;
 
 
-use app\models\Groups as Group;
+use app\models\Groups;
 use app\models\Settings;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
-use nzedb\Groups;
 
 /**
  * Import NZB files into the database.
@@ -308,7 +307,7 @@ class NZBImport
 							$groupName = $group;
 						}
 					} else {
-						$group = Group::isValidGroup($group);
+						$group = Groups::isValidName($group);
 						if ($group !== false) {
 							/*$groupID = $this->groups->add([
 								'name' => $group,
@@ -320,7 +319,7 @@ class NZBImport
 								'backfill' => 0
 							]);*/
 							try {
-								$groupID = Group::create(
+								$groupID = Groups::create(
 									[
 										'name'        => $group,
 										'description' => 'Added by NZBimport script.',
