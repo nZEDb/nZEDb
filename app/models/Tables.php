@@ -108,7 +108,7 @@ class Tables extends \app\extensions\data\Model
 	public static function getTPGNamesFromId($groupId) : array
 	{
 		// Try cache first.
-		$names = Cache::read('default', ['tpgNames' => $groupId]);
+		$names = Cache::read('default', 'tpgNames_' . $groupId);
 		if (!empty($names)) {
 			return $names;
 		}
@@ -126,7 +126,7 @@ class Tables extends \app\extensions\data\Model
 			'prname'=> 'missed_parts_' . $groupId
 		];
 
-		Cache::write('default', ['tpgNames' => $groupId], $tables);
+		Cache::write('default', 'tpgNames_' . $groupId, $tables, '+5 minutes');
 
 		return $tables;
 	}
