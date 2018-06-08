@@ -1,6 +1,8 @@
 <?php
 namespace nzedb;
 
+
+use app\models\Groups as Group;
 use app\models\Settings;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
@@ -305,9 +307,9 @@ class NZBImport
 							$groupName = $group;
 						}
 					} else {
-						$group = $this->groups->isValidGroup($group);
+						$group = Group::isValidGroup($group);
 						if ($group !== false) {
-							$groupID = $this->groups->add([
+							/*$groupID = $this->groups->add([
 								'name' => $group,
 								'description' => 'Added by NZBimport script.',
 								'backfill_target' => 1,
@@ -315,8 +317,15 @@ class NZBImport
 								'last_record' => 0,
 								'active' => 0,
 								'backfill' => 0
-							]);
-							$this->allGroups[$group] = $groupID;
+							]);*/
+							$groupID = Group::create(
+								[
+									'name'        => $group,
+									'description' => 'Added by NZBimport script.',
+								]
+							);
+							$groupID->save();
+							$this->allGroups[$group] = $groupID->id;
 
 							$this->echoOut("Adding missing group: ($group)");
 						}

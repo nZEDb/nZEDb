@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\processing;
 
+use app\models\Groups as Group;
 use app\models\Settings;
 use nzedb\Books;
 use nzedb\Category;
@@ -348,7 +349,7 @@ class PostProcess
 		}
 
 		// Get the PAR2 file.
-		$par2 = $nntp->getMessages($this->groups->getNameByID($groupID), $messageID, $this->alternateNNTP);
+		$par2 = $nntp->getMessages(Group::getNameByID($groupID), $messageID, $this->alternateNNTP);
 		if ($nntp->isError($par2)) {
 			return false;
 		}

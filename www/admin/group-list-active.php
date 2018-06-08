@@ -1,6 +1,7 @@
 <?php
 require_once './config.php';
 
+use app\models\Groups as Group;
 use nzedb\Groups;
 
 $page   = new AdminPage();
@@ -11,7 +12,12 @@ if (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname'])) {
 	$gname = $_REQUEST['groupname'];
 }
 
-$groupcount = $groups->getCount($gname, 1);
+//$groupcount = $groups->getCount($gname, 1);
+$conditions = ['active' => 0];
+if (!empty($gname)) {
+	$conditions += ['name' => ['LIKE' => "%$gname%"]];
+}
+$groupcount = Group::count(['conditions' => $conditions]);
 
 $offset    = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
 $groupname = (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname'])) ?
