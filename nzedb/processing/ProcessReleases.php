@@ -545,6 +545,7 @@ class ProcessReleases
 	 * @param int|string $groupID (optional)
 	 *
 	 * @return array
+	 * @throws \InvalidArgumentException if a new entry must be created but the 'name' is not set.
 	 */
 	public function createReleases($groupID)
 	{
@@ -676,12 +677,18 @@ class ProcessReleases
 									//check if the group already exists in database
 									$xrefGrpID = Group::getIDByName($grpTmp);
 									if ($xrefGrpID === '') {
-										$newGroup = Group::create(
-											[
-												'name'        => $grpTmp,
-												'description' => 'Added by Release processing',
-											]
-										);
+										try {
+											$newGroup = Group::create(
+												[
+													'name'        => $grpTmp,
+													'description' => 'Added by Release processing',
+												]
+											);
+										} catch (\InvalidArgumentException $e) {
+											throw new \InvalidArgumentException($e->getMessage() .
+												PHP_EOL .
+												'Thrown in ProcessReleases.php');
+										}
 										$newGroup->save();
 										$xrefGrpID = $newGroup->id;
 									}

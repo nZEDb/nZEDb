@@ -18,7 +18,14 @@ switch ($action) {
 			if ($_POST['name'] = Group::isValidName($_POST['name'])) {
 				// Only allow entries whose keys are valid columns.
 				$data = array_intersect_key($_POST, Group::schema()->fields());
-				$newGroup = Group::create($data);
+				try {
+					$newGroup = Group::create($data);
+				} catch (\InvalidArgumentException $e) {
+					throw new \InvalidArgumentException($e->getMessage() .
+						PHP_EOL .
+						'Thrown in group-edit.php');
+				}
+
 				$newGroup->save();
 			}
 		} else {

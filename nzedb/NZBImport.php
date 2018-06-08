@@ -265,9 +265,10 @@ class NZBImport
 	/**
 	 * @param object $nzbXML Reference of simpleXmlObject with NZB contents.
 	 * @param bool|string $useNzbName Use the NZB file name as release name?
-	 * @return bool
 	 *
+	 * @return bool
 	 * @access protected
+	 * @throws \InvalidArgumentException if a new entry must be created but the 'name' is not set.
 	 */
 	protected function scanNZBFile(&$nzbXML, $useNzbName = false)
 	{
@@ -318,12 +319,18 @@ class NZBImport
 								'active' => 0,
 								'backfill' => 0
 							]);*/
-							$groupID = Group::create(
-								[
-									'name'        => $group,
-									'description' => 'Added by NZBimport script.',
-								]
-							);
+							try {
+								$groupID = Group::create(
+									[
+										'name'        => $group,
+										'description' => 'Added by NZBimport script.',
+									]
+								);
+							} catch (\InvalidArgumentException $e) {
+								throw new \InvalidArgumentException($e->getMessage() .
+									PHP_EOL .
+									'Thrown in NZBImport.php');
+							}
 							$groupID->save();
 							$this->allGroups[$group] = $groupID->id;
 
