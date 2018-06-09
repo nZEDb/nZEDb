@@ -36,7 +36,7 @@ class Tables extends \app\extensions\data\Model
 
 	protected $pdo;
 
-	private static $tpgTables = ['binaries', 'collections', 'missed_parts', 'parts'];
+	protected static $tpgTables = ['binaries', 'collections', 'missed_parts', 'parts'];
 
 
 	public static function createTPGTablesForId(int $groupId)

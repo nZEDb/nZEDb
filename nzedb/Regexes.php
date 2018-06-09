@@ -192,7 +192,7 @@ class Regexes
 		);
 
 		$data = [];
-		if ($rows) {
+		if (!empty($rows)) {
 			$limit--;
 			$hashes = [];
 			foreach ($rows as $row) {

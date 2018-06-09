@@ -110,10 +110,6 @@ coding_style:
                 true_false_null: undefined
 
 filter:
-    dependency_paths:
-        - "app/libraries/"
-        - "libraries/"
-        - "libs/"
     excluded_paths:
         - "docs/"
         - "resources/"
@@ -126,3 +122,7 @@ filter:
         - "apps/config/bootstrap/media.php"
         - "apps/config/bootstrap/session.php"
         - "apps/config/routes.php"
+    dependency_paths:
+        - "app/libraries/"
+        - "libraries/"
+        - "libs/"

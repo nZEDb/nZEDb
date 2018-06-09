@@ -353,7 +353,6 @@ class Nfo
 				}
 			}
 
-			$groups = new Groups(['Settings' => $this->pdo]);
 			$nzbContents = new NZBContents(
 				[
 					'Echo' => $this->echo,

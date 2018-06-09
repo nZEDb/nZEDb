@@ -44,7 +44,6 @@ preName($argv, $argc);
 function preName($argv, $argc)
 {
 	global $pdo;
-	$groups = new Groups(['Settings' => $pdo]);
 	$category = new Categorize(['Settings' => $pdo]);
 	$internal = $external = $pre = 0;
 	$show = 2;

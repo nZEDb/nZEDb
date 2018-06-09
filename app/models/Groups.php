@@ -178,8 +178,6 @@ class Groups extends \app\extensions\data\Model
 				'order'      => 'name',
 			]
 		);
-
-		return $active;
 	}
 
 	public static function getActiveIDs()
@@ -371,9 +369,9 @@ class Groups extends \app\extensions\data\Model
 	}
 
 	/**
-	 * @param        $id     id of group to update.
-	 * @param string $column 'active' or 'backfill'
-	 * @param int    $status
+	 * @param int|string $id     id of group to update.
+	 * @param string     $column 'active' or 'backfill'
+	 * @param int        $status
 	 *
 	 * @return string
 	 *
