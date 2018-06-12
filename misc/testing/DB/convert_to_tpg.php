@@ -1,6 +1,7 @@
 <?php
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+use app\models\Groups as Group;
 use app\models\Settings;
 use app\models\Tables;
 use nzedb\ConsoleTools;

@@ -375,7 +375,7 @@ class Groups
 
 			foreach ($groups as $group) {
 				if (preg_match($regFilter, $group['group']) > 0) {
-					$res = $this->getIDByName($group['group']);
+					$res = Group::getIDByName($group['group']);
 					if ($res === '') {
 						$this->add(
 							[
