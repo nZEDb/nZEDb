@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-06-12 niel
+	Fix: Correct use statement for Groups model.
 2018-06-08 niel
 	Fix: Correct calls of isValidGroup to isValidName for Groups model.
 2018-06-07 niel
