@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5bb3bd9d6fdd942e55823e5acbfdee56",
+    "content-hash": "41b79deb7a5407767876af9957b66ae1",
     "packages": [
         {
             "name": "b3rs3rk/steamfront",
@@ -2169,25 +2169,75 @@
             "time": "2018-01-11T07:56:07+00:00"
         },
         {
-            "name": "unionofrad/lithium",
+            "name": "unionofrad/li3_fixtures",
             "version": "v1.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/UnionOfRAD/lithium.git",
-                "reference": "bec3f4fdf61ea5002904754f43941ad1430ecec7"
+                "url": "https://github.com/UnionOfRAD/li3_fixtures.git",
+                "reference": "dee83b285e4bf0e716b45ea30ac3f8240b38c8ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/bec3f4fdf61ea5002904754f43941ad1430ecec7",
-                "reference": "bec3f4fdf61ea5002904754f43941ad1430ecec7",
+                "url": "https://api.github.com/repos/UnionOfRAD/li3_fixtures/zipball/dee83b285e4bf0e716b45ea30ac3f8240b38c8ce",
+                "reference": "dee83b285e4bf0e716b45ea30ac3f8240b38c8ce",
                 "shasum": ""
             },
             "require": {
                 "composer/installers": "1.*",
-                "php": "^5.5.14 || ^7.0.3"
+                "php": ">=5.5.14",
+                "unionofrad/lithium": "^1.1"
+            },
+            "type": "lithium-library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Union of RAD"
+                },
+                {
+                    "name": "The Community"
+                }
+            ],
+            "description": "The fixtures library for the li3 PHP framework",
+            "homepage": "http://li3.me",
+            "keywords": [
+                "fixtures",
+                "li3",
+                "lithium",
+                "testing"
+            ],
+            "time": "2017-04-08T07:41:10+00:00"
+        },
+        {
+            "name": "unionofrad/lithium",
+            "version": "v1.2.0-alpha",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/UnionOfRAD/lithium.git",
+                "reference": "1c66ff7005aa24041bad19b1ce2141a54e6c4972"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/1c66ff7005aa24041bad19b1ce2141a54e6c4972",
+                "reference": "1c66ff7005aa24041bad19b1ce2141a54e6c4972",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "1.*",
+                "php": "^5.6 || ^7.0.3 || ^7.1.0"
             },
             "require-dev": {
                 "unionofrad/li3_fixtures": "^1.1"
+            },
+            "suggest": {
+                "ext-curl": "For the Curl Socket adapter.",
+                "ext-memcached": "For the Memcache Cache adapter.",
+                "ext-mongo": "For the MongoDb Datasource. ",
+                "ext-openssl": "For the Encrypt Session strategy.",
+                "ext-pdo": "For the MySql, Postgres and Sqlite Datasources.",
+                "ext-redis": "For the Redis Cache adapter."
             },
             "bin": [
                 "console/li3"
@@ -2205,14 +2255,14 @@
                     "name": "The Community"
                 }
             ],
-            "description": "The core library of the Lithium PHP framework",
+            "description": "The li₃ PHP framework",
             "homepage": "http://li3.me",
             "keywords": [
                 "framework",
                 "li3",
                 "lithium"
             ],
-            "time": "2017-12-22T08:03:51+00:00"
+            "time": "2018-02-03T10:58:06+00:00"
         },
         {
             "name": "zeebinz/rarinfo",
@@ -2304,7 +2354,7 @@
         "dborsatto/php-giantbomb": 20,
         "joshpinkney/tv-maze-php-api": 20,
         "nzedb/git.php": 20,
-        "unionofrad/lithium": 10,
+        "unionofrad/lithium": 15,
         "unionofrad/manual": 20
     },
     "prefer-stable": false,
