@@ -5,8 +5,6 @@ use app\models\Groups;
 use app\models\Predb as PredbModel;
 use lithium\data\Connections;
 use nzedb\db\DB;
-use nzedb\Logger;
-use nzedb\PreDb;
 
 /**
  * Class IRCScraper
