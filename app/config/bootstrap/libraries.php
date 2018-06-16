@@ -79,10 +79,11 @@ use lithium\core\Libraries;
 /**
  * Optimize default request cycle by loading common classes.  If you're implementing custom
  * request/response or dispatch classes, you can safely remove these.  Actually, you can safely
- * remove them anyway, they're just there to give you slightly better out-of-the-box performance.
+ * remove them anyway, they're just there to give slightly you better out-of-the-box performance.
  */
 require LITHIUM_LIBRARY_PATH . '/lithium/core/Object.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/core/StaticObject.php';
+require LITHIUM_LIBRARY_PATH . '/lithium/core/MergeInheritable.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/aop/Filters.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/util/Inflector.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/util/Text.php';
@@ -113,7 +114,7 @@ Libraries::add('lithium');
  * Add the application.  You can pass a `'path'` key here if this bootstrap file is outside of
  * your main application, but generally you should not need to change any settings.
  */
-Libraries::add('app', ['default' => true, 'path' => LITHIUM_APP_PATH . '/app']);
+Libraries::add('app', ['default' => true]);
 
 /**
  * Add lithium plugins. You may manually add plugins or use the library discovery mechanism
@@ -131,9 +132,10 @@ foreach ([LITHIUM_LIBRARY_PATH, LITHIUM_APP_PATH . '/libraries'] as $base) {
  * `autoload.php` file will be available once `composer install` was run.
  */
 $file = LITHIUM_LIBRARY_PATH . '/autoload.php';
-//if (file_exists($file)) {
+if (file_exists($file)) {
 	require_once $file;
-//}
+}
+
 if (file_exists(INSTALLED)) {
 	Libraries::add('nzedb',
 	[
