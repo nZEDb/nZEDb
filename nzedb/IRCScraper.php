@@ -39,7 +39,7 @@ class IRCScraper extends IRCClient
 
 	/**
 	 * Logging object for reporting errors.
-	 * @var \nzedb\Logger Object
+	 * @var \nzedb\Logger|null Object for logging events.
 	 */
 	protected $log = null;
 
@@ -290,8 +290,14 @@ class IRCScraper extends IRCClient
 				$this->insertPreEntry();
 			} catch (\Exception $exception) {
 				if (nZEDb_LOGERROR) {
-					$this->log->log(__CLASS__, __METHOD__, $exception->getMessage(),
-						Logger::LOG_ERROR);
+					if ($this->log instanceof Logger) {
+						$this->log->log(__CLASS__,
+							__METHOD__,
+							$exception->getMessage(),
+							Logger::LOG_ERROR);
+					} else {
+						echo $exception->getMessage() . \PHP_EOL;
+					}
 				}
 			}
 		} else {
