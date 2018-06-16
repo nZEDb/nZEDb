@@ -58,3 +58,5 @@ define('nZEDb_THEMES', nZEDb_WWW . 'themes' . DS);
 define('nZEDb_THEMES_SHARED', nZEDb_THEMES . 'shared' . DS);
 
 define('nZEDb_VERSIONS', nZEDb_ROOT . 'build' . DS . 'nzedb.xml');
+
+define('INSTALLED', nZEDb_CONFIGS . 'install.lock');

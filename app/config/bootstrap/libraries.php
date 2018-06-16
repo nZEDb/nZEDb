@@ -1,10 +1,12 @@
 <?php
 /**
- * Lithium: the most rad php framework
+ * li₃: the most RAD framework for PHP (http://li3.me)
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2015, Union of RAD
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
+
+namespace app\config\bootstrap;
 
 /**
  * The libraries file is where you configure the various plugins, frameworks, and other libraries
@@ -51,11 +53,7 @@
  * application's classes and files.  You don't need to change this unless your webroot folder is
  * stored outside of your app folder.
  */
-define('LITHIUM_APP_PATH', realpath(dirname(dirname(__DIR__))));
-
-if (!defined('nZEDb_ROOT')) {
-	define('nZEDb_ROOT', realpath(dirname(LITHIUM_APP_PATH)) . DS);
-}
+\define('LITHIUM_APP_PATH', \realpath(\dirname(__DIR__, 2)));
 
 /**
  * This is the path to the class libraries used by your application, and must contain a copy of the
@@ -63,13 +61,13 @@ if (!defined('nZEDb_ROOT')) {
  * directory as your application.  If you use the same libraries in multiple applications, you can
  * set this to a shared path on your server.
  */
-define('LITHIUM_LIBRARY_PATH', nZEDb_ROOT . 'libraries');
+\define('LITHIUM_LIBRARY_PATH', \realpath(\dirname(__DIR__, 3) . '/libraries'));
 
 /**
  * Locate and load Lithium core library files.  Throws a fatal error if the core can't be found.
  * If your Lithium core directory is named something other than `lithium`, change the string below.
  */
-if (!include LITHIUM_LIBRARY_PATH . DS . 'lithium' . DS . 'core' . DS . 'Libraries.php') {
+if (!include_once LITHIUM_LIBRARY_PATH . '/lithium/core/Libraries.php') {
 	$message  = "Lithium core could not be found.  Check the value of LITHIUM_LIBRARY_PATH in ";
 	$message .= __FILE__ . ".  It should point to the directory containing your ";
 	$message .= "/libraries directory.";
@@ -81,7 +79,7 @@ use lithium\core\Libraries;
 /**
  * Optimize default request cycle by loading common classes.  If you're implementing custom
  * request/response or dispatch classes, you can safely remove these.  Actually, you can safely
- * remove them anyway, they're just there to give slightly you better out-of-the-box performance.
+ * remove them anyway, they're just there to give you slightly better out-of-the-box performance.
  */
 require LITHIUM_LIBRARY_PATH . '/lithium/core/Object.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/core/StaticObject.php';
@@ -115,20 +113,28 @@ Libraries::add('lithium');
  * Add the application.  You can pass a `'path'` key here if this bootstrap file is outside of
  * your main application, but generally you should not need to change any settings.
  */
-Libraries::add('app', array('default' => true));
+Libraries::add('app', ['default' => true, 'path' => LITHIUM_APP_PATH . '/app']);
 
 /**
  * Add lithium plugins. You may manually add plugins or use the library discovery mechanism
  * by uncommenting the code below. This will automatically register any libraries prefixed
  * with `li3_` in the libraries directories and enable autoloading of them.
  */
-// $pattern = '{' . LITHIUM_LIBRARY_PATH . ',' . LITHIUM_APP_PATH . '/libraries}/li3_*';
-//
-// foreach (glob($pattern, GLOB_BRACE | GLOB_ONYLDIR) as $path) {
-// 	Libraries::add(basename($path), array('path' => $path));
-// }
+foreach ([LITHIUM_LIBRARY_PATH, LITHIUM_APP_PATH . '/libraries'] as $base) {
+	foreach (glob($base . '/li3_*', GLOB_ONLYDIR) as $path) {
+		Libraries::add(basename($path), compact('path'));
+	}
+}
 
-if (file_exists(nZEDb_CONFIGS . 'install.lock')) {
+/**
+ * Enable external autoloading through composer by including its autoloader bootstrap. The
+ * `autoload.php` file will be available once `composer install` was run.
+ */
+$file = LITHIUM_LIBRARY_PATH . '/autoload.php';
+//if (file_exists($file)) {
+	require_once $file;
+//}
+if (file_exists(INSTALLED)) {
 	Libraries::add('nzedb',
 	[
 		'bootstrap'	=> 'bootstrap.php',
@@ -136,17 +142,15 @@ if (file_exists(nZEDb_CONFIGS . 'install.lock')) {
 	]);
 }
 
-require_once LITHIUM_APP_PATH . DS . 'libraries' . DS . 'autoload.php';
-
 /**
  * Add some plugins:
  */
-if (is_dir(LITHIUM_LIBRARY_PATH . DS . 'li3_docs')) {
-	Libraries::add('li3_docs', ['index' => ['app', 'lithium', 'li3_docs', 'manual']]);
-}
+//if (is_dir(LITHIUM_LIBRARY_PATH . DS . 'li3_docs')) {
+//	Libraries::add('li3_docs', ['index' => ['app', 'lithium', 'li3_docs', 'manual']]);
+//}
 
-if (is_dir(LITHIUM_LIBRARY_PATH . DS . 'li3_quality')) {
-	Libraries::add('li3_quality');
-}
+//if (is_dir(LITHIUM_LIBRARY_PATH . DS . 'li3_quality')) {
+//	Libraries::add('li3_quality');
+//}
 
 ?>

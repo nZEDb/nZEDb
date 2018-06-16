@@ -1,12 +1,16 @@
 <?php
 /**
- * Lithium: the most rad php framework
+ * li₃: the most RAD framework for PHP (http://li3.me)
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2015, Union of RAD
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
+namespace app\config;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'nzedb' . DIRECTORY_SEPARATOR . 'constants.php';
+/**
+ * Load nZEDb global constants.
+ */
+require_once \dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'nzedb' . DIRECTORY_SEPARATOR . 'constants.php';
 
 /**
  * This is the primary bootstrap file of your application, and is loaded immediately after the front
@@ -32,7 +36,7 @@ require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'nzedb' . DIRECTO
  * file also statically loads common classes to improve bootstrap performance.
  */
 require_once __DIR__ . '/bootstrap/libraries.php';
-
+echo "boot 1\n";
 /**
  * The error configuration allows you to use the filter system along with the advanced matching
  * rules of the `ErrorHandler` class to provide a high level of control over managing exceptions in

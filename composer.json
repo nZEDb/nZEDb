@@ -27,7 +27,7 @@
     "preferred-install": {
       "*": "source"
     },
-    "vendor-dir": "app/libraries"
+    "vendor-dir": "libraries"
   },
   "description": "A Usenet Indexer",
   "extra": {
