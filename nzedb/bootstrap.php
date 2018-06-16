@@ -18,7 +18,6 @@
  * @author    niel
  * @copyright 2016 nZEDb
  */
-require_once nZEDb_ROOT . 'app/libraries/autoload.php';
 
 use \nzedb\config\Configure;
 use nzedb\utility\Misc;
