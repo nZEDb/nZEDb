@@ -36,7 +36,7 @@ require_once \dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'nzedb' . DIRECTORY_SE
  * file also statically loads common classes to improve bootstrap performance.
  */
 require_once __DIR__ . '/bootstrap/libraries.php';
-echo "boot 1\n";
+
 /**
  * The error configuration allows you to use the filter system along with the advanced matching
  * rules of the `ErrorHandler` class to provide a high level of control over managing exceptions in
