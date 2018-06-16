@@ -16,6 +16,7 @@ test.php
 /app/resources/tmp/*
 /configuration/config.php
 /configuration/settings.php
+/libraries/*
 /nzedb/config/ircscraper_settings.php
 /nzedb/config/ircscraper.php
 /nzedb/config/opensssl.php
