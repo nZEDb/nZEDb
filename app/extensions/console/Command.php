@@ -33,7 +33,7 @@ class Command extends \lithium\console\Command
 		parent::__construct($config + $defaults);
 	}
 
-	public function error($text, $options = [])
+	public function error($text = null, $options = [])
 	{
 		if ($this->silent) {
 			return;
