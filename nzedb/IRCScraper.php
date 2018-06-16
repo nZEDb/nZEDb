@@ -39,7 +39,7 @@ class IRCScraper extends IRCClient
 
 	/**
 	 * Logging object for reporting errors.
-	 * @var \nzedb\Logger Object
+	 * @var \nzedb\Logger|null Object for logging events.
 	 */
 	protected $log = null;
 
