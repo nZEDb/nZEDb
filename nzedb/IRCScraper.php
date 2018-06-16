@@ -290,8 +290,14 @@ class IRCScraper extends IRCClient
 				$this->insertPreEntry();
 			} catch (\Exception $exception) {
 				if (nZEDb_LOGERROR) {
-					$this->log->log(__CLASS__, __METHOD__, $exception->getMessage(),
-						Logger::LOG_ERROR);
+					if ($this->log instanceof Logger) {
+						$this->log->log(__CLASS__,
+							__METHOD__,
+							$exception->getMessage(),
+							Logger::LOG_ERROR);
+					} else {
+						echo $exception->getMessage() . \PHP_EOL;
+					}
 				}
 			}
 		} else {
