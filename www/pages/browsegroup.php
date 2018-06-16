@@ -1,6 +1,6 @@
 <?php
 
-use app\models\Group as Groups;
+use app\models\Groups;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();
