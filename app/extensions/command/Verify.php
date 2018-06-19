@@ -61,7 +61,6 @@ class Verify extends \app\extensions\console\Command
 	public function run()
 	{
 		if ($this->request->args() === null) {
-			var_dump($this->request);
 			return $this->_help();
 		}
 

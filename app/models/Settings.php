@@ -116,8 +116,7 @@ class Settings extends \app\extensions\data\Model
 		}
 		$settings = file($filepath);
 
-		if (!is_array($settings)) {
-			var_dump($settings);
+		if (!\is_array($settings)) {
 			throw new \InvalidArgumentException("Settings is not an array!");
 		}
 
