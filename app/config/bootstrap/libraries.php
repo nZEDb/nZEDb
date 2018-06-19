@@ -4,8 +4,8 @@
  *
  * @copyright     Copyright 2015, Union of RAD
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
+ * The full license text can be found in the LICENSE.txt file.
  */
-
 namespace app\config\bootstrap;
 
 /**
@@ -53,7 +53,9 @@ namespace app\config\bootstrap;
  * application's classes and files.  You don't need to change this unless your webroot folder is
  * stored outside of your app folder.
  */
-\define('LITHIUM_APP_PATH', \realpath(\dirname(__DIR__, 2)));
+if (!\defined('LITHIUM_APP_PATH')) {
+	\define('LITHIUM_APP_PATH', \realpath(\dirname(__DIR__, 2)));
+}
 
 /**
  * This is the path to the class libraries used by your application, and must contain a copy of the
@@ -61,7 +63,9 @@ namespace app\config\bootstrap;
  * directory as your application.  If you use the same libraries in multiple applications, you can
  * set this to a shared path on your server.
  */
-\define('LITHIUM_LIBRARY_PATH', \realpath(\dirname(__DIR__, 3) . '/libraries'));
+if(!\defined('LITHIUM_LIBRARY_PATH')) {
+	\define('LITHIUM_LIBRARY_PATH', \realpath(\dirname(__DIR__, 3) . '/libraries'));
+}
 
 /**
  * Locate and load Lithium core library files.  Throws a fatal error if the core can't be found.

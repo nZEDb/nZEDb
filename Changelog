@@ -15,6 +15,10 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 		app. This is necessary as lithium v1.2 treats the commands differently if outside the 'app'
 		directory, breaking our console commands because of the use of a model in
 		app/config/connections.php.
+	Chg: Updated base Lithium Framework 'app' files to latest v1.2 versions (again).
+	Fix: Wrap LITHIUM_APP_PATH and LITHIUM_LIBRARY_PATH in "if defined" check to prevent clash
+		caused by the way Lithium handles console commands when not started from inside the app
+		hierarchy.
 2018-06-16 niel
 	Chg: Merging in lithium v1.2 (dev-li3-v1,2 branch) changes into dev.
 2018-06-12 niel
