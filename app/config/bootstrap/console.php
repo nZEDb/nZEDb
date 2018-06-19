@@ -17,24 +17,23 @@ use lithium\core\Libraries;
 /**
  * This filter sets the environment based on the current request. By default, `$request->env`, for
  * example in the command `li3 help --env=production`, is used to determine the environment.
+ *
  * Routes are also loaded, to facilitate URL generation from within the console environment.
  */
-Filters::apply(Dispatcher::class,
-	'run',
-	function ($params, $next) {
-		Environment::set($params['request']);
-		foreach (array_reverse(Libraries::get()) as $name => $config) {
-			if ($name === 'lithium') {
-				continue;
-			}
-			$file = "{$config['path']}/config/routes.php";
-			file_exists($file) ? \call_user_func(function () use ($file) {
-				include $file;
-			}) : null;
-		}
+Filters::apply(Dispatcher::class, 'run', function ($params, $next)
+{
+	Environment::set($params['request']);
 
-		return $next($params);
-	});
+	foreach (array_reverse(Libraries::get()) as $name => $config) {
+		if ($name === 'lithium') {
+			continue;
+		}
+		$file = "{$config['path']}/config/routes.php";
+		file_exists($file) ? \call_user_func(function () use ($file) { include $file; }) : null;
+	}
+
+	return $next($params);
+});
 
 /**
  * This filter will convert {:heading} to the specified color codes. This is useful for colorizing

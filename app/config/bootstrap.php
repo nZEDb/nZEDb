@@ -4,6 +4,7 @@
  *
  * @copyright     Copyright 2015, Union of RAD
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
+ * The full license text can be found in the LICENSE.txt file.
  */
 namespace app\config;
 
@@ -55,7 +56,9 @@ require_once __DIR__ . '/bootstrap/action.php';
  * This file contains configurations for connecting to external caching resources, as well as
  * default caching rules for various systems within your application
  */
-require_once __DIR__ . '/bootstrap/cache.php';
+if (PHP_SAPI !== 'cli') {
+	require __DIR__ . '/bootstrap/cache.php';
+}
 
 /**
  * Include this file if your application uses one or more database connections.
@@ -85,7 +88,7 @@ require_once __DIR__ . '/bootstrap/connections.php';
  * This file configures console filters and settings, specifically output behavior and coloring.
  */
 if (PHP_SAPI === 'cli') {
-	require __DIR__ . '/bootstrap/console.php';
+	require_once __DIR__ . '/bootstrap/console.php';
 }
 
 require_once __DIR__ . '/bootstrap/logger.php';

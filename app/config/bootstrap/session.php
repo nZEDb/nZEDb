@@ -59,7 +59,7 @@ Auth::config(
 		],
 	]
 );
-
+/*
 if (!\lithium\data\Connections::get('default')) {
 	Users::applyFilter('save',
 		function ($self, $params, $chain)
@@ -77,5 +77,5 @@ if (!\lithium\data\Connections::get('default')) {
 		}
 	);
 }
-
+*/
 ?>

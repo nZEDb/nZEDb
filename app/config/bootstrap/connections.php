@@ -4,6 +4,7 @@
  *
  * @copyright     Copyright 2015, Union of RAD
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
+ * The full license text can be found in the LICENSE.txt file.
  */
 namespace app\config\bootstrap;
 
@@ -11,9 +12,11 @@ use lithium\data\Connections;
 
 /**
  * ### Configuring backend database connections
+ *
  * Lithium supports a wide variety relational and non-relational databases, and is designed to allow
  * and encourage you to take advantage of multiple database technologies, choosing the most optimal
  * one for each task.
+ *
  * As with other `Adaptable`-based configurations, each database configuration is defined by a name,
  * and an array of information detailing what database adapter to use, and how to connect to the
  * database server. Unlike when configuring other classes, `Connections` uses two keys to determine
@@ -26,7 +29,9 @@ use lithium\data\Connections;
  * `'http'` type. Note that while adapters are always specified in CamelCase form, types are
  * specified either in CamelCase form, or in underscored form, depending on whether an `'adapter'`
  * key is specified. See the examples below for more details.
+ *
  * ### Multiple environments
+ *
  * As with other `Adaptable` classes, `Connections` supports optionally specifying different
  * configurations per named connection, depending on the current environment. For information on
  * specifying environment-based configurations, see the `Environment` class.
@@ -190,7 +195,7 @@ if (file_exists(INSTALLED)) {
 			$adapter = 'PostgreSql';
 			break;
 		default:
-			throw new \RuntimeException("Invalid database system in dev-config file!");
+			throw new \RuntimeException('Invalid database system in dev-config file!');
 			break;
 	}
 
@@ -218,7 +223,7 @@ if (file_exists(INSTALLED)) {
 		]
 	);
 
-	if (nZEDb_DEBUG) {
+	if ($config['debug']['enabled'] === true) {
 		if (!defined('DB_SYSTEM')) {
 			define('DB_SYSTEM', strtolower($adapter));
 		}

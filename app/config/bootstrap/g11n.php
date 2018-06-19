@@ -1,6 +1,7 @@
 <?php
 /**
  * li₃: the most RAD framework for PHP (http://li3.me)
+ *
  * Copyright 2010, Union of RAD. All rights reserved. This source
  * code is distributed under the terms of the BSD 3-Clause License.
  * The full license text can be found in the LICENSE.txt file.
@@ -23,17 +24,21 @@ use lithium\util\Validator;
 
 /**
  * Dates
+ *
  * Sets the default timezone used by all date/time functions.
  */
 date_default_timezone_set('UTC');
 
 /**
  * Locales
+ *
  * Adds globalization specific settings to the environment. The settings for
  * the current locale, time zone and currency are kept as environment settings.
  * This allows for _centrally_ switching, _transparently_ setting and
  * retrieving globalization related settings.
+ *
  * The environment settings are:
+ *
  *  - `'locale'` The default effective locale.
  *  - `'locales'` Application locales available mapped to names. The available locales are used
  *               to negotiate he effective locale, the names can be used i.e. when displaying
@@ -51,6 +56,7 @@ Environment::set('test', ['locale' => 'en', 'locales' => ['en' => 'English']]);
 
 /**
  * Effective/Request Locale
+ *
  * Intercepts dispatching processes in order to set the effective locale by using
  * the locale of the request or if that is not available retrieving a locale preferred
  * by the client.
@@ -71,14 +77,18 @@ Filters::apply(ConsoleDispatcher::class, '_callable', $setLocale);
 
 /**
  * Resources
+ *
  * Globalization (g11n) catalog configuration.  The catalog allows for obtaining and
  * writing globalized data. Each configuration can be adjusted through the following settings:
+ *
  *   - `'adapter'` _string_: The name of a supported adapter. The builtin adapters are `Memory` (a
  *     simple adapter good for runtime data and testing), `Php`, `Gettext`, `Cldr` (for
  *     interfacing with Unicode's common locale data repository) and `Code` (used mainly for
  *     extracting message templates from source code).
+ *
  *   - `'path'` All adapters with the exception of the `Memory` adapter require a directory
  *     which holds the data.
+ *
  *   - `'scope'` If you plan on using scoping i.e. for accessing plugin data separately you
  *     need to specify a scope for each configuration, except for those using the `Memory`,
  *     `Php` or `Gettext` adapter which handle this internally.
@@ -103,6 +113,7 @@ Catalog::config([
 
 /**
  * Multibyte Strings
+ *
  * Configuration for the `Multibyte` class which allows to work with UTF-8
  * encoded strings. At least one configuration named `'default'` must be
  * present. Available adapters are `Intl`, `Mbstring` and `Iconv`. Please keep
@@ -120,6 +131,7 @@ Multibyte::config([
 
 /**
  * Transliteration
+ *
  * Load locale specific transliteration rules through the `Catalog` class or
  * specify them manually to make `Inflector::slug()` work better with
  * characters specific to a locale.
@@ -132,6 +144,7 @@ Multibyte::config([
 
 /**
  * Grammar
+ *
  * If your application has custom singular or plural rules you can configure
  * that by uncommenting the lines below.
  *
@@ -147,9 +160,11 @@ Multibyte::config([
 
 /**
  * Validation
+ *
  * Overwrites certain validation rules in order to make them locale aware. Locale
  * specific versions are added as formats to those rules. In order to validate a
  * german postal code you may use the following configuration in a model.
+ *
  * {{{
  * // ...
  *    public $validates = (
@@ -158,11 +173,14 @@ Multibyte::config([
  *        ]
  *        // ...
  * }}}
+ *
  * When no format or the special `any` format is provided the rule will use the
  * built-in regular expression. This ensures that default behavior isn't affected.
+ *
  * The regular expression for a locale aware rule is retrieved using the `Catalog`
  * class. To add support for more locales and rules have a look at the `li3_lldr`
  * and `li3_cldr` projects.
+ *
  * Further enables support for multibyte strings through the `Multibyte` class by
  * overwriting rules (currently just `lengthBetween`).
  *
@@ -174,8 +192,8 @@ Multibyte::config([
  */
 foreach (['phone', 'postalCode', 'ssn'] as $name) {
 	$regex = Validator::rules($name);
-	Validator::add($name,
-		function ($value, $format, $options) use ($name, $regex) {
+
+	Validator::add($name, function ($value, $format, $options) use ($name, $regex) {
 			if ($format !== 'any') {
 				$regex = Catalog::read(true, "validation.{$name}", $format);
 			}
@@ -188,13 +206,13 @@ foreach (['phone', 'postalCode', 'ssn'] as $name) {
 			return preg_match($regex, $value);
 		});
 }
-Validator::add('lengthBetween',
-	function ($value, $format, $options) {
-		$length = Multibyte::strlen($value);
-		$options += ['min' => 1, 'max' => 255];
 
-		return ($length >= $options['min'] && $length <= $options['max']);
-	});
+Validator::add('lengthBetween', function ($value, $format, $options) {
+	$length = Multibyte::strlen($value);
+	$options += ['min' => 1, 'max' => 255];
+
+	return ($length >= $options['min'] && $length <= $options['max']);
+});
 
 /**
  * In-View Translation
@@ -205,13 +223,11 @@ Validator::add('lengthBetween',
  * @see lithium\g11n\Message::aliases()
  * @see lithium\net\http\Media
  */
-Filters::apply(Media::class,
-	'_handle',
-	function ($params, $next) {
-		$params['handler'] += ['outputFilters' => []];
-		$params['handler']['outputFilters'] += Message::aliases();
+Filters::apply(Media::class, '_handle', function ($params, $next) {
+	$params['handler'] += ['outputFilters' => []];
+	$params['handler']['outputFilters'] += Message::aliases();
 
-		return $next($params);
-	});
+	return $next($params);
+});
 
 ?>

@@ -8,7 +8,7 @@
 
 namespace app\config\bootstrap;
 
-use Exception;
+//use Exception;
 use lithium\action\Dispatcher;
 use lithium\aop\Filters;
 use lithium\core\Environment;
@@ -29,22 +29,20 @@ use lithium\core\Libraries;
  * @see lithium\core\Environment
  * @see lithium\net\http\Router
  */
-Filters::apply(Dispatcher::class,
-	'run',
-	function ($params, $next) {
-		Environment::set($params['request']);
-		foreach (array_reverse(Libraries::get()) as $name => $config) {
-			if ($name === 'lithium') {
-				continue;
-			}
-			$file = "{$config['path']}/config/routes.php";
-			file_exists($file) ? call_user_func(function () use ($file) {
-				include $file;
-			}) : null;
-		}
+Filters::apply(Dispatcher::class, 'run', function ($params, $next) {
+	Environment::set($params['request']);
 
-		return $next($params);
-	});
+	foreach (array_reverse(Libraries::get()) as $name => $config) {
+		if ($name === 'lithium') {
+			continue;
+		}
+		$file = "{$config['path']}/config/routes.php";
+		file_exists($file) ? \call_user_func(function () use ($file) { include $file; }) : null;
+	}
+
+	return $next($params);
+});
+
 /**
  * This filter protects against HTTP host header attacks, by matching the `Host` header
  * sent by the client against a known list of good hostnames. You'll need to modify
