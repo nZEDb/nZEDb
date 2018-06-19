@@ -147,6 +147,7 @@ class Update extends \app\extensions\console\Command
 			}
 		} catch (\Exception $e) {
 			$this->error($e->getMessage());
+			echo $e->getMessage() . \PHP_EOL;
 		}
 	}
 
@@ -195,7 +196,15 @@ class Update extends \app\extensions\console\Command
 			$command .= ' --prefer-source';
 		}
 		$this->out('Running composer install process...', 'primary');
+		$oldwd = getcwd();
+		if ($oldwd !== false) {
+			$oldwd = \chdir(\nZEDb_ROOT) ? $oldwd : false;
+		}
 		system($command, $status);
+		if ($oldwd !== false) {
+			\chdir(\nZEDb_ROOT);
+		}
+
 		return $status;
 	}
 
