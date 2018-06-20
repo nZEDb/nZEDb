@@ -202,7 +202,7 @@ class Update extends \app\extensions\console\Command
 		}
 		system($command, $status);
 		if ($oldwd !== false) {
-			\chdir(\nZEDb_ROOT);
+			\chdir($oldwd);
 		}
 
 		return $status;
