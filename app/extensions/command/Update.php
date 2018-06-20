@@ -190,7 +190,7 @@ class Update extends \app\extensions\console\Command
 	{
 		$this->initialiseGit();
 		$command = 'composer install';
-		if (in_array($this->gitBranch, $this->git->getBranchesStable())) {
+		if (\in_array($this->gitBranch, $this->git->getBranchesStable(), false)) {
 			$command .= ' --prefer-dist --no-dev';
 		} else {
 			$command .= ' --prefer-source';
