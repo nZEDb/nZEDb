@@ -28,7 +28,7 @@ if (!isset($argv[1]) || !in_array($argv[1], ['1'])) {
 
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php';
 
-use nzedb\db\Settings;
+use app\models\Settings;
 use nzedb\db\Settings as DB;
 
 $pdo = new DB();
