@@ -41,6 +41,8 @@ class Settings extends DB
 	const ERR_BAD_COVERS_PATH       = -9;
 	const ERR_BAD_YYDECODER_PATH    = -10;
 
+	protected $table;
+
 	private $settings;
 
 	public function __construct(array $options = [])
@@ -49,8 +51,6 @@ class Settings extends DB
 		$result = parent::exec("describe site", true);
 		$this->table = ($result === false) ? 'settings' : 'site';
 		$this->setCovers();
-
-		return $this->pdo;
 	}
 
 	/**
