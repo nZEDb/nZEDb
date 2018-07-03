@@ -10,6 +10,10 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-07-03 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.8.0
+
+
 2018-07-02 niel
 	Fix: Admin group list active/inactive pages broken by commit 8b5235b8.
 2018-06-19 niel
