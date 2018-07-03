@@ -1,9 +1,10 @@
 <?php
 require_once './config.php';
 
-use app\models\Group as Groups;
+use app\models\Groups;
 
 $page = new AdminPage();
+
 $page->title = $page->meta_title = 'Group List';
 
 $pageno = $_REQUEST['pageno'] ?? 1;

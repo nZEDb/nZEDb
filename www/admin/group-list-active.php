@@ -3,7 +3,8 @@ require_once './config.php';
 
 use app\models\Groups;
 
-$pageno = $_REQUEST['pageno'] ?? 1;
+$page = new AdminPage();
+
 $page->title = $page->meta_title = 'Group List';
 
 $pageno = $_REQUEST['pageno'] ?? 1;
