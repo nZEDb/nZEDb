@@ -110,19 +110,19 @@ coding_style:
                 true_false_null: undefined
 
 filter:
+    excluded_paths:
+        - "docs/"
+        - "resources/"
+        - "app/config/bootstrap/action.php"
+        - "app/config/bootstrap/cache.php"
+        - "app/config/bootstrap/console.php"
+        - "app/config/bootstrap/errors.php"
+        - "app/config/bootstrap/g11n.php"
+        - "app/config/bootstrap/logger.php"
+        - "app/config/bootstrap/media.php"
+        - "app/config/bootstrap/session.php"
+        - "app/config/routes.php"
     dependency_paths:
         - "app/libraries/"
         - "libraries/"
         - "libs/"
-    excluded_paths:
-        - "docs/"
-        - "resources/"
-        - "apps/config/bootstrap/action.php"
-        - "apps/config/bootstrap/cache.php"
-        - "apps/config/bootstrap/console.php"
-        - "apps/config/bootstrap/errors.php"
-        - "apps/config/bootstrap/g11n.php"
-        - "apps/config/bootstrap/logger.php"
-        - "apps/config/bootstrap/media.php"
-        - "apps/config/bootstrap/session.php"
-        - "apps/config/routes.php"

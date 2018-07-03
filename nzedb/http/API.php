@@ -20,8 +20,8 @@
  */
 namespace nzedb\http;
 
+use app\models\Groups;
 use nzedb\Category;
-use nzedb\Groups;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
 
@@ -127,7 +127,7 @@ class API extends Capabilities {
 	{
 		$groupName = -1;
 		if (isset($this->getRequest['group'])) {
-			$group = (new Groups())->isValidGroup($this->getRequest['group']);
+			$group = Groups::isValidName($this->getRequest['group']);
 			if ($group !== false){
 				$groupName = $group;
 			}

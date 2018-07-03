@@ -1,9 +1,11 @@
 <?php
 namespace nzedb\processing;
 
+use app\models\Groups as Group;
 use app\models\MultigroupPosters;
 use app\models\ReleasesGroups;
 use app\models\Settings;
+use app\models\Tables;
 use nzedb\Categorize;
 use nzedb\Category;
 use nzedb\ConsoleTools;
@@ -172,8 +174,9 @@ class ProcessReleases
 		$groupID = '';
 
 		if (!empty($groupName) && $groupName !== 'mgr') {
-			$groupInfo = $this->groups->getByName($groupName);
-			$groupID = $groupInfo['id'];
+			//$groupInfo = $this->groups->getAllByName($groupName);
+			//$groupID = $groupInfo['id'];
+			$groupID = Group::getIDByName($groupName);
 		}
 
 		$processReleases = microtime(true);
@@ -398,7 +401,7 @@ class ProcessReleases
 		}
 
 		if ($groupID == '') {
-			$groupIDs = $this->groups->getActiveIDs();
+			$groupIDs = Group::getActiveIDs()->data();
 		} else {
 			$groupIDs = [['id' => $groupID]];
 		}
@@ -413,7 +416,7 @@ class ProcessReleases
 
 			$groupMinSizeSetting = $groupMinFilesSetting = 0;
 
-			$groupMinimums = $this->groups->getByID($groupID['id']);
+			$groupMinimums = Group::getAllByID($groupID['id']);
 			if ($groupMinimums !== false) {
 				if (!empty($groupMinimums['minsizetoformrelease']) && $groupMinimums['minsizetoformrelease'] > 0) {
 					$groupMinSizeSetting = (int)$groupMinimums['minsizetoformrelease'];
@@ -524,7 +527,7 @@ class ProcessReleases
 	 */
 	protected function initiateTableNames($groupID)
 	{
-		$this->tables = $this->groups->getCBPTableNames($groupID);
+		$this->tables = Tables::getTPGNamesFromId($groupID);
 	}
 
 	/**
@@ -542,6 +545,7 @@ class ProcessReleases
 	 * @param int|string $groupID (optional)
 	 *
 	 * @return array
+	 * @throws \InvalidArgumentException if a new entry must be created but the 'name' is not set.
 	 */
 	public function createReleases($groupID)
 	{
@@ -668,24 +672,25 @@ class ProcessReleases
 						if (preg_match_all('#(\S+):\S+#', $collection['xref'], $matches)) {
 							foreach ($matches[1] as $grp) {
 								//check if the group name is in a valid format
-								$grpTmp = $this->groups->isValidGroup($grp);
+								$grpTmp = Group::isValidName($grp);
 								if ($grpTmp !== false) {
 									//check if the group already exists in database
-									$xrefGrpID = $this->groups->getIDByName($grpTmp);
+									$xrefGrpID = Group::getIDByName($grpTmp);
 									if ($xrefGrpID === '') {
-										$xrefGrpID = $this->groups->add(
-											[
-												'name'                  => $grpTmp,
-												'description'           => 'Added by Release processing',
-												'backfill_target'       => 1,
-												'first_record'          => 0,
-												'last_record'           => 0,
-												'active'                => 0,
-												'backfill'              => 0,
-												'minfilestoformrelease' => '',
-												'minsizetoformrelease'  => ''
-											]
-										);
+										try {
+											$newGroup = Group::create(
+												[
+													'name'        => $grpTmp,
+													'description' => 'Added by Release processing',
+												]
+											);
+										} catch (\InvalidArgumentException $e) {
+											throw new \InvalidArgumentException($e->getMessage() .
+												PHP_EOL .
+												'Thrown in ProcessReleases.php');
+										}
+										$newGroup->save();
+										$xrefGrpID = $newGroup->id;
 									}
 
 									$relGroupsChk = ReleasesGroups::find('first',
@@ -1169,7 +1174,7 @@ class ProcessReleases
 		}
 
 		if ($groupID == '') {
-			$groupIDs = $this->groups->getActiveIDs();
+			$groupIDs = Group::getActiveIDs()->data();
 		} else {
 			$groupIDs = [['id' => $groupID]];
 		}

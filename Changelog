@@ -10,6 +10,36 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-07-03 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.8.0
+
+
+2018-07-02 niel
+	Fix: Admin group list active/inactive pages broken by commit 8b5235b8.
+2018-06-19 niel
+**NOTE** After updating you may have to do `composer install && ./zed update nzedb` to get things
+working again.
+	Fix: Update ./zed command to switch directories, so that lithium considers it part of the main
+		app. This is necessary as lithium v1.2 treats the commands differently if outside the 'app'
+		directory, breaking our console commands because of the use of a model in
+		app/config/connections.php.
+	Chg: Updated base Lithium Framework 'app' files to latest v1.2 versions (again).
+	Fix: Wrap LITHIUM_APP_PATH and LITHIUM_LIBRARY_PATH in "if defined" check to prevent clash
+		caused by the way Lithium handles console commands when not started from inside the app
+		hierarchy.
+	Chg: Remove support for simple_php_yenc_decode extension as it doesn't support PHP 7+.
+2018-06-16 niel
+	Chg: Merging in lithium v1.2 (dev-li3-v1.2 branch) changes into dev.
+2018-06-12 niel
+	Fix: Correct use statement for Groups model.
+2018-06-08 niel
+	Fix: Correct calls of isValidGroup to isValidName for Groups model.
+2018-06-07 niel
+	Mrg: dev-groups This branch brings changes to how the groups table is used. A new Groups Model
+		is now the default way to access it. The older methods still work but are deprecated and
+		will be removed in the future.
+2018-04-23 niel
+	Chg: Remove 'releases' column from groups listing and browse group.
 2018-06-04 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.7.0
 

@@ -147,6 +147,7 @@ class Update extends \app\extensions\console\Command
 			}
 		} catch (\Exception $e) {
 			$this->error($e->getMessage());
+			echo $e->getMessage() . \PHP_EOL;
 		}
 	}
 
@@ -189,13 +190,21 @@ class Update extends \app\extensions\console\Command
 	{
 		$this->initialiseGit();
 		$command = 'composer install';
-		if (in_array($this->gitBranch, $this->git->getBranchesStable())) {
+		if (\in_array($this->gitBranch, $this->git->getBranchesStable(), false)) {
 			$command .= ' --prefer-dist --no-dev';
 		} else {
 			$command .= ' --prefer-source';
 		}
 		$this->out('Running composer install process...', 'primary');
+		$oldwd = getcwd();
+		if ($oldwd !== false) {
+			$oldwd = \chdir(\nZEDb_ROOT) ? $oldwd : false;
+		}
 		system($command, $status);
+		if ($oldwd !== false) {
+			\chdir($oldwd);
+		}
+
 		return $status;
 	}
 

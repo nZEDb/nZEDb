@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use app\models\Groups as Group;
 use app\models\Settings;
 use nzedb\db\DB;
 use nzedb\processing\PostProcess;
@@ -352,7 +353,6 @@ class Nfo
 				}
 			}
 
-			$groups = new Groups(['Settings' => $this->pdo]);
 			$nzbContents = new NZBContents(
 				[
 					'Echo' => $this->echo,
@@ -365,7 +365,7 @@ class Nfo
 			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo]);
 
 			foreach ($res as $arr) {
-				$fetchedBinary = $nzbContents->getNfoFromNZB($arr['guid'], $arr['id'], $arr['groups_id'], $groups->getNameByID($arr['groups_id']));
+				$fetchedBinary = $nzbContents->getNfoFromNZB($arr['guid'], $arr['id'], $arr['groups_id'], Group::getNameByID($arr['groups_id']));
 				if ($fetchedBinary !== false) {
 					// Insert nfo into database.
 					$cp = 'COMPRESS(%s)';

@@ -1,12 +1,10 @@
 <?php
 namespace nzedb;
 
-use app\models\Group;
+use app\models\Groups;
 use app\models\Predb as PredbModel;
 use lithium\data\Connections;
 use nzedb\db\DB;
-use nzedb\Logger;
-use nzedb\PreDb;
 
 /**
  * Class IRCScraper
@@ -41,7 +39,7 @@ class IRCScraper extends IRCClient
 
 	/**
 	 * Logging object for reporting errors.
-	 * @var \nzedb\Logger Object
+	 * @var \nzedb\Logger|null Object for logging events.
 	 */
 	protected $log = null;
 
@@ -292,8 +290,14 @@ class IRCScraper extends IRCClient
 				$this->insertPreEntry();
 			} catch (\Exception $exception) {
 				if (nZEDb_LOGERROR) {
-					$this->log->log(__CLASS__, __METHOD__, $exception->getMessage(),
-						Logger::LOG_ERROR);
+					if ($this->log instanceof Logger) {
+						$this->log->log(__CLASS__,
+							__METHOD__,
+							$exception->getMessage(),
+							Logger::LOG_ERROR);
+					} else {
+						echo $exception->getMessage() . \PHP_EOL;
+					}
 				}
 			}
 		} else {
@@ -477,13 +481,13 @@ class IRCScraper extends IRCClient
 	 * @param string $groupName
 	 *
 	 * @return mixed
-	 *
 	 * @access protected
+	 * @throws \InvalidArgumentException if a new entry must be created but the 'name' is not set.
 	 */
 	protected function _getGroupID($groupName)
 	{
 		if (!isset($this->_groupList[$groupName])) {
-			$group = Group::findIdFromName($groupName, [
+			$group = Groups::findIdFromName($groupName, [
 				'create'	=> true,
 				'description'	=> 'Added by IRCScraper.',
 			]);
@@ -491,7 +495,7 @@ class IRCScraper extends IRCClient
 			if ($group === null) {
 				$this->_groupList[$groupName] = false;
 			} else {
-				$this->_groupList[$groupName] = $group->id;
+				$this->_groupList[$groupName] = $group;
 			}
 		}
 

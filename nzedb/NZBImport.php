@@ -1,10 +1,11 @@
 <?php
 namespace nzedb;
 
+
+use app\models\Groups;
 use app\models\Settings;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
-use nzedb\Groups;
 
 /**
  * Import NZB files into the database.
@@ -263,9 +264,10 @@ class NZBImport
 	/**
 	 * @param object $nzbXML Reference of simpleXmlObject with NZB contents.
 	 * @param bool|string $useNzbName Use the NZB file name as release name?
-	 * @return bool
 	 *
+	 * @return bool
 	 * @access protected
+	 * @throws \InvalidArgumentException if a new entry must be created but the 'name' is not set.
 	 */
 	protected function scanNZBFile(&$nzbXML, $useNzbName = false)
 	{
@@ -305,9 +307,9 @@ class NZBImport
 							$groupName = $group;
 						}
 					} else {
-						$group = $this->groups->isValidGroup($group);
+						$group = Groups::isValidName($group);
 						if ($group !== false) {
-							$groupID = $this->groups->add([
+							/*$groupID = $this->groups->add([
 								'name' => $group,
 								'description' => 'Added by NZBimport script.',
 								'backfill_target' => 1,
@@ -315,8 +317,21 @@ class NZBImport
 								'last_record' => 0,
 								'active' => 0,
 								'backfill' => 0
-							]);
-							$this->allGroups[$group] = $groupID;
+							]);*/
+							try {
+								$groupID = Groups::create(
+									[
+										'name'        => $group,
+										'description' => 'Added by NZBimport script.',
+									]
+								);
+							} catch (\InvalidArgumentException $e) {
+								throw new \InvalidArgumentException($e->getMessage() .
+									PHP_EOL .
+									'Thrown in NZBImport.php');
+							}
+							$groupID->save();
+							$this->allGroups[$group] = $groupID->id;
 
 							$this->echoOut("Adding missing group: ($group)");
 						}

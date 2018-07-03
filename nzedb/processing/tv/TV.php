@@ -770,7 +770,7 @@ abstract class TV extends Videos
 	 * Returns true or false
 	 *
 	 * @param $array
-	 * @param int $type
+	 * @param string $type
 	 *
 	 * @return bool
 	 */

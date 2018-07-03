@@ -1,10 +1,14 @@
 <?php
 /**
- * Lithium: the most rad php framework
+ * li₃: the most RAD framework for PHP (http://li3.me)
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2015, Union of RAD
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
+ * The full license text can be found in the LICENSE.txt file.
  */
+namespace app\config\bootstrap;
+
+use lithium\data\Connections;
 
 /**
  * ### Configuring backend database connections
@@ -35,26 +39,25 @@
  * @see lithium\core\Adaptable
  * @see lithium\core\Environment
  */
-use lithium\data\Connections;
 
 /**
  * Uncomment this configuration to use MongoDB as your default database.
  */
-// Connections::add('default', array(
+// Connections::add('default', [
 // 	'type' => 'MongoDb',
 // 	'host' => 'localhost',
-// 	'database' => 'my_app'
-// ));
+// 	'database' => 'app'
+// ]);
 
 /**
  * Uncomment this configuration to use CouchDB as your default database.
  */
-// Connections::add('default', array(
+// Connections::add('default', [
 // 	'type' => 'http',
 // 	'adapter' => 'CouchDb',
 // 	'host' => 'localhost',
-// 	'database' => 'my_app'
-// ));
+// 	'database' => 'app'
+// ]);
 
 /**
  * Uncomment this configuration to use MySQL as your default database.
@@ -62,32 +65,33 @@ use lithium\data\Connections;
  * Strict mode can be enabled or disabled, older MySQL versions were
  * by default non-strict.
  */
-// Connections::add('default', array(
+// Connections::add('default', [
 // 	'type' => 'database',
 // 	'adapter' => 'MySql',
 // 	'host' => 'localhost',
 // 	'login' => 'root',
 // 	'password' => '',
-// 	'database' => 'my_app',
+// 	'database' => 'app',
 // 	'encoding' => 'UTF-8',
 // 	'strict' => false
-// ));
+// ]);
+
+use app\models\Settings;
+use nzedb\utility\Misc;
 
 \lithium\util\Inflector::rules('uninflected', ['predb']);
 
-$installed = nZEDb_CONFIGS . 'install.lock';
-
-if (! defined('DB_MOCK')) {
+if (! \defined('DB_MOCK')) {
 	// Add new condition to use DB_MOCK mode here.
-	if (defined('MAINTENANCE_MODE_ENABLED') && MAINTENANCE_MODE_ENABLED == true) {
-		define('DB_MOCK', true);
+	if (\defined('MAINTENANCE_MODE_ENABLED') && MAINTENANCE_MODE_ENABLED == true) {
+		\define('DB_MOCK', true);
 	} else {
-		define('DB_MOCK', false);
+		\define('DB_MOCK', false);
 	}
 }
 
 if (DB_MOCK === true) {
-	if (defined('nZEDb_DEBUG') && nZEDb_DEBUG === true) {
+	if (\defined('nZEDb_DEBUG') && nZEDb_DEBUG === true) {
 		echo 'No connection defined, using mock connection.' . PHP_EOL;
 	}
 	Connections::add('mock',
@@ -106,7 +110,7 @@ if (DB_MOCK === true) {
 }
 
 // Check for install.lock first. If it exists, so should config.php
-if (file_exists($installed)) {
+if (file_exists(INSTALLED)) {
 	// This allows us to set up a db config separate to that created by /install
 	$config1 = LITHIUM_APP_PATH . DS . 'config' . DS . 'db-config.php';
 	$config2 = nZEDb_CONFIGS . 'config.php';
@@ -165,9 +169,15 @@ if (file_exists($installed)) {
 			]
 		);
 
-		\nzedb\utility\Misc::setCoversConstant(
-			\app\models\Settings::value('site.main.coverspath')
-		);
+		try {
+			Misc::setCoversConstant(
+				Settings::value('site.main.coverspath')
+			);
+		} catch (\Error $e) {
+			echo $e->getMessage() . \PHP_EOL;
+
+			exit();
+		}
 	} else {
 		throw new \ErrorException(
 			"No valid database adapter provided in configuration file '$config'"
@@ -185,7 +195,7 @@ if (file_exists($installed)) {
 			$adapter = 'PostgreSql';
 			break;
 		default:
-			throw new \RuntimeException("Invalid database system in dev-config file!");
+			throw new \RuntimeException('Invalid database system in dev-config file!');
 			break;
 	}
 
@@ -213,7 +223,7 @@ if (file_exists($installed)) {
 		]
 	);
 
-	if (nZEDb_DEBUG) {
+	if ($config['debug']['enabled'] === true) {
 		if (!defined('DB_SYSTEM')) {
 			define('DB_SYSTEM', strtolower($adapter));
 		}
@@ -263,8 +273,8 @@ if (file_exists($installed)) {
 		define('NNTP_SOCKET_TIMEOUT_A', $usp['connection2']['timeout']);
 	}
 
-	\nzedb\utility\Misc::setCoversConstant(
-		\app\models\Settings::value('site.main.coverspath')
+	Misc::setCoversConstant(
+		Settings::value('site.main.coverspath')
 	);
 }
 

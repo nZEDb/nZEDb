@@ -1,7 +1,9 @@
 <?php
 namespace nzedb;
 
+use app\models\Groups as Group;
 use app\models\Settings;
+use app\models\Tables;
 use nzedb\db\DB;
 use nzedb\processing\ProcessReleasesMultiGroup;
 
@@ -287,8 +289,8 @@ class Binaries
 			(int)Settings::value('..maxpartrepair') : 15000;
 		$this->_partRepairMaxTries = (Settings::value('..partrepairmaxtries') != '' ?
 			(int)Settings::value('..partrepairmaxtries') : 3);
-		$this->_showDroppedYEncParts = (Settings::value('..showdroppedyencparts') == 1 ? true : false);
-		$this->allAsMgr = Settings::value('indexer.mgr.allasmgr') == 1 ? true : false;
+		$this->_showDroppedYEncParts = Settings::value('..showdroppedyencparts') == 1;
+		$this->allAsMgr = Settings::value('indexer.mgr.allasmgr') == 1;
 
 		$this->blackList = $this->whiteList = [];
 	}
@@ -302,7 +304,7 @@ class Binaries
 	 */
 	public function updateAllGroups($maxHeaders = 100000)
 	{
-		$groups = $this->_groups->getActive();
+		$groups = Group::getActive()->data();
 
 		$groupCount = count($groups);
 		if ($groupCount > 0) {
@@ -622,7 +624,7 @@ class Binaries
 		$this->notYEnc = $this->headersBlackListed = 0;
 
 		// Check if MySQL tables exist, create if they do not, get their names at the same time.
-		$this->tableNames = $this->_groups->getCBPTableNames($this->groupMySQL['id']);
+		$this->tableNames = Tables::getTPGNamesFromId($this->groupMySQL['id']);
 
 		$mgrPosters = $this->getMultiGroupPosters();
 
@@ -751,8 +753,9 @@ class Binaries
 				// enabled AND it's not prefixed by '"Usenet Index Post'
 				if ($this->_showDroppedYEncParts === true && strpos($header['Subject'], '"Usenet Index Post') !== 0) {
 					file_put_contents(
-						nZEDb_LOGS . 'not_yenc' . $this->groupMySQL['name'] . '.dropped.log',
-						$header['Subject'] . PHP_EOL, FILE_APPEND
+						nZEDb_LOGS . 'dropped.no_yenc.' . $this->groupMySQL['name'] . '.log',
+						$header['from'] . "\t" . $header['Subject'] . PHP_EOL,
+						FILE_APPEND
 					);
 				}
 				$this->notYEnc++;
@@ -796,7 +799,7 @@ class Binaries
 
 		// Standard headers go second so we can switch tableNames back and do part repair to standard group tables
 		if (isset($stdHeaders) && count($stdHeaders) > 0) {
-			$this->tableNames = $this->_groups->getCBPTableNames($this->groupMySQL['id']);
+			$this->tableNames = Tables::getTPGNamesFromId($this->groupMySQL['id']);
 			$this->storeHeaders($stdHeaders, false);
 		}
 		unset($stdHeaders);
@@ -881,12 +884,17 @@ class Binaries
 				}
 
 				// Attempt to find the file count. If it is not found, set it to 0.
-				if (!$whitelistMatch && !preg_match('/[[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[])\s$:]/i', $this->header['matches'][1], $fileCount)) {
+				if (!$whitelistMatch &&
+					!preg_match(
+						'/[[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[])\s$:]/i',
+						$this->header['matches'][1],
+						$fileCount)) {
 					$fileCount[1] = $fileCount[3] = 0;
 					if ($this->_showDroppedYEncParts === true) {
 						file_put_contents(
-							nZEDb_LOGS . 'no_files' . $this->groupMySQL['name'] . '.log',
-							$this->header['Subject'] . PHP_EOL, FILE_APPEND
+							nZEDb_LOGS . 'dropped.no_files' . $this->groupMySQL['name'] . '.log',
+							$this->header['From'] . "\t" . $this->header['Subject'] . PHP_EOL,
+							FILE_APPEND
 						);
 					}
 				}
@@ -1155,18 +1163,20 @@ class Binaries
 	 * Attempt to get missing article headers.
 	 *
 	 * @param array	$groupArr	The info for this group from mysql.
-	 *
 	 * @param array	$tables		The tables to scan.
 	 *
 	 * @return void
 	 */
 	public function partRepair($groupArr, array $tables = null)
 	{
+		/*
 		$tableNames = $tables;
 
 		if ($tableNames === null) {
-			$tableNames = $this->_groups->getCBPTableNames($groupArr['id']);
+			$tableNames = Tables::getTPGNamesFromId($groupArr['id']);
 		}
+		*/
+		$tableNames = $tables ?: Tables::getTPGNamesFromId($groupArr['id']);
 
 		// Get all parts in partrepair table.
 		$missingParts = $this->_pdo->query(
@@ -1300,10 +1310,10 @@ class Binaries
 	public function postdate($post, array $groupData)
 	{
 		// Set table names
-		$groupID = $this->_groups->getIDByName($groupData['group']);
+		$groupID = Group::getIDByName($groupData['group']);
 		$group = [];
 		if ($groupID !== '') {
-			$group = $this->_groups->getCBPTableNames($groupID);
+			$group = Tables::getTPGNamesFromId($groupID);
 		}
 
 		$currentPost = $post;

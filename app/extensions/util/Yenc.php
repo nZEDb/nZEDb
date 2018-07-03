@@ -25,7 +25,7 @@ class Yenc extends \lithium\core\Adaptable
 	/**
 	 * `Libraries::locate()`-compatible path to adapter for this class.
 	 *
-	 * @see lithium\core\Libraries::locate()
+	 * @see \lithium\core\Libraries::locate()
 	 * @var string Dot-delimited path.
 	 */
 	protected static $_adapters = 'adapter.extensions.util.yenc';

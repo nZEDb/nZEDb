@@ -1,38 +1,39 @@
 <?php
 require_once './config.php';
 
-use nzedb\Groups;
+use app\models\Groups;
 
-$page   = new AdminPage();
-$groups = new Groups(['Settings' => $page->settings]);
+$page = new AdminPage();
 
-$gname = "";
-if (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname'])) {
-	$gname = $_REQUEST['groupname'];
-}
+$page->title = $page->meta_title = 'Group List';
 
-$groupcount = $groups->getCount($gname, 0);
+$pageno = $_REQUEST['pageno'] ?? 1;
 
-$offset    = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;
-$groupname = (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname'])) ?
-	$_REQUEST['groupname'] : '';
+$conditions = ['active' => 0];
+$conditions += empty($groupname) ? [] : ['name' => ['LIKE' => '%$groupname%']];
 
-$page->smarty->assign('groupname', $groupname);
-$page->smarty->assign('pagertotalitems', $groupcount);
-$page->smarty->assign('pageroffset', $offset);
-$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
+$count = Groups::find('count', ['conditions' => $conditions]);
+$grouplist = Groups::getRange($pageno,ITEMS_PER_PAGE, $_REQUEST['groupname'], 1);
 
-$groupsearch = ($gname != "") ? 'groupname=' . $gname . '&amp;' : '';
-$page->smarty->assign('pagerquerybase',
-					  WWW_TOP . "/group-list-inactive.php?" . $groupsearch . "offset=");
-$pager = $page->smarty->fetch("pager.tpl");
-$page->smarty->assign('pager', $pager);
+$groupsearch = empty($_REQUEST['groupname']) ? '' : '&amp;groupname=' . $_REQUEST['groupname'];
 
-$grouplist = $groups->getRange($offset, ITEMS_PER_PAGE, $gname, 0);
+$page->smarty->assign(
+	[
+		'groupname'        => $_REQUEST['groupname'],
+		'pagecurrent'      => (int)$pageno,
+		'pagerlast'         => (int)($count / ITEMS_PER_PAGE) + 1,
+		'pagerquerybase'   => WWW_TOP . '/group-list-inactive?pageno=',
+		'pagerquerysuffix' => $groupsearch,
+		'pagertotalitems'  => $count,
+		'results'          => $grouplist,
+		'tz'               => \lithium\data\Connections::config()['default']['object']->timezone(),
+	]
+);
 
-$page->smarty->assign('grouplist', $grouplist);
-
-$page->title = "Group List";
+// Pager must be set outside the main assignment, so it can receive the scope of those variables.
+$page->smarty->assign('pager', $page->smarty->fetch('paginate.tpl'));
 
 $page->content = $page->smarty->fetch('group-list.tpl');
 $page->render();
+
+?>

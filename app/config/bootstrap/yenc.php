@@ -18,12 +18,14 @@
  */
 
 use app\models\Settings;
+use lithium\aop\Filters;
+use lithium\action\Dispatcher;
 
 
 if (defined('nZEDb_INSTALLER') && nZEDb_INSTALLER !== false) {
-	$adapter = 'Php';
+		$adapter = 'Php';
 } else {
-	switch (true) {
+		switch (true) {
 		case extension_loaded('yenc'):
 			if (method_exists('\yenc\yEnc', 'version') &&
 				version_compare(
@@ -38,13 +40,11 @@ if (defined('nZEDb_INSTALLER') && nZEDb_INSTALLER !== false) {
 				trigger_error('Your version of the php-yenc extension is out of date and will be
 				ignored. Please update it to use the extension.', E_USER_WARNING);
 			}
-		case extension_loaded('simple_php_yenc_decode'):
-			$adapter = 'SimplePhpYencDecode';
-			break;
 		default:
 			$adapter = 'Php';
 	}
 }
+
 
 app\extensions\util\Yenc::config(
 	[
@@ -59,15 +59,15 @@ app\extensions\util\Yenc::config(
 		'php' => [
 			'adapter' => 'Php'
 		],
-
-		'simple' => [
-			'adapter' => 'SimplePhpYencDecode'
-		],
-
-		'ydecode' => [
-			'adapter' => 'Ydecode'
-		],
 	]
 );
+
+Filters::apply(Ypart::class,
+	'parseBlock',
+	function ($params, $next) {
+		return $next($params);
+	});
+
+
 
 ?>

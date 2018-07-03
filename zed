@@ -1,2 +1,5 @@
-#!/bin/sh
-libraries/lithium/console/li3 "$@"
+#!/bin/bash
+
+pushd app
+../libraries/lithium/console/li3 "$@"
+popd
