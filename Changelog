@@ -13,6 +13,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 2018-07-02 niel
 	Fix: Admin group list active/inactive pages broken by commit 8b5235b8.
 2018-06-19 niel
+**NOTE** After updating you may have to do `composer install && ./zed update nzedb` to get things
+working again.
 	Fix: Update ./zed command to switch directories, so that lithium considers it part of the main
 		app. This is necessary as lithium v1.2 treats the commands differently if outside the 'app'
 		directory, breaking our console commands because of the use of a model in

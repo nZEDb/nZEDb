@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 pushd app
 ../libraries/lithium/console/li3 "$@"
 popd
