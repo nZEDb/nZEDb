@@ -15,7 +15,7 @@
 	</tr>
 
 	{foreach $results as $result}
-		{if $result.num_releases > 0}
+		{if $pagertotalitems > 0}
 		<tr class="{cycle values=",alt"}">
 			<td>
 				<a title="Browse releases from {$result.name|replace:"alt.binaries":"a.b"}" href="{$smarty.const.WWW_TOP}/browse?g={$result.name}">{$result.name|replace:"alt.binaries":"a.b"}</a>
