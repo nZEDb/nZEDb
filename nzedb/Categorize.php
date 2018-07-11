@@ -478,6 +478,16 @@ class Categorize extends Category
 				case $group === 'alt.binaries.pro-wrestling':
 					$this->tmpCat = Category::TV_SPORT;
 					break;
+				case $group === 'alt.binaries.sounds':
+					switch (true) {
+						case $this->categorizeForeign && $this->isMusicForeign():
+						case $this->isMusic():
+							break;
+						default:
+							$this->tmpCat = Category::MUSIC_MP3;
+							break;
+					}
+					break;
 				case preg_match('/alt\.binaries\.sounds\.(flac(\.jazz)?|jpop|lossless(\.[a-z0-9]+)?)|alt\.binaries\.(cd\.lossless|music\.flac)/i', $group):
 					switch (true) {
 						case $this->categorizeForeign && $this->isMusicForeign():
