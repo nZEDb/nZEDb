@@ -11,6 +11,12 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 
+2018-07-11 Bart39
+	Fix: Typo in querying database timezone
+	Chg: Add categorization for a.b.sounds
+	Chg: Search for all other/unknown categories (not just Misc>Other) when trying to fix names
+		using Par2
+	Chg: Strip '00-' from searchname (mostly music titles) when parsing Par2 for a better name
 2018-07-04 niel
 	Chg: Removed release counts, for the themes that used it, on group list templates.
 2018-07-04 niel

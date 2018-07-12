@@ -333,9 +333,17 @@ class NameFixer
 			$query = sprintf('
 					SELECT rel.id AS releases_id, rel.fromname, rel.guid, rel.groups_id
 					FROM releases rel
-					WHERE (rel.isrenamed = %d OR rel.categories_id = %d)
+					WHERE (rel.isrenamed = %d OR rel.categories_id in (%d, %d, %d, %d, %d, %d, %d, %d, %d))
 					AND proc_par2 = %d',
 					self::IS_RENAMED_NONE,
+					Category::BOOKS_UNKNOWN,
+					Category::GAME_OTHER,
+					Category::MOVIE_OTHER,
+					Category::MUSIC_OTHER,
+					Category::PC_PHONE_OTHER,
+					Category::TV_OTHER,
+					Category::OTHER_HASHED,
+					Category::XXX_OTHER,
 					Category::OTHER_MISC,
 					self::PROC_PAR2_NONE
 			);
