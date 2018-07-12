@@ -20,6 +20,8 @@
 
 namespace app\models;
 
+use lithium\data\collection\RecordSet;
+
 class Groups extends \app\extensions\data\Model
 {
 	public $belongsTo = ['Releases', 'ReleasesGroups'];
@@ -242,7 +244,13 @@ class Groups extends \app\extensions\data\Model
 		return $active->data();
 	}
 
-	public static function getBackfilling(string $order, bool $active = true)
+	/**
+	 * @param string $order
+	 * @param bool   $active
+	 *
+	 * @return array
+	 */
+	public static function getBackfilling(string $order, bool $active = true) : array
 	{
 		switch (\strtolower($order)) {
 			case '':
@@ -278,7 +286,7 @@ class Groups extends \app\extensions\data\Model
 			]
 		);
 
-		return $results->data();
+		return ($results instanceof RecordSet) ? $results->data() : [];
 	}
 
 	/**
