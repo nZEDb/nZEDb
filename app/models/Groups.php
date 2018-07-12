@@ -242,7 +242,7 @@ class Groups extends \app\extensions\data\Model
 		return $active->data();
 	}
 
-	public static function getBackfilling(string $order)
+	public static function getBackfilling(string $order, bool $active = true)
 	{
 		switch (\strtolower($order)) {
 			case '':
@@ -256,7 +256,7 @@ class Groups extends \app\extensions\data\Model
 				throw new \InvalidArgumentException("Order must be 'normal' or 'date'");
 		}
 
-		return static::find('all',
+		$results = static::find('all',
 			[
 				'fields'     => [
 					'id',
@@ -273,10 +273,12 @@ class Groups extends \app\extensions\data\Model
 					'backfill',
 					'description',
 				],
-				'conditions' => ['active' => true],
+				'conditions' => ['active' => $active, 'backfill' => true],
 				'order'      => $order
 			]
 		);
+
+		return $results->data();
 	}
 
 	/**
