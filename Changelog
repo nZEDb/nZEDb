@@ -11,6 +11,13 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 
+2018-07-13 Bart39
+	Fix: undefined index 'groupname' for Admin grouplist active/inactive pages
+	Fix: Admin grouplist inactive page returning active groups
+2018-07-13 niel
+	Fix: app\models\Groups::getBackfilling() to return array of groups filtered by active and
+		backfill state.
+	Fix: Check for valid RecordSet returning it, or an empty array otherwise
 2018-07-11 Bart39
 	Fix: Typo in querying database timezone
 	Chg: Add categorization for a.b.sounds
