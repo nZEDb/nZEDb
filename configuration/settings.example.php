@@ -18,7 +18,7 @@ use nzedb\utility\Misc;
  *                    $current_settings_file_version in nzedb\config\Configure.php
  * @version 4
  */
-define('nZEDb_SETTINGS_FILE_VERSION', 5);
+\define('nZEDb_SETTINGS_FILE_VERSION', 5);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// Web Settings ////////////////////////////////////////////////
@@ -28,14 +28,14 @@ define('nZEDb_SETTINGS_FILE_VERSION', 5);
  *
  * @default '50'
  */
-define('ITEMS_PER_PAGE', '50');
+\define('ITEMS_PER_PAGE', 50);
 
 /**
  * How many releases to show per page in cover view.
  *
  * @default '20'
  */
-define('ITEMS_PER_COVER_PAGE', '20');
+\define('ITEMS_PER_COVER_PAGE', 20);
 
 /**
  * How many releases maximum to display in total on browse/search/etc.
@@ -46,14 +46,14 @@ define('ITEMS_PER_COVER_PAGE', '20');
  * a relatively low value.
  * @default '125000'
  */
-define('nZEDb_MAX_PAGER_RESULTS', '125000');
+\define('nZEDb_MAX_PAGER_RESULTS', 125000);
 
 /**
  * If the PRE API page (preinfo) is open to the public or only accessible by registered / api users.
  *
  * @default false
  */
-define('nZEDb_PREINFO_OPEN', false);
+\define('nZEDb_PREINFO_OPEN', false);
 
 /**
  * Whether to check if a person is trying to send too many requests in a given amount of time,
@@ -61,14 +61,14 @@ define('nZEDb_PREINFO_OPEN', false);
  *
  * @default false
  */
-define('nZEDb_FLOOD_CHECK', false);
+\define('nZEDb_FLOOD_CHECK', false);
 
 /**
  * How many seconds should the person be locked out of the site.
  *
  * @default 5
  */
-define('nZEDb_FLOOD_WAIT_TIME', 5);
+\define('nZEDb_FLOOD_WAIT_TIME', 5);
 
 /**
  * How many requests in a second can a person send to the site max before being locked out for
@@ -76,7 +76,7 @@ define('nZEDb_FLOOD_WAIT_TIME', 5);
  *
  * @default 5
  */
-define('nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND', 5);
+\define('nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND', 5);
 
 /**
  * The higher this number, the more secure the password algorithm for the website will be, at the
@@ -86,7 +86,7 @@ define('nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND', 5);
  * @note    It is not recommended to set this under 11.
  * @default 11
  */
-define('nZEDb_PASSWORD_HASH_COST', 11);
+\define('nZEDb_PASSWORD_HASH_COST', 11);
 
 /**
  * The type of search system to use on the site.
@@ -96,7 +96,7 @@ define('nZEDb_PASSWORD_HASH_COST', 11);
  *
  * @default 0
  */
-define('nZEDb_RELEASE_SEARCH_TYPE', 0);
+\define('nZEDb_RELEASE_SEARCH_TYPE', 0);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////// Sphinx Settings ////////////////////////////////////////////
@@ -109,14 +109,14 @@ define('nZEDb_RELEASE_SEARCH_TYPE', 0);
  * @note    See misc/sphinxsearch/README.md for installation details.
  * @default '0'
  */
-define('nZEDb_SPHINXQL_HOST_NAME', '0');
+\define('nZEDb_SPHINXQL_HOST_NAME', '0');
 
 /**
  * This is the port to the SphinxQL server (mysql41 protocol).
  *
  * @default 9306
  */
-define('nZEDb_SPHINXQL_PORT', 9306);
+\define('nZEDb_SPHINXQL_PORT', 9306);
 
 /**
  * This is the (optional) location to the SphinxQL server socket file, if you set the "listen"
@@ -124,7 +124,7 @@ define('nZEDb_SPHINXQL_PORT', 9306);
  *
  * @default ''
  */
-define('nZEDb_SPHINXQL_SOCK_FILE', '');
+\define('nZEDb_SPHINXQL_SOCK_FILE', '');
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////// CLI Settings /////////////////////////////////////////////
@@ -134,14 +134,14 @@ define('nZEDb_SPHINXQL_SOCK_FILE', '');
  *
  * @default true
  */
-define('nZEDb_ECHOCLI', true);
+\define('nZEDb_ECHOCLI', true);
 
 /**
  * Rename releases using PAR2 files (if they match on PRE titles)?
  *
  * @default true
  */
-define('nZEDb_RENAME_PAR2', true);
+\define('nZEDb_RENAME_PAR2', true);
 
 /**
  * Rename music releases using media info from the MP3/FLAC/etc tags (names are created using info
@@ -149,7 +149,7 @@ define('nZEDb_RENAME_PAR2', true);
  *
  * @default true
  */
-define('nZEDb_RENAME_MUSIC_MEDIAINFO', true);
+\define('nZEDb_RENAME_MUSIC_MEDIAINFO', true);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////// Cache Settings ////////////////////////////////////////////
@@ -169,7 +169,7 @@ define('nZEDb_RENAME_MUSIC_MEDIAINFO', true);
  * @default    0
  * @version    3
  */
-define('nZEDb_CACHE_TYPE', 0);
+\define('nZEDb_CACHE_TYPE', 0);
 
 /**
  * List of redis or memcached servers to connect to. Separate them by comma.
@@ -180,7 +180,7 @@ define('nZEDb_CACHE_TYPE', 0);
  *                   If you have more than 1 memcached server, see the memcached documentation for more info:
  *                   http://php.net/manual/en/memcached.addserver.php
  */
-define('nZEDb_CACHE_HOSTS',
+\define('nZEDb_CACHE_HOSTS',
 	serialize(
 		[
 			'Server1' => [
@@ -201,14 +201,14 @@ define('nZEDb_CACHE_HOSTS',
  * @note    Read and write access is required to the socket file.
  * @default ''
  */
-define('nZEDb_CACHE_SOCKET_FILE', '');
+\define('nZEDb_CACHE_SOCKET_FILE', '');
 
 /**
  * Timeout for connecting to cache server(s).
  *
  * @default 10
  */
-define('nZEDb_CACHE_TIMEOUT', 10);
+\define('nZEDb_CACHE_TIMEOUT', 10);
 
 /**
  * Memcached allows to compress the data, saving RAM at the expense of CPU time.
@@ -216,7 +216,7 @@ define('nZEDb_CACHE_TIMEOUT', 10);
  * @note    Does nothing on redis.
  * @default false
  */
-define('nZEDb_CACHE_COMPRESSION', false);
+\define('nZEDb_CACHE_COMPRESSION', false);
 
 /**
  * Serialization is a way of converting data in PHP into strings of text which can be stored on the
@@ -234,7 +234,7 @@ define('nZEDb_CACHE_COMPRESSION', false);
  * @default    0
  * @version    3
  */
-define('nZEDb_CACHE_SERIALIZER', 0);
+\define('nZEDb_CACHE_SERIALIZER', 0);
 
 /**
  * Amount of time in seconds to expire data from the cache server.
@@ -242,9 +242,9 @@ define('nZEDb_CACHE_SERIALIZER', 0);
  *
  * @defaults 300/600/900
  */
-define('nZEDb_CACHE_EXPIRY_SHORT', 300);
-define('nZEDb_CACHE_EXPIRY_MEDIUM', 600);
-define('nZEDb_CACHE_EXPIRY_LONG', 900);
+\define('nZEDb_CACHE_EXPIRY_SHORT', 300);
+\define('nZEDb_CACHE_EXPIRY_MEDIUM', 600);
+\define('nZEDb_CACHE_EXPIRY_LONG', 900);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////// Log Settings ///////////////////////////////////////////////
@@ -254,14 +254,14 @@ define('nZEDb_CACHE_EXPIRY_LONG', 900);
  *
  * @default false
  */
-define('nZEDb_DEBUG', false);
+\define('nZEDb_DEBUG', false);
 
 /**
  * Log debug messages to nzedb/resources/debug.log
  *
  * @default false
  */
-define('nZEDb_LOGGING', true);
+\define('nZEDb_LOGGING', true);
 
 /**
  * var_dump missing autoloader files.
@@ -269,14 +269,14 @@ define('nZEDb_LOGGING', true);
  * @note    Dev setting.
  * @default false
  */
-define('nZEDb_LOGAUTOLOADER', false);
+\define('nZEDb_LOGAUTOLOADER', false);
 
 /**
  * How many log files to keep in the log folder.
  *
  * @default 20
  */
-define('nZEDb_LOGGING_MAX_LOGS', 20);
+\define('nZEDb_LOGGING_MAX_LOGS', 20);
 
 /**
  * How large can the log files be in MegaBytes before we create a new one? The old files are
@@ -284,7 +284,7 @@ define('nZEDb_LOGGING_MAX_LOGS', 20);
  *
  * @default 30
  */
-define('nZEDb_LOGGING_MAX_SIZE', 30);
+\define('nZEDb_LOGGING_MAX_SIZE', 30);
 
 /**
  * The folder to put the log files in. Put quotes, example : '/var/log/nZEDb/'
@@ -293,7 +293,7 @@ define('nZEDb_LOGGING_MAX_SIZE', 30);
  * @example '/var/log/nZEDb/'
  * @default nZEDb_LOGS
  */
-define('nZEDb_LOGGING_LOG_FOLDER', nZEDb_LOGS);
+\define('nZEDb_LOGGING_LOG_FOLDER', nZEDb_LOGS);
 
 /**
  * The name of the log file.
@@ -301,35 +301,35 @@ define('nZEDb_LOGGING_LOG_FOLDER', nZEDb_LOGS);
  *
  * @default 'nzedb'
  */
-define('nZEDb_LOGGING_LOG_NAME', 'nzedb');
+\define('nZEDb_LOGGING_LOG_NAME', 'nzedb');
 
 /**
  * Display memory usage in log file and debug message output?
  *
  * @default true
  */
-define('nZEDb_LOGGING_LOG_MEMORY_USAGE', true);
+\define('nZEDb_LOGGING_LOG_MEMORY_USAGE', true);
 
 /**
  * Display CPU load in log file and debug message output?
  *
  * @default true
  */
-define('nZEDb_LOGGING_LOG_CPU_LOAD', true);
+\define('nZEDb_LOGGING_LOG_CPU_LOAD', true);
 
 /**
  * Display running time in log file and debug message output?
  *
  * @default true
  */
-define('nZEDb_LOGGING_LOG_RUNNING_TIME', true);
+\define('nZEDb_LOGGING_LOG_RUNNING_TIME', true);
 
 /**
  * Display resource usage in log file and debug message output?
  *
  * @default false
  */
-define('nZEDb_LOGGING_LOG_RESOURCE_USAGE', true);
+\define('nZEDb_LOGGING_LOG_RESOURCE_USAGE', true);
 
 /*********************************************************************************
  * The following options require either nZEDb_DEBUG OR nZEDb_LOGGING to be true: *
@@ -340,42 +340,42 @@ define('nZEDb_LOGGING_LOG_RESOURCE_USAGE', true);
  *
  * @default false
  */
-define('nZEDb_LOGINFO', true);
+\define('nZEDb_LOGINFO', true);
 
 /**
  * Log and/or echo debug Notice messages.
  *
  * @default false
  */
-define('nZEDb_LOGNOTICE', true);
+\define('nZEDb_LOGNOTICE', true);
 
 /**
  * Log and/or echo debug Warning messages.
  *
  * @default false
  */
-define('nZEDb_LOGWARNING', true);
+\define('nZEDb_LOGWARNING', true);
 
 /**
  * Log and/or echo debug Error messages.
  *
  * @default false
  */
-define('nZEDb_LOGERROR', true);
+\define('nZEDb_LOGERROR', true);
 
 /**
  * Log and/or echo debug Fatal messages.
  *
  * @default false
  */
-define('nZEDb_LOGFATAL', true);
+\define('nZEDb_LOGFATAL', true);
 
 /**
  * Log and/or echo debug failed SQL queries.
  *
  * @default false
  */
-define('nZEDb_LOGQUERIES', true);
+\define('nZEDb_LOGQUERIES', true);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////// SQL Settings //////////////////////////////////////////////
@@ -388,7 +388,7 @@ define('nZEDb_LOGQUERIES', true);
  *            log.
  * @default false
  */
-define('nZEDb_QUERY_STRIP_WHITESPACE', false);
+\define('nZEDb_QUERY_STRIP_WHITESPACE', false);
 
 /**
  * Use transactions when doing certain SQL jobs.
@@ -399,7 +399,7 @@ define('nZEDb_QUERY_STRIP_WHITESPACE', false);
  * @note    If all your tables are MyISAM you can set this to false, as MyISAM does not support transactions.
  * @default true
  */
-define('nZEDb_USE_SQL_TRANSACTIONS', true);
+\define('nZEDb_USE_SQL_TRANSACTIONS', true);
 
 /**
  * Allows the use of LOW_PRIORITY in certain DELETE queries.
@@ -411,7 +411,7 @@ define('nZEDb_USE_SQL_TRANSACTIONS', true);
  * @default false
  * @version 1
  */
-define('nZEDb_SQL_DELETE_LOW_PRIORITY', false);
+\define('nZEDb_SQL_DELETE_LOW_PRIORITY', false);
 
 /**
  * Allows the use QUICK in certain DELETE queries.
@@ -423,7 +423,7 @@ define('nZEDb_SQL_DELETE_LOW_PRIORITY', false);
  * @default false
  * @version 1
  */
-define('nZEDb_SQL_DELETE_QUICK', false);
+\define('nZEDb_SQL_DELETE_QUICK', false);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// PHPMailer Settings ////////////////////////////////////////////
@@ -432,7 +432,7 @@ define('nZEDb_SQL_DELETE_QUICK', false);
  * Simple constant to let us know this file is included and we should use PHPMailer library.
  * Uncomment the line below after setting the other constants.
  */
-define('PHPMAILER_ENABLED', false);
+\define('PHPMAILER_ENABLED', false);
 
 /**
  * Global "From" Address.
@@ -442,7 +442,7 @@ define('PHPMAILER_ENABLED', false);
  * @note    Depending on server configurations, it may not respect this value.
  * @default '' (uses the contact email configured in 'Edit Site' settings)
  */
-define('PHPMAILER_FROM_EMAIL', '');
+\define('PHPMAILER_FROM_EMAIL', '');
 
 /**
  * Global "From" Name.
@@ -452,7 +452,7 @@ define('PHPMAILER_FROM_EMAIL', '');
  * @note    Depending on server configurations, it may not respect this value.
  * @default '' (uses the site title configured in 'Edit Site' settings)
  */
-define('PHPMAILER_FROM_NAME', '');
+\define('PHPMAILER_FROM_NAME', '');
 
 /**
  * Global "Reply-to" Address.
@@ -462,7 +462,7 @@ define('PHPMAILER_FROM_NAME', '');
  * @note    It's a good idea to set this to your support email account (if possible)
  * @default '' (uses the contact email configured in 'Edit Site' settings)
  */
-define('PHPMAILER_REPLYTO', '');
+\define('PHPMAILER_REPLYTO', '');
 
 /**
  * Always BCC.
@@ -471,7 +471,7 @@ define('PHPMAILER_REPLYTO', '');
  * @note    This has very specific uses, don't enable unless you're sure you want to get the deluge.
  * @default ''
  */
-define('PHPMAILER_BCC', '');
+\define('PHPMAILER_BCC', '');
 
 /**
  * Should we use a SMTP server to send mail?
@@ -480,7 +480,7 @@ define('PHPMAILER_BCC', '');
  * @note    If set to true, be sure to set the server settings below.
  * @default false
  */
-define('PHPMAILER_USE_SMTP', false);
+\define('PHPMAILER_USE_SMTP', false);
 
 /*********************************************************************************
  * The following options require PHPMAILER_USE_SMTP to be true: *
@@ -492,7 +492,7 @@ define('PHPMAILER_USE_SMTP', false);
  * @note    You can specify main and backup hosts, delimit with a semicolon. (i.e. 'main.host.com;backup.host.com')
  * @default ''
  */
-define('PHPMAILER_SMTP_HOST', '');
+\define('PHPMAILER_SMTP_HOST', '');
 
 /**
  * TLS & SSL Support for your SMTP server.
@@ -500,7 +500,7 @@ define('PHPMAILER_SMTP_HOST', '');
  * @note    Possible values: false, 'tls', 'ssl'
  * @default 'tls'
  */
-define('PHPMAILER_SMTP_SECURE', 'tls');
+\define('PHPMAILER_SMTP_SECURE', 'tls');
 
 /**
  * SMTP Port
@@ -508,7 +508,7 @@ define('PHPMAILER_SMTP_SECURE', 'tls');
  * @note    Usually this is 25, 465, or 587
  * @default 587
  */
-define('PHPMAILER_SMTP_PORT', 587);
+\define('PHPMAILER_SMTP_PORT', 587);
 
 /**
  * Does your SMTP host require authentication?
@@ -516,7 +516,7 @@ define('PHPMAILER_SMTP_PORT', 587);
  * @note    Be sure to set credentials below if changing to true.
  * @default false
  */
-define('PHPMAILER_SMTP_AUTH', false);
+\define('PHPMAILER_SMTP_AUTH', false);
 
 /*********************************************************************************
  * The following options require both PHPMAILER_USE_SMTP & PHPMAILER_SMTP_AUTH to be true: *
@@ -527,14 +527,14 @@ define('PHPMAILER_SMTP_AUTH', false);
  *
  * @default ''
  */
-define('PHPMAILER_SMTP_USER', '');
+\define('PHPMAILER_SMTP_USER', '');
 
 /**
  * SMTP password for authentication.
  *
  * @default ''
  */
-define('PHPMAILER_SMTP_PASSWORD', '');
+\define('PHPMAILER_SMTP_PASSWORD', '');
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////// PHP CLI Settings ////////////////////////////////////////////////
@@ -804,7 +804,7 @@ if (extension_loaded('xdebug')) {
  * 		your proper site again.
  * @default false
  */
-define('MAINTENANCE_MODE_ENABLED', false);
+\define('MAINTENANCE_MODE_ENABLED', false);
 
 /**
  * The fully qualified absolute path to the maintenance mode HTML file.
@@ -818,7 +818,7 @@ define('MAINTENANCE_MODE_ENABLED', false);
  *		references to user data. Links to other site pages can remain intact.
  * @default ''
  */
-define('MAINTENANCE_MODE_HTML_PATH', '');
+\define('MAINTENANCE_MODE_HTML_PATH', '');
 
 /**
  * What IP addresses should be excluded from maintenance mode.
@@ -829,7 +829,7 @@ define('MAINTENANCE_MODE_HTML_PATH', '');
  * @note Keep in mind, if your site uses ipv6 you may need to enter your ipv6 address here as well.
  * @default []
  */
-define('MAINTENANCE_MODE_IP_EXCEPTIONS', []);
+\define('MAINTENANCE_MODE_IP_EXCEPTIONS', []);
 
 /***************************************************************************************************
  * /////////////////////////////////////////////////////////////////////////////////////////////////
