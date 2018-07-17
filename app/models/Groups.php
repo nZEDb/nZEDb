@@ -338,8 +338,7 @@ class Groups extends \app\extensions\data\Model
 	 *
 	 * @return mixed
 	 */
-	public static function getRange(int $pageno = 1, int $number = ITEMS_PER_PAGE, $groupname = '',
-									$active = null)
+	public static function getRange(int $pageno = 1, int $number = ITEMS_PER_PAGE, $groupname = '', $active = null)
 	{
 		$conditions = empty($groupname) ? [] : ['name' => ['LIKE' => "%$groupname%"]];
 		$conditions += empty($active) ? [] : ['active' => $active];

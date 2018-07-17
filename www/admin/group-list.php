@@ -8,10 +8,9 @@ $page->title = $page->meta_title = 'Group List';
 
 $pageno = $_REQUEST['pageno'] ?? 1;
 
-$groupname = (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname'])) ?
-	$_REQUEST['groupname'] : '';
+$groupname = (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname'])) ? $_REQUEST['groupname'] : '';
 
-$conditions = empty($groupname) ? [] : ['name' => ['LIKE' => '%$groupname%']];
+$conditions = empty($groupname) ? [] : ['name' => ['LIKE' => "%$groupname%"]];
 
 $count = Groups::find('count', ['conditions' => $conditions]);
 $grouplist = Groups::getRange($pageno, ITEMS_PER_PAGE, $groupname);

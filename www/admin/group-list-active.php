@@ -11,10 +11,10 @@ $pageno = $_REQUEST['pageno'] ?? 1;
 $groupname = (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname'])) ? $_REQUEST['groupname'] : '';
 
 $conditions = ['active' => 1];
-$conditions += empty($groupname) ? [] : ['name' => ['LIKE' => '%$groupname%']];
+$conditions += empty($groupname) ? [] : ['name' => ['LIKE' => "%$groupname%"]];
 
 $count = Groups::find('count', ['conditions' => $conditions]);
-$grouplist = Groups::getRange($pageno,ITEMS_PER_PAGE, $groupname, 1);
+$grouplist = Groups::getRange($pageno,ITEMS_PER_PAGE, $groupname, true);
 
 $groupsearch = empty($_REQUEST['groupname']) ? '' : '&amp;groupname=' . $_REQUEST['groupname'];
 
