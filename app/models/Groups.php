@@ -327,12 +327,22 @@ class Groups extends \app\extensions\data\Model
 		return $entry !== null ? $entry->data()['name'] : '';
 	}
 
-	public static function getRange($pageno = 1, $number = [], $groupname = '', $active = null)
+	/**
+	 * Fetch a range of groups, taking maximum items per page and pageno into account. Optionally
+	 * limiting by %groupname% matching.
+	 *
+	 * @param int    $pageno
+	 * @param int    $number
+	 * @param string $groupname
+	 * @param null   $active
+	 *
+	 * @return mixed
+	 */
+	public static function getRange(int $pageno = 1, int $number = ITEMS_PER_PAGE, $groupname = '',
+									$active = null)
 	{
-		$conditions = empty($groupname) ? [] : ['name' => ['LIKE' => '%$groupname%']];
+		$conditions = empty($groupname) ? [] : ['name' => ['LIKE' => "%$groupname%"]];
 		$conditions += empty($active) ? [] : ['active' => $active];
-		$limit = empty($number) ? [] : ['limit' => $number];
-		$page = empty($number) ? [] : ['page' => $pageno];
 
 		$results = static::find('all',
 			[
@@ -352,9 +362,9 @@ class Groups extends \app\extensions\data\Model
 					'description',
 				],
 				'conditions' => $conditions,
-				$limit,
+				'limit' => $number,
 				'order' => 'name ASC',
-				$page,
+				'page' => $pageno,
 			]
 		);
 
@@ -362,7 +372,7 @@ class Groups extends \app\extensions\data\Model
 	}
 
 	/**
-	 * Checks group name is standard and replaces the shorthand prefix if is exists.
+	 * Checks group name is standard and replaces the shorthand prefix if it exists.
 	 *
 	 * @param string $name The full name of the usenet group being evaluated
 	 *
