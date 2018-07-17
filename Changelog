@@ -12,6 +12,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2018-07-17 niel
 	Fix: \app\models\Groups::getRange() to correctly handle pagination and filtering by a groupname.
+	Fix: Query string for group (in)active pages pagination.
 2018-07-13 Bart39
 	Fix: undefined index 'groupname' for Admin grouplist active/inactive pages
 	Fix: Admin grouplist inactive page returning active groups

@@ -4,13 +4,11 @@ require_once './config.php';
 use app\models\Groups;
 
 $page = new AdminPage();
-
 $page->title = $page->meta_title = 'Group List';
 
 $pageno = $_REQUEST['pageno'] ?? 1;
 
-$groupname = (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname'])) ?
-	$_REQUEST['groupname'] : '';
+$groupname = (isset($_REQUEST['groupname']) && !empty($_REQUEST['groupname'])) ? $_REQUEST['groupname'] : '';
 
 $conditions = ['active' => 1];
 $conditions += empty($groupname) ? [] : ['name' => ['LIKE' => '%$groupname%']];
@@ -25,7 +23,7 @@ $page->smarty->assign(
 		'groupname'        => $groupname,
 		'pagecurrent'      => (int)$pageno,
 		'pagerlast'         => (int)($count / ITEMS_PER_PAGE) + 1,
-		'pagerquerybase'   => WWW_TOP . '/group-list-active?pageno=',
+		'pagerquerybase'   => WWW_TOP . '/group-list-active.php?pageno=',
 		'pagerquerysuffix' => $groupsearch,
 		'pagertotalitems'  => $count,
 		'results'          => $grouplist,
