@@ -331,17 +331,18 @@ class Groups extends \app\extensions\data\Model
 	 * Fetch a range of groups, taking maximum items per page and pageno into account. Optionally
 	 * limiting by %groupname% matching.
 	 *
-	 * @param int    $pageno
-	 * @param int    $number
-	 * @param string $groupname
-	 * @param null   $active
+	 * @param int       $pageno
+	 * @param int       $number
+	 * @param string    $groupname
+	 * @param bool|null $active Whether result should be filtered by active/inactive, or
+	 *                          neither. true/false or null.
 	 *
 	 * @return mixed
 	 */
 	public static function getRange(int $pageno = 1, int $number = ITEMS_PER_PAGE, $groupname = '', $active = null)
 	{
 		$conditions = empty($groupname) ? [] : ['name' => ['LIKE' => "%$groupname%"]];
-		$conditions += empty($active) ? [] : ['active' => $active];
+		$conditions += \is_null($active) ? [] : ['active' => $active];
 
 		$results = static::find('all',
 			[
