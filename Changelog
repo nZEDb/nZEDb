@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-07-18 niel
+	Fix: Check for whether $active is null, as empty also includes false.
 2018-07-17 niel
 	Fix: \app\models\Groups::getRange() to correctly handle pagination and filtering by a groupname.
 	Fix: Query string for group (in)active pages pagination.
