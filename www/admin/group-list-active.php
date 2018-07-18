@@ -14,7 +14,7 @@ $conditions = ['active' => 1];
 $conditions += empty($groupname) ? [] : ['name' => ['LIKE' => "%$groupname%"]];
 
 $count = Groups::find('count', ['conditions' => $conditions]);
-$grouplist = Groups::getRange($pageno,ITEMS_PER_PAGE, $groupname, true);
+$grouplist = Groups::getRange($pageno, ITEMS_PER_PAGE, $groupname, true);
 
 $groupsearch = empty($_REQUEST['groupname']) ? '' : '&amp;groupname=' . $_REQUEST['groupname'];
 
