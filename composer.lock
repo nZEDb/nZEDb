@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "41b79deb7a5407767876af9957b66ae1",
+    "content-hash": "be88c7057926987b9574cceeabc5500f",
     "packages": [
         {
             "name": "b3rs3rk/steamfront",
@@ -1691,6 +1691,64 @@
             "time": "2016-10-25T08:14:27+00:00"
         },
         {
+            "name": "niel/lithium",
+            "version": "dev-php7.2-updates",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/niel/lithium.git",
+                "reference": "a62d6f2ce0a1755fb44ac40803e7c8d42f616d1d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/niel/lithium/zipball/a62d6f2ce0a1755fb44ac40803e7c8d42f616d1d",
+                "reference": "a62d6f2ce0a1755fb44ac40803e7c8d42f616d1d",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "1.*",
+                "php": "^5.6 || ~7.0.3 || ~7.1.0"
+            },
+            "require-dev": {
+                "unionofrad/li3_fixtures": "1.2.x-dev"
+            },
+            "suggest": {
+                "ext-curl": "For the Curl Socket adapter.",
+                "ext-memcached": "For the Memcache Cache adapter.",
+                "ext-mongo": "For the MongoDb Datasource. ",
+                "ext-openssl": "For the Encrypt Session strategy.",
+                "ext-pdo": "For the MySql, Postgres and Sqlite Datasources.",
+                "ext-redis": "For the Redis Cache adapter."
+            },
+            "bin": [
+                "console/li3"
+            ],
+            "type": "lithium-library",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Union of RAD"
+                },
+                {
+                    "name": "The Community"
+                }
+            ],
+            "description": "The li₃ PHP framework",
+            "homepage": "http://li3.me",
+            "keywords": [
+                "framework",
+                "li3",
+                "lithium"
+            ],
+            "support": {
+                "stack overflow": "https://stackoverflow.com/tags/li3",
+                "source": "https://github.com/niel/lithium/tree/php7.2-updates",
+                "issues": "https://github.com/niel/lithium/issues"
+            },
+            "time": "2018-07-23 20:07:54"
+        },
+        {
             "name": "nzedb/Git.php",
             "version": "dev-master",
             "source": {
@@ -2348,13 +2406,13 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
         "b3rs3rk/steamfront": 20,
         "dborsatto/php-giantbomb": 20,
         "joshpinkney/tv-maze-php-api": 20,
+        "niel/lithium": 20,
         "nzedb/git.php": 20,
-        "unionofrad/lithium": 15,
         "unionofrad/manual": 20
     },
     "prefer-stable": false,

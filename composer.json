@@ -106,7 +106,7 @@
     "james-heinrich/getid3": "^1.9.12",
     "joshpinkney/tv-maze-php-api": "dev-master",
     "moinax/tvdb": "^1.0.4",
-    "niel/lithium": "dev-php7.2",
+    "niel/lithium": "dev-php7.2-updates",
     "nzedb/Git.php": "dev-master",
     "php": ">=7.0",
     "php-tmdb/api": "^2.1",
