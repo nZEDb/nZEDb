@@ -59,6 +59,10 @@
     },
     {
       "type": "vcs",
+      "url": "https://github.com/niel/lithium"
+    },
+    {
+      "type": "vcs",
       "url": "https://github.com/nZEDb/Git.php"
     },
     {
@@ -101,13 +105,13 @@
     "james-heinrich/getid3": "^1.9.12",
     "joshpinkney/tv-maze-php-api": "dev-master",
     "moinax/tvdb": "^1.0.4",
+    "niel/lithium": "dev-php7.2",
     "nzedb/Git.php": "dev-master",
     "php": ">=7.0",
     "php-tmdb/api": "^2.1",
     "phpmailer/phpmailer": "^6.0.2",
     "smarty/smarty": "~3.1.29",
     "unionofrad/li3_fixtures": "^1.1.1",
-    "unionofrad/lithium": "^1.2.0-alpha",
     "zeebinz/rarinfo": "~2.5.0",
     "bower-asset/animate.css": "~3.5.1",
     "bower-asset/autosize-3.0.x": "~3.0.15",
