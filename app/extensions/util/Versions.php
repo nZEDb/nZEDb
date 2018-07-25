@@ -22,7 +22,7 @@ use app\models\Settings;
 use lithium\core\ConfigException;
 use nzedb\utility\Misc;
 
-class Versions extends \lithium\core\Object
+class Versions extends \lithium\core\BaseObject
 {
 	/**
 	 * These constants are bitwise for checking what has changed.

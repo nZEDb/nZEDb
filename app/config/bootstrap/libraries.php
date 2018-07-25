@@ -85,7 +85,7 @@ use lithium\core\Libraries;
  * request/response or dispatch classes, you can safely remove these.  Actually, you can safely
  * remove them anyway, they're just there to give slightly you better out-of-the-box performance.
  */
-require LITHIUM_LIBRARY_PATH . '/lithium/core/Object.php';
+require LITHIUM_LIBRARY_PATH . '/lithium/core/BaseObject.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/core/StaticObject.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/core/MergeInheritable.php';
 require LITHIUM_LIBRARY_PATH . '/lithium/aop/Filters.php';
