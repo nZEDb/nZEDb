@@ -30,9 +30,8 @@ The overall speed of nZEDb is largely governed by performance of the database. A
 
 ### Software
 
-	PHP 5.6+ (and various modules)
+	PHP 7.0+ (and various modules)
     MariaDB 10.0 (strongly preferred database choice)
-	MySQL 5.6+ (secondary option, needs compatibily adjustments)
 The installation guides have more detailed software requirements.
 
 ### Database
