@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "be88c7057926987b9574cceeabc5500f",
+    "content-hash": "9207e86a642064e622313bd22a869264",
     "packages": [
         {
             "name": "b3rs3rk/steamfront",
@@ -1223,16 +1223,16 @@
         },
         {
             "name": "fxp/composer-asset-plugin",
-            "version": "v1.3.1",
+            "version": "v1.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fxpio/composer-asset-plugin.git",
-                "reference": "0bfdd307d2cddbc42c634b14247f3f3a8525b836"
+                "reference": "0d07328eef6e6f3753aa835fd2faef7fed1717bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fxpio/composer-asset-plugin/zipball/0bfdd307d2cddbc42c634b14247f3f3a8525b836",
-                "reference": "0bfdd307d2cddbc42c634b14247f3f3a8525b836",
+                "url": "https://api.github.com/repos/fxpio/composer-asset-plugin/zipball/0d07328eef6e6f3753aa835fd2faef7fed1717bf",
+                "reference": "0d07328eef6e6f3753aa835fd2faef7fed1717bf",
                 "shasum": ""
             },
             "require": {
@@ -1240,13 +1240,13 @@
                 "php": ">=5.3.3"
             },
             "require-dev": {
-                "composer/composer": "^1.4.0"
+                "composer/composer": "^1.6.0"
             },
             "type": "composer-plugin",
             "extra": {
                 "class": "Fxp\\Composer\\AssetPlugin\\FxpAssetPlugin",
                 "branch-alias": {
-                    "dev-master": "1.3-dev"
+                    "dev-master": "1.4-dev"
                 }
             },
             "autoload": {
@@ -1278,7 +1278,7 @@
                 "npm",
                 "package"
             ],
-            "time": "2017-04-09T11:49:10+00:00"
+            "time": "2018-07-02T11:37:17+00:00"
         },
         {
             "name": "google/recaptcha",
@@ -1696,17 +1696,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/niel/lithium.git",
-                "reference": "a62d6f2ce0a1755fb44ac40803e7c8d42f616d1d"
+                "reference": "de766aa26e4dfcb3f3d6a57df056ed81325f8c13"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/niel/lithium/zipball/a62d6f2ce0a1755fb44ac40803e7c8d42f616d1d",
-                "reference": "a62d6f2ce0a1755fb44ac40803e7c8d42f616d1d",
+                "url": "https://api.github.com/repos/niel/lithium/zipball/de766aa26e4dfcb3f3d6a57df056ed81325f8c13",
+                "reference": "de766aa26e4dfcb3f3d6a57df056ed81325f8c13",
                 "shasum": ""
             },
             "require": {
                 "composer/installers": "1.*",
-                "php": "^5.6 || ~7.0.3 || ~7.1.0"
+                "php": "^7.0.3"
             },
             "require-dev": {
                 "unionofrad/li3_fixtures": "1.2.x-dev"
@@ -1746,7 +1746,7 @@
                 "source": "https://github.com/niel/lithium/tree/php7.2-updates",
                 "issues": "https://github.com/niel/lithium/issues"
             },
-            "time": "2018-07-23 20:07:54"
+            "time": "2018-07-30 03:14:41"
         },
         {
             "name": "nzedb/Git.php",

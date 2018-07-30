@@ -100,7 +100,7 @@
     "b3rs3rk/steamfront": "dev-master",
     "barracudanetworks/forkdaemon-php": "^1.0.7",
     "dborsatto/php-giantbomb": "dev-master",
-    "fxp/composer-asset-plugin": "~1.3.0",
+    "fxp/composer-asset-plugin": "1.4.4",
     "google/recaptcha": "^1.1.2",
     "guzzlehttp/guzzle": "^6.3",
     "james-heinrich/getid3": "^1.9.12",
