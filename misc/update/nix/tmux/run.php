@@ -39,7 +39,7 @@ if ($session != 0) {
 }
 
 //reset collections dateadded to now if dateadded > delay time check
-echo $pdo->log->header("Resetting expired collections dateadded to now. This could take a minute or two. Really.");
+echo $pdo->log->header("Resetting expired collections dateadded to now. This could take a minute or ten. Really!");
 
 exec("cd {$DIR}/update/nix/tmux/bin/ && php resetdelaytime.php");
 
