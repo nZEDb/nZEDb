@@ -3,6 +3,27 @@ ChangeLog file which list *when* changes are made to the dev branches.
 
 
 0.8.8.1 2018-07-04
+Changed:
+	* Removed release counts, for the themes that used it, on group list templates.
+	* Strip '00-' from searchname (mostly music titles) when parsing Par2 for a better name.
+	* Search for all other/unknown categories (not just Misc>Other) when trying to fix names using
+	 Par2.
+	* Add categorization for a.b.sounds.
+
+Fixed:
+	* Typo in querying database timezone.
+	* When fetching RecordSet, check it is valid. If it is, return it;  otherwise return an empty
+	 array.
+	* app\models\Groups::getBackfilling() to return array of groups filtered by active and backfill
+	 state.
+	* Undefined index 'groupname' for Admin grouplist active/inactive pages.
+	* Admin grouplist inactive page returning active groups.
+	* \app\models\Groups::getRange() to correctly handle pagination and filtering by a groupname.
+	* Query string for group (in)active pages pagination.
+	* Quotation marks around $groupname need to be double, not single. Filtering should work again.
+
+
+0.8.8.1 2018-07-04
 Fixed:
 	* Alpha/Charisma/Gamma/Gentele/Omicron templates for browsing groups.
 
