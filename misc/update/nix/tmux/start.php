@@ -29,7 +29,7 @@ if (`which tmux`) {
 
 $tmux = new Tmux();
 $tmux_settings = $tmux->get('tmux_session');
-$tmux_session = (isset($tmux_settings->tmux_session)) ? $tmux_settings->tmux_session : 0;
+$tmux_session = $tmux_settings->tmux_session ?? 0;
 $path = __DIR__;
 
 // Set running value to on.
