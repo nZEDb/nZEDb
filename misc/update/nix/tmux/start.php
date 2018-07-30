@@ -35,14 +35,9 @@ $path = __DIR__;
 // Set running value to on.
 $tmux->startRunning();
 
-// Create a placeholder session so tmux commands do not throw server not found errors.
-//exec('tmux new-session -ds placeholder 2>/dev/null');
-
 //check if session exists
 $session = shell_exec("tmux list-session | grep $tmux_session");
-// Kill the placeholder
-//exec('tmux kill-session -t placeholder');
-if (count($session) == 0) {
+if ($session === null) {
 	echo $pdo->log->info("Starting the tmux server and monitor script.\n");
 	passthru("php $path/run.php");
 }
