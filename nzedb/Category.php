@@ -94,6 +94,8 @@ class Category
 	 * Construct.
 	 *
 	 * @param array $options Class instances.
+	 *
+	 * @throws \RuntimeException
 	 */
 	public function __construct(array $options = [])
 	{
@@ -113,7 +115,7 @@ class Category
 	 *
 	 * @return array
 	 */
-	public function getCategories($activeonly = false, $excludedcats = [])
+	public function getCategories($activeonly = false, array $excludedcats = [])
 	{
 		return $this->pdo->query(
 			"SELECT c.id, CONCAT(cp.title, ' > ',c.title) AS title, cp.id AS parentid, c.status, c.minsize
@@ -121,12 +123,12 @@ class Category
 			INNER JOIN categories cp ON cp.id = c.parentid " .
 			($activeonly ?
 				sprintf(
-					" WHERE c.status = %d %s ",
-					Category::STATUS_ACTIVE,
-					(count($excludedcats) > 0 ? " AND c.id NOT IN (" . implode(",", $excludedcats) . ")" : '')
+					' WHERE c.status = %d %s ',
+					self::STATUS_ACTIVE,
+					(count($excludedcats) > 0 ? ' AND c.id NOT IN (' . implode(',', $excludedcats) . ')' : '')
 				) : ''
 			) .
-			" ORDER BY c.id"
+			' ORDER BY c.id'
 		);
 	}
 
@@ -153,7 +155,7 @@ class Category
 		}
 
 		foreach ($cat as $category) {
-			if ($category != -1 && $this->isParent($category)) {
+			if ($category !== -1 && $this->isParent($category)) {
 				foreach ($this->getChildren($category) as $child) {
 					$categories[] = $child['id'];
 				}
@@ -175,7 +177,7 @@ class Category
 				break;
 			// Multiple category constraints
 			default:
-				$catsrch = " AND r.categories_id IN (" . implode(", ", $categories) . ") ";
+				$catsrch = ' AND r.categories_id IN (' . implode(', ', $categories) . ') ';
 				break;
 		}
 
@@ -189,7 +191,7 @@ class Category
 	 */
 	public static function getCategoryOthersGroup()
 	{
-		return implode(",",
+		return implode(',',
 			[
 				self::BOOKS_UNKNOWN,
 				self::GAME_OTHER,
@@ -220,10 +222,10 @@ class Category
 	public function isParent($cid)
 	{
 		$ret = $this->pdo->query(
-			sprintf("SELECT id FROM categories WHERE id = %d AND parentid IS NULL", $cid),
+			sprintf('SELECT id FROM categories WHERE id = %d AND parentid IS NULL', $cid),
 			true, nZEDb_CACHE_EXPIRY_LONG
 		);
-		return (isset($ret[0]['id']));
+		return isset($ret[0]['id']);
 	}
 
 	/**
@@ -233,11 +235,11 @@ class Category
 	 */
 	public function getFlat($activeonly = false)
 	{
-		$act = "";
+		$act = '';
 		if ($activeonly) {
-			$act = sprintf(" WHERE c.status = %d ", Category::STATUS_ACTIVE);
+			$act = sprintf(' WHERE c.status = %d ', self::STATUS_ACTIVE);
 		}
-		return $this->pdo->query("SELECT c.*, (SELECT title FROM categories WHERE id=c.parentid) AS parentName FROM categories c " . $act . " ORDER BY c.id");
+		return $this->pdo->query('SELECT c.*, (SELECT title FROM categories WHERE id=c.parentid) AS parentName FROM categories c ' . $act . " ORDER BY c.id");
 	}
 
 	/**
@@ -250,7 +252,7 @@ class Category
 	public function getChildren($cid)
 	{
 		return $this->pdo->query(
-			sprintf("SELECT c.* FROM categories c WHERE parentid = %d", $cid),
+			sprintf('SELECT c.* FROM categories c WHERE parentid = %d', $cid),
 			true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
@@ -262,7 +264,7 @@ class Category
 	public function getEnabledParentNames()
 	{
 		return $this->pdo->query(
-			"SELECT title FROM categories WHERE parentid IS NULL AND status = 1",
+			'SELECT title FROM categories WHERE parentid IS NULL AND status = 1',
 			true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
@@ -275,7 +277,7 @@ class Category
 	public function getDisabledIDs()
 	{
 		return $this->pdo->query(
-			"SELECT id FROM categories WHERE status = 2 OR parentid IN (SELECT id FROM categories WHERE status = 2 AND parentid IS NULL)",
+			'SELECT id FROM categories WHERE status = 2 OR parentid IN (SELECT id FROM categories WHERE status = 2 AND parentid IS NULL)',
 			true, nZEDb_CACHE_EXPIRY_LONG
 		);
 	}
@@ -320,9 +322,9 @@ class Category
 					WHERE c.id IN (%s)", implode(',', $ids)
 				), true, nZEDb_CACHE_EXPIRY_LONG
 			);
-		} else {
-			return false;
 		}
+
+		return false;
 	}
 
 	/**
@@ -339,8 +341,8 @@ class Category
 	{
 		return $this->pdo->queryExec(
 			sprintf(
-				"UPDATE categories SET disablepreview = %d, status = %d, description = %s, minsize = %d
-				WHERE id = %d",
+				'UPDATE categories SET disablepreview = %d, status = %d, description = %s, minsize = %d
+				WHERE id = %d',
 				$disablepreview, $status, $this->pdo->escapeString($desc), $minsize, $id
 			)
 		);
@@ -349,31 +351,33 @@ class Category
 	/**
 	 * @param array $excludedcats
 	 *
+	 * @param array $roleexcludedcats
+	 *
 	 * @return array
 	 */
-	public function getForMenu($excludedcats = [], $roleexcludedcats = [])
+	public function getForMenu(array $excludedcats = [], array $roleexcludedcats = [])
 	{
 		$ret = [];
 
 		$exccatlist = '';
-		if (count($excludedcats) > 0 && count($roleexcludedcats) == 0) {
+		if (count($excludedcats) > 0 && count($roleexcludedcats) === 0) {
 			$exccatlist = ' AND id NOT IN (' . implode(',', $excludedcats) . ')';
 		} elseif (count($excludedcats) > 0 && count($roleexcludedcats) > 0) {
 			$exccatlist = ' AND id NOT IN (' . implode(',', $excludedcats) . ',' . implode(',', $roleexcludedcats) . ')';
-		} elseif (count($excludedcats) == 0 && count($roleexcludedcats) > 0) {
+		} elseif (count($excludedcats) === 0 && count($roleexcludedcats) > 0) {
 			$exccatlist = ' AND id NOT IN (' . implode(',', $roleexcludedcats) . ')';
 		}
 
 		$arr = $this->pdo->query(
-			sprintf('SELECT * FROM categories WHERE status = %d %s', Category::STATUS_ACTIVE, $exccatlist),
+			sprintf('SELECT * FROM categories WHERE status = %d %s', self::STATUS_ACTIVE, $exccatlist),
 			true, nZEDb_CACHE_EXPIRY_LONG
 		);
 
 		foreach($arr as $key => $val) {
-			if($val['id'] == '0') {
+			if((int) $val['id'] === 0) {
 				$item = $arr[$key];
 				unset($arr[$key]);
-				array_push($arr, $item);
+				$arr[] = $item;
 				break;
 			}
 		}
@@ -388,7 +392,7 @@ class Category
 			$subcatlist = [];
 			$subcatnames = [];
 			foreach ($arr as $a) {
-				if ($a['parentid'] == $parent['id']) {
+				if ($a['parentid'] === $parent['id']) {
 					$subcatlist[] = $a;
 					$subcatnames[] = $a['title'];
 				}
@@ -415,11 +419,11 @@ class Category
 		$temp_array = [];
 
 		if ($blnIncludeNoneSelected) {
-			$temp_array[-1] = "--Please Select--";
+			$temp_array[-1] = '--Please Select--';
 		}
 
 		foreach ($categories as $category) {
-			$temp_array[$category["id"]] = $category["title"];
+			$temp_array[$category['id']] = $category['title'];
 		}
 
 		return $temp_array;
@@ -434,14 +438,14 @@ class Category
 	public function getNameByID($ID)
 	{
 		$cat = $this->pdo->queryOneRow(
-			sprintf("
+			sprintf('
 				SELECT c.title AS ctitle, cp.title AS ptitle
 				FROM categories c
 				INNER JOIN categories cp ON c.parentid = cp.id
-				WHERE c.id = %d",
+				WHERE c.id = %d',
 				$ID
 			)
 		);
-		return $cat["ptitle"] . "->" . $cat["ctitle"];
+		return $cat['ptitle'] . '->' . $cat['ctitle'];
 	}
 }

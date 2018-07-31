@@ -59,10 +59,18 @@ class Console
 	 * Store names of failed Amazon lookup items
 	 * @var array
 	 */
-	public $failCache;
+	public  $failCache;
+
+	/**
+	 * @var string
+	 */
+	public $catWhere;
 
 	/**
 	 * @param array $options Class instances / Echo to cli.
+	 *
+	 * @throws \RuntimeException
+	 * @throws \Exception
 	 */
 	public function __construct(array $options = [])
 	{
@@ -80,16 +88,16 @@ class Console
 		$this->privkey = Settings::value('APIs..amazonprivkey');
 		$this->asstag = Settings::value('APIs..amazonassociatetag');
 		$result = Settings::value('..maxgamesprocessed');
-		$this->gameqty = ($result != '') ? $result : 150;
+		$this->gameqty = $result !== '' ? $result : 150;
 		$result = Settings::value('..amazonsleep');
-		$this->sleeptime = ($result != '') ? $result : 1000;
+		$this->sleeptime = $result !== '' ? $result : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'console' . DS;
 		$this->renamed = '';
-		if (Settings::value('..lookupgames') == 2) {
+		if ((int) Settings::value('..lookupgames') === 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
 		//$this->cleanconsole = (Settings::value('..lookupgames') == 2) ? 'AND isrenamed = 1' : '';
-		$this->catWhere = "AND categories_id BETWEEN " . Category::GAME_ROOT . " AND " . Category::GAME_OTHER;
+		$this->catWhere = 'AND categories_id BETWEEN ' . Category::GAME_ROOT . ' AND ' . Category::GAME_OTHER;
 		$this->failCache = array();
 	}
 
@@ -102,7 +110,7 @@ class Console
 	{
 		return $this->pdo->queryOneRow(
 			sprintf(
-				"SELECT consoleinfo.*, genres.title AS genres FROM consoleinfo LEFT OUTER JOIN genres ON genres.id = consoleinfo.genre_id WHERE consoleinfo.id = %d ",
+				'SELECT consoleinfo.*, genres.title AS genres FROM consoleinfo LEFT OUTER JOIN genres ON genres.id = consoleinfo.genre_id WHERE consoleinfo.id = %d ',
 				$id
 			)
 		);
@@ -136,9 +144,9 @@ class Console
 				}
 			}
 			$searchwords = trim($searchwords);
-			$searchsql .= sprintf(" MATCH(title, platform) AGAINST(%s IN BOOLEAN MODE) AND platform = %s", $this->pdo->escapeString($searchwords), $this->pdo->escapeString($platform));
+			$searchsql .= sprintf(' MATCH(title, platform) AGAINST(%s IN BOOLEAN MODE) AND platform = %s', $this->pdo->escapeString($searchwords), $this->pdo->escapeString($platform));
 		}
-		return $this->pdo->queryOneRow(sprintf("SELECT * FROM consoleinfo WHERE %s", $searchsql));
+		return $this->pdo->queryOneRow(sprintf('SELECT * FROM consoleinfo WHERE %s', $searchsql));
 	}
 
 	/**
@@ -151,7 +159,7 @@ class Console
 	{
 		return $this->pdo->query(
 			sprintf(
-				"SELECT * FROM consoleinfo ORDER BY createddate DESC %s",
+				'SELECT * FROM consoleinfo ORDER BY createddate DESC %s',
 				($start === false ? '' : ('LIMIT ' . $num . ' OFFSET ' . $start))
 			)
 		);
@@ -162,7 +170,7 @@ class Console
 	 */
 	public function getCount()
 	{
-		$res = $this->pdo->queryOneRow("SELECT COUNT(id) AS num FROM consoleinfo");
+		$res = $this->pdo->queryOneRow('SELECT COUNT(id) AS num FROM consoleinfo');
 		return ($res === false ? 0 : $res['num']);
 	}
 
@@ -174,19 +182,20 @@ class Console
 	 * @param array $excludedcats
 	 *
 	 * @return array
+	 * @throws \RuntimeException
 	 */
-	public function getConsoleRange($cat, $start, $num, $orderby, $excludedcats = [])
+	public function getConsoleRange($cat, $start, $num, $orderby, array $excludedcats = [])
 	{
 		$browseby = $this->getBrowseBy();
 
 		$catsrch = '';
-		if (count($cat) > 0 && $cat[0] != -1) {
+		if (count($cat) > 0 && $cat[0] !== -1) {
 			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
-		$exccatlist = "";
+		$exccatlist = '';
 		if (count($excludedcats) > 0) {
-			$exccatlist = " AND r.categories_id NOT IN (" . implode(",", $excludedcats) . ")";
+			$exccatlist = ' AND r.categories_id NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
 		$order = $this->getConsoleOrder($orderby);
@@ -277,8 +286,8 @@ class Console
 	 */
 	public function getConsoleOrder($orderby)
 	{
-		$order = ($orderby == '') ? 'r.postdate' : $orderby;
-		$orderArr = explode("_", $order);
+		$order = $orderby === '' ? 'r.postdate' : $orderby;
+		$orderArr = explode('_', $order);
 		switch ($orderArr[0]) {
 			case 'title':
 				$orderfield = 'con.title';
@@ -355,7 +364,7 @@ class Console
 		$newArr = [];
 		$i = 0;
 		foreach ($tmpArr as $ta) {
-			if (trim($ta) == '') {
+			if (trim($ta) === '') {
 				continue;
 			}
 			// Only use first 6.
@@ -385,23 +394,23 @@ class Console
 	public function update($id, $title, $asin, $url, $salesrank, $platform, $publisher, $releasedate, $esrb, $cover, $genreID, $review = 'review')
 	{
 		$this->pdo->queryExec(
-			sprintf("
+			sprintf('
 				UPDATE consoleinfo
 				SET
 					title = %s, asin = %s, url = %s, salesrank = %s, platform = %s, publisher = %s,
 					releasedate= %s, esrb = %s, cover = %d, genre_id = %d, review = %s, updateddate = NOW()
-				WHERE id = %d",
+				WHERE id = %d',
 				$this->pdo->escapeString($title),
 				$this->pdo->escapeString($asin),
 				$this->pdo->escapeString($url),
 				$salesrank,
 				$this->pdo->escapeString($platform),
 				$this->pdo->escapeString($publisher),
-				($releasedate != "" ? $this->pdo->escapeString($releasedate) : "null"),
+				$releasedate !== '' ? $this->pdo->escapeString($releasedate) : 'null',
 				$this->pdo->escapeString($esrb),
 				$cover,
 				$genreID,
-				($review == 'review' ? $review : $this->pdo->escapeString(substr($review, 0, 3000))),
+				($review === 'review' ? $review : $this->pdo->escapeString(substr($review, 0, 3000))),
 				$id
 			)
 		);
@@ -411,7 +420,7 @@ class Console
 	 * @param $gameInfo
 	 *
 	 * @return false|int|string
-	 * @throws \Exception
+	 * @throws \RuntimeException
 	 */
 	public function updateConsoleInfo($gameInfo)
 	{
@@ -420,10 +429,10 @@ class Console
 		try {
 			$amaz = $this->fetchAmazonProperties($gameInfo['title'], $gameInfo['node']);
 		} catch (\Exception $e) {
-			if ($e->getMessage() == 'Invalid xml response.') {
+			if ($e->getMessage() === 'Invalid xml response.') {
 				$amaz = false;
 			} else {
-				throw new \Exception($e->getMessage(), $e->getCode(), $e);
+				throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
 			}
 		}
 
@@ -446,7 +455,7 @@ class Console
 				// Set covers properties
 				$con['coverurl'] = (string)$amaz->Items->Item->LargeImage->URL;
 
-				if ($con['coverurl'] != "") {
+				if ($con['coverurl'] !== '') {
 					$con['cover'] = 1;
 				} else {
 					$con['cover'] = 0;
@@ -454,18 +463,16 @@ class Console
 
 				$consoleId = $this->_updateConsoleTable($con);
 
-				if ($this->echooutput) {
-					if ($consoleId !== -2) {
-						$this->pdo->log->doEcho(
-							$this->pdo->log->header("Added/updated game: ") .
-							$this->pdo->log->alternateOver("   Title:    ") .
-							$this->pdo->log->primary($con['title']) .
-							$this->pdo->log->alternateOver("   Platform: ") .
-							$this->pdo->log->primary($con['platform']) .
-							$this->pdo->log->alternateOver("   Genre: ") .
-							$this->pdo->log->primary($con['consolegenre'])
-						);
-					}
+				if ($this->echooutput && $consoleId !== -2) {
+					ColorCLI::doEcho(
+						ColorCLI::header('Added/updated game: ') .
+						ColorCLI::alternateOver('   Title:    ') .
+						ColorCLI::primary($con['title']) .
+						ColorCLI::alternateOver('   Platform: ') .
+						ColorCLI::primary($con['platform']) .
+						ColorCLI::alternateOver('   Genre: ') .
+						ColorCLI::primary($con['consolegenre'])
+					);
 				}
 			}
 		}
@@ -478,7 +485,7 @@ class Console
 	 *
 	 * @return bool
 	 */
-	protected function _matchConToGameInfo($gameInfo = [], $con = [])
+	protected function _matchConToGameInfo(array $gameInfo = [], array $con = [])
 	{
 		$matched = false;
 
@@ -492,17 +499,17 @@ class Console
 		similar_text(strtolower($gameInfo['platform']), strtolower($con['platform']), $platformpercent);
 
 		if (nZEDb_DEBUG) {
-			echo(PHP_EOL . "Matched: Title Percentage 1: $titlepercent% between " . $gameInfo['title'] . " and " . $con['title'] . PHP_EOL);
+			echo(PHP_EOL . "Matched: Title Percentage 1: $titlepercent% between " . $gameInfo['title'] . ' and ' . $con['title'] . PHP_EOL);
 		}
 
 		// Since Wii Ware games and XBLA have inconsistent original platforms, as long as title is 50% its ok.
-		if (preg_match('/wiiware|xbla/i', trim($gameInfo['platform'])) && $titlepercent >= 50) {
+		if ($titlepercent >= 50 && preg_match('/wiiware|xbla/i', trim($gameInfo['platform']))) {
 			$titlepercent = 100;
 			$platformpercent = 100;
 		}
 
 		// If the release is DLC matching will be difficult, so assume anything over 50% is legit.
-		if (isset($gameInfo['dlc']) && $gameInfo['dlc'] == 1 && $titlepercent >= 50) {
+		if ($titlepercent >= 50 && isset($gameInfo['dlc']) && (int) $gameInfo['dlc'] === 1) {
 			$titlepercent = 100;
 			$platformpercent = 100;
 		}
@@ -513,12 +520,12 @@ class Console
 		}
 
 		if (nZEDb_DEBUG) {
-			echo("Matched: Title Percentage 2: $titlepercent% between " . $gameInfo['title'] . " and " . $con['title'] . PHP_EOL);
-			echo("Matched: Platform Percentage: $platformpercent% between " . $gameInfo['platform'] . " and " . $con['platform'] . PHP_EOL);
+			echo("Matched: Title Percentage 2: $titlepercent% between " . $gameInfo['title'] . ' and ' . $con['title'] . PHP_EOL);
+			echo("Matched: Platform Percentage: $platformpercent% between " . $gameInfo['platform'] . ' and ' . $con['platform'] . PHP_EOL);
 		}
 
 		// Platform must equal 100%.
-		if ($platformpercent == 100 && $titlepercent >= 70) {
+		if ($platformpercent === 100 && $titlepercent >= 70) {
 			$matched = true;
 		}
 
@@ -559,17 +566,17 @@ class Console
 	 *
 	 * @return array
 	 */
-	protected function _setConAfterMatch($amaz = [])
+	protected function _setConAfterMatch(array $amaz = [])
 	{
 		$con = [];
 		$con['asin'] = (string)$amaz->Items->Item->ASIN;
 
 		$con['url'] = (string)$amaz->Items->Item->DetailPageURL;
-		$con['url'] = str_replace("%26tag%3Dws", "%26tag%3Dopensourceins%2D21", $con['url']);
+		$con['url'] = str_replace('%26tag%3Dws', '%26tag%3Dopensourceins%2D21', $con['url']);
 
 		$con['salesrank'] = (string)$amaz->Items->Item->SalesRank;
-		if ($con['salesrank'] == "") {
-			$con['salesrank'] = "null";
+		if ($con['salesrank'] === '') {
+			$con['salesrank'] = 'null';
 		}
 
 		$con['publisher'] = (string)$amaz->Items->Item->ItemAttributes->Publisher;
@@ -580,8 +587,8 @@ class Console
 			$con['releasedate'] = "";
 		}
 
-		if ($con['releasedate'] == "''") {
-			$con['releasedate'] = "";
+		if ($con['releasedate'] === "''") {
+			$con['releasedate'] = '';
 		}
 
 		$con['review'] = "";
@@ -596,7 +603,7 @@ class Console
 	 *
 	 * @return array
 	 */
-	protected function _matchGenre($amaz = [])
+	protected function _matchGenre(array $amaz = [])
 	{
 
 		$genreName = '';
@@ -606,7 +613,7 @@ class Console
 			//workaround is to get the xml and load that into its own obj
 			$amazGenresXml = $amaz->Items->Item->BrowseNodes->asXml();
 			$amazGenresObj = simplexml_load_string($amazGenresXml);
-			$amazGenres = $amazGenresObj->xpath("//Name");
+			$amazGenres = $amazGenresObj->xpath('//Name');
 
 			foreach ($amazGenres as $amazGenre) {
 				$currName = trim($amazGenre[0]);
@@ -620,7 +627,7 @@ class Console
 			}
 		}
 
-		if ($genreName == '' && isset($amaz->Items->Item->ItemAttributes->Genre)) {
+		if ($genreName === '' && isset($amaz->Items->Item->ItemAttributes->Genre)) {
 			$a = (string)$amaz->Items->Item->ItemAttributes->Genre;
 			$b = str_replace('-', ' ', $a);
 			$tmpGenre = explode(' ', $b);
@@ -652,13 +659,13 @@ class Console
 	{
 		$genreassoc = $this->_loadGenres();
 
-		if (in_array(strtolower($genreName), $genreassoc)) {
-			$genreKey = array_search(strtolower($genreName), $genreassoc);
+		if (in_array(strtolower($genreName), $genreassoc, false)) {
+			$genreKey = array_search(strtolower($genreName), $genreassoc, false);
 		} else {
 			$genreKey = $this->pdo->queryInsert(
-								sprintf("
+								sprintf('
 									INSERT INTO genres (title, type)
-									VALUES (%s, %d)",
+									VALUES (%s, %d)',
 									$this->pdo->escapeString($genreName),
 									Category::GAME_ROOT
 								)
@@ -755,7 +762,7 @@ class Console
 	 *
 	 * @return false|int|string
 	 */
-	protected function _updateConsoleTable($con = [])
+	protected function _updateConsoleTable(array $con = [])
 	{
 		$ri = new ReleaseImage($this->pdo);
 
@@ -771,17 +778,18 @@ class Console
 		if ($check === false) {
 			$consoleId = $this->pdo->queryInsert(
 				sprintf(
-					"INSERT INTO consoleinfo (title, asin, url, salesrank, platform, publisher, genre_id, esrb, releasedate, review, cover, createddate, updateddate)
-					VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, NOW(), NOW())",
+					'INSERT INTO consoleinfo (title, asin, url, salesrank, platform, publisher, genre_id, esrb, releasedate, review, cover, createddate, updateddate)
+					VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, NOW(), NOW())',
 					$this->pdo->escapeString($con['title']),
 					$this->pdo->escapeString($con['asin']),
 					$this->pdo->escapeString($con['url']),
 					$con['salesrank'],
 					$this->pdo->escapeString($con['platform']),
 					$this->pdo->escapeString($con['publisher']),
-					($con['consolegenreID'] == -1 ? "null" : $con['consolegenreID']),
+					$con['consolegenreID'] === -1 ?
+						'null' : $con['consolegenreID'],
 					$this->pdo->escapeString($con['esrb']),
-					($con['releasedate'] != "" ? $this->pdo->escapeString($con['releasedate']) : "null"),
+					$con['releasedate'] !== '' ? $this->pdo->escapeString($con['releasedate']) : 'null',
 					$this->pdo->escapeString(substr($con['review'], 0, 3000)),
 					$con['cover']
 				)
@@ -815,7 +823,7 @@ class Console
 	{
 		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
 		try {
-			$result = $obj->searchProducts($title, AmazonProductAPI::GAMES, "NODE", $node);
+			$result = $obj->searchProducts($title, AmazonProductAPI::GAMES, 'NODE', $node);
 		} catch (\Exception $e) {
 			$result = false;
 		}
@@ -845,7 +853,7 @@ class Console
 		if ($res instanceof \Traversable && $res->rowCount() > 0) {
 
 			if ($this->echooutput) {
-				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $res->rowCount() . ' console release(s).'));
+				ColorCLI::doEcho(ColorCLI::header('Processing ' . $res->rowCount() . ' console release(s).'));
 			}
 
 			foreach ($res as $arr) {
@@ -856,9 +864,9 @@ class Console
 
 				if ($gameInfo !== false) {
 						if ($this->echooutput) {
-						$this->pdo->log->doEcho(
-							$this->pdo->log->headerOver('Looking up: ') .
-							$this->pdo->log->primary(
+						ColorCLI::doEcho(
+							ColorCLI::headerOver('Looking up: ') .
+							ColorCLI::primary(
 								$gameInfo['title'] .
 								' (' .
 								$gameInfo['platform'] . ')'
@@ -869,10 +877,11 @@ class Console
 					// Check for existing console entry.
 					$gameCheck = $this->getConsoleInfoByName($gameInfo['title'], $gameInfo['platform']);
 
-					if ($gameCheck === false && in_array($gameInfo['title'] . $gameInfo['platform'], $this->failCache)) {
+					if ($gameCheck === false && in_array($gameInfo['title'] . $gameInfo['platform'],
+							$this->failCache, false)) {
 						// Lookup recently failed, no point trying again
 						if ($this->echooutput) {
-							$this->pdo->log->doEcho($this->pdo->log->headerOver('Cached previous failure. Skipping.') . PHP_EOL);
+							ColorCLI::doEcho(ColorCLI::headerOver('Cached previous failure. Skipping.') . PHP_EOL);
 						}
 						$gameId = -2;
 					} else if ($gameCheck === false) {
@@ -884,9 +893,9 @@ class Console
 						}
 					} else {
 						if ($this->echooutput) {
-							$this->pdo->log->doEcho(
-									$this->pdo->log->headerOver("Found Local: ") .
-									$this->pdo->log->primary("{$gameCheck['title']} - {$gameCheck['platform']}") .
+							ColorCLI::doEcho(
+									ColorCLI::headerOver('Found Local: ') .
+									ColorCLI::primary("{$gameCheck['title']} - {$gameCheck['platform']}") .
 									PHP_EOL
 							);
 						}
@@ -917,7 +926,7 @@ class Console
 			}
 
 		} else if ($this->echooutput) {
-			$this->pdo->log->doEcho($this->pdo->log->header('No console releases to process.'));
+			ColorCLI::doEcho(ColorCLI::header('No console releases to process.'));
 		}
 	}
 
@@ -949,7 +958,7 @@ class Console
 				if (stripos('Rock Band Network', $result['title']) !== false) {
 					$result['title'] = 'Rock Band';
 				} else if (strpos('-', $result['title']) !== false) {
-					$dlc = explode("-", $result['title']);
+					$dlc = explode('-', $result['title']);
 					$result['title'] = $dlc[0];
 				} else if (preg_match('/(.*? .*?) /i', $result['title'], $dlc)) {
 					$result['title'] = $dlc[0];
@@ -989,7 +998,7 @@ class Console
 		   Other option is to pass the $release->categoryID here if we don't find a platform but that
 		   would require an extra lookup to determine the name. In either case we should have a title at the minimum. */
 
-		return (isset($result['title']) && !empty($result['title']) && isset($result['platform'])) ? $result : false;
+		return (isset($result['title'], $result['platform']) && !empty($result['title'])) ? $result : false;
 	}
 
 	/**
@@ -1140,7 +1149,7 @@ class Console
 				break;
 		}
 
-		return ($str != '') ? $str : false;
+		return ($str !== '') ? $str : false;
 	}
 
 
