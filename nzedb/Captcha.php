@@ -102,18 +102,13 @@ class Captcha
 	}
 
 	/**
-	 * If site admin setup keys properly,
-	 * allow display of recaptcha.
+	 * If site admin setup keys properly, allow display of recaptcha.
 	 *
 	 * @return bool
 	 */
-	public function shouldDisplay()
+	public function shouldDisplay() : bool
 	{
-		if ($this->_bootstrapCaptcha()) {
-			return true;
-		}
-
-		return false;
+		return $this->bootstrapCaptcha() === true;
 	}
 
 	/**
@@ -191,14 +186,14 @@ class Captcha
 	 *
 	 * @return bool
 	 */
-	private function _bootstrapCaptcha()
+	private function bootstrapCaptcha() : bool
 	{
 		if ($this->recaptcha instanceof ReCaptcha) {
 			return true;
 		}
 
 		$enabled = Settings::value(self::RECAPTCHA_SETTING_ENABLED);
-		if ($enabled || is_null($enabled)) { // Only disable if the setting exists and is truish.
+		if (!empty($enabled) && $enabled > 0 ) {// Only disable if the setting exists and is truish.
 			$this->sitekey = Settings::value(self::RECAPTCHA_SETTING_SITEKEY);
 			$this->secretkey = Settings::value(self::RECAPTCHA_SETTING_SECRETKEY);
 
