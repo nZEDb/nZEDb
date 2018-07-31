@@ -9,7 +9,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2018-07-31 niel
+	Mrg: Bring in updates for PHP 7.2 compatibility.
 2018-07-30 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.9.0
 
