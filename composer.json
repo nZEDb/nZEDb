@@ -56,6 +56,10 @@
     },
     {
       "type": "vcs",
+      "url": "https://github.com/niel/li3_fixtures"
+    },
+    {
+      "type": "vcs",
       "url": "https://github.com/niel/li3_quality"
     },
     {
@@ -112,7 +116,6 @@
     "php-tmdb/api": "^2.1",
     "phpmailer/phpmailer": "^6.0.2",
     "smarty/smarty": "~3.1.29",
-    "unionofrad/li3_fixtures": "^1.1.1",
     "zeebinz/rarinfo": "~2.5.0",
     "bower-asset/animate.css": "~3.5.1",
     "bower-asset/autosize-3.0.x": "~3.0.15",
