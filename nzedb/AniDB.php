@@ -12,6 +12,8 @@ class AniDB
 
 	/**
 	 * @param array $options Class instances / Echo to cli.
+	 *
+	 * @throws \RuntimeException
 	 */
 	public function __construct(array $options = [])
 	{
@@ -98,14 +100,14 @@ class AniDB
 	{
 		$rsql = $tsql = '';
 
-		if ($letter != '') {
-			if ($letter == '0-9') {
+		if ($letter !== '') {
+			if ($letter === '0-9') {
 				$letter = '[0-9]';
 			}
 			$rsql .= sprintf('AND at.title REGEXP %s', $this->pdo->escapeString('^' . $letter));
 		}
 
-		if ($animetitle != '') {
+		if ($animetitle !== '') {
 			$tsql .= sprintf('AND at.title %s', $this->pdo->likeString($animetitle, true, true));
 		}
 
@@ -130,7 +132,7 @@ class AniDB
 	/**
 	 * Retrieves a range of Anime titles for site display
 	 *
-	 * @param int $start
+	 * @param int|bool $start
 	 * @param int $num
 	 * @param string $animetitle
 	 * @return array|bool
@@ -144,7 +146,7 @@ class AniDB
 		}
 
 		$rsql = '';
-		if ($animetitle != '') {
+		if ($animetitle !== '') {
 			$rsql = sprintf('AND at.title %s', $this->pdo->likeString($animetitle, true, true));
 		}
 
@@ -173,7 +175,7 @@ class AniDB
 	public function getAnimeCount($animetitle = '')
 	{
 		$rsql = '';
-		if ($animetitle != '') {
+		if ($animetitle !== '') {
 			$rsql .= sprintf('AND at.title %s', $this->pdo->likeString($animetitle, true, true));
 		}
 
