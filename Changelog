@@ -11,6 +11,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2018-07-31 niel
 	Mrg: Bring in updates for PHP 7.2 compatibility.
+		***NOTE*** You *must* run `composer install` manually as the lithium framework version has
+		changed and your current one will not have some of the new stuff that this update adds.
 2018-07-30 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.9.0
 
