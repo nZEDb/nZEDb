@@ -25,7 +25,7 @@ namespace app\extensions\util\yenc\adapter;
  *
  * @package app\extensions\util\yenc\adapter
  */
-class Php extends \lithium\core\Object
+class Php extends \lithium\core\BaseObject
 {
 	public static function decode(&$text)
 	{

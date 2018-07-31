@@ -9,6 +9,13 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+2018-07-31 niel
+	Mrg: Bring in updates for PHP 7.2 compatibility.
+		***NOTE*** You *must* run `composer install` manually as the lithium framework version has
+		changed and your current one will not have some of the new stuff that this update adds.
+2018-07-30 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.9.0
+
 
 2018-07-18 niel
 	Fix: Check for whether $active is null, as empty also includes false.
