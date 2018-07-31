@@ -1362,17 +1362,21 @@ class Categorize extends Category
 		}
 	}
 
-	public function isMusicForeign()
+	/**
+	 * Should the category be set to MUSIC_FOREIGN
+	 *
+	 * @return bool
+	 */
+	public function isMusicForeign() : bool
 	{
-		if ($this->categorizeForeign) {
-			if (preg_match('/[ \-\._](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish|bl|cz|de|es|fr|ger|heb|hu|hun|it(a| 19|20\d\d)|jap|ko|kor|nl|pl|se)[ \-\._]/i', $this->releaseName)) {
-				$this->tmpCat = Category::MUSIC_FOREIGN;
-
-				return true;
-			}
+		$flag = $this->categorizeForeign &&
+			preg_match('/[ \-\._](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish|bl|cz|de|es|fr|ger|heb|hu|hun|it(a| 19|20\d\d)|jap|ko|kor|nl|pl|se)[ \-\._]/i',
+				$this->releaseName);
+		if ($flag) {
+			$this->tmpCat = Category::MUSIC_FOREIGN;
 		}
 
-		return false;
+		return $flag;
 	}
 
 	public function isAudiobook()
