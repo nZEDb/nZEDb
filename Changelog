@@ -10,6 +10,7 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 2018-07-31 DariusIII
+	Chg: Update coding style of classes, fourth batch
 	Chg: Update coding style of classes, third batch
 	Chg: Update coding style of classes, second batch
 	Chg: Update coding style of classes, first batch
