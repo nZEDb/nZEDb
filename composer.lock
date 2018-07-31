@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "9207e86a642064e622313bd22a869264",
+    "content-hash": "568eabf7ca439c5dfc982685be69a69f",
     "packages": [
         {
             "name": "b3rs3rk/steamfront",
@@ -1691,25 +1691,66 @@
             "time": "2016-10-25T08:14:27+00:00"
         },
         {
+            "name": "niel/li3_fixtures",
+            "version": "1.2.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/niel/li3_fixtures.git",
+                "reference": "379f226ed544b2d7a00fb78cb311560f342dd4ae"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/niel/li3_fixtures/zipball/379f226ed544b2d7a00fb78cb311560f342dd4ae",
+                "reference": "379f226ed544b2d7a00fb78cb311560f342dd4ae",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "1.*",
+                "niel/lithium": "dev-php7.2-updates",
+                "php": ">=7.0.3"
+            },
+            "type": "lithium-library",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Union of RAD"
+                },
+                {
+                    "name": "The Community"
+                }
+            ],
+            "description": "The fixtures library for the li3 PHP framework",
+            "homepage": "http://li3.me",
+            "keywords": [
+                "fixtures",
+                "li3",
+                "lithium",
+                "testing"
+            ],
+            "support": {
+                "source": "https://github.com/niel/li3_fixtures/tree/1.2"
+            },
+            "time": "2018-07-31 02:01:55"
+        },
+        {
             "name": "niel/lithium",
             "version": "dev-php7.2-updates",
             "source": {
                 "type": "git",
                 "url": "https://github.com/niel/lithium.git",
-                "reference": "de766aa26e4dfcb3f3d6a57df056ed81325f8c13"
+                "reference": "fdd339eafc1e157aebefede91b6ced935d021f41"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/niel/lithium/zipball/de766aa26e4dfcb3f3d6a57df056ed81325f8c13",
-                "reference": "de766aa26e4dfcb3f3d6a57df056ed81325f8c13",
+                "url": "https://api.github.com/repos/niel/lithium/zipball/fdd339eafc1e157aebefede91b6ced935d021f41",
+                "reference": "fdd339eafc1e157aebefede91b6ced935d021f41",
                 "shasum": ""
             },
             "require": {
                 "composer/installers": "1.*",
                 "php": "^7.0.3"
-            },
-            "require-dev": {
-                "unionofrad/li3_fixtures": "1.2.x-dev"
             },
             "suggest": {
                 "ext-curl": "For the Curl Socket adapter.",
@@ -1746,7 +1787,7 @@
                 "source": "https://github.com/niel/lithium/tree/php7.2-updates",
                 "issues": "https://github.com/niel/lithium/issues"
             },
-            "time": "2018-07-30 03:14:41"
+            "time": "2018-07-31 00:56:01"
         },
         {
             "name": "nzedb/Git.php",
@@ -2227,102 +2268,6 @@
             "time": "2018-01-11T07:56:07+00:00"
         },
         {
-            "name": "unionofrad/li3_fixtures",
-            "version": "v1.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/UnionOfRAD/li3_fixtures.git",
-                "reference": "dee83b285e4bf0e716b45ea30ac3f8240b38c8ce"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/li3_fixtures/zipball/dee83b285e4bf0e716b45ea30ac3f8240b38c8ce",
-                "reference": "dee83b285e4bf0e716b45ea30ac3f8240b38c8ce",
-                "shasum": ""
-            },
-            "require": {
-                "composer/installers": "1.*",
-                "php": ">=5.5.14",
-                "unionofrad/lithium": "^1.1"
-            },
-            "type": "lithium-library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Union of RAD"
-                },
-                {
-                    "name": "The Community"
-                }
-            ],
-            "description": "The fixtures library for the li3 PHP framework",
-            "homepage": "http://li3.me",
-            "keywords": [
-                "fixtures",
-                "li3",
-                "lithium",
-                "testing"
-            ],
-            "time": "2017-04-08T07:41:10+00:00"
-        },
-        {
-            "name": "unionofrad/lithium",
-            "version": "v1.2.0-alpha",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/UnionOfRAD/lithium.git",
-                "reference": "1c66ff7005aa24041bad19b1ce2141a54e6c4972"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/UnionOfRAD/lithium/zipball/1c66ff7005aa24041bad19b1ce2141a54e6c4972",
-                "reference": "1c66ff7005aa24041bad19b1ce2141a54e6c4972",
-                "shasum": ""
-            },
-            "require": {
-                "composer/installers": "1.*",
-                "php": "^5.6 || ^7.0.3 || ^7.1.0"
-            },
-            "require-dev": {
-                "unionofrad/li3_fixtures": "^1.1"
-            },
-            "suggest": {
-                "ext-curl": "For the Curl Socket adapter.",
-                "ext-memcached": "For the Memcache Cache adapter.",
-                "ext-mongo": "For the MongoDb Datasource. ",
-                "ext-openssl": "For the Encrypt Session strategy.",
-                "ext-pdo": "For the MySql, Postgres and Sqlite Datasources.",
-                "ext-redis": "For the Redis Cache adapter."
-            },
-            "bin": [
-                "console/li3"
-            ],
-            "type": "lithium-library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Union of RAD"
-                },
-                {
-                    "name": "The Community"
-                }
-            ],
-            "description": "The li₃ PHP framework",
-            "homepage": "http://li3.me",
-            "keywords": [
-                "framework",
-                "li3",
-                "lithium"
-            ],
-            "time": "2018-02-03T10:58:06+00:00"
-        },
-        {
             "name": "zeebinz/rarinfo",
             "version": "v2.5.0",
             "source": {
@@ -2413,6 +2358,7 @@
         "joshpinkney/tv-maze-php-api": 20,
         "niel/lithium": 20,
         "nzedb/git.php": 20,
+        "niel/li3_fixtures": 20,
         "unionofrad/manual": 20
     },
     "prefer-stable": false,

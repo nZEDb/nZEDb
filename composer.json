@@ -110,6 +110,7 @@
     "james-heinrich/getid3": "^1.9.12",
     "joshpinkney/tv-maze-php-api": "dev-master",
     "moinax/tvdb": "^1.0.4",
+    "niel/li3_fixtures": "1.2.x-dev"
     "niel/lithium": "dev-php7.2-updates",
     "nzedb/Git.php": "dev-master",
     "php": ">=7.0",
@@ -141,7 +142,7 @@
     "bower-asset/responsive-tables-js-1.0.x": "~1.0.6",
     "bower-asset/select2-4.0.x": "~4.0.2",
     "bower-asset/slimScroll-1.3.x": "~1.3.7",
-    "bower-asset/tinymce-builded": "^4.4"
+    "bower-asset/tinymce-builded": "^4.4",
   },
   "require-dev": {
     "unionofrad/manual": "1.1.x-dev"
