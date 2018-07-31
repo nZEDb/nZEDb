@@ -3,7 +3,6 @@ namespace nzedb;
 
 use app\models\Groups;
 use app\models\Predb as PredbModel;
-use lithium\data\Connections;
 use nzedb\db\DB;
 
 /**
@@ -41,7 +40,7 @@ class IRCScraper extends IRCClient
 	 * Logging object for reporting errors.
 	 * @var \nzedb\Logger|null Object for logging events.
 	 */
-	protected $log = null;
+	protected $log;
 
 	/**
 	 * Is this pre nuked or un nuked?
@@ -85,6 +84,8 @@ class IRCScraper extends IRCClient
 	 * @param bool $silent Run this in silent mode (no text output).
 	 * @param bool $debug  Turn on debug? Shows sent/received socket buffer messages.
 	 *
+	 * @throws \RuntimeException
+	 * @throws \nzedb\LoggerException
 	 * @access public
 	 */
 	public function __construct(&$silent = false, &$debug = false)
@@ -133,11 +134,6 @@ class IRCScraper extends IRCClient
 		$this->_resetPreVariables();
 		$this->_startScraping();
 		$this->log = new Logger();
-	}
-
-	public function __destruct()
-	{
-		parent::__destruct();
 	}
 
 	/**
@@ -195,6 +191,7 @@ class IRCScraper extends IRCClient
 	 * Process bot messages, insert/update PREs.
 	 *
 	 * @access protected
+	 * @throws \InvalidArgumentException
 	 */
 	protected function processChannelMessages()
 	{
@@ -280,7 +277,7 @@ class IRCScraper extends IRCClient
 	 */
 	protected function _checkForDupe()
 	{
-		$this->dbEntry = \app\models\Predb::find('first', [
+		$this->dbEntry = PredbModel::find('first', [
 			'conditions' => [ 'title' => $this->_curPre['title'] ],
 			//'with' => 'Groups',
 		]);
@@ -383,27 +380,27 @@ class IRCScraper extends IRCClient
 			return;
 		}
 
-		if (!empty($this->_curPre['category']) && $this->dbEntry->category != $this->_curPre['category']) {
+		if (!empty($this->_curPre['category']) && $this->dbEntry->category !== $this->_curPre['category']) {
 			$this->dbEntry->category = $this->_curPre['category'];
 		}
 
-		if (!empty($this->_curPre['size']) && $this->dbEntry->size != $this->_curPre['size']) {
+		if (!empty($this->_curPre['size']) && $this->dbEntry->size !== $this->_curPre['size']) {
 			$this->dbEntry->size = $this->_curPre['size'];
 		}
 
-		if (!empty($this->_curPre['source']) && $this->dbEntry->source != $this->_curPre['source']) {
+		if (!empty($this->_curPre['source']) && $this->dbEntry->source !== $this->_curPre['source']) {
 			$this->dbEntry->source = $this->_curPre['source'];
 		}
 
-		if (!empty($this->_curPre['files']) && $this->dbEntry->files != $this->_curPre['files']) {
+		if (!empty($this->_curPre['files']) && $this->dbEntry->files !== $this->_curPre['files']) {
 			$this->dbEntry->files = $this->_curPre['files'];
 		}
 
-		if (!empty($this->_curPre['']) && $this->dbEntry->nukereason != $this->_curPre['reason']) {
+		if (!empty($this->_curPre['']) && $this->dbEntry->nukereason !== $this->_curPre['reason']) {
 			$this->dbEntry->nukereason = $this->_curPre['reason'];
 		}
 
-		if (!empty($this->_curPre['reqid']) && $this->dbEntry->requestid != $this->_curPre['reqid']) {
+		if (!empty($this->_curPre['reqid']) && $this->dbEntry->requestid !== $this->_curPre['reqid']) {
 			$this->dbEntry->requestid = $this->_curPre['reqid'];
 		}
 
@@ -412,15 +409,15 @@ class IRCScraper extends IRCClient
 		}
 
 		$datetime = $this->_curPre['predate']->format('Y-m-d H:i:s');
-		if (!empty($this->_curPre['predate']) && $this->dbEntry->created != $datetime) {
+		if (!empty($this->_curPre['predate']) && $this->dbEntry->created !== $datetime) {
 			$this->dbEntry->updated = $datetime;
 		}
 
-		if (!empty($this->_curPre['nuked']) && $this->dbEntry->nuked != $this->_curPre['nuked']) {
+		if (!empty($this->_curPre['nuked']) && $this->dbEntry->nuked !== $this->_curPre['nuked']) {
 			$this->dbEntry->nuked = $this->_curPre['nuked'];
 		}
 
-		if (!empty($this->_curPre['filename']) && $this->dbEntry->filename != $this->_curPre['filename']) {
+		if (!empty($this->_curPre['filename']) && $this->dbEntry->filename !== $this->_curPre['filename']) {
 			$this->dbEntry->filename = $this->_curPre['filename'];
 		}
 

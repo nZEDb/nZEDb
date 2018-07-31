@@ -86,14 +86,14 @@ abstract class IRCClient
 	 * @var resource
 	 * @access protected
 	 */
-	protected $_socket = null;
+	protected $_socket;
 
 	/**
 	 * Buffer contents.
 	 * @var string
 	 * @access protected
 	 */
-	protected $_buffer = null;
+	protected $_buffer;
 
 	/**
 	 * When someone types something into a channel, buffer it.
@@ -184,13 +184,13 @@ abstract class IRCClient
 	 * The default is fine, it will ping the server if the server does not ping us
 	 * within this time to keep the connection alive.
 	 *
-	 * @param int|string $timeout Seconds.
+	 * @param int|string|float $timeout Seconds.
 	 *
 	 * @access public
 	 */
 	public function setSocketTimeout($timeout)
 	{
-		if (!is_numeric($timeout) || is_double($timeout)) {
+		if (!is_numeric($timeout) || is_float($timeout)) {
 			echo 'ERROR: IRC socket timeout must be a number!' . PHP_EOL;
 		} else {
 			$this->_socket_timeout = $timeout;
@@ -200,13 +200,13 @@ abstract class IRCClient
 	/**
 	 * Amount of time to wait before giving up when connecting.
 	 *
-	 * @param int|string $timeout Seconds.
+	 * @param int|string|float $timeout Seconds.
 	 *
 	 * @access public
 	 */
 	public function setConnectionTimeout($timeout)
 	{
-		if (!is_numeric($timeout) || is_double($timeout)) {
+		if (!is_numeric($timeout) || is_float($timeout)) {
 			echo 'ERROR: IRC connection timeout must be a number!' . PHP_EOL;
 		} else {
 			$this->_remote_connection_timeout = $timeout;
@@ -216,13 +216,13 @@ abstract class IRCClient
 	/**
 	 * Amount of times to retry before giving up when connecting.
 	 *
-	 * @param int $retries
+	 * @param int|float $retries
 	 *
 	 * @access public
 	 */
 	public function setConnectionRetries($retries)
 	{
-		if (!is_numeric($retries) || is_double($retries)) {
+		if (!is_numeric($retries) || is_float($retries)) {
 			echo 'ERROR: IRC connection retries must be a number!' . PHP_EOL;
 		} else {
 			$this->_reconnectRetries = $retries;
@@ -232,13 +232,13 @@ abstract class IRCClient
 	/**
 	 * Amount of time to wait between failed connects.
 	 *
-	 * @param int $delay Seconds.
+	 * @param int|float $delay Seconds.
 	 *
 	 * @access public
 	 */
 	public function setReConnectDelay($delay)
 	{
-		if (!is_numeric($delay) || is_double($delay)) {
+		if (!is_numeric($delay) || is_float($delay)) {
 			echo 'ERROR: IRC reconnect delay must be a number!' . PHP_EOL;
 		} else {
 			$this->_reconnectDelay = $delay;
@@ -249,7 +249,7 @@ abstract class IRCClient
 	 * Connect to a IRC server.
 	 *
 	 * @param string     $hostname Host name of the IRC server (can be a IP or a name).
-	 * @param int|string $port     Port number of the IRC server.
+	 * @param int|string|float $port     Port number of the IRC server.
 	 * @param bool       $tls      Use encryption for the socket transport? (make sure the port is right).
 	 *
 	 * @return bool
@@ -263,12 +263,12 @@ abstract class IRCClient
 
 		$socket_string = $transport . '://' . $hostname . ':' . $port;
 		if ($socket_string !== $this->_remote_socket_string || !$this->_connected()) {
-			if (!is_string($hostname) || $hostname == '') {
+			if (!is_string($hostname) || $hostname === '') {
 				echo 'ERROR: IRC host name must not be empty!' . PHP_EOL;
 				return false;
 			}
 
-			if (!is_numeric($port) || is_double($port)) {
+			if (!is_numeric($port) || is_float($port)) {
 				echo 'ERROR: IRC port must be a number!' . PHP_EOL;
 				return false;
 			}
@@ -284,10 +284,10 @@ abstract class IRCClient
 				$this->_initiateStream();
 				if ($this->_connected()) {
 					break;
-				} else {
-					// Sleep between retries.
-					sleep($this->_reconnectDelay);
 				}
+
+				// Sleep between retries.
+				sleep($this->_reconnectDelay);
 			}
 		} else {
 			$this->_alreadyLoggedIn = true;
@@ -352,12 +352,12 @@ abstract class IRCClient
 
 			} else if (preg_match('/^:(.*?)\s+(\d+).*?(:.+?)?$/', $this->_buffer, $matches)) {
 				// We found 001, which means we are logged in.
-				if ($matches[2] == 001) {
+				if ($matches[2] === 001) {
 					$this->_remote_host_received = $matches[1];
 					break;
 
 				// We got 464, which means we need to send a password.
-				} else if ($matches[2] == 464) {
+				} else if ($matches[2] === 464) {
 					// Before the lower check, set the password : username:password
 					$tempPass = $userName . ':' . $password;
 
@@ -368,7 +368,9 @@ abstract class IRCClient
 
 					if ($password !== null && !$this->_writeSocket('PASS ' . $tempPass)) {
 						return false;
-					} else if (isset($matches[3]) && strpos(strtolower($matches[3]), 'invalid password')) {
+					}
+
+					if (isset($matches[3]) && stripos($matches[3], 'invalid password') !== false) {
 						echo 'Invalid password or username for (' . $this->_remote_host . ').';
 						return false;
 					}
@@ -485,7 +487,7 @@ abstract class IRCClient
 	 */
 	protected function _joinChannel($channel, $password)
 	{
-		$this->_writeSocket('JOIN ' . $channel . ($password === null ? '' : ' ' . $password));
+		$this->_writeSocket('JOIN ' . $channel . (empty($password) ? '' : ' ' . $password));
 	}
 
 	/**
@@ -519,7 +521,7 @@ abstract class IRCClient
 		$pong = $this->_writeSocket('PING ' . $host);
 
 		// Check if there's a connection error.
-		if ($pong === false || ((time() - $this->_lastPing) > ($this->_socket_timeout / 2) && !preg_match('/^PONG/', $this->_buffer))) {
+		if ($pong === false || ((time() - $this->_lastPing) > ($this->_socket_timeout / 2) && strpos($this->_buffer, 'PONG') === 0)) {
 			$this->_reconnect();
 		}
 
@@ -580,7 +582,7 @@ abstract class IRCClient
 	protected function _writeSocket($command)
 	{
 		$command .= "\r\n";
-		for ($written = 0; $written < strlen($command); $written += $fWrite) {
+		for ($written = 0, $writtenMax = strlen($command); $written < $writtenMax; $written += $fWrite) {
 			stream_set_timeout($this->_socket, $this->_socket_timeout);
 			$fWrite = $this->_writeSocketChar(substr($command, $written));
 
@@ -646,7 +648,7 @@ abstract class IRCClient
 	 */
 	protected function _closeStream()
 	{
-		if (!is_null($this->_socket)) {
+		if ($this->_socket !== null) {
 			$this->_socket = null;
 		}
 	}

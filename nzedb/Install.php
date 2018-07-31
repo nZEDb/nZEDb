@@ -5,12 +5,12 @@ class Install
 {
 	public $DB_SYSTEM;
 	public $DB_TYPE;
-	public $DB_HOST = "127.0.0.1";
+	public $DB_HOST = '127.0.0.1';
 	public $DB_PORT;
 	public $DB_SOCKET;
 	public $DB_USER;
 	public $DB_PASSWORD;
-	public $DB_NAME = "nzedb";
+	public $DB_NAME = 'nzedb';
 	public $NNTP_USERNAME;
 	public $NNTP_PASSWORD;
 	public $NNTP_SERVER;

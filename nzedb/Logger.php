@@ -62,7 +62,7 @@ class Logger
 	 * @var bool
 	 * @access private
 	 */
-	private $outputCLI = true;
+	private $outputCLI;
 
 	/**
 	 * Cache of the date.
@@ -96,7 +96,7 @@ class Logger
 	 * @var resource|null|false Resource for log file.
 	 * @access private
 	 */
-	private $resource = null;
+	private $resource;
 
 	/**
 	 * How many old logs can we have max in the logs folder.
@@ -283,7 +283,7 @@ class Logger
 		return
 			str_pad(
 				number_format(
-					round($actualUsage / pow(1024, ($i = floor(log($actualUsage, 1024)))), 2)),
+					round($actualUsage / (1024 ** ($i = floor(log($actualUsage, 1024)))), 2)),
 					4, '~~~', STR_PAD_LEFT
 			) . $units[(int)$i];
 	}
@@ -341,7 +341,9 @@ class Logger
 	 *
 	 * @param string $folder   Folder where the log should be stored.
 	 * @param string $fileName Name of the file (must be alphanumeric and contain no file extensions).
+	 *
 	 * @access public
+	 * @throws \nzedb\LoggerException
 	 */
 	public function changeLogFileLocation($folder, $fileName)
 	{
@@ -451,6 +453,7 @@ class Logger
 	 * Log message to file.
 	 *
 	 * @access private
+	 * @throws \nzedb\LoggerException
 	 */
 	private function logMessage()
 	{
@@ -502,7 +505,7 @@ class Logger
 		// Check if the log folder exists, create it if not.
 		if (!is_dir($this->currentLogFolder)) {
 			$old = umask(0777);
-			if (!mkdir($this->currentLogFolder)) {
+			if (!mkdir($concurrentDirectory = $this->currentLogFolder) && !is_dir($concurrentDirectory)) {
 				throw new LoggerException('Unable to create log file folder ' . $this->currentLogFolder);
 			}
 			chmod($this->currentLogFolder, 0777);
@@ -533,6 +536,7 @@ class Logger
 	 * Rotate log file if it exceeds a certain size.
 	 *
 	 * @access private
+	 * @throws \nzedb\LoggerException
 	 */
 	private function rotateLog()
 	{
@@ -540,7 +544,9 @@ class Logger
 		$logSize = filesize($this->logPath);
 		if ($logSize === false) {
 			return;
-		} else if ($logSize >= ($this->maxLogSize * 1024 * 1024)) {
+		}
+
+		if ($logSize >= ($this->maxLogSize * 1024 * 1024)) {
 			$this->closeFile();
 			$this->compressLog();
 			$this->initiateLog();
@@ -612,7 +618,7 @@ class Logger
 
 		// Check if this is CLI or web.
 		if ($this->outputCLI) {
-			echo $this->colorCLI->debug($this->logMessage);
+			echo ColorCLI::debug($this->logMessage);
 		} else {
 			echo '<pre>' . $this->logMessage . '</pre><br />';
 		}
@@ -686,7 +692,7 @@ class Logger
 			$time .= '00H:';
 		}
 		if ($seconds > 60) {
-			$time .= str_pad(round((($seconds % 3600) / 60)), 2, '0', STR_PAD_LEFT) . 'M:';
+			$time .= str_pad(round(($seconds % 3600) / 60), 2, '0', STR_PAD_LEFT) . 'M:';
 		} else {
 			$time .= '00M:';
 		}

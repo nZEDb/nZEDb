@@ -75,6 +75,8 @@ class Captcha
 	 * @note Passing $page by reference to setup smarty vars easily.
 	 *
 	 * @param \Page $page
+	 *
+	 * @throws \InvalidArgumentException
 	 */
 	public function __construct(&$page)
 	{
@@ -82,22 +84,20 @@ class Captcha
 			throw new \InvalidArgumentException('Invalid Page variable provided');
 		}
 
-		$this->page = $page;
-
 		if ($this->shouldDisplay()) {
-			$this->page->smarty->assign('showCaptcha', true);
-			$this->page->smarty->assign('sitekey', $this->sitekey);
+			$page->smarty->assign('showCaptcha', true);
+			$page->smarty->assign('sitekey', $this->sitekey);
 
-			if ($this->page->isPostBack()) {
+			if ($page->isPostBack()) {
 				if (!$this->processCaptcha($_POST, $_SERVER['REMOTE_ADDR'])) {
-					$this->page->smarty->assign('error', $this->getError());
+					$page->smarty->assign('error', $this->getError());
 				}
 				//Delete this key after using so it doesn't interfere with normal $_POST
 				//processing. (i.e. contact-us)
-				unset($_POST[Captcha::RECAPTCHA_POSTKEY]);
+				unset($_POST[self::RECAPTCHA_POSTKEY]);
 			}
 		} else {
-			$this->page->smarty->assign('showCaptcha', false);
+			$page->smarty->assign('showCaptcha', false);
 		}
 	}
 
@@ -190,6 +190,8 @@ class Captcha
 	 * Return bool on success/failure.
 	 *
 	 * @return bool
+	 * @throws \RuntimeException
+	 * @throws \Exception
 	 */
 	private function _bootstrapCaptcha()
 	{
@@ -198,12 +200,12 @@ class Captcha
 		}
 
 		$enabled = Settings::value(self::RECAPTCHA_SETTING_ENABLED);
-		if ($enabled || is_null($enabled)) { // Only disable if the setting exists and is truish.
+		if ($enabled || $enabled === null) { // Only disable if the setting exists and is truish.
 			$this->sitekey = Settings::value(self::RECAPTCHA_SETTING_SITEKEY);
 			$this->secretkey = Settings::value(self::RECAPTCHA_SETTING_SECRETKEY);
 
-			if ($this->sitekey != false && $this->sitekey != '') {
-				if ($this->secretkey != false && $this->secretkey != '') {
+			if ($this->sitekey !== false && $this->sitekey !== '') {
+				if ($this->secretkey !== false && $this->secretkey !== '') {
 					$this->recaptcha = new ReCaptcha($this->secretkey);
 
 					return true;

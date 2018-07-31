@@ -83,6 +83,9 @@ class Backfill
 	 * Constructor.
 	 *
 	 * @param array $options Class instances / Echo to cli?
+	 *
+	 * @throws \RuntimeException
+	 * @throws \Exception
 	 */
 	public function __construct(array $options = [])
 	{
@@ -112,21 +115,21 @@ class Backfill
 			}
 		}
 
-		$this->_compressedHeaders = (Settings::value('..compressedheaders') == 1 ? true : false);
-		$this->_safeBackFillDate = (Settings::value('..safebackfilldate') != '') ?
-			(string)Settings::value('..safebackfilldate') : '2008-08-14';
-		$this->_safePartRepair = (Settings::value('..safepartrepair') == 1 ? 'update' : 'backfill');
-		$this->_disableBackfillGroup = (Settings::value('..disablebackfillgroup') == 1 ? true : false);
+		$this->_compressedHeaders = (int) Settings::value('..compressedheaders') === 1;
+		$this->_safeBackFillDate = Settings::value('..safebackfilldate') !== '' ? (string) Settings::value('..safebackfilldate') : '2008-08-14';
+		$this->_safePartRepair = (int) Settings::value('..safepartrepair') === 1 ? 'update' : 'backfill';
+		$this->_disableBackfillGroup = (int)Settings::value('..disablebackfillgroup') === 1;
 	}
 
 	/**
 	 * Backfill all the groups up to user specified time/date.
 	 *
-	 * @param string $groupName
+	 * @param string     $groupName
 	 * @param string|int $articles
-	 * @param string $type
+	 * @param string     $type
 	 *
 	 * @return void
+	 * @throws \InvalidArgumentException
 	 */
 	public function backfillAllGroups($groupName = '', $articles = '', $type = '')
 	{
@@ -155,7 +158,7 @@ class Backfill
 			}
 
 			if ($this->_echoCLI) {
-				$this->pdo->log->doEcho($this->pdo->log->header($dMessage), true);
+				ColorCLI::doEcho(ColorCLI::header($dMessage), true);
 			}
 
 			$this->_binaries = new Binaries(
@@ -169,13 +172,13 @@ class Backfill
 			// Loop through groups.
 			foreach ($res as $groupArr) {
 				if ($groupName === '') {
-					$dMessage = "Starting group " . $counter . ' of ' . $groupCount;
+					$dMessage = 'Starting group ' . $counter . ' of ' . $groupCount;
 					if ($this->_debug) {
-						$this->_debugging->log(get_class(), __FUNCTION__, $dMessage, Logger::LOG_INFO);
+						$this->_debugging->log(__CLASS__, __FUNCTION__, $dMessage, Logger::LOG_INFO);
 					}
 
 					if ($this->_echoCLI) {
-						$this->pdo->log->doEcho($this->pdo->log->header($dMessage), true);
+						ColorCLI::doEcho(ColorCLI::header($dMessage), true);
 					}
 				}
 				$this->backfillGroup($groupArr, $groupCount - $counter, $articles);
@@ -184,20 +187,20 @@ class Backfill
 
 			$dMessage = 'Backfilling completed in ' . number_format(microtime(true) - $allTime, 2) . " seconds.";
 			if ($this->_debug) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $dMessage, Logger::LOG_INFO);
+				$this->_debugging->log(__CLASS__, __FUNCTION__, $dMessage, Logger::LOG_INFO);
 			}
 
 			if ($this->_echoCLI) {
-				$this->pdo->log->doEcho($this->pdo->log->primary($dMessage));
+				ColorCLI::doEcho(ColorCLI::primary($dMessage));
 			}
 		} else {
 			$dMessage = "No groups specified. Ensure groups are added to nZEDb's database for updating.";
 			if ($this->_debug) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $dMessage, Logger::LOG_FATAL);
+				$this->_debugging->log(__CLASS__, __FUNCTION__, $dMessage, Logger::LOG_FATAL);
 			}
 
 			if ($this->_echoCLI) {
-				$this->pdo->log->doEcho($this->pdo->log->warning($dMessage), true);
+				ColorCLI::doEcho(ColorCLI::warning($dMessage), true);
 			}
 		}
 	}
@@ -223,15 +226,15 @@ class Backfill
 		// If our local oldest article 0, it means we never ran update_binaries on the group.
 		if ($groupArr['first_record'] <= 0) {
 			$dMessage =
-				"You need to run update_binaries on " .
+				'You need to run update_binaries on ' .
 				$groupName .
-				". Otherwise the group is dead, you must disable it.";
+				'. Otherwise the group is dead, you must disable it.';
 			if ($this->_debug) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $dMessage, Logger::LOG_ERROR);
+				$this->_debugging->log(__CLASS__, __FUNCTION__, $dMessage, Logger::LOG_ERROR);
 			}
 
 			if ($this->_echoCLI) {
-				$this->pdo->log->doEcho($this->pdo->log->error($dMessage));
+				ColorCLI::doEcho(ColorCLI::error($dMessage));
 			}
 			return;
 		}
@@ -246,11 +249,11 @@ class Backfill
 		}
 
 		if ($this->_echoCLI) {
-			$this->pdo->log->doEcho($this->pdo->log->primary('Processing ' . $groupName), true);
+			ColorCLI::doEcho(ColorCLI::primary('Processing ' . $groupName), true);
 		}
 
 		// Check if this is days or post backfill.
-		$postCheck = ($articles === '' ? false : true);
+		$postCheck = $articles !== '';
 
 		// Get target post based on date or user specified number.
 		$targetpost = (string)($postCheck
@@ -268,12 +271,13 @@ class Backfill
 		// Check if our target post is newer than our oldest post or if our local oldest article is older than the servers oldest.
 		if ($targetpost >= $groupArr['first_record'] || $groupArr['first_record'] <= $data['first']) {
 			$dMessage =
-				"We have hit the maximum we can backfill for " .
+				'We have hit the maximum we can backfill for ' .
 				$groupName .
-				($this->_disableBackfillGroup ? ", disabling backfill on it." :
-				", skipping it, consider disabling backfill on it.");
+				($this->_disableBackfillGroup ?
+					', disabling backfill on it.' :
+					', skipping it, consider disabling backfill on it.');
 			if ($this->_debug) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $dMessage, Logger::LOG_NOTICE);
+				$this->_debugging->log(__CLASS__, __FUNCTION__, $dMessage, Logger::LOG_NOTICE);
 			}
 
 			if ($this->_disableBackfillGroup) {
@@ -281,14 +285,14 @@ class Backfill
 			}
 
 			if ($this->_echoCLI) {
-				$this->pdo->log->doEcho($this->pdo->log->notice($dMessage), true);
+				ColorCLI::doEcho(ColorCLI::notice($dMessage), true);
 			}
 			return;
 		}
 
 		if ($this->_echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary(
+			ColorCLI::doEcho(
+				ColorCLI::primary(
 					'Group ' .
 					$groupName .
 					"'s oldest article is " .
@@ -318,18 +322,18 @@ class Backfill
 		while ($done === false) {
 
 			if ($this->_echoCLI) {
-				$this->pdo->log->doEcho(
-					$this->pdo->log->set256('Yellow') .
+				ColorCLI::doEcho(
+					ColorCLI::set256('Yellow') .
 					"\nGetting " .
-					(number_format($last - $first + 1)) .
-					" articles from " .
+					number_format($last - $first + 1) .
+					' articles from ' .
 					$groupName .
-					", " .
+					', ' .
 					$left .
-					" group(s) left. (" .
-					(number_format($first - $targetpost)) .
-					" articles in queue)." .
-					$this->pdo->log->rsetColor(), true
+					' group(s) left. (' .
+					number_format($first - $targetpost) .
+					' articles in queue).' .
+					ColorCLI::rsetColor(), true
 				);
 			}
 
@@ -354,7 +358,7 @@ class Backfill
 					$this->pdo->escapeString($first),
 					$groupArr['id'])
 			);
-			if ($first == $targetpost) {
+			if ($first === $targetpost) {
 				$done = true;
 			} else {
 				// Keep going: set new last, new first, check for last chunk.
@@ -367,14 +371,14 @@ class Backfill
 		}
 
 		if ($this->_echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary(
+			ColorCLI::doEcho(
+				ColorCLI::primary(
 					PHP_EOL .
 					'Group ' .
 					$groupName .
 					' processed in ' .
 					number_format(microtime(true) - $startGroup, 2) .
-					" seconds."
+					' seconds.'
 				), true
 			);
 		}
@@ -387,6 +391,7 @@ class Backfill
 	 * @param string $articles
 	 *
 	 * @return void
+	 * @throws \InvalidArgumentException
 	 */
 	public function safeBackfill($articles = '')
 	{
@@ -406,12 +411,12 @@ class Backfill
 				$this->_safeBackFillDate .
 				", or you have not enabled them to be backfilled in the groups page.\n";
 			if ($this->_debug) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $dMessage, Logger::LOG_FATAL);
+				$this->_debugging->log(__CLASS__, __FUNCTION__, $dMessage, Logger::LOG_FATAL);
 			}
 			exit($dMessage);
-		} else {
-			$this->backfillAllGroups($groupname['name'], $articles);
 		}
+
+		$this->backfillAllGroups($groupname['name'], $articles);
 	}
 
 }

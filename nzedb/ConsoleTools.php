@@ -48,7 +48,7 @@ class ConsoleTools
 		echo str_repeat(chr(8), $this->lastMessageLength);
 
 		$this->lastMessageLength = strlen($message);
-		echo $this->cli->headerOver($message);
+		echo ColorCLI::headerOver($message);
 	}
 
 	/**
@@ -62,11 +62,11 @@ class ConsoleTools
 		}
 
 		echo str_repeat(chr(8), $this->lastMessageLength);
-		echo str_repeat(" ", $this->lastMessageLength);
+		echo str_repeat(' ', $this->lastMessageLength);
 		echo str_repeat(chr(8), $this->lastMessageLength);
 
 		$this->lastMessageLength = strlen($message);
-		echo $this->cli->primaryOver($message);
+		echo ColorCLI::primaryOver($message);
 	}
 
 	/**
@@ -80,7 +80,7 @@ class ConsoleTools
 		}
 
 		echo str_repeat(chr(8), $this->lastMessageLength);
-		echo str_repeat(" ", $this->lastMessageLength);
+		echo str_repeat(' ', $this->lastMessageLength);
 		echo str_repeat(chr(8), $this->lastMessageLength);
 
 		$this->lastMessageLength = strlen($message);
@@ -93,7 +93,7 @@ class ConsoleTools
 	public function appendWrite($message)
 	{
 		echo $message;
-		$this->lastMessageLength = $this->lastMessageLength + strlen($message);
+		$this->lastMessageLength += strlen($message);
 	}
 
 	/**
@@ -105,7 +105,7 @@ class ConsoleTools
 	public function percentString($cur, $total)
 	{
 		$percent = 100 * $cur / $total;
-		$formatString = "% " . strlen($total) . "d/%d (% 2d%%)";
+		$formatString = '% ' . strlen($total) . 'd/%d (% 2d%%)';
 		return sprintf($formatString, $cur, $total, $percent);
 	}
 
@@ -120,7 +120,7 @@ class ConsoleTools
 	{
 		$percent1 = 100 * ($first - 1) / $total;
 		$percent2 = 100 * $last / $total;
-		$formatString = "% " . strlen($total) . "d-% " . strlen($total) . "d/%d (% 2d%%-% 3d%%)";
+		$formatString = '% ' . strlen($total) . 'd-% ' . strlen($total) . 'd/%d (% 2d%%-% 3d%%)';
 		return sprintf($formatString, $first, $last, $total, $percent1, $percent2);
 	}
 
@@ -135,12 +135,14 @@ class ConsoleTools
 	{
 
 		if ($seconds > 3600) {
-			return round($seconds / 3600) . " hour(s)";
-		} else if ($seconds > 60) {
-			return round($seconds / 60) . " minute(s)";
-		} else {
-			return $seconds . " second(s)";
+			return round($seconds / 3600) . ' hour(s)';
 		}
+
+		if ($seconds > 60) {
+			return round($seconds / 60) . ' minute(s)';
+		}
+
+		return $seconds . ' second(s)';
 	}
 
 	/**
@@ -152,7 +154,7 @@ class ConsoleTools
 	 */
 	public function convertTimer($seconds)
 	{
-		return " " . sprintf("%02dh:%02dm:%02ds", floor($seconds / 3600), floor(($seconds / 60) % 60), $seconds % 60);
+		return ' ' . sprintf('%02dh:%02dm:%02ds', floor($seconds / 3600), floor(($seconds / 60) % 60), $seconds % 60);
 	}
 
 	/**
@@ -163,7 +165,7 @@ class ConsoleTools
 	public function showSleep($seconds)
 	{
 		for ($i = $seconds; $i >= 0; $i--) {
-			$this->overWriteHeader("Sleeping for " . $i . " seconds.");
+			$this->overWriteHeader('Sleeping for ' . $i . ' seconds.');
 			sleep(1);
 		}
 		echo PHP_EOL;
