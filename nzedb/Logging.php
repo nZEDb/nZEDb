@@ -31,6 +31,8 @@ class Logging
 	 * Constructor.
 	 *
 	 * @param array $options
+	 *
+	 * @throws \RuntimeException
 	 */
 	public function __construct(array $options = [])
 	{
@@ -65,26 +67,27 @@ class Logging
 	 * @return void
 	 *
 	 * @access public
+	 * @throws \Exception
 	 */
 	public function LogBadPasswd($username = '', $host = '')
 	{
 		// If logggingopt is = 0, then we do nothing, 0 = logging off.
 		$loggingOpt = Settings::value('site.main.loggingopt');
 		$logFile = Settings::value('site.main.logfile');
-		if ($loggingOpt == '1') {
+		if ($loggingOpt === '1') {
 			$this->pdo->queryInsert(sprintf('INSERT INTO logging (time, username, host) VALUES (NOW(), %s, %s)',
 				$this->pdo->escapeString($username), $this->pdo->escapeString($host)));
-		} else if ($loggingOpt == '2') {
+		} else if ($loggingOpt === '2') {
 			$this->pdo->queryInsert(sprintf('INSERT INTO logging (time, username, host) VALUES (NOW(), %s, %s)',
 				$this->pdo->escapeString($username), $this->pdo->escapeString($host)));
-			$logData = date('M d H:i:s ') . "Login Failed for " . $username . " from " . $host . "." .
+			$logData = date('M d H:i:s ') . 'Login Failed for ' . $username . ' from ' . $host . '.' .
 				$this->newLine;
-			if (isset($logFile) && $logFile != "") {
+			if (! empty($logFile)) {
 				file_put_contents($logFile, $logData, FILE_APPEND);
 			}
-		} else if ($loggingOpt == '3') {
-			$logData = date('M d H:i:s ') . "Login Failed for " . $username . " from " . $host . "." . $this->newLine;
-			if (isset($logFile) && $logFile != '') {
+		} else if ($loggingOpt === '3') {
+			$logData = date('M d H:i:s ') . 'Login Failed for ' . $username . ' from ' . $host . '.' . $this->newLine;
+			if (!empty($logFile)) {
 				file_put_contents($logFile, $logData, FILE_APPEND);
 			}
 		}

@@ -91,6 +91,21 @@ class Games
 	protected $_resultsFound = 0;
 
 	/**
+	 * @var string
+	 */
+	protected $catWhere;
+
+	/**
+	 * @var \DBorsatto\GiantBomb\Config
+	 */
+	protected $config;
+
+	/**
+	 * @var \DBorsatto\GiantBomb\Client
+	 */
+	protected $giantbomb;
+
+	/**
 	 * @param array $options Class instances / Echo to cli.
 	 *
 	 * @throws \Exception
@@ -110,15 +125,15 @@ class Games
 
 		$this->publicKey = Settings::value('APIs..giantbombkey');
 		$result = Settings::value('..maxgamesprocessed');
-		$this->gameQty = ($result != '') ? $result : 150;
+		$this->gameQty = $result !== '' ? $result : 150;
 		$result = Settings::value('..amazonsleep');
-		$this->sleepTime = ($result != '') ? $result : 1000;
+		$this->sleepTime = $result !== '' ? $result : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'games' . DS;
 		$this->renamed = '';
 		$this->matchPercentage = 60;
 		$this->maxHitRequest = false;
 		$this->cookie = nZEDb_TMP . 'xxx.cookie';
-		if (Settings::value('..lookupgames') == 2) {
+		if ((int) Settings::value('..lookupgames') === 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
 		$this->catWhere = 'AND categories_id = ' . Category::PC_GAMES;
@@ -137,11 +152,11 @@ class Games
 	public function getGamesInfo($id)
 	{
 		return $this->pdo->queryOneRow(
-			sprintf("
+			sprintf('
 				SELECT gamesinfo.*, genres.title AS genres
 				FROM gamesinfo
 				LEFT OUTER JOIN genres ON genres.id = gamesinfo.genre_id
-				WHERE gamesinfo.id = %d",
+				WHERE gamesinfo.id = %d',
 				$id
 			)
 		);
@@ -201,8 +216,8 @@ class Games
 	{
 		return $this->pdo->query(
 			sprintf(
-				"SELECT gi.*, g.title AS genretitle FROM gamesinfo gi INNER JOIN genres g ON gi.genre_id = g.id ORDER BY createddate DESC %s",
-				($start === false ? '' : 'LIMIT ' . $num . ' OFFSET ' . $start)
+				'SELECT gi.*, g.title AS genretitle FROM gamesinfo gi INNER JOIN genres g ON gi.genre_id = g.id ORDER BY createddate DESC %s',
+				$start === false ? '' : 'LIMIT ' . $num . ' OFFSET ' . $start
 			)
 		);
 	}
@@ -212,8 +227,8 @@ class Games
 	 */
 	public function getCount()
 	{
-		$res = $this->pdo->queryOneRow("SELECT COUNT(id) AS num FROM gamesinfo");
-		return ($res === false ? 0 : $res["num"]);
+		$res = $this->pdo->queryOneRow('SELECT COUNT(id) AS num FROM gamesinfo');
+		return ($res === false ? 0 : $res['num']);
 	}
 
 	/**
@@ -221,17 +236,18 @@ class Games
 	 * @param       $start
 	 * @param       $num
 	 * @param       $orderby
-	 * @param int   $maxage
+	 * @param int|string   $maxage
 	 * @param array $excludedcats
 	 *
 	 * @return array
+	 * @throws \RuntimeException
 	 */
-	public function getGamesRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = [])
+	public function getGamesRange($cat, $start, $num, $orderby, $maxage = -1, array $excludedcats = [])
 	{
 		$browseby = $this->getBrowseBy();
 
 		$catsrch = '';
-		if (count($cat) > 0 && $cat[0] != -1) {
+		if (count($cat) > 0 && $cat[0] !== -1) {
 			$catsrch = (new Category(['Settings' => $this->pdo]))->getCategorySearch($cat);
 		}
 
@@ -241,9 +257,9 @@ class Games
 			$maxage = '';
 		}
 
-		$exccatlist = "";
+		$exccatlist = '';
 		if (count($excludedcats) > 0) {
-			$exccatlist = " AND r.categories_id NOT IN (" . implode(",", $excludedcats) . ")";
+			$exccatlist = ' AND r.categories_id NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
 		$order = $this->getGamesOrder($orderby);
@@ -330,8 +346,8 @@ class Games
 	 */
 	public function getGamesOrder($orderby)
 	{
-		$order = ($orderby == '') ? 'r.postdate' : $orderby;
-		$orderArr = explode("_", $order);
+		$order = ($orderby === '') ? 'r.postdate' : $orderby;
+		$orderArr = explode('_', $order);
 		switch ($orderArr[0]) {
 			case 'title':
 				$orderfield = 'gi.title';
@@ -362,7 +378,7 @@ class Games
 	}
 
 	/**
-	 * @return string[]
+	 * @return array
 	 */
 	public function getGamesOrdering()
 	{
@@ -427,7 +443,7 @@ class Games
 		$newArr = [];
 		$i = 0;
 		foreach ($tmpArr as $ta) {
-			if (trim($ta) == '') {
+			if (trim($ta) === '') {
 				continue;
 			}
 			// Only use first 6.
@@ -459,11 +475,11 @@ class Games
 	{
 
 		$this->pdo->queryExec(
-			sprintf("
+			sprintf('
 				UPDATE gamesinfo
 				SET title = %s, asin = %s, url = %s, publisher = %s,
 					releasedate = %s, esrb = %s, cover = %d, trailer = %s, genre_id = %d, updateddate = NOW()
-				WHERE id = %d",
+				WHERE id = %d',
 				$this->pdo->escapeString($title),
 				$this->pdo->escapeString($asin),
 				$this->pdo->escapeString($url),
@@ -484,8 +500,8 @@ class Games
 	 * @param $gameInfo
 	 *
 	 * @return bool
-	 * @throws \RuntimeException
 	 * @throws \InvalidArgumentException
+	 * @throws \Exception
 	 */
 	public function updateGamesInfo($gameInfo)
 	{
@@ -537,9 +553,7 @@ class Games
 				if (!empty($this->_gameResults['releasedate'])) {
 					$dateReleased = $this->_gameResults['releasedate'];
 					$date = \DateTime::createFromFormat('M j, Y', $dateReleased);
-					if ($date instanceof \DateTime) {
-						$game['releasedate'] = (string)$date->format('Y-m-d');
-					}
+					$game['releasedate'] = (string)$date->format('Y-m-d');
 				}
 
 				if (!empty($this->_gameResults['description'])) {
@@ -764,6 +778,7 @@ class Games
 
 	/**
 	 * Main function for retrieving and processing PC games titles
+	 * @throws \InvalidArgumentException
 	 */
 	public function processGamesReleases()
 	{
@@ -783,7 +798,7 @@ class Games
 
 		if ($res instanceof \Traversable && $res->rowCount() > 0) {
 			if ($this->echoOutput) {
-				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $res->rowCount() . ' games release(s).'));
+				ColorCLI::doEcho(ColorCLI::header("Processing " . $res->rowCount() . ' games release(s).'));
 			}
 
 			foreach ($res as $arr) {
@@ -795,9 +810,9 @@ class Games
 				if ($gameInfo !== false) {
 
 					if ($this->echoOutput) {
-						$this->pdo->log->doEcho(
-							$this->pdo->log->headerOver('Looking up: ') .
-							$this->pdo->log->primary($gameInfo['title'] . ' (PC)')
+						ColorCLI::doEcho(
+							ColorCLI::headerOver('Looking up: ') .
+							ColorCLI::primary($gameInfo['title'] . ' (PC)')
 						);
 					}
 
@@ -838,7 +853,7 @@ class Games
 			}
 		} else {
 			if ($this->echoOutput) {
-				$this->pdo->log->doEcho($this->pdo->log->header('No games releases to process.'));
+				ColorCLI::doEcho(ColorCLI::header('No games releases to process.'));
 			}
 		}
 	}

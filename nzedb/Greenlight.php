@@ -10,10 +10,10 @@ class Greenlight
 	public $cookie = null;
 
 
-	const GREENLIGHTURL = "http://steamcommunity.com/greenlight/";
-	const GREENLIGHTVARS = "&childpublishedfileid=0&section=items&appid=765&browsesort=textsearch";
-	const AGECHECKURL = "http://store.steampowered.com/agecheck/app/";
-	const DIRECTGAMEURL = "http://steamcommunity.com/sharedfiles/filedetails/?id=";
+	const GREENLIGHTURL = 'http://steamcommunity.com/greenlight/';
+	const GREENLIGHTVARS = '&childpublishedfileid=0&section=items&appid=765&browsesort=textsearch';
+	const AGECHECKURL = 'http://store.steampowered.com/agecheck/app/';
+	const DIRECTGAMEURL = 'http://steamcommunity.com/sharedfiles/filedetails/?id=';
 
 	/**
 	 * @var
@@ -63,7 +63,7 @@ class Greenlight
 	public function __construct()
 	{
 		$this->_html = new \simple_html_dom();
-		if (isset($this->cookie)) {
+		if ($this->cookie !== null) {
 			$this->getUrl(self::GREENLIGHTURL);
 		}
 	}
@@ -84,7 +84,7 @@ class Greenlight
 	 */
 	public function gameDescription()
 	{
-		if ($ret = $this->_html->find("div.workshopItemDescription", 0)) {
+		if ($ret = $this->_html->find('div.workshopItemDescription', 0)) {
 			$this->_res['description'] = trim(html_entity_decode($ret->plaintext));
 		}
 
@@ -98,14 +98,14 @@ class Greenlight
 	 */
 	public function images()
 	{
-			if ($ret = $this->_html->find("div.workshopItemPreviewImageMain", 0)) {
+			if ($ret = $this->_html->find('div.workshopItemPreviewImageMain', 0)) {
 				if (preg_match('#\'(?<largeimage>.*)\'#i', $ret->outertext, $matches)) {
 					$this->_res['cover'] = trim($matches['largeimage']);
 				} else {
-					$this->_res['cover'] = $this->_html->find("img#previewImageMain", 0)->src;
+					$this->_res['cover'] = $this->_html->find('img#previewImageMain', 0)->src;
 				}
 			}
-			if ($ret = $this->_html->find("div.screenshot_holder", 0)) {
+			if ($ret = $this->_html->find('div.screenshot_holder', 0)) {
 				if ($ret = $ret->find("a", 0)) {
 					if (preg_match('#\'(?<backdropimage>.*)\'#', $ret->outertext, $matches)) {
 						$this->_res['backdrop'] = trim($matches['backdropimage']);
@@ -122,19 +122,19 @@ class Greenlight
 	 */
 	public function details()
 	{
-		if ($this->_html->find("div.workshopTags", 0)) {
-			foreach ($this->_html->find("div.workshopTags") as $detail) {
-				if ($ret = $detail->find("span.workshopTagsTitle", 0)) {
+		if ($this->_html->find('div.workshopTags', 0)) {
+			foreach ($this->_html->find('div.workshopTags') as $detail) {
+				if ($ret = $detail->find('span.workshopTagsTitle', 0)) {
 					$ret2 = trim($ret->next_sibling()->innertext);
-					$ret = str_ireplace("&nbsp;", "", $ret->plaintext);
-					$ret = rtrim(trim($ret), ":");
-					if ($ret != "Languages") {
-						if (count($detail->find("a")) > 1) {
+					$ret = str_ireplace('&nbsp;', "", $ret->plaintext);
+					$ret = rtrim(trim($ret), ':');
+					if ($ret !== 'Languages') {
+						if (count($detail->find('a')) > 1) {
 							$ret3 = [];
-							foreach ($detail->find("a") as $a) {
+							foreach ($detail->find('a') as $a) {
 								$ret3[] = trim($a->innertext);
 							}
-							$joinedmultiple = join(",", $ret3);
+							$joinedmultiple = implode(',', $ret3);
 							$this->_res['gamedetails'][$ret] = $joinedmultiple;
 						} else {
 							$this->_res['gamedetails'][$ret] = $ret2;
@@ -155,7 +155,7 @@ class Greenlight
 	public function trailer()
 	{
 			if (preg_match('#youtube_video_id: "(?<youtubeid>.*)",#i', $this->_response, $matches)) {
-				$this->_res['trailer'] = "https://www.youtube.com/watch?v=" . trim($matches['youtubeid']);
+				$this->_res['trailer'] = 'https://www.youtube.com/watch?v=' . trim($matches['youtubeid']);
 			}
 
 		return $this->_res;
@@ -172,9 +172,9 @@ class Greenlight
 		if (!empty($this->searchTerm)) {
 			$this->searchTerm = trim($this->searchTerm);
 			if ($this->getUrl(self::GREENLIGHTURL . '?searchtext=' . urlencode($this->searchTerm) . self::GREENLIGHTVARS) !== false) {
-				if ($ret = $this->_html->find("div.workshopItemTitle")) {
+				if ($ret = $this->_html->find('div.workshopItemTitle')) {
 					if (count($ret) > 0) {
-						foreach ($this->_html->find("div.workshopItemTitle") as $ret) {
+						foreach ($this->_html->find('div.workshopItemTitle') as $ret) {
 							$this->_title = trim($ret->plaintext);
 							//Sanitize both searchTerm and title for a positive 100% match
 							if ($this->cleanTitles(strtolower($this->_title), strtolower($this->searchTerm)) === true) {
@@ -236,7 +236,7 @@ class Greenlight
 	 *
 	 * @return bool
 	 */
-	private function getUrl($fetchurl = "", $usepost = false)
+	private function getUrl($fetchurl = '', $usepost = false)
 	{
 		if (!empty($fetchurl)) {
 			$this->_ch = curl_init($fetchurl);
@@ -252,7 +252,7 @@ class Greenlight
 		curl_setopt($this->_ch, CURLOPT_VERBOSE, 0);
 		curl_setopt($this->_ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
 		curl_setopt($this->_ch, CURLOPT_FAILONERROR, 1);
-		if (isset($this->cookie)) {
+		if ($this->cookie !== null) {
 			curl_setopt($this->_ch, CURLOPT_COOKIEJAR, $this->cookie);
 			curl_setopt($this->_ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
@@ -273,19 +273,16 @@ class Greenlight
 	 * Removes all but alphanumeric only and does a 100% match check
 	 *
 	 * @param string $title
-	 * @param string $searchtitle
+	 * @param string $searchTitle
 	 *
 	 * @return bool
 	 */
-	protected function cleanTitles($title = "", $searchtitle = "")
+	protected function cleanTitles($title = '', $searchTitle = '')
 	{
 		$title = preg_replace('/[^\w]/', '', $title);
-		$searchtitle = preg_replace('/[^\w]/', '', $searchtitle);
-		similar_text($title, $searchtitle, $p);
-		if ($p == 100) {
-			return true;
-		} else {
-			return false;
-		}
+		$searchTitle = preg_replace('/[^\w]/', '', $searchTitle);
+		similar_text($title, $searchTitle, $p);
+
+		return $p === 100;
 	}
 }
