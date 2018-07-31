@@ -22,7 +22,7 @@ namespace app\extensions\util\yenc\adapter;
 use yenc\yenc;
 
 
-class NzedbYenc extends \lithium\core\Object
+class NzedbYenc extends \lithium\core\BaseObject
 {
 	public static function decode(&$text)
 	{
