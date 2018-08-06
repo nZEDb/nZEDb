@@ -16,7 +16,7 @@ define('nZEDb_CORE', nZEDb_LIB);
 define('nZEDb_CONFIGS', nZEDb_ROOT . 'configuration' . DS);
 
 // Used to refer to the third party library files.
-define('nZEDb_LIBS', nZEDb_ROOT . 'libs' . DS);
+define('nZEDb_LIBS', nZEDb_ROOT . 'libraries' . DS);
 
 // Used to refer to the /misc class files.
 define('nZEDb_MISC', nZEDb_ROOT . 'misc' . DS);

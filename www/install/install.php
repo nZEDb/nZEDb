@@ -22,7 +22,7 @@
 if (!defined('nZEDb_INSTALLER')) {
 	define('nZEDb_INSTALLER', true);
 }
-require_once realpath(dirname(dirname(__DIR__)) .
+require_once realpath(dirname(__DIR__, 2) .
 	DIRECTORY_SEPARATOR .
 	'app' .
 	DIRECTORY_SEPARATOR .
@@ -35,7 +35,7 @@ use nzedb\config\Configure;
 $config = new Configure('install');
 
 // Path to smarty files. (not prefixed with nZEDb as the name is needed in smarty files).
-define('SMARTY_DIR', nZEDb_ROOT . 'libraries' . DS . 'smarty' . DS . 'smarty' . DS . 'libs' . DS);
+define('SMARTY_DIR', nZEDb_LIBS . 'smarty' . DS . 'smarty' . DS . 'libs' . DS);
 
 $www_top = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']));
 if (strlen($www_top) == 1) {
