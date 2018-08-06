@@ -24,7 +24,6 @@
 										<th data-field="name" data-sortable="true">Name</th>
 										<th>Description</th>
 										<th data-field="updated" data-sortable="true">Updated</th>
-										<th data-firstsort="desc">Releases</th>
 									</tr>
 									</thead>
 									<tbody>
@@ -37,7 +36,6 @@
 												</td>
 												<td>{$result.description}</td>
 												<td>{$result.last_updated|timeago} ago</td>
-												<td>{$result.num_releases}</td>
 											</tr>
 										{/if}
 									{/foreach}

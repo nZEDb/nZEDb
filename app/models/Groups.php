@@ -20,6 +20,8 @@
 
 namespace app\models;
 
+use lithium\data\collection\RecordSet;
+
 class Groups extends \app\extensions\data\Model
 {
 	public $belongsTo = ['Releases', 'ReleasesGroups'];
@@ -242,7 +244,13 @@ class Groups extends \app\extensions\data\Model
 		return $active->data();
 	}
 
-	public static function getBackfilling(string $order)
+	/**
+	 * @param string $order
+	 * @param bool   $active
+	 *
+	 * @return array
+	 */
+	public static function getBackfilling(string $order, bool $active = true) : array
 	{
 		switch (\strtolower($order)) {
 			case '':
@@ -256,7 +264,7 @@ class Groups extends \app\extensions\data\Model
 				throw new \InvalidArgumentException("Order must be 'normal' or 'date'");
 		}
 
-		return static::find('all',
+		$results = static::find('all',
 			[
 				'fields'     => [
 					'id',
@@ -273,10 +281,12 @@ class Groups extends \app\extensions\data\Model
 					'backfill',
 					'description',
 				],
-				'conditions' => ['active' => true],
+				'conditions' => ['active' => $active, 'backfill' => true],
 				'order'      => $order
 			]
 		);
+
+		return ($results instanceof RecordSet) ? $results->data() : [];
 	}
 
 	/**
@@ -317,12 +327,22 @@ class Groups extends \app\extensions\data\Model
 		return $entry !== null ? $entry->data()['name'] : '';
 	}
 
-	public static function getRange($pageno = 1, $number = [], $groupname = '', $active = null)
+	/**
+	 * Fetch a range of groups, taking maximum items per page and pageno into account. Optionally
+	 * limiting by %groupname% matching.
+	 *
+	 * @param int       $pageno
+	 * @param int       $number
+	 * @param string    $groupname
+	 * @param bool|null $active Whether result should be filtered by active/inactive, or
+	 *                          neither. true/false or null.
+	 *
+	 * @return mixed
+	 */
+	public static function getRange(int $pageno = 1, int $number = ITEMS_PER_PAGE, $groupname = '', $active = null)
 	{
-		$conditions = empty($groupname) ? [] : ['name' => ['LIKE' => '%$groupname%']];
-		$conditions += empty($active) ? [] : ['active' => $active];
-		$limit = empty($number) ? [] : ['limit' => $number];
-		$page = empty($number) ? [] : ['page' => $pageno];
+		$conditions = empty($groupname) ? [] : ['name' => ['LIKE' => "%$groupname%"]];
+		$conditions += \is_null($active) ? [] : ['active' => $active];
 
 		$results = static::find('all',
 			[
@@ -342,9 +362,9 @@ class Groups extends \app\extensions\data\Model
 					'description',
 				],
 				'conditions' => $conditions,
-				$limit,
+				'limit' => $number,
 				'order' => 'name ASC',
-				$page,
+				'page' => $pageno,
 			]
 		);
 
@@ -352,7 +372,7 @@ class Groups extends \app\extensions\data\Model
 	}
 
 	/**
-	 * Checks group name is standard and replaces the shorthand prefix if is exists.
+	 * Checks group name is standard and replaces the shorthand prefix if it exists.
 	 *
 	 * @param string $name The full name of the usenet group being evaluated
 	 *

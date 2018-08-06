@@ -10,6 +10,31 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-07-30 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.9.0
+
+
+2018-07-18 niel
+	Fix: Check for whether $active is null, as empty also includes false.
+2018-07-17 niel
+	Fix: \app\models\Groups::getRange() to correctly handle pagination and filtering by a groupname.
+	Fix: Query string for group (in)active pages pagination.
+	Fix: Quotation marks around $groupname need to be double, not single.
+2018-07-13 Bart39
+	Fix: undefined index 'groupname' for Admin grouplist active/inactive pages.
+	Fix: Admin grouplist inactive page returning active groups.
+2018-07-13 niel
+	Fix: app\models\Groups::getBackfilling() to return array of groups filtered by active and
+		backfill state.
+	Fix: Check for valid RecordSet returning it, or an empty array otherwise.
+2018-07-11 Bart39
+	Fix: Typo in querying database timezone.
+	Chg: Add categorization for a.b.sounds.
+	Chg: Search for all other/unknown categories (not just Misc>Other) when trying to fix names.
+		using Par2.
+	Chg: Strip '00-' from searchname (mostly music titles) when parsing Par2 for a better name.
+2018-07-04 niel
+	Chg: Removed release counts, for the themes that used it, on group list templates.
 2018-07-04 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.8.1
 

@@ -404,7 +404,7 @@ class PostProcess
 
 				// Try to get a new name.
 				if ($foundName === false) {
-					$query['textstring'] = $file['name'];
+					$query['textstring'] = preg_replace('/^00-/', '', $file['name']);
 					if ($this->nameFixer->checkName($query, 1, 'PAR2, ', 1, $show) === true) {
 						$foundName = true;
 					}

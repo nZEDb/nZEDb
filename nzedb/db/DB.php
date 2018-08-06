@@ -1363,7 +1363,7 @@ class DB extends \PDO
 		$this->pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 
 		// Find Database sever's TZ.
-		$tz = $this->queryOneRow('SELECT @@global.time_zone as global, @@session.time_zone as session;');
+		$tz = $this->queryOneRow('SELECT @@global.time_zone as global, @@session.time_zone as session');
 
 		if($this->sphinx === false) {
 			if (empty($tz)) {

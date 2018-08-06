@@ -11,7 +11,6 @@
                 <th>Name</th>
                 <th>Description</th>
                 <th>Updated</th>
-                <th>Releases</th>
 	</tr>
 
 	{foreach $results as $result}
@@ -24,7 +23,6 @@
 					{$result.description}
 			</td>
 			<td class="less">{$result.last_updated|timeago} ago</td>
-			<td class="less">{$result.num_releases}</td>
 		</tr>
 		{/if}
 	{/foreach}

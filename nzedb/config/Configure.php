@@ -68,7 +68,7 @@ class Configure
 					if (php_sapi_name() == 'cli') {
 						// TODO put this version in the nzedb.xml file and load it. Hard coding is bad.
 						$current_settings_file_version = 5; // Update this when updating settings.example.php
-						if (!defined('nZEDb_SETTINGS_FILE_VERSION') ||
+						if (!\defined('nZEDb_SETTINGS_FILE_VERSION') ||
 							nZEDb_SETTINGS_FILE_VERSION != $current_settings_file_version
 						) {
 							echo("\033[0;31mNotice: Your $settings_file file is either out of date or you have not updated" .
@@ -78,32 +78,32 @@ class Configure
 						}
 						unset($current_settings_file_version);
 					}
-				} else if (!defined('ITEMS_PER_PAGE')) {
-					define('ITEMS_PER_PAGE', '50');
-					define('ITEMS_PER_COVER_PAGE', '20');
-					define('nZEDb_ECHOCLI', true);
-					define('nZEDb_DEBUG', false);
-					define('nZEDb_LOGGING', false);
-					define('nZEDb_LOGINFO', false);
-					define('nZEDb_LOGNOTICE', false);
-					define('nZEDb_LOGWARNING', false);
-					define('nZEDb_LOGERROR', false);
-					define('nZEDb_LOGFATAL', false);
-					define('nZEDb_LOGQUERIES', false);
-					define('nZEDb_LOGAUTOLOADER', false);
-					define('nZEDb_QUERY_STRIP_WHITESPACE', false);
-					define('nZEDb_RENAME_PAR2', true);
-					define('nZEDb_RENAME_MUSIC_MEDIAINFO', true);
-					define('nZEDb_CACHE_EXPIRY_SHORT', 300);
-					define('nZEDb_CACHE_EXPIRY_MEDIUM', 600);
-					define('nZEDb_CACHE_EXPIRY_LONG', 900);
-					define('nZEDb_PREINFO_OPEN', false);
-					define('nZEDb_FLOOD_CHECK', false);
-					define('nZEDb_FLOOD_WAIT_TIME', 5);
-					define('nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND', 5);
-					define('nZEDb_USE_SQL_TRANSACTIONS', true);
-					define('nZEDb_RELEASE_SEARCH_TYPE', 0);
-					define('nZEDb_MAX_PAGER_RESULTS', '125000');
+				} else if (!\defined('ITEMS_PER_PAGE')) {
+					\define('ITEMS_PER_PAGE', 50);
+					\define('ITEMS_PER_COVER_PAGE', 20);
+					\define('nZEDb_ECHOCLI', true);
+					\define('nZEDb_DEBUG', false);
+					\define('nZEDb_LOGGING', false);
+					\define('nZEDb_LOGINFO', false);
+					\define('nZEDb_LOGNOTICE', false);
+					\define('nZEDb_LOGWARNING', false);
+					\define('nZEDb_LOGERROR', false);
+					\define('nZEDb_LOGFATAL', false);
+					\define('nZEDb_LOGQUERIES', false);
+					\define('nZEDb_LOGAUTOLOADER', false);
+					\define('nZEDb_QUERY_STRIP_WHITESPACE', false);
+					\define('nZEDb_RENAME_PAR2', true);
+					\define('nZEDb_RENAME_MUSIC_MEDIAINFO', true);
+					\define('nZEDb_CACHE_EXPIRY_SHORT', 300);
+					\define('nZEDb_CACHE_EXPIRY_MEDIUM', 600);
+					\define('nZEDb_CACHE_EXPIRY_LONG', 900);
+					\define('nZEDb_PREINFO_OPEN', false);
+					\define('nZEDb_FLOOD_CHECK', false);
+					\define('nZEDb_FLOOD_WAIT_TIME', 5);
+					\define('nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND', 5);
+					\define('nZEDb_USE_SQL_TRANSACTIONS', true);
+					\define('nZEDb_RELEASE_SEARCH_TYPE', 0);
+					\define('nZEDb_MAX_PAGER_RESULTS', 125000);
 				}
 				unset($settings_file);
 				break;
@@ -113,12 +113,12 @@ class Configure
 	private function defaultSSL()
 	{
 		// Check if they updated config.php for the openssl changes. Only check 1 to save speed.
-		if (!defined('nZEDb_SSL_VERIFY_PEER')) {
-			define('nZEDb_SSL_CAFILE', '');
-			define('nZEDb_SSL_CAPATH', '');
-			define('nZEDb_SSL_VERIFY_PEER', '0');
-			define('nZEDb_SSL_VERIFY_HOST', '0');
-			define('nZEDb_SSL_ALLOW_SELF_SIGNED', '1');
+		if (!\defined('nZEDb_SSL_VERIFY_PEER')) {
+			\define('nZEDb_SSL_CAFILE', '');
+			\define('nZEDb_SSL_CAPATH', '');
+			\define('nZEDb_SSL_VERIFY_PEER', '0');
+			\define('nZEDb_SSL_VERIFY_HOST', '0');
+			\define('nZEDb_SSL_ALLOW_SELF_SIGNED', '1');
 		}
 	}
 
