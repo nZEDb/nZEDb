@@ -113,7 +113,7 @@
     "niel/li3_fixtures": "1.2.x-dev",
     "niel/lithium": "dev-php7.2-updates",
     "nzedb/Git.php": "dev-master",
-    "php": ">=7.0",
+    "php": "~7.0",
     "php-tmdb/api": "^2.1",
     "phpmailer/phpmailer": "^6.0.2",
     "smarty/smarty": "~3.1.29",
