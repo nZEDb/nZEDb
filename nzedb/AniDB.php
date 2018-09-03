@@ -135,13 +135,9 @@ class AniDB
 	 * @param string $animetitle
 	 * @return array|bool
 	 */
-	public function getAnimeRange($start, $num, $animetitle = '')
+	public function getAnimeRange(int $start, int $num, string $animetitle = '')
 	{
-		if ($start === false) {
-			$limit = '';
-		} else {
-			$limit = ' LIMIT ' . $num . ' OFFSET ' . $start;
-		}
+		$limit = $start === 0 ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start;
 
 		$rsql = '';
 		if ($animetitle != '') {

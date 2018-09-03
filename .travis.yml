@@ -8,6 +8,7 @@ branches:
     - 0.x
     - Latest-testing
     - dev
+    - nzedb-php7.2
 
 notifications:
   irc:
@@ -21,9 +22,9 @@ notifications:
       - "\x030[\x0310Travis-ci\x030]\x03 Commit \x0314{%{commit}}\x03 by \x0315(%{author})\x03@\x0313%{repository_name}/%{branch}\x03 has \x037%{result}\x03: \x032%{build_url}\x03"
 
 php:
-  - '5.6'
   - '7.0'
   - '7.1'
+  - '7.2'
 
 addons:
   mariadb: '10.0'

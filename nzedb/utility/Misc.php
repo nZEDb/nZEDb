@@ -245,7 +245,7 @@ class Misc
 			$header += $options['requestheaders'];
 		}
 
-		$ch = curl_init();
+		$ch = \curl_init();
 
 		$context = [
 			CURLOPT_URL            => $options['url'],
