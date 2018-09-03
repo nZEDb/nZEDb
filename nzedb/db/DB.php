@@ -1344,7 +1344,7 @@ class DB extends \PDO
 
 		// In case PDO is not set to produce exceptions (PHP's default behaviour).
 		if ($this->pdo === false) {
-			$message = "Unable to create connection to the Database!";
+			$message = 'Unable to create connection to the Database!';
 			$this->echoError(
 				$message,
 				'connect',
