@@ -2,6 +2,16 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
+0.8.10.0 2018-09-03
+Added:
+	* Support for PHP 7.2
+	 ***NOTE*** You *must* run `composer install` manually as the lithium framework version has
+	 changed and your current one will not have some of the new stuff that this update requires.
+	  Also, there is currently no version of the php-yenc extension for PHP 7.2. I'm in the process
+	 of rewriting it in C/C++, but I do not expect this to be quick, as my spare time is very short
+	 currently.
+
+
 0.8.9.0 2018-08-06
 Changed:
 	* Removed release counts, for the themes that used it, on group list templates.
