@@ -9,6 +9,11 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
+2018-10-02 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.11.0
+
+
 2018-09-18 niel
 	Fix: Updated scripts in .../misc/testing/DB to use moder require_once syntax (instead of nesting
 		multiple dirname() calls. Also added a new require_once to two scripts that need
