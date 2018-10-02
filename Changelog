@@ -15,8 +15,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2018-09-18 niel
-	Fix: Updated scripts in .../misc/testing/DB to use moder require_once syntax (instead of nesting
-		multiple dirname() calls. Also added a new require_once to two scripts that need
+	Fix: Updated scripts in .../misc/testing/DB to use modern require_once syntax (instead of
+		nesting multiple dirname() calls. Also added a new require_once to two scripts that need
 		.../configuration/settings.php to run. Note they will cause an error if the file does not
 		exist, but it should be obvious to the user what the problem is.
 		 If any other scripts are complaining about missing nZEDb_* or other constants let me know
