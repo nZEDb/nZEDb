@@ -22,7 +22,7 @@
 /* TODO better tune the queries for performance, including pre-fetching groups_id and other data for
 	faster inclusion in the main query.
 */
-require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
+require_once realpath(dirname(__DIR__, 2) . '/app/config/bootstrap.php');
 
 use nzedb\db\PreDb;
 use nzedb\utility\Misc;
