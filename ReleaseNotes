@@ -2,6 +2,16 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
+0.8.11.0 2018-10-02
+Fixed:
+	* Updated scripts in .../misc/testing/DB to use modern require_once syntax (instead of nesting
+	 multiple dirname() calls. Also added a new require_once to two scripts that need
+	 .../configuration/settings.php to run. Note they will cause an error if the file does not
+	 exist, but it should be obvious to the user what the problem is.
+	  If any other scripts are complaining about missing nZEDb_* or other constants let me know
+	 and I'll update them as well.
+
+
 0.8.10.0 2018-09-03
 Added:
 	* Support for PHP 7.2

@@ -711,12 +711,28 @@ class Movie
 		$mov['tmdb_id'] = (!isset($tmdb['tmdb_id']) || $tmdb['tmdb_id'] == '') ? 0 : $tmdb['tmdb_id'];
 
 		// Prefer Fanart.tv cover over TMDB and TMDB over IMDB.
-		if ($this->checkVariable($fanart['cover'])) {
-			$mov['cover'] = $this->releaseImage->saveImage($imdbId . '-cover', $fanart['cover'], $this->imgSavePath);
-		} else if ($this->checkVariable($tmdb['cover'])) {
-			$mov['cover'] = $this->releaseImage->saveImage($imdbId . '-cover', $tmdb['cover'], $this->imgSavePath);
-		} else if ($this->checkVariable($imdb['cover'])) {
-			$mov['cover'] = $this->releaseImage->saveImage($imdbId . '-cover', $imdb['cover'], $this->imgSavePath);
+		switch (true) {
+			case $this->checkVariable($fanart['cover']):
+				$imgURL = $fanart['cover'];
+				break;
+			case $this->checkVariable($tmdb['cover']):
+				$imgURL = $tmdb['cover'];
+				break;
+			case $this->checkVariable($imdb['cover']):
+				$imgURL = $imdb['cover'];
+				break;
+			default:
+				$imgURL = '';
+		}
+		if ($imgURL === '') {
+			// TODO Log error
+			if (\nZEDb_LOGGING) {
+				echo "WTF, no URL!!\n";
+			}
+		} else {
+			$mov['cover'] = $this->releaseImage->saveImage($imdbId . '-cover',
+				$imgURL,
+				$this->imgSavePath);
 		}
 
 		// Backdrops.

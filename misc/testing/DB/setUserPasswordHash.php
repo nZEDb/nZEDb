@@ -6,7 +6,7 @@
  * reason, it will allow the password hash on the account to be changed.
  * Hopefully that will allow admin access to fix any further problems.
  */
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
+require_once realpath(dirname(__DIR__, 3) . '/app/config/bootstrap.php');
 
 use nzedb\Users;
 use nzedb\db\DB;

@@ -119,14 +119,16 @@ class ReleaseImage
 	 * @param string $imgMaxHeight Max height to resize image to.  (OPTIONAL)
 	 * @param bool   $saveThumb    Save a thumbnail of this image? (OPTIONAL)
 	 *
-	 * @return int 1 on success, 0 on failure Used on site to check if there is an image.
+	 * @return bool                True on success, false on failure. Used on site to check if there
+	 * 							   is an image.
 	 */
-	public function saveImage($imgName, $imgLoc, $imgSavePath, $imgMaxWidth = '', $imgMaxHeight = '', $saveThumb = false)
+	public function saveImage($imgName, $imgLoc, $imgSavePath, $imgMaxWidth = '', $imgMaxHeight = '', $saveThumb = false) : bool
 	{
 		// Try to get the image as a string.
 		$cover = $this->fetchImage($imgLoc);
 		if ($cover === false) {
-			return 0;
+			// Add check for debug mode and log this error if enabled.
+			return false;
 		}
 
 		// Check if we need to resize it.
@@ -137,8 +139,8 @@ class ReleaseImage
 			$height = $imagick->getImageHeight();
 			$ratio = min($imgMaxHeight / $height, $imgMaxWidth / $width);
 			// New dimensions
-			$new_width = intval($ratio * $width);
-			$new_height = intval($ratio * $height);
+			$new_width = (int)($ratio * $width);
+			$new_height = (int)($ratio * $height);
 			if ($new_width < $width && $new_width > 10 && $new_height > 10) {
 				$imagick->thumbnailImage($new_width, $new_height, true);
 				$imagick->setImageFormat('jpeg');
@@ -155,14 +157,18 @@ class ReleaseImage
 			}
 			$imagick->clear();
 		}
+
 		// Store it on the hard drive.
 		$coverPath = $imgSavePath . $imgName . '.jpg';
 		$coverSave = @file_put_contents($coverPath, $cover);
+
 		// Check if it's on the drive.
 		if ($coverSave === false || !is_file($coverPath)) {
-			return 0;
+			// Add check for debug mode and log this error if enabled.
+			return false;
 		}
-		return 1;
+
+		return true;
 	}
 
 	/**

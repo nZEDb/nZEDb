@@ -1,5 +1,5 @@
 <?php
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
+require_once realpath(dirname(__DIR__, 3) . '/app/config/bootstrap.php');
 
 use app\models\Groups as Group;
 use app\models\Tables;

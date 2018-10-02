@@ -1,6 +1,6 @@
 <?php
 // This script removes releases with no NZBs, resets all groups, truncates article tables. All other releases are left alone.
-require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
+require_once realpath(dirname(__DIR__, 3) . '/app/config/bootstrap.php');
 
 use app\models\Settings;
 use nzedb\db\DB;
