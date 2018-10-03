@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-10-03 niel
+	Fix: Make sure newly activated groups have TPG tables, if TPG mode is enabled and MGR mode is not.
 2018-10-02 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.11.0
 
