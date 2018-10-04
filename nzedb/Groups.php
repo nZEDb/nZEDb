@@ -2,6 +2,7 @@
 namespace nzedb;
 
 use app\models\Groups as Group;
+use app\models\Settings;
 use app\models\Tables;
 use nzedb\db\DB;
 
