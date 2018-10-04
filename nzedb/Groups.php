@@ -411,8 +411,8 @@ class Groups
 	 */
 	public function updateStatus($id, $column, $status = 0)
 	{
-		if ((new Settings)->value('..tablepergroup') == 1 &&
-			(new Settings)->value('indexer.mgr.allasmgr') == 0) {
+		if (Settings::value('..tablepergroup') == 1 &&
+			Settings::value('indexer.mgr.allasmgr') == 0) {
 			(new Tables)->createTPGTablesForId($id);
 		}
 
