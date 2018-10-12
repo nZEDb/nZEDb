@@ -235,7 +235,7 @@ class AniDB
 				$updatedAni = $this->checkAniDBInfo($anidbId['anidbid'], $cleanArr['epno']);
 
 				if ($updatedAni === false) {
-					if ($this->updateTimeCheck($anidbId['anidbid']) !== false) {
+					if ($this->updatedRecently($anidbId['anidbid']) === false) {
 						$this->padb->populateTable('info', $anidbId['anidbid']);
 						$this->doRandomSleep();
 						$updatedAni = $this->checkAniDBInfo($anidbId['anidbid']);
@@ -293,22 +293,24 @@ class AniDB
 	}
 
 	/**
-	 * Checks a specific Anime title's last update time
+	 * Checks a specific Anime ID's last update time, returning true if it was updated in the
+	 * last week
 	 *
-	 * @param int $anidbId
+	 * @param int    $anidbId
 	 *
-	 * @return bool|\PDOStatement Has it been 7 days since we last updated this AniDB ID or not?
+	 * @return bool  Has it been 7 days, or more, since we last updated this AniDB ID or not?
 	 */
-	private function updateTimeCheck($anidbId)
+	private function updatedRecently($anidbId) : bool
 	{
-		return $this->pdo->queryOneRow(
-			sprintf("
-				SELECT anidbid
-				FROM anidb_info ai
-				WHERE ai.updated < (NOW() - INTERVAL 7 DAY)
-				AND ai.anidbid = %d",
-				$anidbId
-			)
+		$result = $this->pdo->queryOneRow(
+			sprintf('	SELECT ai.updated FROM anidb_info AS ai WHERE ai.anidbid = %d LIMIT 1',
+				$anidbId)
 		);
+
+		if (\is_array($result)) {
+			$result = \strtotime($result) > \strtotime('1 week ago');
+		}
+
+		return (bool)$result;
 	}
 }
