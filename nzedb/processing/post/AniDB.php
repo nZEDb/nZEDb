@@ -308,7 +308,7 @@ class AniDB
 		);
 
 		if (\is_array($result)) {
-			$result = \strtotime($result) > \strtotime('1 week ago');
+			$result = \strtotime($result['updated']) > \strtotime('1 week ago');
 		}
 
 		return (bool)$result;
