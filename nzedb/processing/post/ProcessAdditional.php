@@ -992,7 +992,7 @@ class ProcessAdditional
 			}
 
 			if ($this->_releaseHasPassword === true) {
-				$this->_echo(\PHP_EOL . 'Skipping processing of rar ' . $nzbFile['title'] . ' it has a password.', 'primaryOver', true);
+				$this->_echo(\PHP_EOL . 'Skipped processing of ' . $nzbFile['title'] . ' rar needs a password.', 'primaryOver', true);
 				break;
 			}
 
