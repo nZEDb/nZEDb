@@ -186,6 +186,8 @@
 <!-- jQuery -->
 <script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-2.2.x/dist/jquery.min.js"></script>
+<!-- library for iphone style toggles -->
+<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.iphone.toggle.js"></script>
 <!-- jQuery migrate script -->
 <script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-migrate-1.4.x/jquery-migrate.min.js"></script>
@@ -239,13 +241,13 @@
 <![endif]-->
 
 <!-- PNotify -->
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/assets/pnotify/dist/pnotify.js"></script>
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/assets/pnotify/dist/pnotify.animate.js"></script>
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/assets/pnotify/dist/pnotify.desktop.js"></script>
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/assets/pnotify/dist/pnotify.callbacks.js"></script>
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/assets/pnotify/dist/pnotify.buttons.js"></script>
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/assets/pnotify/dist/pnotify.confirm.js"></script>
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/assets/pnotify/dist/pnotify.nonblock.js"></script>
+<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/pnotify-3.0.x/dist/pnotify.js"></script>
+<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/pnotify-3.0.x/dist/pnotify.animate.js"></script>
+<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/pnotify-3.0.x/dist/pnotify.desktop.js"></script>
+<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/pnotify-3.0.x/dist/pnotify.callbacks.js"></script>
+<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/pnotify-3.0.x/dist/pnotify.buttons.js"></script>
+<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/pnotify-3.0.x/dist/pnotify.confirm.js"></script>
+<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/shared/libs/pnotify-3.0.x/dist/pnotify.nonblock.js"></script>
 
 <script type="text/javascript">
     tinyMCE.init({
