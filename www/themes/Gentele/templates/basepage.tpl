@@ -32,7 +32,7 @@
 	<!-- Custom styling plus plugins -->
 	<!-- Newposterwall -->
 	<link href="{$smarty.const.WWW_THEMES}/shared/css/posterwall.css" rel="stylesheet" type="text/css" media="screen"/>
-	<link href="{$smarty.const.WWW_THEMES}/shared/css/custom.css" rel="stylesheet">
+	<link href="{$smarty.const.WWW_THEMES}/{$theme}/css/custom.css" rel="stylesheet">
 	<link href="{$smarty.const.WWW_THEMES}/shared/libs/icheck-1.0.x/skins/flat/green.css" rel="stylesheet">
 	<link href="{$smarty.const.WWW_THEMES}/shared/js/jquery.qtip2.css" type="text/css" media="screen"/>
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
