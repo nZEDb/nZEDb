@@ -30,7 +30,14 @@
 															<tbody>
 															<tr class="bg-aqua-active">
 																<td colspan="2" style="padding-left: 8px;"><strong>General</strong>
-																</td>
+															</td>
+															</tr>                                                                                                                <tr>
+																<th width="200">First Name</th>
+																<td>{$user.firstname}</td>
+															</tr>
+															<tr>
+																<th width="200">Last Name</th>
+																<td><{$user.lastname}</td>
 															</tr>
 															<tr>
 																<th width="200">Username</th>
