@@ -88,7 +88,6 @@ class CollectionsCleaning
 	public function __construct(array $options = [])
 	{
 		// Extensions.
-		$this->e0 = self::REGEX_FILE_EXTENSIONS;
 		$this->e1 = self::REGEX_FILE_EXTENSIONS . self::REGEX_END;
 		$this->e2 = self::REGEX_FILE_EXTENSIONS . self::REGEX_SUBJECT_SIZE . self::REGEX_END;
 
@@ -148,7 +147,7 @@ class CollectionsCleaning
 			// File/part count.
 			$cleanSubject = preg_replace('/((( \(\d\d\) -|(\d\d)? - \d\d\.|\d{4} \d\d -) | - \d\d-| \d\d\. [a-z]).+| \d\d of \d\d| \dof\d)\.mp3"?|(\)|\(|\[|\s)\d{1,5}(\/|(\s|_)of(\s|_)|-)\d{1,5}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|[^\d]{4}-\d{1,3}-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $this->subject);
 			// File extensions.
-			$cleanSubject = preg_replace('/' . $this->e0 . '/i', ' ', $cleanSubject);
+			$cleanSubject = preg_replace('/' . self::REGEX_FILE_EXTENSIONS . '/i', ' ', $cleanSubject);
 			// File extensions - If it was not in quotes.
 			$cleanSubject = preg_replace('/(-? [a-z0-9]+-?|\(?\d{4}\)?(_|-)[a-z0-9]+)\.jpg"?| [a-z0-9]+\.mu3"?|((\d{1,3})?\.part(\d{1,5})?|\d{1,5} ?|sample|- Partie \d+)?\.(7z|\d{3}(?=(\s|"))|avi|diz|docx?|epub|idx|iso|jpg|m3u|m4a|mds|mkv|mobi|mp4|nfo|nzb|par(\s?2|")|pdf|rar|rev|rtf|r\d\d|sfv|srs|srr|sub|txt|vol.+(par2)|xls|zip|z{2,3})"?|(\s|(\d{2,3})?-)\d{2,3}\.mp3|\d{2,3}\.pdf|\.part\d{1,4}\./i', ' ', $cleanSubject);
 			// File Sizes - Non unique ones.
@@ -198,7 +197,7 @@ class CollectionsCleaning
 					}
 				}
 				$newName = preg_replace('/".+?"/', '', $this->subject);
-				$newName = preg_replace('/[a-z0-9]|' . $this->e0 . '/i', '', $newName);
+				$newName = preg_replace('/[a-z0-9]|' . self::REGEX_FILE_EXTENSIONS . '/i', '', $newName);
 
 				$result['name'] = $cleanSubject . $newName . $x;
 			} else {
