@@ -353,7 +353,7 @@ class ReleaseCleaning
 	 *
 	 * @return string
 	 */
-	public function releaseCleanerHelper($subject)
+	public function releaseCleanerHelper($subject) : string
 	{
 		$cleanerName = preg_replace('/(- )?yEnc$/', '', $subject);
 		return trim(preg_replace('/\s\s+/', ' ', $cleanerName));
