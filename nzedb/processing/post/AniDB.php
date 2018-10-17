@@ -147,7 +147,7 @@ class AniDB
 	 *
 	 * @return array
 	 */
-	private function extractTitleEpisode($cleanName = '')
+	private function extractTitleEpisode(string $cleanName = '') : array
 	{
 		$cleanName = str_replace('_', ' ', $cleanName);
 
@@ -201,14 +201,14 @@ class AniDB
 	}
 
 	/**
-	 * Matches the anime release to AniDB Info
-	 * If no info is available locally the AniDB API is invoked
+	 * Matches the anime release to AniDB Info.
+	 * If no info is available locally the AniDB API is invoked.
 	 *
 	 * @param array $release
 	 *
 	 * @return bool
 	 */
-	private function matchAnimeRelease($release = array())
+	private function matchAnimeRelease(array $release = []) : bool
 	{
 		$matched = false;
 		$type    = 'Local';
@@ -216,9 +216,9 @@ class AniDB
 		// clean up the release name to ensure we get a good chance at getting a valid title
 		$cleanArr = $this->extractTitleEpisode($release['searchname']);
 
-		if (is_array($cleanArr) && isset($cleanArr['title']) && is_numeric($cleanArr['epno'])) {
+		if (\is_array($cleanArr) && isset($cleanArr['title']) && is_numeric($cleanArr['epno'])) {
 
-			echo $this->pdo->log->header(PHP_EOL . "Looking Up: ") .
+			echo $this->pdo->log->header(PHP_EOL . 'Looking Up: ') .
 				$this->pdo->log->primary("   Title: {$cleanArr['title']}" . PHP_EOL .
 				"   Episode: {$cleanArr['epno']}");
 
@@ -242,7 +242,7 @@ class AniDB
 						$type = 'Remote';
 					} else {
 						echo PHP_EOL .
-							$this->pdo->log->info("This AniDB ID was not found to be accurate locally, but has been updated too recently to check AniDB.") .
+							$this->pdo->log->info('This AniDB ID was not found to be accurate locally, but has been updated too recently to check AniDB.') .
 							PHP_EOL;
 					}
 				}
@@ -252,11 +252,11 @@ class AniDB
 				$this->pdo->log->doEcho(
 					$this->pdo->log->headerOver("Matched {$type} AniDB ID: ") .
 					$this->pdo->log->primary($anidbId['anidbid']) .
-					$this->pdo->log->alternateOver("   Title: ") .
+					$this->pdo->log->alternateOver('   Title: ') .
 					$this->pdo->log->primary($anidbId['title']) .
-					$this->pdo->log->alternateOver("   Episode #: ") .
+					$this->pdo->log->alternateOver('   Episode #: ') .
 					$this->pdo->log->primary($cleanArr['epno']) .
-					$this->pdo->log->alternateOver("   Episode Title: ") .
+					$this->pdo->log->alternateOver('   Episode Title: ') .
 					$this->pdo->log->primary($updatedAni['episode_title'])
 				);
 
