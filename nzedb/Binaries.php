@@ -926,8 +926,10 @@ class Binaries
 
 					// Get the current unixtime from PHP.
 					$now = time();
-					$date = $this->header['Date'] > $now ? $now : $this->header['Date'];
-					$unixtime = is_numeric($this->header['Date']) ? $date : $now;
+					$timestamp = is_numeric($this->header['Date']) ? $this->header['Date'] : $now;
+					if ($timestamp > $now) {
+						$timestamp = $now;
+					}
 
 					$xref = ($this->multiGroup === true ? sprintf('xref = CONCAT(xref, "\\n"%s ),', $this->_pdo->escapeString(substr($this->header['Xref'], 2, 255))) : '');
 
@@ -940,7 +942,7 @@ class Binaries
 							$this->tableNames['cname'],
 							$this->_pdo->escapeString(substr(utf8_encode($this->header['matches'][1]), 0, 255)),
 							$this->_pdo->escapeString(utf8_encode($this->header['From'])),
-							$unixtime,
+							$timestamp,
 							$this->_pdo->escapeString(substr($this->header['Xref'], 0, 255)),
 							$this->groupMySQL['id'],
 							$fileCount[3],
