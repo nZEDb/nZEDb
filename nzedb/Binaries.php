@@ -306,7 +306,7 @@ class Binaries
 	{
 		$groups = Group::getActive()->data();
 
-		$groupCount = count($groups);
+		$groupCount = \count($groups);
 		if ($groupCount > 0) {
 			$counter = 1;
 			$allTime = microtime(true);
@@ -385,7 +385,7 @@ class Binaries
 		}
 
 		// Attempt to repair any missing parts before grabbing new ones.
-		if ($groupMySQL['last_record'] != 0) {
+		if ($groupMySQL['last_record'] !== 0) {
 			if ($this->_partRepair) {
 				if ($this->_echoCLI) {
 					$this->_colorCLI->doEcho($this->_colorCLI->primary('Part repair enabled. Checking for missing parts.'), true);
@@ -402,7 +402,7 @@ class Binaries
 		}
 
 		// Generate postdate for first record, for those that upgraded.
-		if (is_null($groupMySQL['first_record_postdate']) && $groupMySQL['first_record'] != 0) {
+		if (($groupMySQL['first_record_postdate'] === null) && $groupMySQL['first_record'] !== 0) {
 
 			$groupMySQL['first_record_postdate'] = $this->postdate($groupMySQL['first_record'], $groupNNTP);
 
@@ -418,7 +418,7 @@ class Binaries
 		}
 
 		// Get first article we want aka the oldest.
-		if ($groupMySQL['last_record'] == 0) {
+		if ($groupMySQL['last_record'] === 0) {
 			if ($this->_newGroupScanByDays) {
 				// For new newsgroups - determine here how far we want to go back using date.
 				$first = $this->daytopost($this->_newGroupDaysToScan, $groupNNTP);
@@ -649,15 +649,15 @@ class Binaries
 		}
 
 		// If there was an error, try to reconnect.
-		if ($this->_nntp->isError($headers)) {
+		if ($this->_nntp::isError($headers)) {
 
-			if ($this->first == $this->last) {
+			if ($this->first === $this->last) {
 				$numberId = '= ' . $this->first;
 			} else {
 				$numberId = 'IN (' . implode(',', range($this->first, $this->last)) . ')';
 			}
 
-			// Increment if part repair and return false.
+			// Increment if part repair and return empty array.
 			if ($partRepair === true) {
 				$this->_pdo->queryExec(
 					sprintf(
@@ -682,7 +682,7 @@ class Binaries
 			$this->_nntp->enableCompression();
 
 			// Check if the non-compression headers have an error.
-			if ($this->_nntp->isError($headers)) {
+			if ($this->_nntp::isError($headers)) {
 				$message = ($headers->code == 0 ? 'Unknown error' : $headers->message);
 				$this->log(
 					"Code {$headers->code}: $message\nSkipping group: {$this->groupMySQL['name']}",
@@ -701,7 +701,7 @@ class Binaries
 		$this->timeHeaders = number_format($this->startCleaning - $this->startLoop, 2);
 
 		// Check if we got headers.
-		$msgCount = count($headers);
+		$msgCount = \count($headers);
 
 		if ($msgCount < 1) {
 			return $returnArray;
@@ -725,7 +725,7 @@ class Binaries
 
 			// If set we are running in partRepair mode.
 			if ($partRepair === true && !is_null($missingParts)) {
-				if (!in_array($header['Number'], $missingParts)) {
+				if (!\in_array($header['Number'], $missingParts, true)) {
 					// If article isn't one that is missing skip it.
 					continue;
 				} else {
