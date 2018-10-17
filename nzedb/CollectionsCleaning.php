@@ -134,9 +134,15 @@ class CollectionsCleaning
 		}
 	}
 
-	//	Cleans usenet subject before inserting, used for collectionhash. If no regexes matched on collectionsCleaner.
-	protected function generic()
+	/**
+	 * Cleans usenet subject before inserting, used for collectionhash. If no regexes matched on collectionsCleaner.
+	 */
+	protected function generic() : array
 	{
+		$result = [
+			'id' => null,
+			'name' => null
+		];
 		// For non music groups.
 		if (!preg_match('/\.(flac|lossless|mp3|music|sounds)/', $this->groupName)) {
 			// File/part count.
@@ -150,19 +156,17 @@ class CollectionsCleaning
 			// Random stuff.
 			$cleanSubject = preg_replace('/AutoRarPar\d{1,5}|\(\d+\)( |  )yEnc|\d+(Amateur|Classic)| \d{4,}[a-z]{4,} |part\d+/i', ' ', $cleanSubject);
 			// Multi spaces.
-			return [
-				'id'   => self::REGEX_GENERIC_MATCH,
-				'name' => utf8_encode(trim(preg_replace('/\s\s+/', ' ', $cleanSubject)))
-			];
+
+			$result['id'] = self::REGEX_GENERIC_MATCH;
+			$result['name'] = utf8_encode(trim(preg_replace('/\s\s+/', ' ', $cleanSubject)));
 		} // Music groups.
 		else {
+			$result['id'] = self::REGEX_MUSIC_MATCH;
+
 			// Try some music group regexes.
 			$musicSubject = $this->musicSubject();
 			if ($musicSubject !== false) {
-				return [
-					'id'   => self::REGEX_MUSIC_MATCH,
-					'name' => $musicSubject
-				];
+				$result['name'] = $musicSubject;
 				// Parts/files
 			} else {
 				$cleanSubject = preg_replace('/((( \(\d\d\) -|(\d\d)? - \d\d\.|\d{4} \d\d -) | - \d\d-| \d\d\. [a-z]).+| \d\d of \d\d| \dof\d)\.mp3"?|(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|-\d{1,3}-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $this->subject);
@@ -195,24 +199,21 @@ class CollectionsCleaning
 				}
 				$newName = preg_replace('/".+?"/', '', $this->subject);
 				$newName = preg_replace('/[a-z0-9]|' . $this->e0 . '/i', '', $newName);
-				return [
-					'id'   => self::REGEX_MUSIC_MATCH,
-					'name' => $cleanSubject . $newName . $x
-				];
+
+				$result['name'] = $cleanSubject . $newName . $x;
 			} else {
-				return [
-					'id'   => self::REGEX_MUSIC_MATCH,
-					'name' => $cleanSubject
-				];
+				$result['name'] = $cleanSubject;
 			}
 		}
+
+		return $result;
 	}
 
 	// Generic regexes for music groups.
 	protected function musicSubject()
 	{
 		//Broderick_Smith-Unknown_Country-2009-404 "00-broderick_smith-unknown_country-2009.sfv" yEnc
-		if (preg_match('/^(\w{10,}-[a-zA-Z0-9]+ ")\d\d-.+?" yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^([\w-]+)\s*"\d+-.+?" yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} else {
 			return false;

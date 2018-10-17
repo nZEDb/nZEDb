@@ -10,6 +10,9 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-10-17 niel
+	Fix: Make generic music subject regex actually matche the example. Simplify returns for
+		CollectionsCleaning::generic() method.
 2018-10-12 niel
 	Chg: Rename updateTimeCheck function to updatedRecently. Change it to return true if the entry
 		was updated within the last week, false otherwise.
