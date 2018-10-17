@@ -913,23 +913,23 @@ class Binaries
 				);
 
 				// Used to group articles together when forming the release.  MGR requires this to be group irrespective
-                $this->header['CollectionKey'] = $collMatch['name'].$ckId.$fileCount[3];
+				$this->header['CollectionKey'] = $collMatch['name'] . $ckId . $fileCount[3];
 
 				// If this header's collection key isn't in memory, attempt to insert the collection
 				if (!isset($collectionIDs[$this->header['CollectionKey']])) {
 
-					/* Date from header should be a string this format:
+					/* Date from header should be a string in this format:
 					 * 31 Mar 2014 15:36:04 GMT or 6 Oct 1998 04:38:40 -0500
-					 * Still make sure it's not unix time, convert it to unix time if it is.
+					 * If it's numeric, assume it is unix time, otherwise convert it to unix time.
 					 */
 					$this->header['Date'] = (is_numeric($this->header['Date']) ? $this->header['Date'] : strtotime($this->header['Date']));
 
 					// Get the current unixtime from PHP.
 					$now = time();
-
-					$xref = ($this->multiGroup === true ? sprintf('xref = CONCAT(xref, "\\n"%s ),', $this->_pdo->escapeString(substr($this->header['Xref'], 2, 255))) : '');
 					$date = $this->header['Date'] > $now ? $now : $this->header['Date'];
 					$unixtime = is_numeric($this->header['Date']) ? $date : $now;
+
+					$xref = ($this->multiGroup === true ? sprintf('xref = CONCAT(xref, "\\n"%s ),', $this->_pdo->escapeString(substr($this->header['Xref'], 2, 255))) : '');
 
 					$collectionID = $this->_pdo->queryInsert(
 						sprintf("
