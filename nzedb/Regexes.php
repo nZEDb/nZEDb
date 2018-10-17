@@ -277,7 +277,8 @@ class Regexes
 	}
 
 	/**
-	 * This will try to find regex in the DB for a group and a usenet subject, attempt to match them and return the matches.
+	 * This will try to find a regex in the DB for a usenet group and subject, attempt to match them
+	 * and return the matches.
 	 *
 	 * @param string $subject
 	 * @param string $groupName
@@ -291,7 +292,7 @@ class Regexes
 		$this->_fetchRegex($groupName);
 
 		$returnString = '';
-		// If there are no regex, return and try regex in this file.
+		// If there are no regexes, return and try regex in this file.
 		if ($this->_regexCache[$groupName]['regex']) {
 			foreach ($this->_regexCache[$groupName]['regex'] as $regex) {
 
