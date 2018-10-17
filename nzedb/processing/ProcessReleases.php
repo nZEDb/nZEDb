@@ -617,10 +617,10 @@ class ProcessReleases
 						$collection['subject'], $collection['fromname'], $collection['filesize'], $collection['gname']
 					);
 
-					if (is_array($cleanedName)) {
+					if (\is_array($cleanedName)) {
 						$properName = $cleanedName['properlynamed'];
-						$preID = (isset($cleanerName['predb']) ? $cleanerName['predb'] : false);
-						$isReqID = (isset($cleanerName['requestid']) ? $cleanerName['requestid'] : false);
+						$preID = $cleanerName['predb'] ?? false;
+						$isReqID = $cleanerName['requestid'] ?? false;
 						$cleanedName = $cleanedName['cleansubject'];
 					} else {
 						$properName = true;
