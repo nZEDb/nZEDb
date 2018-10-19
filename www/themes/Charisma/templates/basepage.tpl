@@ -131,6 +131,10 @@
 							</ul>
 						</li>
 						<li><a href="{$smarty.const.WWW_TOP}/logout"><i class="fa fa-unlock"></i><span> Logout</span></a></li>
+							{elseif}
+							<li><a href="{$smarty.const.WWW_TOP}/login"><i
+												class="fa fa-envelope-o"></i><span> Login</span> <span
+												class="fa arrow"></span></a></li>
 							{/if}
 					</ul>
 				</div>
