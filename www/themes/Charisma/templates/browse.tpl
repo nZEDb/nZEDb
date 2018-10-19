@@ -70,18 +70,26 @@
 							<tr>
 								<th><input id="chkSelectAll" type="checkbox" class="nzb_check_all"/></th>
 								<th>Name
-									<a title="Sort Descending" href="{$orderbyname_desc}">
-										<i class="fa-icon-caret-down text-muted"> </i>
-									</a>
-									<a title="Sort Ascending" href="{$orderbyname_asc}">
-										<i class="fa-icon-caret-up text-muted"> </i>
-									</a>
+                                                                        <a title="Sort Descending" href="{$orderbycat_desc}"><i class="fa fa-chevron-down"></i></a>
+                                                                        <a title="Sort Ascending" href="{$orderbycat_asc}"><i class="fa fa-chevron-up"></i></a>
 								</th>
 								{if $category >= 2000 && $category <=2999 || $category >= 5000 && $category <=5999} <th>Cover</th>{/if}
-								<th>Category</th>
-								<th>Posted</th>
-								<th>Size</th>
-								<th>Action</th>
+								<th>Category
+								        <a title="Sort Descending" href="{$orderbycat_desc}"><i class="fa fa-chevron-down"></i></a>
+									<a title="Sort Ascending" href="{$orderbycat_asc}"><i class="fa fa-chevron-up"></i></a>
+								</th>
+								<th>Posted
+								        <a title="Sort Descending" href="{$orderbycat_desc}"><i class="fa fa-chevron-down"></i></a>
+									<a title="Sort Ascending" href="{$orderbycat_asc}"><i class="fa fa-chevron-up"></i></a>
+								</th>
+								<th>Size
+								        <a title="Sort Descending" href="{$orderbycat_desc}"><i class="fa fa-chevron-down"></i></a>
+									<a title="Sort Ascending" href="{$orderbycat_asc}"><i class="fa fa-chevron-up"></i></a>
+								</th>
+								<th>Action
+								        <a title="Sort Descending" href="{$orderbycat_desc}"><i class="fa fa-chevron-down"></i></a>
+									<a title="Sort Ascending" href="{$orderbycat_asc}"><i class="fa fa-chevron-up"></i></a>
+								</th>
 							</tr>
 							</thead>
 							<tbody>
