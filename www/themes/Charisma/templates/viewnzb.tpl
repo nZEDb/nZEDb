@@ -147,14 +147,17 @@
 									{if ($release.haspreview == 1 && $userdata.canpreview == 1) || ($release.haspreview == 2 && $userdata.canpreview == 1)}
 										<li><a href="#pane7" data-toggle="tab">Preview</a></li>
 									{/if}
+									{if ($release.videostatus == 1 && $userdata.canpreview == 1)}
+										<li><a href="#pane8" data-toggle="tab">Video Sample</a></li>
+									{/if}
 									{if $reVideo.releases_id|@count > 0 || $reAudio|@count > 0}
-										<li><a href="#pane8" data-toggle="tab">MediaInfo</a></li>
+										<li><a href="#pane9" data-toggle="tab">MediaInfo</a></li>
 									{/if}
 									{if isset($xxx.backdrop) && $xxx.backdrop == 1}
-										<li><a href="#pane9" data-toggle="tab">Back Cover</a></li>
+										<li><a href="#pane10" data-toggle="tab">Back Cover</a></li>
 									{/if}
 									{if isset($game.backdrop) && $game.backdrop == 1}
-									<li><a href="#pane10" data-toggle="tab">Screenshot</a></li>
+									<li><a href="#pane11" data-toggle="tab">Screenshot</a></li>
 									{/if}
 								</ul>
 								<div class="tab-content">
@@ -635,8 +638,13 @@
 												 data-target="#modal-image"/>
 										</div>
 									{/if}
-									{if $reVideo.releases_id|@count > 0 || $reAudio|@count > 0}
+									{if ($release.videostatus == 1 && $userdata.canpreview == 1)}
 										<div id="pane8" class="tab-pane">
+											<video width="450" controls><source src="{$smarty.const.WWW_TOP}/covers/video/{$release.guid}.ogv" type="video/ogg">Your browser does not support the video tag.</video>
+										</div>
+									{/if}
+									{if $reVideo.releases_id|@count > 0 || $reAudio|@count > 0}
+										<div id="pane9" class="tab-pane">
 											<table style="width:100%;"
 												   class="data table table-condensed table-striped table-responsive table-hover">
 												<tr>
@@ -782,7 +790,7 @@
 										</div>
 									{/if}
 									{if isset($xxx.backdrop) && $xxx.backdrop == 1}
-										<div id="pane9" class="tab-pane">
+										<div id="pane10" class="tab-pane">
 											<img src="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-backdrop.jpg"
 												 alt="{$xxx.title|escape:"htmlall"}"
 												 data-toggle="modal"
@@ -790,7 +798,7 @@
 										</div>
 									{/if}
 									{if isset($game.backdrop) && $game.backdrop == 1}
-										<div id="pane10" class="tab-pane">
+										<div id="pane11" class="tab-pane">
 											<img src="{$smarty.const.WWW_TOP}/covers/games/{$game.id}-backdrop.jpg"
 												 alt="{$game.title|escape:"htmlall"}"
 												 data-toggle="modal"
