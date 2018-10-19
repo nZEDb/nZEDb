@@ -93,6 +93,12 @@
 										<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
 										   class="title">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>{if !empty($result.failed)} <i class="fa fa-exclamation-circle" style="color: red" title="This release has failed to download for some users"></i>{/if}
 										<br/>
+                                                                                {if $result.passwordstatus == 1}
+                                                                                                        <span class="fa fa-stack" title="Potentially Passworded"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-unlock-alt"></i></span>
+                                                                                {elseif $result.passwordstatus == 2}
+                                                                                                        <span class="fa fa-stack" title="Broken Post"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa fa-chain-broken"></i></span>
+                                                                                {elseif $result.passwordstatus == 10}
+                                                                                                        <span class="fa fa-stack" title="Passworded Archive"><i class="fa fa-square-o fa-stack-base"></i><i class="fa fa-lock"></i></span>{/if}
 													<span class="label label-default">{$result.grabs}
 														Grab{if $result.grabs != 1}s{/if}</span>
 										{if $result.nfoid > 0}<span><a
@@ -104,12 +110,32 @@
 										{if $result.haspreview == 1 && $userdata.canpreview == 1}<span><a
 													href="{$smarty.const.WWW_TOP}/covers/preview/{$result.guid}_thumb.jpg"
 													name="name{$result.guid}" class="modal_prev label label-default" rel="preview">Preview</a></span>{/if}
+										{if $result.videostatus > 0 && $userdata.canpreview == 1}<span><a
+                                                                                                        class="label label-default model_prev"
+                                                                                                        href="{$smarty.const.WWW_TOP}/details/{$result.guid}"
+                                                                                                        title="This release has a video preview" rel="preview">
+                                                                                                        <i class="fa fa-youtube-play"></i></a></span>{/if}
+										{if $result.imdbid > 0}<span>
+													<a class="label label-default modal_imdb" 
+													href="#" name="name{$result.imdbid}" title="View movie info" rel="movie"></a></span>{/if}
 										{if $result.videos_id > 0}<span class="label label-default"><a
 													href="{$smarty.const.WWW_TOP}/series/{$result.videos_id}">View TV</a></span>{/if}
 										{if isset($result.firstaired) && $result.firstaired != ""}<span class="label label-default" title="{$result.guid}">
-											Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>{/if}
+													Aired {if $result.firstaired|strtotime > $smarty.now}in future{else}{$result.firstaired|daysago}{/if}</span>{/if}
+										{if $result.musicinfo_id > 0}<span><a
+													class="label label-default modal_music"
+													href="#" name="name{$result.musicinfo_id}"
+													title="View music info" rel="music"><i class="fa fa-music"></i></a></span>{/if}
 										{if $result.anidbid > 0}<span class="label label-default"><a
 													href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}">View Anime</a></span>{/if}
+                                                                                {if $result.reid > 0}<span
+                                                                                                        class="label label-default mediainfo"
+                                                                                                        title="{$result.guid}"
+                                                                                                        ><i class="fa fa-list-alt"></i></span>{/if}
+                                                                                {if $result.predb_id > 0}<span
+                                                                                                        class="label label-default preinfo rndbtn"
+                                                                                                        title="{$result.predb_id}"><i class="fa fa-eye"></i></span>{/if}
+
 										{if !empty($result.failed)}<span class="label label-default">
 											<i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>{/if}									</td>
 									<td><span class="label label-default">{$result.category_name}</span>
