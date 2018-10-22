@@ -12,6 +12,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2018-10-23 niel
 	Add: New anime title regex in PPA to capture more titles correctly.
+	Chg: Altered 'Complete Sequential' to 'Custom Sequential' in tmux settings, to avoid confusion
+		of people thinking it is more complete than Simple.
 2018-10-17 niel
 	Fix: Make generic music subject regex actually matche the example. Simplify returns for
 		CollectionsCleaning::generic() method.
