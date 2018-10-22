@@ -114,8 +114,8 @@ class PostProcess
 		$this->releaseFiles = (($options['ReleaseFiles'] instanceof ReleaseFiles) ? $options['ReleaseFiles'] : new ReleaseFiles($this->pdo));
 
 		// Site settings.
-		$this->addpar2 = (Settings::value('..addpar2') == 0) ? false : true;
-		$this->alternateNNTP = (Settings::value('..alternate_nntp') == 1 ? true : false);
+		$this->addpar2 = Settings::value('..addpar2') != 0;
+		$this->alternateNNTP = (Settings::value('..alternate_nntp') == 1);
 	}
 
 	/**
