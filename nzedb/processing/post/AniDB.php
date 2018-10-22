@@ -105,7 +105,7 @@ class AniDB
 				}
 			}
 		} else {
-			$this->pdo->log->doEcho($this->pdo->log->info("No work to process."), true);
+			$this->pdo->log->doEcho($this->pdo->log->info('No work to process.'), true);
 		}
 	}
 
@@ -156,7 +156,7 @@ class AniDB
 				$matches)
 		) {
 			$matches['epno'] = (int)$matches['epno'];
-			if (in_array($matches['epno'], ['Movie', 'OVA'])) {
+			if (\in_array($matches['epno'], ['Movie', 'OVA'])) {
 				$matches['epno'] = 1;
 			}
 		} else if (preg_match('/^(\[[a-zA-Z\.\-!?]+\][\s_]*)?(\[BD\])?(\[\d{3,4}[ip]\])?(?P<title>[\w\s_.+!?\'-\(\)]+)(New Edit|(Blu-?ray)?( ?Box)?( ?Set)?)?\s*[\(\[](BD|\d{3,4}[ipx])/i',
@@ -164,10 +164,12 @@ class AniDB
 			$matches)
 		) {
 			$matches['epno'] = 1;
+		} else if (\preg_match('#^(\[[a-zA-Z\.\-!?]+\][\s_]*)?(?P<title>[\w -]+)?\s+-\s+(?P<epno>\d+)\s*(\[\d+p\])?$#', $cleanName, $matches)) {
+			$matches['epno'] = (int)$matches['epno'];
 		} else {
 			if (nZEDb_DEBUG) {
 				$this->pdo->log->doEcho(
-					PHP_EOL . "Could not parse searchname {$cleanName}.",
+					PHP_EOL . "Could not parse searchname '{$cleanName}'.",
 					true
 				);
 			}
