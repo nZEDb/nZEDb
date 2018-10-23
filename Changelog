@@ -14,6 +14,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Add: New anime title regex in PPA to capture more titles correctly.
 	Chg: Altered 'Complete Sequential' to 'Custom Sequential' in tmux settings, to avoid confusion
 		of people thinking it is more complete than Simple.
+	Chg: Update meaning of type field in videos table.
+	Add: Videos controller, model, and tests.
 2018-10-17 niel
 	Fix: Make generic music subject regex actually matche the example. Simplify returns for
 		CollectionsCleaning::generic() method.

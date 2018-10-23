@@ -1259,8 +1259,8 @@ CREATE TABLE video_data (
 
 DROP TABLE IF EXISTS videos;
 CREATE TABLE videos (
-  id           MEDIUMINT(11) UNSIGNED  NOT NULL AUTO_INCREMENT COMMENT 'Show\'s ID to be used in other tables as reference.',
-  type         TINYINT(1) UNSIGNED     NOT NULL DEFAULT '0' COMMENT '0 = TV, 1 = Film, 2 = Anime',
+  id           MEDIUMINT(11) UNSIGNED  NOT NULL AUTO_INCREMENT COMMENT 'ID to be used in other tables as reference.',
+  type         TINYINT(1) UNSIGNED     NOT NULL DEFAULT '0' COMMENT '0 = Unknown, 1 = TV Series, 2 = Film, 3 = Made for TV Film, 4 = Short Film, 5 = (straight to) video, 6 = TV Mini series',
   title        VARCHAR(180) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Name of the video.',
   countries_id CHAR(2) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Two character country code (FK to countries table).',
   started      DATETIME                NOT NULL COMMENT 'Date (UTC) of production''s first airing',
