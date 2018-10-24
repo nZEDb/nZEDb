@@ -52,12 +52,6 @@ class ReleaseExtra
 		return $codec;
 	}
 
-	public function get($id)
-	{
-		// hopefully nothing will use this soon and it can be deleted
-		return $this->pdo->queryOneRow(sprintf('SELECT * FROM video_data WHERE releases_id = %d', $id));
-	}
-
 	public function getVideo($id)
 	{
 		return $this->pdo->queryOneRow(sprintf('SELECT * from video_data WHERE releases_id = %d', $id));
