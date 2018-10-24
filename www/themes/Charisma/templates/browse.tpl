@@ -73,7 +73,7 @@
                                                                         <a title="Sort Descending" href="{$orderbycat_desc}"><i class="fa fa-chevron-down"></i></a>
                                                                         <a title="Sort Ascending" href="{$orderbycat_asc}"><i class="fa fa-chevron-up"></i></a>
 								</th>
-								{if $category >= 2000 && $category <=2999 || $category >= 5000 && $category <=5999} <th>Cover</th>{/if}
+								{if $category >= 2000 && $category <=2999 || $category >= 5000 && $category <=5069 || $category >= 5071 && $category <=5999} <th>Cover</th>{/if}
 								<th>Category
 								        <a title="Sort Descending" href="{$orderbycat_desc}"><i class="fa fa-chevron-down"></i></a>
 									<a title="Sort Ascending" href="{$orderbycat_asc}"><i class="fa fa-chevron-up"></i></a>
@@ -147,7 +147,7 @@
 
 										{if !empty($result.failed)}<span class="label label-default">
 											<i class ="fa fa-thumbs-o-up"></i> {$result.grabs} Grab{if $result.grabs != 1}s{/if} / <i class ="fa fa-thumbs-o-down"></i> {$result.failed} Failed Download{if $result.failed != 1}s{/if}</span>{/if}									</td>
-									{if $category >= 5000 && $category <= 5099} <td><img src="{$smarty.const.WWW_TOP}/covers/tvshows/{$result.videos_id}.jpg" width="240" height="120"></td> {elseif $category >= 2000 && $category <= 2999} <td><img src="{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-cover.jpg" width="120" height="120"></td> {else}{/if}
+									{if $category >= 5000 && $category <= 5069 || $category >= 5071 && $category <=5999} <td><img src="{$smarty.const.WWW_TOP}/covers/tvshows/{$result.videos_id}.jpg" width="240" height="120"></td> {elseif $category >= 2000 && $category <= 2999} <td><img src="{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-cover.jpg" width="120" height="120"></td> {else}{/if}
 									<td><span class="label label-default">{$result.category_name}</span>
 									</td>
 									<td>{$result.postdate|timeago}</td>
