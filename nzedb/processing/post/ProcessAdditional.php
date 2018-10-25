@@ -568,7 +568,8 @@ class ProcessAdditional
 			$this->_mainTmpPath .= DS;
 		}
 
-		// If we are doing per group, use the groupID has a inner path, so other scripts don't delete the files we are working on.
+		// If we are doing per group, use the groupID as an inner path, so other scripts can't
+		// delete the files we are working on.
 		if ($groupID !== '') {
 			$this->_mainTmpPath .= ($groupID . DS);
 		} else if ($guidChar !== '') {
@@ -577,13 +578,13 @@ class ProcessAdditional
 
 		if (!is_dir($this->_mainTmpPath)) {
 			$old = umask(0777);
-			@mkdir($this->_mainTmpPath, 0777, true);
+			if (!mkdir($this->_mainTmpPath, 0777, true) && !is_dir($this->_mainTmpPath)) {
+				throw new \ProcessAdditionalException(
+					'Could not create the tmpunrar folder (' . $this->_mainTmpPath . ')'
+				);
+			}
 			@chmod($this->_mainTmpPath, 0777);
 			@umask($old);
-		}
-
-		if (!is_dir($this->_mainTmpPath)) {
-			throw new ProcessAdditionalException('Could not create the tmpunrar folder (' . $this->_mainTmpPath . ')');
 		}
 
 		$this->_clearMainTmpPath();
