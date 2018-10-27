@@ -86,7 +86,7 @@ if (nZEDb_DEBUG) {
 }
 
 foreach ($dirs as $dir) {
-	if ($dir['name'] == "0README.txt") {
+	if ($dir['name'] == '0README.txt') {
 		continue;
 	}
 
@@ -173,11 +173,11 @@ foreach ($data as $dir => $files) {
 
 				// Make sure it's readable by all.
 				chmod($dumpFile, 0777);
-				$local = strtolower($argv[2]) == 'local' ? true : false;
+				$local = strtolower($argv[2]) === 'local' ? true : false;
 				$verbose = $argv[3] == true ? true : false;
 
 				if ($verbose) {
-					echo $predb->log->info("Clearing import table");
+					echo $predb->log->info('Clearing import table');
 				}
 
 				// Truncate to clear any old data
@@ -194,7 +194,7 @@ foreach ($data as $dir => $files) {
 
 				// Remove any titles where length <=8
 				if ($verbose === true) {
-					echo $predb->log->info("Deleting any records where title <=8 from Temporary Table");
+					echo $predb->log->info('Deleting any records where title <=8 from Temporary Table');
 				}
 				$predb->executeDeleteShort();
 
@@ -204,7 +204,7 @@ foreach ($data as $dir => $files) {
 				// Fill the groups_id
 				$predb->executeUpdateGroupID();
 
-				echo $predb->log->info("Inserting records from temporary table into predb table");
+				echo $predb->log->info('Inserting records from temporary table into predb table');
 				$predb->executeInsert();
 
 				// Delete the dump.
@@ -215,7 +215,7 @@ foreach ($data as $dir => $files) {
 				echo sprintf("Successfully imported PreDB dump %d (%s), %d dumps remaining\n",
 					$match['stamp'],
 					 date('Y-m-d', $match['stamp']),
-					--$total
+					$total--
 					);
 			} else {
 				echo "Ignoring: {$file['download_url']}\n";
