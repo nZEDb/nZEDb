@@ -4,8 +4,10 @@ namespace nzedb\processing\post;
 use app\models\Groups as Group;
 use app\models\Settings;
 use lithium\analysis\Logger;
+use Mhor\MediaInfo\MediaInfo;
 use nzedb\Categorize;
 use nzedb\Category;
+use nzedb\db\DB;
 use nzedb\Groups;
 use nzedb\NameFixer;
 use nzedb\Nfo;
@@ -16,7 +18,6 @@ use nzedb\ReleaseFiles;
 use nzedb\ReleaseImage;
 use nzedb\Releases;
 use nzedb\SphinxSearch;
-use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 class ProcessAdditional
@@ -136,6 +137,11 @@ class ProcessAdditional
 	 * @var string
 	 */
 	protected $_maxSize;
+
+	/**
+	 * @var \Mhor\MediaInfo\MediaInfo
+	 */
+	protected $mediainfo;
 
 	/**
 	 * @var string
@@ -414,6 +420,10 @@ class ProcessAdditional
 		$this->_par2Info = new \Par2Info();
 		$this->_nfo = ($options['Nfo'] instanceof Nfo ? $options['Nfo'] : new Nfo(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
 		$this->sphinx = ($options['SphinxSearch'] instanceof SphinxSearch ? $options['SphinxSearch'] : new SphinxSearch());
+
+		$this->mediaInfo = new MediaInfo();
+		$this->mediaInfo->setConfig('use_oldxml_mediainfo_output_format', true);
+		$this->mediaInfo->setConfig('command', Settings::settingValue('apps..mediainfopath'));
 
 		$value = Settings::value('indexer.ppa.innerfileblacklist');
 		$this->_innerFileBlacklist = ($value == '' ? false : $value);
@@ -1457,7 +1467,7 @@ class ProcessAdditional
 						// Try to get media info. Don't get it here if $mediaMsgID is not empty.
 						// 2014-06-28 -> Commented out, since the media info of a sample video is not indicative of the actual release.si
 						/*if ($this->_foundMediaInfo === false && empty($mediaMsgID)) {
-							$this->_foundMediaInfo = $this->_getMediaInfo($fileLocation);
+							$this->_foundMediaInfo = $this->getMediaInfo($fileLocation);
 						}*/
 
 					}
@@ -1504,7 +1514,7 @@ class ProcessAdditional
 
 						// Try to get media info.
 						if ($this->_foundMediaInfo === false) {
-							$this->_foundMediaInfo = $this->_getMediaInfo($fileLocation);
+							$this->_foundMediaInfo = $this->getMediaInfo($fileLocation);
 						}
 
 						// Try to get a sample picture.
@@ -1787,7 +1797,6 @@ class ProcessAdditional
 					$this->_killString . Settings::value('apps..mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
 				);
 				if (is_array($xmlArray)) {
-
 					// Convert to array.
 					$arrXml = Misc::objectsIntoArray(@simplexml_load_string(implode("\n", $xmlArray)));
 
@@ -2032,7 +2041,6 @@ class ProcessAdditional
 
 			// Check if the file exists.
 			if (is_file($fileName)) {
-
 				// Try to resize/move the image.
 				$saved = $this->_releaseImage->saveImage(
 					$this->_release['guid'] . '_thumb',
@@ -2194,41 +2202,35 @@ class ProcessAdditional
 	 *
 	 * @return bool
 	 */
-	protected function _getMediaInfo($fileLocation)
+	protected function getMediaInfo($fileLocation) : bool
 	{
-		if (!$this->_processMediaInfo) {
-			return false;
-		}
+		$result = false;
 
-		// Look for the video file.
-		if (is_file($fileLocation)) {
-
+		if ($this->_processMediaInfo && is_file($fileLocation)) {
 			// Run media info on it.
-			$xmlArray = Misc::runCmd(
-				$this->_killString . Settings::value('apps..mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
-			);
+			$mediaInfoContainer = $this->mediaInfo->getInfo($fileLocation, false);
+			//$xmlArray = Misc::objectsIntoArray($mediaInfoContainer);
 
 			// Check if we got it.
-			if (is_array($xmlArray)) {
-
+			//if (\count($xmlArray) > 0) {
 				// Convert it to string.
-				$xmlArray = implode("\n", $xmlArray);
+				//$xmlArray = implode("\n", $xmlArray);
 
-				if (!preg_match('/<track type="(Audio|Video)">/i', $xmlArray)) {
-					return false;
+				if ($mediaInfoContainer !== null) {
+					// Insert it into the DB.
+					$this->_releaseExtra->addFull($this->_release['id'], $mediaInfoContainer->__toXML());
+					$this->_releaseExtra->addFromMediaInfoContainer($this->_release['id'], $mediaInfoContainer);
+
+					if ($this->_echoCLI) {
+						$this->_echo('m', 'primaryOver', false);
+					}
+
+					$result =  true;
 				}
-
-				// Insert it into the DB.
-				$this->_releaseExtra->addFull($this->_release['id'], $xmlArray);
-				$this->_releaseExtra->addFromXml($this->_release['id'], $xmlArray);
-
-				if ($this->_echoCLI) {
-					$this->_echo('m', 'primaryOver', false);
-				}
-				return true;
-			}
+			//}
 		}
-		return false;
+
+		return $result;
 	}
 
 	/**
@@ -2373,7 +2375,7 @@ class ProcessAdditional
 
 		// Try to get media info with it.
 		if ($this->_foundMediaInfo === false) {
-			$this->_foundMediaInfo = $this->_getMediaInfo($fileLocation);
+			$this->_foundMediaInfo = $this->getMediaInfo($fileLocation);
 		}
 	}
 
