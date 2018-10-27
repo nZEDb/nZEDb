@@ -10,6 +10,9 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-10-27 niel
+	Fix: Post-decrement (instead of pre-decrement) $total dumps counter to make it correct for
+		output. This will prevent the "-1 dumps remaining message".
 2018-10-23 niel
 	Add: New anime title regex in PPA to capture more titles correctly.
 	Chg: Altered 'Complete Sequential' to 'Custom Sequential' in tmux settings, to avoid confusion
