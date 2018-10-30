@@ -423,7 +423,7 @@ class ProcessAdditional
 
 		$this->mediaInfo = new MediaInfo();
 		$this->mediaInfo->setConfig('use_oldxml_mediainfo_output_format', true);
-		$this->mediaInfo->setConfig('command', Settings::settingValue('apps..mediainfopath'));
+		$this->mediaInfo->setConfig('command', Settings::value('apps..mediainfopath'));
 
 		$value = Settings::value('indexer.ppa.innerfileblacklist');
 		$this->_innerFileBlacklist = ($value == '' ? false : $value);
