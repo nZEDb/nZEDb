@@ -136,8 +136,9 @@ class ReleaseExtra
 					$audioFormat = $audio->get('format')->getFullName();
 				}
 
-				if ($audio->get('mode') !== null) {
-					$audioMode = $audio->get('mode')->getFullName();
+				$value = $audio->get('mode');
+				if ($value !== null) {
+					$audioMode = $value;
 				}
 
 				if ($audio->get('format_settings_sbr') !== null) {
