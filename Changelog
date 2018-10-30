@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-10-30 niel
+	Mrg: fix-mediainfo branch. Adds support for mediaInfo's new format in v17.12+
 2018-10-27 niel
 	Fix: Post-decrement (instead of pre-decrement) $total dumps counter to make it correct for
 		output. This will prevent the "-1 dumps remaining message".
