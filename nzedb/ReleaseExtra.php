@@ -167,6 +167,18 @@ class ReleaseExtra
 
 				if ($audio->get('language') !== null) {
 					$audioLanguage = $audio->get('language');
+					if (\is_array($audioLanguage)) { // If we have an array
+						foreach ($audioLanguage as $language) { // search through the list
+							if (\strlen($language) === 2) {
+								$audioLanguage = $language; // and use the first two letter code.
+								break;
+							}
+						}
+
+						if (\is_array($audioLanguage)) { // If it is still an array...
+							$audioLanguage = \implode(', ', $audioLanguage); // collapse it.
+						}
+					}
 				}
 
 				if ($audio->get('title') !== null) {
