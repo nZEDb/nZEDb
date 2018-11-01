@@ -18,7 +18,8 @@
  */
 namespace app\models;
 
-class MultigroupPosters extends \lithium\data\Model
+
+class MultigroupPosters extends \app\extensions\data\Model
 {
 	protected $_meta = [
 		'key' => ['poster']

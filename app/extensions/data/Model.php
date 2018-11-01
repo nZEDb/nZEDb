@@ -16,10 +16,11 @@
  * @author    niel
  * @copyright 2017 nZEDb
  */
-
 namespace app\extensions\data;
 
+
 use lithium\data\Entity;
+
 
 /**
  * @method array all(array $options)

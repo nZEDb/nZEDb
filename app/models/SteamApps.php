@@ -18,7 +18,7 @@
  */
 namespace app\models;
 
-class SteamApps extends \lithium\data\Model
+class SteamApps extends \app\extensions\data\Model
 {
 	protected $_meta = [
 		'key' => [
