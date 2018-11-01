@@ -20,7 +20,7 @@ class VideosController extends \lithium\action\Controller {
 	public function add() {
 		$video = Videos::create();
 
-		if (($this->request->data) && $video->save($this->request->data)) {
+		if ($this->request->data && $video->save($this->request->data)) {
 			return $this->redirect(['Videos::view', 'args' => [$video->id]]);
 		}
 		return compact('video');
@@ -32,7 +32,7 @@ class VideosController extends \lithium\action\Controller {
 		if (!$video) {
 			return $this->redirect('Videos::index');
 		}
-		if (($this->request->data) && $video->save($this->request->data)) {
+		if ($this->request->data && $video->save($this->request->data)) {
 			return $this->redirect(['Videos::view', 'args' => [$video->id]]);
 		}
 		return compact('video');
@@ -40,7 +40,7 @@ class VideosController extends \lithium\action\Controller {
 
 	public function delete() {
 		if (!$this->request->is('post') && !$this->request->is('delete')) {
-			$msg = "Videos::delete can only be called with http:post or http:delete.";
+			$msg = 'Videos::delete can only be called with http:post or http:delete.';
 			throw new DispatchException($msg);
 		}
 		Videos::find($this->request->id)->delete();
