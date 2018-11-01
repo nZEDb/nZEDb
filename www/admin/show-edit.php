@@ -11,7 +11,7 @@ $video = new Videos(['Settings' => $page->settings]);
 switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 	case 'submit':
 		//TODO: Use a function that allows overwrites
-		//$tv->update($_POST["id"], $_POST["title"],$_POST["summary"], $_POST['countries_id']);
+		//$tv->update($_POST["id"], $_POST["title"],$_POST["summary"], $_POST['country_id']);
 
 		if (isset($_POST['from']) && !empty($_POST['from'])) {
 			header("Location:" . $_POST['from']);

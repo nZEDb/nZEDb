@@ -1008,7 +1008,7 @@ class Releases
 
 		$baseSql = sprintf(
 			"SELECT r.*,
-				v.title, v.countries_id, v.started, v.tvdb, v.trakt,
+				v.title, v.country_id, v.started, v.tvdb, v.trakt,
 					v.imdb, v.tmdb, v.tvmaze, v.tvrage, v.source,
 				tvi.summary, tvi.publisher, tvi.image,
 				tve.series, tve.episode, tve.se_complete, tve.title, tve.firstaired, tve.summary,

@@ -45,7 +45,7 @@
 			{foreach $series as $s}
 				<tr>
 					<td><a class="title" title="View series" href="{$smarty.const.WWW_TOP}/series/{$s.id}">{$s.title|escape:"htmlall"}</a>{if $s.prevdate != ''}<br /><span class="label label-info">Last: {$s.previnfo|escape:"htmlall"} aired {$s.prevdate|date_format}</span>{/if}</td>
-					<td>{$s.countries_id|escape:"htmlall"}</td>
+					<td>{$s.country_id|escape:"htmlall"}</td>
 					<td class="mid">
 						{if $s.userseriesid != null}
 							<a href="{$smarty.const.WWW_TOP}/myshows/edit/{$s.id}?from={$smarty.server.REQUEST_URI|escape:"url"}" class="myshows btn btn-sm btn-warning" rel="edit" name="series{$s.id}" title="Edit">Edit</a>

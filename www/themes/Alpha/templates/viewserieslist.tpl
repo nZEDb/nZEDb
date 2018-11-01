@@ -61,8 +61,8 @@
 						{/if}
 					</td>
 					<td>
-						{if $s.countries_id != ''}
-							<div class="text-center">{$s.countries_id|escape:"htmlall"}</div>
+						{if $s.country_id != ''}
+							<div class="text-center">{$s.country_id|escape:"htmlall"}</div>
 						{/if}
 					</td>
 					<td>

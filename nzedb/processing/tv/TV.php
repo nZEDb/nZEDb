@@ -247,7 +247,7 @@ abstract class TV extends Videos
 			$videoId = $this->pdo->queryInsert(
 				sprintf('
 					INSERT INTO videos
-					(type, title, countries_id, started, source, tvdb, trakt, tvrage, tvmaze, imdb, tmdb)
+					(type, title, country_id, started, source, tvdb, trakt, tvrage, tvmaze, imdb, tmdb)
 					VALUES (%d, %s, %s, %s, %d, %d, %d, %d, %d, %d, %d)',
 					$show['type'],
 					$this->pdo->escapeString($show['title']),
@@ -336,11 +336,11 @@ abstract class TV extends Videos
 			sprintf('
 				UPDATE videos v
 				LEFT JOIN tv_info tvi ON v.id = tvi.videos_id
-				SET v.countries_id = %s, v.tvdb = %s, v.trakt = %s, v.tvrage = %s,
+				SET v.country_id = %s, v.tvdb = %s, v.trakt = %s, v.tvrage = %s,
 					v.tvmaze = %s, v.imdb = %s, v.tmdb = %s,
 					tvi.summary = %s, tvi.publisher = %s, tvi.localzone = %s
 				WHERE v.id = %d',
-				sprintf($ifStringInfo, 'v.countries_id', $this->pdo->escapeString($show['country']), 'v.countries_id'),
+				sprintf($ifStringInfo, 'v.country_id', $this->pdo->escapeString($show['country']), 'v.country_id'),
 				sprintf($ifStringID, 'v.tvdb', $show['tvdb'], 'v.tvdb'),
 				sprintf($ifStringID, 'v.trakt', $show['trakt'], 'v.trakt'),
 				sprintf($ifStringID, 'v.tvrage', $show['tvrage'], 'v.tvrage'),

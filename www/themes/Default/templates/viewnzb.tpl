@@ -23,7 +23,7 @@
 			{if $show.description != ""}<span class="descinitial">{$show.description|escape:"htmlall"|nl2br|magicurl|truncate:"350":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>{if $show.description|strlen > 350}<span class="descfull">{$show.description|escape:"htmlall"|nl2br|magicurl}</span>{/if}<br /><br />{/if}
 			{if $show.genre != ""}<strong>Genre:</strong> {$show.genre|escape:"htmlall"|replace:"|":", "}<br />{/if}
 			{if $release.firstaired != ""}<strong>Aired:</strong> {$release.firstaired|date_format}<br/>{/if}
-			{if $show.countries_id != ""}<strong>Country:</strong> {$show.countries_id}{/if}
+			{if $show.country_id != ""}<strong>Country:</strong> {$show.country_id}{/if}
 			<div style="margin-top:10px;">
 				<a class="rndbtn" title="View all episodes from this series" href="{$smarty.const.WWW_TOP}/series/{$release.videos_id}">All Episodes</a>
 				{if $release.tvrage >0}<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.tvrage}" title="View at TV Rage">TV Rage</a>{/if}
