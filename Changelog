@@ -10,6 +10,10 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-11-05 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.12.0
+
+
 2018-10-30 niel
 	Mrg: fix-mediainfo branch. Adds support for mediaInfo's new format in v17.12+
 2018-10-27 niel
@@ -22,7 +26,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Chg: Update meaning of type field in videos table.
 	Add: Videos controller, model, and tests.
 2018-10-17 niel
-	Fix: Make generic music subject regex actually matche the example. Simplify returns for
+	Fix: Make generic music subject regex actually match the example. Simplify returns for
 		CollectionsCleaning::generic() method.
 	Fix: Remove $this->e0. No need to duplicate the constant.
 2018-10-12 niel

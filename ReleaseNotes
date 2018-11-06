@@ -2,6 +2,22 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
+0.8.12.0 2018-11-05
+Added:
+	* New anime title regex in PPA to capture more titles correctly.
+	* Support for mediaInfo's new format in v17.12+
+
+Changed:
+	* Renamed 'Complete Sequential' to 'Custom Sequential' in tmux settings, to avoid confusion of
+	 people thinking it is more complete than Simple.
+
+Fixed:
+	* Make sure newly activated groups have TPG tables, if TPG mode is enabled and MGR mode is not.
+	* Fix anime last updated check to correctly return if an update was attempted 'recently'.
+	* Correct generic music regex to actually match the example.
+	* Corrected counter on predb import daily script, so it no longer reports -1 remaining.
+
+
 0.8.11.0 2018-10-02
 Fixed:
 	* Updated scripts in .../misc/testing/DB to use modern require_once syntax (instead of nesting
