@@ -59,7 +59,7 @@ $page->smarty->assign('fix_crap_check_names',
 						  'sample', 'scr', 'short', 'size', 'wmv_all'
 					  ]);
 $page->smarty->assign('sequential_ids', [0, 1, 2]);
-$page->smarty->assign('sequential_names', ['Disabled', 'Basic Sequential', 'Complete Sequential']);
+$page->smarty->assign('sequential_names', ['Disabled', 'Basic Sequential', 'Custom Sequential']);
 $page->smarty->assign('binaries_ids', [0, 1, 2]);
 $page->smarty->assign('binaries_names',
 					  ['Disabled', 'Simple Threaded Update', 'Complete Threaded Update']);

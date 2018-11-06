@@ -29,7 +29,7 @@
 						{if $show.summary|strlen > 350}<span class="descfull">{$show.summary|escape:"htmlall"|nl2br|magicurl}</span>{/if}<br><br>{/if}
 						{if $release.firstaired != ""}<strong>Aired:</strong> {$release.firstaired|date_format}<br>{/if}
 						{if $show.publisher != ""}<strong>Network:</strong> {$show.publisher}<br>{/if}
-						{if $show.countries_id != ""}<strong>Country:</strong> {$show.countries_id}{/if}
+						{if $show.country_id != ""}<strong>Country:</strong> {$show.country_id}{/if}
 						<div style="margin-top:10px;">
 							<span class="label label-default"><a title="View all episodes from this series" href="{$smarty.const.WWW_TOP}/series/{$release.videos_id}">All Episodes</a></span>
 							{if $show.tvdb > 0}

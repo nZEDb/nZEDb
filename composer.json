@@ -109,6 +109,7 @@
     "guzzlehttp/guzzle": "^6.3",
     "james-heinrich/getid3": "^1.9.12",
     "joshpinkney/tv-maze-php-api": "dev-master",
+    "mhor/php-mediainfo": "^5.0@dev",
     "moinax/tvdb": "^1.0.4",
     "niel/li3_fixtures": "1.2.x-dev",
     "niel/lithium": "dev-php7.2-updates",

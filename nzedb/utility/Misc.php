@@ -666,23 +666,30 @@ class Misc
 		}
 	}
 
-	// Convert obj to array.
-	public static function objectsIntoArray($arrObjData, $arrSkipIndices = [])
+	/**
+	 * Convert objects or arrays containing objects into pure arrays.
+	 *
+	 * @param       $arrObjData
+	 * @param array $arrSkipIndices
+	 *
+	 * @return array
+	 */
+	public static function objectsIntoArray($arrObjData, array $arrSkipIndices = []) : array
 	{
 		$arrData = [];
 
 		// If input is object, convert into array.
-		if (is_object($arrObjData)) {
+		if (\is_object($arrObjData)) {
 			$arrObjData = get_object_vars($arrObjData);
 		}
 
-		if (is_array($arrObjData)) {
+		if (\is_array($arrObjData)) {
 			foreach ($arrObjData as $index => $value) {
 				// Recursive call.
-				if (is_object($value) || is_array($value)) {
+				if (\is_object($value) || \is_array($value)) {
 					$value = self::objectsIntoArray($value, $arrSkipIndices);
 				}
-				if (in_array($index, $arrSkipIndices)) {
+				if (\in_array($index, $arrSkipIndices, false)) {
 					continue;
 				}
 				$arrData[$index] = $value;

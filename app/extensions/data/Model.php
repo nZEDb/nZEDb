@@ -16,15 +16,16 @@
  * @author    niel
  * @copyright 2017 nZEDb
  */
-
 namespace app\extensions\data;
+
 
 use lithium\data\Entity;
 
+
 /**
- * @method array all(array $options)
- * @method array count(array $options)
- * @method array first(array $options)
+ * @method static array all(array $options = []) Returns all rows from the model, that match the $options.
+ * @method static array count(array $optionss = []) Counts the rows, that match the provided options.
+ * @method static array first(array $optionss = []) Returns the first match for the provided options.
  */
 class Model extends \lithium\data\Model
 {

@@ -63,7 +63,7 @@
 					<br/><span class="label label-info">Last: {$s.previnfo|escape:"htmlall"}
 						aired {$s.prevdate|date_format}</span>{/if}</td>
 					<td>{$s.publisher|escape:"htmlall"}</td>
-					<td>{$s.countries_id|escape:"htmlall"}</td>
+					<td>{$s.country_id|escape:"htmlall"}</td>
 					<td class="mid">
 						{if $s.userseriesid != null}
 							<a href="{$smarty.const.WWW_TOP}/myshows/edit/{$s.id}?from={$smarty.server.REQUEST_URI|escape:"url"}"

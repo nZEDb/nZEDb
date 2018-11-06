@@ -59,8 +59,8 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
 			$seriessummary[] = $show['summary'];
 		}
 
-		if (!empty($show['countries_id'])) {
-			$seriescountry[] = $show['countries_id'];
+		if (!empty($show['country_id'])) {
+			$seriescountry[] = $show['country_id'];
 		}
 
 		$seriestitles = implode('/', array_map("trim", $seriestitles));

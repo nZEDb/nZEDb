@@ -79,10 +79,10 @@
 		</tr>
 		<tr>
 		<tr>
-			<td><label for="countries_id">Show countries_id:</label></td>
+			<td><label for="country_id">Show country_id:</label></td>
 			<td>
-				<input id="countries_id" name="countries_id" type="text" value="{$show.countries_id|escape:'htmlall'}" maxlength="2" />
-				<div class="hint">The countries_id for the TV show.</div>
+				<input id="country_id" name="country_id" type="text" value="{$show.country_id|escape:'htmlall'}" maxlength="2" />
+				<div class="hint">The country_id for the TV show.</div>
 			</td>
 		</tr>
 		<tr>

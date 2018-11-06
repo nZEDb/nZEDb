@@ -142,19 +142,19 @@ class ProcessReleases
 		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
 		$dummy = Settings::value('..delaytime');
-		$this->collectionDelayTime = ($dummy != '' ? (int)$dummy : 2);
+		$this->collectionDelayTime = ($dummy === '' ? 2 : (int)$dummy);
 		$dummy = Settings::value('..crossposttime');
-		$this->crossPostTime = ($dummy != '' ? (int)$dummy : 2);
+		$this->crossPostTime = ($dummy === '' ? 2 : (int)$dummy);
 		$dummy = Settings::value('..maxnzbsprocessed');
-		$this->releaseCreationLimit = ($dummy != '' ? (int)$dummy : 1000);
+		$this->releaseCreationLimit = ($dummy === '' ? 1000 : (int)$dummy);
 		$dummy = Settings::value('..releasecompletion');
-		$this->completion = ($dummy != '' ? (int)$dummy : 0);
+		$this->completion = ($dummy === '' ? 0 : (int)$dummy);
 		$this->processRequestIDs = (int)Settings::value('lookup_reqids');
 		if ($this->completion > 100) {
 			$this->completion = 100;
 			echo $this->pdo->log->error(PHP_EOL . 'You have an invalid setting for completion. It cannot be higher than 100.');
 		}
-		$this->collectionTimeout = intval(Settings::value('indexer.processing.collection_timeout'));
+		$this->collectionTimeout = (int)Settings::value('indexer.processing.collection_timeout');
 	}
 
 	/**
@@ -181,7 +181,7 @@ class ProcessReleases
 
 		$processReleases = microtime(true);
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho($this->pdo->log->header("Starting release update process (" . date('Y-m-d H:i:s') . ")"), true);
+			$this->pdo->log->doEcho($this->pdo->log->header('Starting release update process (' . date('Y-m-d H:i:s') . ')'), true);
 		}
 
 		if (!file_exists(Settings::value('..nzbpath'))) {
@@ -617,10 +617,10 @@ class ProcessReleases
 						$collection['subject'], $collection['fromname'], $collection['filesize'], $collection['gname']
 					);
 
-					if (is_array($cleanedName)) {
+					if (\is_array($cleanedName)) {
 						$properName = $cleanedName['properlynamed'];
-						$preID = (isset($cleanerName['predb']) ? $cleanerName['predb'] : false);
-						$isReqID = (isset($cleanerName['requestid']) ? $cleanerName['requestid'] : false);
+						$preID = $cleanerName['predb'] ?? false;
+						$isReqID = $cleanerName['requestid'] ?? false;
 						$cleanedName = $cleanedName['cleansubject'];
 					} else {
 						$properName = true;

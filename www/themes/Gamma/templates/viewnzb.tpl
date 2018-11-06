@@ -61,9 +61,9 @@
 					<dt>Aired</dt>
 					<dd>{$release.firstaired|date_format}</dd>
 				{/if}
-				{if $show.countries_id != ""}
+				{if $show.country_id != ""}
 					<dt>Country</dt>
-					<td>{$show.countries_id}</td>
+					<td>{$show.country_id}</td>
 				{/if}
 				{/if}
 			</dl>

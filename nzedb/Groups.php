@@ -2,6 +2,8 @@
 namespace nzedb;
 
 use app\models\Groups as Group;
+use app\models\Settings;
+use app\models\Tables;
 use nzedb\db\DB;
 
 class Groups
@@ -409,6 +411,11 @@ class Groups
 	 */
 	public function updateStatus($id, $column, $status = 0)
 	{
+		if (Settings::value('..tablepergroup') == 1 &&
+			Settings::value('indexer.mgr.allasmgr') == 0) {
+			(new Tables)->createTPGTablesForId($id);
+		}
+
 		$this->pdo->queryExec("
 			UPDATE groups
 			SET {$column} = {$status}

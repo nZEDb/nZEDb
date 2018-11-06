@@ -14,40 +14,18 @@
  *
  * @link      <http://www.gnu.org/licenses/>.
  * @author    niel
- * @copyright 2016 nZEDb
+ * @copyright 2018 nZEDb
  */
 namespace app\models;
 
 
-class MultigroupPosters extends \app\extensions\data\Model
+class Films extends \app\extensions\data\Model
 {
 	protected $_meta = [
-		'key' => ['poster']
+		'source'     => 'movies',
 	];
 
-	public $validates = [
-		'poster' => [
-			'notEmpty',
-			'message' => 'Empty poster value is not permitted.'
-		]
-	];
-
-	public static function commaSeparatedList()
-	{
-		$list = [];
-		$posters = MultigroupPosters::find('all',
-			[
-				'fields' => ['poster'],
-				'order'  => ['poster' => 'ASC'],
-			]
-		);
-
-		foreach ($posters as $poster) {
-			$list[] = $poster->poster;
-		}
-
-		return implode("','", $list);
-	}
+	public $validates = [];
 }
 
 ?>

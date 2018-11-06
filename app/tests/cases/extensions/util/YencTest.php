@@ -10,44 +10,26 @@
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with this program (see LICENSE.txt in the base directory.  If
- * not, see:
+ * not, see:.
  *
  * @link      <http://www.gnu.org/licenses/>.
+ *
  * @author    niel
  * @copyright 2016 nZEDb
  */
-namespace app\models;
+namespace app\tests\cases\extensions\util;
 
-
-class MultigroupPosters extends \app\extensions\data\Model
+class YencTest extends \lithium\test\Unit
 {
-	protected $_meta = [
-		'key' => ['poster']
-	];
-
-	public $validates = [
-		'poster' => [
-			'notEmpty',
-			'message' => 'Empty poster value is not permitted.'
-		]
-	];
-
-	public static function commaSeparatedList()
+	public function setUp()
 	{
-		$list = [];
-		$posters = MultigroupPosters::find('all',
-			[
-				'fields' => ['poster'],
-				'order'  => ['poster' => 'ASC'],
-			]
-		);
+	}
 
-		foreach ($posters as $poster) {
-			$list[] = $poster->poster;
-		}
+	public function tearDown()
+	{
+	}
 
-		return implode("','", $list);
+	public function test()
+	{
 	}
 }
-
-?>

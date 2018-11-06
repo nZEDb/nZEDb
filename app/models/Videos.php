@@ -14,40 +14,20 @@
  *
  * @link      <http://www.gnu.org/licenses/>.
  * @author    niel
- * @copyright 2016 nZEDb
+ * @copyright 2018 nZEDb
  */
 namespace app\models;
 
 
-class MultigroupPosters extends \app\extensions\data\Model
+class Videos extends \app\extensions\data\Model
 {
-	protected $_meta = [
-		'key' => ['poster']
-	];
+	// Anime is one of the types below. _TV if serial, _FILM if cinema or OVA, etc.
+	const TYPE_UNKNOWN = 0;
+	const TYPE_TV = 1;		// TV programme, but not a film.
+	const TYPE_FILM = 2;	// Film of any type, except if made for TV (i.e. TV Movie on IMDb)/
+	const TYPE_TVFILM = 3;	// Made for TV Film
 
-	public $validates = [
-		'poster' => [
-			'notEmpty',
-			'message' => 'Empty poster value is not permitted.'
-		]
-	];
-
-	public static function commaSeparatedList()
-	{
-		$list = [];
-		$posters = MultigroupPosters::find('all',
-			[
-				'fields' => ['poster'],
-				'order'  => ['poster' => 'ASC'],
-			]
-		);
-
-		foreach ($posters as $poster) {
-			$list[] = $poster->poster;
-		}
-
-		return implode("','", $list);
-	}
+	public $validates = [];
 }
 
 ?>

@@ -345,12 +345,12 @@
 																			<td>{$show.publisher}</td>
 																		</tr>
 																	{/if}
-																	{if $show.countries_id != ""}
+																	{if $show.country_id != ""}
 																		<tr>
 																			<th width="140">
 																				Country
 																			</th>
-																			<td>{$show.countries_id}</td>
+																			<td>{$show.country_id}</td>
 																		</tr>
 																	{/if}
 																{/if}

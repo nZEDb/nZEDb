@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use Mhor\MediaInfo\Container\MediaInfoContainer;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
 
@@ -17,6 +18,205 @@ class ReleaseExtra
 	public function __construct($settings = null)
 	{
 		$this->pdo = ($settings instanceof DB ? $settings : new DB());
+	}
+
+	/**
+	 * Add
+	 *
+	 * @param                                              $releaseID
+	 * @param \Mhor\MediaInfo\Container\MediaInfoContainer $mediaInfoContainer
+	 */
+	public function addFromMediaInfoContainer($releaseID, MediaInfoContainer $mediaInfoContainer)
+	{
+		$audioID = 1;
+		$audioBitRate = $audioBitRateMode = $audioChannels = $audioFormat = $audioMode = '';
+		$audioLanguage = $audioLibrary = $audioSampleRate = $audioTitle = '';
+
+		$containerFormat = $overallBitRate = $videoDuration = $videoFormat = $videoCodec = '';
+		$videoAspect = $videoBitRate = $videoFrameRate = $videoHeight = $videoLibrary = '';
+		$videoWidth = '';
+
+		$general = $mediaInfoContainer->getGeneral();
+		$audios = $mediaInfoContainer->getAudios();
+		$videos = $mediaInfoContainer->getVideos();
+		$subtitles = $mediaInfoContainer->getSubtitles();
+
+		if (!empty($general)) {
+			if (!empty($general->get('unique_id'))) {
+				$uniqueId = (int)$general->get('unique_id')->getShortName();
+				if ($uniqueId !== 1) {
+					$this->addUID($releaseID, $uniqueId);
+				}
+			}
+
+			if ($general->get('format') !== null) {
+				$containerFormat = $general->get('format')->getFullName();
+			}
+
+			if ($general->get('overall_bit_rate') !== null) {
+				$overallBitRate = $general->get('overall_bit_rate')->getFullName();
+			}
+		}
+
+
+		if (!empty($videos)) {
+			foreach ($videos as $video) {
+				if ($video->get('duration') !== null) {
+					$videoDuration = $general->get('duration')->getMilliseconds();
+				}
+
+				if ($video->get('format') !== null) {
+					$videoFormat = $video->get('format')->getFullName();
+				}
+
+				$value = $video->get('codec_id');
+				if ($value !== null) {
+					$videoCodec = $value;
+				}
+
+				if ($video->get('width') !== null) {
+					$videoWidth = $video->get('width')->getAbsoluteValue();
+				}
+
+				if ($video->get('height') !== null) {
+					$videoHeight = $video->get('height')->getAbsoluteValue();
+				}
+
+				if ($video->get('display_aspect_ratio') !== null) {
+					$videoAspect = $video->get('display_aspect_ratio')->getTextValue();
+				}
+
+				if ($video->get('frame_rate') !== null) {
+					$videoFrameRate = $video->get('frame_rate')->getTextValue();
+				}
+
+				$value = $video->get('encoded_library');
+				if ($value !== null) {
+					$videoLibrary = $value;
+				}
+
+				$value = $video->get('encoded_library_version');
+				if ($value !== null) {
+					$videoLibrary .= $value;
+				}
+
+				if ($video->get('writing_library') !== null) {
+					$videoLibrary = $video->get('writing_library')->getFullName();
+				}
+
+				if ($video->get('nominal_bit_rate') !== null) {
+					$videoBitRate = $video->get('nominal_bit_rate')->getTextValue();
+				}
+
+				if (!empty($videoBitRate)) {
+					$overallBitRate = $videoBitRate;
+				}
+
+				$this->addVideo($releaseID,
+					$containerFormat,
+					$overallBitRate,
+					$videoDuration,
+					$videoFormat,
+					$videoCodec,
+					$videoWidth,
+					$videoHeight,
+					$videoAspect,
+					$videoFrameRate,
+					$videoLibrary);
+			}
+		}
+
+		if (!empty($audios)) {
+			foreach ($audios as $audio) {
+				if ($audio->get('id') !== null) {
+					$audioID = $audio->get('id')->getFullName();
+				}
+
+				if ($audio->get('format') !== null) {
+					$audioFormat = $audio->get('format')->getFullName();
+				}
+
+				$value = $audio->get('mode');
+				if ($value !== null) {
+					$audioMode = $value;
+				}
+
+				if ($audio->get('format_settings_sbr') !== null) {
+					$audioMode = $audio->get('format_settings_sbr')->getFullName();
+				}
+
+				if ($audio->get('bit_rate_mode') !== null) {
+					$audioBitRateMode = $audio->get('bit_rate_mode')->getFullName();
+				}
+
+				if ($audio->get('bit_rate') !== null) {
+					$audioBitRate = $audio->get('bit_rate')->getTextValue();
+				}
+
+				if ($audio->get('channel_s') !== null) {
+					$audioChannels = $audio->get('channel_s')->getAbsoluteValue();
+				}
+
+				if ($audio->get('sampling_rate') !== null) {
+					$audioSampleRate = $audio->get('sampling_rate')->getTextValue();
+				}
+
+				if ($audio->get('encoded_library') !== null) {
+					$audioLibrary = $audio->get('encoded_library');
+				}
+
+				if ($audio->get('language') !== null) {
+					$audioLanguage = $audio->get('language');
+					if (\is_array($audioLanguage)) { // If we have an array
+						foreach ($audioLanguage as $language) { // search through the list
+							if (\strlen($language) === 2) {
+								$audioLanguage = $language; // and use the first two letter code.
+								break;
+							}
+						}
+
+						if (\is_array($audioLanguage)) { // If it is still an array...
+							$audioLanguage = \implode(', ', $audioLanguage); // collapse it.
+						}
+					}
+				}
+
+				if ($audio->get('title') !== null) {
+					$audioTitle = $audio->get('title');
+				}
+
+				$this->addAudio(
+					$releaseID,
+					$audioID,
+					$audioFormat,
+					$audioMode,
+					$audioBitRateMode,
+					$audioBitRate,
+					$audioChannels,
+					$audioSampleRate,
+					$audioLibrary,
+					$audioLanguage,
+					$audioTitle
+				);
+			}
+		}
+
+		if (!empty($subtitles)) {
+			foreach ($subtitles as $subtitle) {
+				$subsID = 1;
+				$subsLanguage = 'Unknown';
+
+				if ($subtitle->get('id') !== null) {
+					$subsID = $subtitle->get('id')->getFullName();
+				}
+
+				if ($subtitle->get('language') !== null) {
+					$subsLanguage = $subtitle->get('language');
+				}
+
+				$this->addSubs($releaseID, $subsID, $subsLanguage);
+			}
+		}
 	}
 
 	public function makeCodecPretty($codec)
@@ -50,12 +250,6 @@ class ReleaseExtra
 		}
 
 		return $codec;
-	}
-
-	public function get($id)
-	{
-		// hopefully nothing will use this soon and it can be deleted
-		return $this->pdo->queryOneRow(sprintf('SELECT * FROM video_data WHERE releases_id = %d', $id));
 	}
 
 	public function getVideo($id)
@@ -212,7 +406,7 @@ class ReleaseExtra
 	{
 		$ckid = $this->pdo->queryOneRow(sprintf('SELECT releases_id FROM release_subtitles WHERE releases_id = %s', $releaseID));
 		if (!isset($ckid['releases_id'])) {
-			return $this->pdo->queryExec(sprintf('INSERT INTO release_subtitles (releases_id, subsid, subslanguage) VALUES (%d, %d, %s)', $releaseID, $subsID, $this->pdo->escapeString($subslanguage)));
+			return $this->pdo->queryExec(sprintf('INSERT INTO release_subtitles (releases_id, subsid, subslanguage) VALUES (%d, %d, %s)', $releaseID, $subsID, $this->pdo->escapeString($subslanguage[1])));
 		}
 	}
 

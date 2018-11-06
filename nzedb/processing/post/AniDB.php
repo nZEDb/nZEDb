@@ -105,7 +105,7 @@ class AniDB
 				}
 			}
 		} else {
-			$this->pdo->log->doEcho($this->pdo->log->info("No work to process."), true);
+			$this->pdo->log->doEcho($this->pdo->log->info('No work to process.'), true);
 		}
 	}
 
@@ -147,7 +147,7 @@ class AniDB
 	 *
 	 * @return array
 	 */
-	private function extractTitleEpisode($cleanName = '')
+	private function extractTitleEpisode(string $cleanName = '') : array
 	{
 		$cleanName = str_replace('_', ' ', $cleanName);
 
@@ -156,7 +156,7 @@ class AniDB
 				$matches)
 		) {
 			$matches['epno'] = (int)$matches['epno'];
-			if (in_array($matches['epno'], ['Movie', 'OVA'])) {
+			if (\in_array($matches['epno'], ['Movie', 'OVA'])) {
 				$matches['epno'] = 1;
 			}
 		} else if (preg_match('/^(\[[a-zA-Z\.\-!?]+\][\s_]*)?(\[BD\])?(\[\d{3,4}[ip]\])?(?P<title>[\w\s_.+!?\'-\(\)]+)(New Edit|(Blu-?ray)?( ?Box)?( ?Set)?)?\s*[\(\[](BD|\d{3,4}[ipx])/i',
@@ -164,10 +164,12 @@ class AniDB
 			$matches)
 		) {
 			$matches['epno'] = 1;
+		} else if (\preg_match('#^(\[[a-zA-Z\.\-!?]+\][\s_]*)?(?P<title>[\w -]+)?\s+-\s+(?P<epno>\d+)\s*(\[\d+p\])?$#', $cleanName, $matches)) {
+			$matches['epno'] = (int)$matches['epno'];
 		} else {
 			if (nZEDb_DEBUG) {
 				$this->pdo->log->doEcho(
-					PHP_EOL . "Could not parse searchname {$cleanName}.",
+					PHP_EOL . "Could not parse searchname '{$cleanName}'.",
 					true
 				);
 			}
@@ -201,14 +203,14 @@ class AniDB
 	}
 
 	/**
-	 * Matches the anime release to AniDB Info
-	 * If no info is available locally the AniDB API is invoked
+	 * Matches the anime release to AniDB Info.
+	 * If no info is available locally the AniDB API is invoked.
 	 *
 	 * @param array $release
 	 *
 	 * @return bool
 	 */
-	private function matchAnimeRelease($release = array())
+	private function matchAnimeRelease(array $release = []) : bool
 	{
 		$matched = false;
 		$type    = 'Local';
@@ -216,9 +218,9 @@ class AniDB
 		// clean up the release name to ensure we get a good chance at getting a valid title
 		$cleanArr = $this->extractTitleEpisode($release['searchname']);
 
-		if (is_array($cleanArr) && isset($cleanArr['title']) && is_numeric($cleanArr['epno'])) {
+		if (\is_array($cleanArr) && isset($cleanArr['title']) && is_numeric($cleanArr['epno'])) {
 
-			echo $this->pdo->log->header(PHP_EOL . "Looking Up: ") .
+			echo $this->pdo->log->header(PHP_EOL . 'Looking Up: ') .
 				$this->pdo->log->primary("   Title: {$cleanArr['title']}" . PHP_EOL .
 				"   Episode: {$cleanArr['epno']}");
 
@@ -235,14 +237,14 @@ class AniDB
 				$updatedAni = $this->checkAniDBInfo($anidbId['anidbid'], $cleanArr['epno']);
 
 				if ($updatedAni === false) {
-					if ($this->updateTimeCheck($anidbId['anidbid']) !== false) {
+					if ($this->updatedRecently($anidbId['anidbid']) === false) {
 						$this->padb->populateTable('info', $anidbId['anidbid']);
 						$this->doRandomSleep();
 						$updatedAni = $this->checkAniDBInfo($anidbId['anidbid']);
 						$type = 'Remote';
 					} else {
 						echo PHP_EOL .
-							$this->pdo->log->info("This AniDB ID was not found to be accurate locally, but has been updated too recently to check AniDB.") .
+							$this->pdo->log->info('This AniDB ID was not found to be accurate locally, but has been updated too recently to check AniDB.') .
 							PHP_EOL;
 					}
 				}
@@ -252,11 +254,11 @@ class AniDB
 				$this->pdo->log->doEcho(
 					$this->pdo->log->headerOver("Matched {$type} AniDB ID: ") .
 					$this->pdo->log->primary($anidbId['anidbid']) .
-					$this->pdo->log->alternateOver("   Title: ") .
+					$this->pdo->log->alternateOver('   Title: ') .
 					$this->pdo->log->primary($anidbId['title']) .
-					$this->pdo->log->alternateOver("   Episode #: ") .
+					$this->pdo->log->alternateOver('   Episode #: ') .
 					$this->pdo->log->primary($cleanArr['epno']) .
-					$this->pdo->log->alternateOver("   Episode Title: ") .
+					$this->pdo->log->alternateOver('   Episode Title: ') .
 					$this->pdo->log->primary($updatedAni['episode_title'])
 				);
 
@@ -293,22 +295,24 @@ class AniDB
 	}
 
 	/**
-	 * Checks a specific Anime title's last update time
+	 * Checks a specific Anime ID's last update time, returning true if it was updated in the
+	 * last week
 	 *
-	 * @param int $anidbId
+	 * @param int    $anidbId
 	 *
-	 * @return bool|\PDOStatement Has it been 7 days since we last updated this AniDB ID or not?
+	 * @return bool  Has it been 7 days, or more, since we last updated this AniDB ID or not?
 	 */
-	private function updateTimeCheck($anidbId)
+	private function updatedRecently($anidbId) : bool
 	{
-		return $this->pdo->queryOneRow(
-			sprintf("
-				SELECT anidbid
-				FROM anidb_info ai
-				WHERE ai.updated < (NOW() - INTERVAL 7 DAY)
-				AND ai.anidbid = %d",
-				$anidbId
-			)
+		$result = $this->pdo->queryOneRow(
+			sprintf('	SELECT ai.updated FROM anidb_info AS ai WHERE ai.anidbid = %d LIMIT 1',
+				$anidbId)
 		);
+
+		if (\is_array($result)) {
+			$result = \strtotime($result['updated']) > \strtotime('1 week ago');
+		}
+
+		return (bool)$result;
 	}
 }
