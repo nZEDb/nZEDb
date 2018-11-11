@@ -912,13 +912,13 @@ class NameFixer
 		$matching = 0;
 		$pre = false;
 
-		$matchPre = function (string $fileName) {
+		$matchPre = function(string $fileName) {
 			$success = preg_match('/(\d{2}\.\d{2}\.\d{2})+[\w-.]+[\w]$/i', $fileName, $match);
 
 			return $success === 1 ? $match : false;
 		};
 
-		foreach(explode('||', $release['filename']) AS $key => $fileName) {
+		foreach (explode('||', $release['filename']) as $key => $fileName) {
 			$this->_fileName = '';
 			$this->_cleanMatchFiles();
 
