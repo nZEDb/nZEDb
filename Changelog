@@ -10,6 +10,9 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-11-16 niel
+	Fix: Add pagination links to Alpha, Charisma, Gamma, Gentele, and Omicron Themes for Browse
+		Groups page.
 2018-11-11 niel
 	Fix: Attempt to improve accuracy of PreDb matching. Addresses issue #2568.
 2018-11-05 niel
