@@ -87,7 +87,7 @@ class Binaries
 	protected $_pdo;
 
 	/**
-	 * How many days to go back on a new group?
+	 * Whether a new group should be initialised by days OR by number of headers.
 	 *
 	 * @var bool
 	 */
@@ -304,7 +304,8 @@ class Binaries
 	 */
 	public function updateAllGroups($maxHeaders = 100000)
 	{
-		$groups = Group::getActive()->data();
+		/* @var $groups string[][] */
+		$groups = Group::getActive();
 
 		$groupCount = \count($groups);
 		if ($groupCount > 0) {
@@ -422,6 +423,7 @@ class Binaries
 			if ($this->_newGroupScanByDays) {
 				// For new newsgroups - determine here how far we want to go back using date.
 				$first = $this->daytopost($this->_newGroupDaysToScan, $groupNNTP);
+			// TODO check if this is the cause of buggered up new group's header fetching.
 			} else if ($groupNNTP['first'] >= ($groupNNTP['last'] - ($this->_newGroupMessagesToScan + $this->messageBuffer))) {
 				// If what we want is lower than the groups first article, set the wanted first to the first.
 				$first = $groupNNTP['first'];

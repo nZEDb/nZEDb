@@ -54,7 +54,7 @@ class Groups
 	 */
 	public function getGroupsForSelect()
 	{
-		$groups = Group::getActive()->data();
+		$groups = Group::getActive();
 		$temp_array = [];
 
 		$temp_array[-1] = "--Please Select--";

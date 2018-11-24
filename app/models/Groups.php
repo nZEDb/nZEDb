@@ -88,7 +88,7 @@ class Groups extends \app\extensions\data\Model
 	 * @return \lithium\data\entity\Entity
 	 * @throws \InvalidArgumentException if the new group's name is omitted.
 	 */
-	public static function create(array $data = [], array $options = [])
+	public static function create(array $data = [], array $options = []) : \lithium\data\entity\Entity
 	{
 		// TODO reinstate validation of name field once all lithium's edge cases are resolved.
 		/*
@@ -157,7 +157,12 @@ class Groups extends \app\extensions\data\Model
 		return $group === null ? null : $group->id;
 	}
 
-	public static function getActive()
+	/**
+	 * Returns an array of active groups and their associated data.
+	 *
+	 * @return array
+	 */
+	public static function getActive() : array
 	{
 		return static::find('all',
 			[
@@ -179,7 +184,7 @@ class Groups extends \app\extensions\data\Model
 				'conditions' => ['active' => true],
 				'order'      => 'name',
 			]
-		);
+		)->data();
 	}
 
 	public static function getActiveIDs()
