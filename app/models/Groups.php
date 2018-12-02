@@ -85,10 +85,11 @@ class Groups extends \app\extensions\data\Model
 	 *                      be certain that the id is available.
 	 * @param array $options
 	 *
-	 * @return \lithium\data\entity\Entity
+	 * @return \lithium\data\entity\Entity This *should* return a lithium\data\entity\Record object,
+	 *                                     but it actually returns a RecordSet for some reason.
 	 * @throws \InvalidArgumentException if the new group's name is omitted.
 	 */
-	public static function create(array $data = [], array $options = []) : \lithium\data\entity\Entity
+	public static function create(array $data = [], array $options = [])
 	{
 		// TODO reinstate validation of name field once all lithium's edge cases are resolved.
 		/*
