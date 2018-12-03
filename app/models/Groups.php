@@ -85,7 +85,8 @@ class Groups extends \app\extensions\data\Model
 	 *                      be certain that the id is available.
 	 * @param array $options
 	 *
-	 * @return \lithium\data\entity\Entity
+	 * @return \lithium\data\Entity	This *should* return a lithium\data\entity\Record object, but
+	 *                              it actually returns a RecordSet for some reason.
 	 * @throws \InvalidArgumentException if the new group's name is omitted.
 	 */
 	public static function create(array $data = [], array $options = [])
@@ -157,7 +158,12 @@ class Groups extends \app\extensions\data\Model
 		return $group === null ? null : $group->id;
 	}
 
-	public static function getActive()
+	/**
+	 * Returns an array of active groups and their associated data.
+	 *
+	 * @return array
+	 */
+	public static function getActive() : array
 	{
 		return static::find('all',
 			[
@@ -179,7 +185,7 @@ class Groups extends \app\extensions\data\Model
 				'conditions' => ['active' => true],
 				'order'      => 'name',
 			]
-		);
+		)->data();
 	}
 
 	public static function getActiveIDs()

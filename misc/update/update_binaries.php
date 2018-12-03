@@ -2,7 +2,7 @@
 /* Argument 1 is optional string, group name. Or numeric, number of header max to download.
  * Argument 2 is optional int, max number of headers to download.
  */
-require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
+require_once realpath(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use app\models\Groups as Group;
 use app\models\Settings;
@@ -17,9 +17,11 @@ $maxHeaders = Settings::value('max.headers.iteration') ?: 1000000;
 
 // Create the connection here and pass
 $nntp = new NNTP(['Settings' => $pdo]);
+
 if ($nntp->doConnect() !== true) {
-	exit($pdo->log->error("Unable to connect to usenet."));
+	exit($pdo->log->error('Unable to connect to usenet.'));
 }
+
 $binaries = new Binaries(['NNTP' => $nntp, 'Settings' => $pdo]);
 
 if (isset($argv[1]) && !is_numeric($argv[1])) {

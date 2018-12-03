@@ -87,7 +87,7 @@ class Binaries
 	protected $_pdo;
 
 	/**
-	 * How many days to go back on a new group?
+	 * Whether a new group should be initialised by days OR by number of headers.
 	 *
 	 * @var bool
 	 */
@@ -276,19 +276,25 @@ class Binaries
 			}
 		}
 
-		$this->messageBuffer = (Settings::value('..maxmssgs') != '') ?
-			(int)Settings::value('..maxmssgs') : 20000;
-		$this->_compressedHeaders = (Settings::value('..compressedheaders') == 1 ? true : false);
-		$this->_partRepair = (Settings::value('..partrepair') == 0 ? false : true);
-		$this->_newGroupScanByDays = (Settings::value('..newgroupscanmethod') == 1 ? true : false);
-		$this->_newGroupMessagesToScan = (Settings::value('..newgroupmsgstoscan') != '') ?
-			(int)Settings::value('..newgroupmsgstoscan') : 50000;
-		$this->_newGroupDaysToScan = (Settings::value('..newgroupdaystoscan') != '') ?
-			(int)Settings::value('..newgroupdaystoscan') : 3;
-		$this->_partRepairLimit = (Settings::value('..maxpartrepair') != '') ?
-			(int)Settings::value('..maxpartrepair') : 15000;
-		$this->_partRepairMaxTries = (Settings::value('..partrepairmaxtries') != '' ?
-			(int)Settings::value('..partrepairmaxtries') : 3);
+		$value = Settings::value('..maxmssgs');
+		$this->messageBuffer = $value !== '' ? (int)$value : 20000;
+
+		$this->_compressedHeaders = Settings::value('..compressedheaders') == 1;
+		$this->_partRepair = Settings::value('..partrepair') != 0;
+		$this->_newGroupScanByDays = Settings::value('..newgroupscanmethod') == 1;
+
+		$value = Settings::value('..newgroupmsgstoscan');
+		$this->_newGroupMessagesToScan = $value != '' ? (int)$value : 50000;
+
+		$value = Settings::value('..newgroupdaystoscan');
+		$this->_newGroupDaysToScan = ($value != '') ? (int)$value : 3;
+
+		$value = Settings::value('..maxpartrepair');
+		$this->_partRepairLimit = ($value != '') ? (int)$value : 15000;
+
+		$value = Settings::value('..partrepairmaxtries');
+		$this->_partRepairMaxTries = ($value != '' ? (int)$value : 3);
+
 		$this->_showDroppedYEncParts = Settings::value('..showdroppedyencparts') == 1;
 		$this->allAsMgr = Settings::value('indexer.mgr.allasmgr') == 1;
 
@@ -304,7 +310,8 @@ class Binaries
 	 */
 	public function updateAllGroups($maxHeaders = 100000)
 	{
-		$groups = Group::getActive()->data();
+		/* @var $groups string[][] */
+		$groups = Group::getActive();
 
 		$groupCount = \count($groups);
 		if ($groupCount > 0) {
@@ -385,7 +392,7 @@ class Binaries
 		}
 
 		// Attempt to repair any missing parts before grabbing new ones.
-		if ($groupMySQL['last_record'] !== 0) {
+		if ($groupMySQL['last_record'] != 0) {
 			if ($this->_partRepair) {
 				if ($this->_echoCLI) {
 					$this->_colorCLI->doEcho($this->_colorCLI->primary('Part repair enabled. Checking for missing parts.'), true);
@@ -402,8 +409,7 @@ class Binaries
 		}
 
 		// Generate postdate for first record, for those that upgraded.
-		if (($groupMySQL['first_record_postdate'] === null) && $groupMySQL['first_record'] !== 0) {
-
+		if (($groupMySQL['first_record_postdate'] === null) && $groupMySQL['first_record'] != 0) {
 			$groupMySQL['first_record_postdate'] = $this->postdate($groupMySQL['first_record'], $groupNNTP);
 
 			$this->_pdo->queryExec(
@@ -418,10 +424,11 @@ class Binaries
 		}
 
 		// Get first article we want aka the oldest.
-		if ($groupMySQL['last_record'] === 0) {
+		if ($groupMySQL['last_record'] == 0) {
 			if ($this->_newGroupScanByDays) {
 				// For new newsgroups - determine here how far we want to go back using date.
 				$first = $this->daytopost($this->_newGroupDaysToScan, $groupNNTP);
+			// TODO check if this is the cause of buggered up new group's header fetching.
 			} else if ($groupNNTP['first'] >= ($groupNNTP['last'] - ($this->_newGroupMessagesToScan + $this->messageBuffer))) {
 				// If what we want is lower than the groups first article, set the wanted first to the first.
 				$first = $groupNNTP['first'];

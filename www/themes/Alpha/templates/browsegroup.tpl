@@ -1,5 +1,6 @@
 {include file='elements/ads.tpl' ad=$site->adbrowse}
 {if $results|@count > 0}
+	{$pager}
 	<table class="table-striped table-condensed table-highlight data Sortable table" id="browsetable">
 		<thead>
 		<tr>
@@ -24,4 +25,5 @@
 		{/foreach}
 		</tbody>
 	</table>
+	{$pager}
 {/if}

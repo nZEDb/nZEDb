@@ -912,15 +912,24 @@ class NameFixer
 		$matching = 0;
 		$pre = false;
 
-		foreach(explode('||', $release['filename']) AS $key => $fileName) {
-			$this->_fileName = $fileName;
+		$matchPre = function(string $fileName) {
+			$success = preg_match('/(\d{2}\.\d{2}\.\d{2})+[\w-.]+[\w]$/i', $fileName, $match);
+
+			return $success === 1 ? $match : false;
+		};
+
+		foreach (explode('||', $release['filename']) as $key => $fileName) {
+			$this->_fileName = '';
 			$this->_cleanMatchFiles();
-			$preMatch = preg_match('/(\d{2}\.\d{2}\.\d{2})+[\w-.]+[\w]$/i', $this->_fileName, $match);
-			if ($preMatch) {
+
+			$match = $matchPre($fileName);
+			if (\is_array($match)) {
 				$result = $this->pdo->queryOneRow(sprintf("SELECT filename AS filename FROM predb WHERE MATCH(filename) AGAINST ('$match[0]' IN BOOLEAN MODE)"));
-				$preFTmatch = preg_match('/(\d{2}\.\d{2}\.\d{2})+[\w-.]+[\w]$/i', $result['filename'], $match1);
-				if ($preFTmatch) {
-					if ($match[0] == $match1[0]) {
+
+				$match1 = $matchPre($result['filename']);
+				if (\is_array($match1) && $match[0] === $match1[0]) {
+					\similar_text($match[1], $match1[1], $percentage);
+					if ($percentage >= 93) {
 						$this->_fileName = $result['filename'];
 					}
 				}
@@ -938,10 +947,10 @@ class NameFixer
 				);
 			}
 
-			if (isset($pre) && $pre !== false) {
+			if ($pre !== null && $pre !== false) {
 				$release['filename'] = $this->_fileName;
 				if ($pre['title'] !== $release['searchname']) {
-					$this->updateRelease($release, $pre['title'], $method = "file matched source: " . $pre['source'], $echo, "PreDB file match, ", $namestatus, $show, $pre['predb_id']);
+					$this->updateRelease($release, $pre['title'], $method = 'file matched source: ' . $pre['source'], $echo, 'PreDB file match, ', $namestatus, $show, $pre['predb_id']);
 				} else {
 					$this->_updateSingleColumn('predb_id', $pre['predb_id'], $release['releases_id']);
 				}
@@ -949,6 +958,7 @@ class NameFixer
 				break;
 			}
 		}
+
 		return $matching;
 	}
 

@@ -10,6 +10,20 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-12-03 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.13.0
+
+
+2018-11-27 niel
+	Fix: New groups not respecting number of days/posts to initialise with and then starting from
+		first header on the server.
+2018-11-21 niel
+	Fix: Correct categories table data for Book entries.
+2018-11-16 niel
+	Fix: Add pagination links to Alpha, Charisma, Gamma, Gentele, and Omicron Themes for Browse
+		Groups page.
+2018-11-11 niel
+	Fix: Attempt to improve accuracy of PreDb matching. Addresses issue 2568.
 2018-11-05 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.12.0
 
