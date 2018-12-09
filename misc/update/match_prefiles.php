@@ -1,5 +1,5 @@
 <?php
-require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'bootstrap.php');
+require_once realpath(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use nzedb\ColorCLI;
 use nzedb\NameFixer;

@@ -922,15 +922,17 @@ class NameFixer
 			$this->_fileName = '';
 			$this->_cleanMatchFiles();
 
-			$match = $matchPre($fileName);
-			if (\is_array($match)) {
-				$result = $this->pdo->queryOneRow(sprintf("SELECT filename AS filename FROM predb WHERE MATCH(filename) AGAINST ('$match[0]' IN BOOLEAN MODE)"));
+			$match1 = $matchPre($fileName);
+			if (\is_array($match1)) {
+				$result = $this->pdo->queryOneRow(sprintf("SELECT filename AS filename FROM predb WHERE MATCH(filename) AGAINST ('$match1[0]' IN BOOLEAN MODE)"));
 
-				$match1 = $matchPre($result['filename']);
-				if (\is_array($match1) && $match[0] === $match1[0]) {
-					\similar_text($match[1], $match1[1], $percentage);
-					if ($percentage >= 93) {
-						$this->_fileName = $result['filename'];
+				if ($result['filename'] != '') { // Using loose comparison here to catch null and ''
+					$match2 = $matchPre($result['filename']);
+					if (\is_array($match2) && $match1[0] === $match2[0]) {
+						\similar_text($match1[1], $match2[1], $percentage);
+						if ($percentage >= 93) {
+							$this->_fileName = $result['filename'];
+						}
 					}
 				}
 			}
