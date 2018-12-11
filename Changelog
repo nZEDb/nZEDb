@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-12-11 DariusIII
+	Fix: Fix inserting of new mediainfo xml into releaseextrafull table (fixes issue #2609)
 2018-12-03 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.13.0
 
