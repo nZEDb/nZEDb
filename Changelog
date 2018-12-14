@@ -10,6 +10,11 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-12-14 niel
+	Chg: Add check for "Uncaught lithium\data\model\QueryException: ...: Duplicate entry '<group-name>'
+		for key 'ix_groups_name' in /var/www/nZEDb/libraries/lithium/data/source/Database.php". It
+		will still throw an exception but it is an InvalidArgumentException with a clearer message
+		now.
 2018-12-11 DariusIII
 	Fix: Fix inserting of new mediainfo xml into releaseextrafull table (fixes issue #2609)
 2018-12-10 niel
