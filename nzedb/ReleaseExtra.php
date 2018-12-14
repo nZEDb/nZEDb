@@ -14,6 +14,8 @@ class ReleaseExtra
 
 	/**
 	 * @param \nzedb\db\Settings $settings
+	 *
+	 * @throws \RuntimeException
 	 */
 	public function __construct($settings = null)
 	{
@@ -21,7 +23,7 @@ class ReleaseExtra
 	}
 
 	/**
-	 * Add
+	 * Add data from MediaInfo
 	 *
 	 * @param                                              $releaseID
 	 * @param \Mhor\MediaInfo\Container\MediaInfoContainer $mediaInfoContainer
@@ -219,7 +221,12 @@ class ReleaseExtra
 		}
 	}
 
-	public function makeCodecPretty($codec)
+	/**
+	 * @param $codec
+	 *
+	 * @return string
+	 */
+	public function makeCodecPretty($codec): string
 	{
 		switch (true) {
 			case preg_match('#(?:^36$|HEVC)#i', $codec):
@@ -252,31 +259,61 @@ class ReleaseExtra
 		return $codec;
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return array|bool
+	 */
 	public function getVideo($id)
 	{
 		return $this->pdo->queryOneRow(sprintf('SELECT * from video_data WHERE releases_id = %d', $id));
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return array
+	 */
 	public function getAudio($id)
 	{
 		return $this->pdo->query(sprintf('SELECT * from audio_data WHERE releases_id = %d ORDER BY audioid ASC', $id));
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return array|bool
+	 */
 	public function getSubs($id)
 	{
 		return $this->pdo->queryOneRow(sprintf("SELECT GROUP_CONCAT(subslanguage SEPARATOR ', ') AS subs FROM release_subtitles WHERE releases_id = %d ORDER BY subsid ASC", $id));
 	}
 
+	/**
+	 * @param $guid
+	 *
+	 * @return array|bool
+	 */
 	public function getBriefByGuid($guid)
 	{
 		return $this->pdo->queryOneRow(sprintf("SELECT containerformat, videocodec, videoduration, videoaspect, CONCAT(video_data.videowidth,'x',video_data.videoheight,' @',format(videoframerate,0),'fps') AS size, GROUP_CONCAT(DISTINCT audio_data.audiolanguage SEPARATOR ', ') AS audio, GROUP_CONCAT(DISTINCT audio_data.audioformat,' (',SUBSTRING(audio_data.audiochannels,1,1),' ch)' SEPARATOR ', ') AS audioformat, GROUP_CONCAT(DISTINCT audio_data.audioformat,' (',SUBSTRING(audio_data.audiochannels,1,1),' ch)' SEPARATOR ', ') AS audioformat, GROUP_CONCAT(DISTINCT release_subtitles.subslanguage SEPARATOR ', ') AS subs FROM video_data LEFT OUTER JOIN release_subtitles ON video_data.releases_id = release_subtitles.releases_id LEFT OUTER JOIN audio_data ON video_data.releases_id = audio_data.releases_id INNER JOIN releases r ON r.id = video_data.releases_id WHERE r.guid = %s GROUP BY r.id", $this->pdo->escapeString($guid)));
 	}
 
+	/**
+	 * @param $guid
+	 *
+	 * @return array|bool
+	 */
 	public function getByGuid($guid)
 	{
 		return $this->pdo->queryOneRow(sprintf('SELECT video_data.* FROM video_data INNER JOIN releases r ON r.id = video_data.releases_id WHERE r.guid = %s', $this->pdo->escapeString($guid)));
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return bool|\PDOStatement
+	 */
 	public function delete($id)
 	{
 		$this->pdo->queryExec(sprintf('DELETE FROM audio_data WHERE releases_id = %d', $id));
@@ -284,6 +321,10 @@ class ReleaseExtra
 		return $this->pdo->queryExec(sprintf('DELETE FROM video_data WHERE releases_id = %d', $id));
 	}
 
+	/**
+	 * @param $releaseID
+	 * @param $xml
+	 */
 	public function addFromXml($releaseID, $xml)
 	{
 		$xmlObj = @simplexml_load_string($xml);
@@ -386,6 +427,21 @@ class ReleaseExtra
 		}
 	}
 
+	/**
+	 * @param $releaseID
+	 * @param $containerformat
+	 * @param $overallbitrate
+	 * @param $videoduration
+	 * @param $videoformat
+	 * @param $videocodec
+	 * @param $videowidth
+	 * @param $videoheight
+	 * @param $videoaspect
+	 * @param $videoframerate
+	 * @param $videolibrary
+	 *
+	 * @return bool|\PDOStatement
+	 */
 	public function addVideo($releaseID, $containerformat, $overallbitrate, $videoduration, $videoformat, $videocodec, $videowidth, $videoheight, $videoaspect, $videoframerate, $videolibrary)
 	{
 		$ckid = $this->pdo->queryOneRow(sprintf('SELECT releases_id FROM video_data WHERE releases_id = %s', $releaseID));
@@ -394,6 +450,21 @@ class ReleaseExtra
 		}
 	}
 
+	/**
+	 * @param $releaseID
+	 * @param $audioID
+	 * @param $audioformat
+	 * @param $audiomode
+	 * @param $audiobitratemode
+	 * @param $audiobitrate
+	 * @param $audiochannels
+	 * @param $audiosamplerate
+	 * @param $audiolibrary
+	 * @param $audiolanguage
+	 * @param $audiotitle
+	 *
+	 * @return bool|\PDOStatement
+	 */
 	public function addAudio($releaseID, $audioID, $audioformat, $audiomode, $audiobitratemode, $audiobitrate, $audiochannels, $audiosamplerate, $audiolibrary, $audiolanguage, $audiotitle)
 	{
 		$ckid = $this->pdo->queryOneRow(sprintf('SELECT releases_id FROM audio_data WHERE releases_id = %s', $releaseID));
@@ -402,6 +473,13 @@ class ReleaseExtra
 		}
 	}
 
+	/**
+	 * @param $releaseID
+	 * @param $subsID
+	 * @param $subslanguage
+	 *
+	 * @return bool|\PDOStatement
+	 */
 	public function addSubs($releaseID, $subsID, $subslanguage)
 	{
 		$ckid = $this->pdo->queryOneRow(sprintf('SELECT releases_id FROM release_subtitles WHERE releases_id = %s', $releaseID));
@@ -434,24 +512,35 @@ class ReleaseExtra
 		}
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return array|bool
+	 */
 	public function getFull($id)
 	{
 		return $this->pdo->queryOneRow(sprintf('SELECT * FROM releaseextrafull WHERE releases_id = %d', $id));
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return bool|\PDOStatement
+	 */
 	public function deleteFull($id)
 	{
 		return $this->pdo->queryExec(sprintf('DELETE FROM releaseextrafull WHERE releases_id = %d', $id));
 	}
 
 	/**
-	 * @param $id
-	 * @param string $xml
+	 * @param                                              $id
+	 * @param \Mhor\MediaInfo\Container\MediaInfoContainer $xmlArray
 	 */
-	public function addFull($id, $xml)
+	public function addFull($id, MediaInfoContainer $xmlArray)
 	{
 		$ckid = $this->pdo->queryOneRow(sprintf('SELECT releases_id FROM releaseextrafull WHERE releases_id = %s', $id));
 		if (!isset($ckid['releases_id'])) {
+			$xml = $xmlArray->__toXML()->asXML();
 			$this->pdo->queryExec(sprintf('INSERT INTO releaseextrafull (releases_id, mediainfo) VALUES (%d, %s)', $id, $this->pdo->escapeString($xml)));
 		}
 	}
