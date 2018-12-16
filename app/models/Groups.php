@@ -116,7 +116,7 @@ class Groups extends \app\extensions\data\Model
 
 			try {
 				$result = parent::create($data, $options);
-			} catch (\lithium\data\model\QueryException $e) {
+			} catch (lithium\data\model\QueryException $e) {
 				$message = $e->getMessage();
 				if (stripos($message,
 						"Duplicate entry '{$data['name']}' for key 'ix_groups_name'"
