@@ -91,17 +91,14 @@ class Groups extends \app\extensions\data\Model
 	 */
 	public static function create(array $data = [], array $options = [])
 	{
-		$result = false;
+		// TODO reinstate validation of name field once all lithium's edge cases are resolved.
+		/*
+		if ((!empty($data) && !isset($data['name']) || )) {
+			throw new \InvalidArgumentException("To create a new group entry, you *must* supply the new group's name!\n" . print_r($data, true));
+		}
+		*/
 
 		if (!empty($data) && \count($data) > 1) {
-			if (empty($data['name'])) {
-				throw new \InvalidArgumentException(
-					"To create a new group entry, you *must* supply the new group's name!\n" .
-					print_r($data, true)
-				);
-			}
-			// TODO reinstate validation of name field once all lithium's edge cases are resolved.
-
 			$defaults = [
 				'active'          => false,
 				'backfill'        => false,
@@ -113,25 +110,9 @@ class Groups extends \app\extensions\data\Model
 				//'minsizetoformrelease'  => 0,
 			];
 			$data += $defaults;
-
-			try {
-				$result = parent::create($data, $options);
-			} catch (lithium\data\model\QueryException $e) {
-				$message = $e->getMessage();
-				if (stripos($message,
-						"Duplicate entry '{$data['name']}' for key 'ix_groups_name'"
-					)
-					!== false) {
-					throw new \InvalidArgumentException(
-						"Cannot create group '{$data['name']}, as it already exists'!\n",
-						$e->getCode(),
-						$e);
-				}
-				throw new \InvalidArgumentException($message, $e->getCode(), $e);
-			}
 		}
 
-		return $result;
+		return parent::create($data, $options);
 	}
 
 	/**
