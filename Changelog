@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-12-19 niel
+	Chg: Add 'z' to regexes detecting RAR parts i.e. z01 as a suffix.
 2018-12-11 DariusIII
 	Fix: Fix inserting of new mediainfo xml into releaseextrafull table (fixes issue #2609)
 2018-12-10 niel
