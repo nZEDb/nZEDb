@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2018-12-20 niel
+	Fix Correct pd.predate to pd.created in viewnzb.tpl file for Alpha and Default themes
 2018-12-19 niel
 	Chg: Add 'z' to regexes detecting RAR parts i.e. z01 as a suffix.
 2018-12-11 DariusIII
