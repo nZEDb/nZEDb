@@ -329,6 +329,27 @@ class NZBImport
 								throw new \InvalidArgumentException($e->getMessage() .
 									PHP_EOL .
 									'Thrown in NZBImport.php');
+							} catch (\lithium\data\model\QueryException $e) {
+								if (stripos(
+										$e->getMessage(),
+										"Duplicate entry '$group' for key 'ix_groups_name'")
+									!== false) {
+									if (\nZEDb_DEBUG || \nZEDb_ECHOCLI) {
+										$this->pdo->log("Cannot create group '$group', as it already exists'!\n");
+									}
+								} else {
+									throw new \InvalidArgumentException(
+										"Cannot create group '$group', as it already exists'!\n",
+										$e->getCode(),
+										$e
+									);
+								}
+							} catch (\Exception $e) {
+								throw new \RuntimeException(
+									$e->getMessage(),
+									$e->getCode(),
+									$e
+								);
 							}
 							$groupID->save();
 							$this->allGroups[$group] = $groupID->id;
