@@ -335,7 +335,7 @@ class NZBImport
 										"Duplicate entry '$group' for key 'ix_groups_name'")
 									!== false) {
 									if (\nZEDb_DEBUG || \nZEDb_ECHOCLI) {
-										$this->pdo->log("Cannot create group '$group', as it already exists'!\n");
+										$this->pdo->log->error("Cannot create group '$group', as it already exists'!\n");
 									}
 								} else {
 									throw new \InvalidArgumentException(
