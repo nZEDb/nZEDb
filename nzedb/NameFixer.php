@@ -926,7 +926,7 @@ class NameFixer
 			if (\is_array($match1)) {
 				$result = $this->pdo->queryOneRow(sprintf("SELECT filename AS filename FROM predb WHERE MATCH(filename) AGAINST ('$match1[0]' IN BOOLEAN MODE)"));
 
-				if ($result['filename'] != '') { // Using loose comparison here to catch null and ''
+				if (!empty($result['filename'])) {
 					$match2 = $matchPre($result['filename']);
 					if (\is_array($match2) && $match1[0] === $match2[0]) {
 						\similar_text($match1[1], $match2[1], $percentage);
