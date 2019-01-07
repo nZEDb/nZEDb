@@ -10,12 +10,17 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2019-01-07 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.14.0
+
 
 2018-12-27 niel
 	Fix: Use empty() to check for '' and NULL for filename in NameFixer::matchPredbFiles().
 2018-12-24 niel
 	Fix: Removed extra tab in categories tsv file that caused XXX->UHD to have incorrect parent ID.
 	Chg: Increased size of xref field in collections and multigroup_collections to avoid truncation.
+		**NOTE** There is no patch for existing installs yet. This will be coming when I get my
+		backup server fixed as it handles validating the SQL etc.
 2018-12-20 niel
 	Fix Correct pd.predate to pd.created in viewnzb.tpl file for Alpha and Default themes
 2018-12-19 niel
