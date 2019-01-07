@@ -14,6 +14,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.14.0
 
 
+2019-01-05 Bart39
+	Fix: invalid object type in ProcessAdditional::getMediaInfo.
 2018-12-27 niel
 	Fix: Use empty() to check for '' and NULL for filename in NameFixer::matchPredbFiles().
 2018-12-24 niel

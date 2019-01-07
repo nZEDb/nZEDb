@@ -2235,7 +2235,7 @@ class ProcessAdditional
 
 				if ($mediaInfoContainer !== null) {
 					// Insert it into the DB.
-					$this->_releaseExtra->addFull($this->_release['id'], $mediaInfoContainer->__toXML());
+					$this->_releaseExtra->addFull($this->_release['id'], $mediaInfoContainer);
 					$this->_releaseExtra->addFromMediaInfoContainer($this->_release['id'], $mediaInfoContainer);
 
 					if ($this->_echoCLI) {
