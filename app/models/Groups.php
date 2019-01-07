@@ -198,7 +198,14 @@ class Groups extends \app\extensions\data\Model
 		);
 	}
 
-	public static function getAllByID($id)
+	/**
+	 * Get all fields for given group ID.
+	 *
+	 * @param $id
+	 *
+	 * @return array
+	 */
+	public static function getAllByID($id) : array
 	{
 		$active = static::find('first',
 			[
@@ -224,6 +231,13 @@ class Groups extends \app\extensions\data\Model
 		return $active->data();
 	}
 
+	/**
+	 * Get all fields for given group name.
+	 *
+	 * @param string $name
+	 *
+	 * @return mixed
+	 */
 	public static function getAllByName(string $name)
 	{
 		$active = static::find('first',

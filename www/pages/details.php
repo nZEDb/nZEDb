@@ -81,11 +81,11 @@ if (isset($_GET['id'])) {
 	$re = new ReleaseExtra($page->settings);
 
 	$page->smarty->assign([
-		'anidb'   => ($data['anidbid'] > 0 ? (new AniDB(['Settings' => $page->settings]))->getAnimeInfo($data['anidbid']) : ''),
+		'anidb' => ($data['anidbid'] > 0 ? (new AniDB(['Settings' => $page->settings]))->getAnimeInfo($data['anidbid']) : ''),
 		'boo'   => ($data['bookinfo_id'] != '' ? (new Books(['Settings' => $page->settings]))->getBookInfo($data['bookinfo_id']) : ''),
 		'con'   => ($data['consoleinfo_id'] != '' ? (new Console(['Settings' => $page->settings]))->getConsoleInfo($data['consoleinfo_id']) : ''),
 		'game'  => ($data['gamesinfo_id'] != '' ? (new Games(['Settings' => $page->settings]))->getgamesInfo($data['gamesinfo_id']) : ''),
-		'movie'   => $mov,
+		'movie' => $mov,
 		'music' => ($data['musicinfo_id'] != '' ? (new Music(['Settings' => $page->settings]))->getMusicInfo($data['musicinfo_id']) : ''),
 		'pre'   => (new PreDb(['Settings' => $page->settings]))->getForRelease($data['predb_id']),
 		'show'  => $showInfo,

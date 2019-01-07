@@ -24,6 +24,27 @@ switch ($action) {
 					throw new \InvalidArgumentException($e->getMessage() .
 						PHP_EOL .
 						'Thrown in group-edit.php');
+				} catch (\lithium\data\model\QueryException $e) {
+					if (stripos(
+							$e->getMessage(),
+							"Duplicate entry '{$data['name']}' for key 'ix_groups_name'")
+						!== false) {
+						if (\nZEDb_DEBUG || \nZEDb_ECHOCLI) {
+							$this->pdo->log("Cannot create group '{$data['name']}', as it already exists'!\n");
+						}
+					} else {
+						throw new \InvalidArgumentException(
+							"Cannot create group '{$data['name']}', as it already exists'!\n",
+							$e->getCode(),
+							$e
+						);
+					}
+				} catch (\Exception $e) {
+					throw new \RuntimeException(
+						$e->getMessage(),
+						$e->getCode(),
+						$e
+					);
 				}
 
 				$newGroup->save();
