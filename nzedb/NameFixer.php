@@ -874,7 +874,7 @@ class NameFixer
 					echo $this->pdo->log->header($n . number_format($total) . ' releases to process.');
 
 					foreach ($query as $row) {
-						$success = $this->matchPredbFiles($row, 1, 1, true, $show);
+						$success = $this->matchPredbFiles($row, 1, 1, $show);
 						if ($success === 1) {
 							$counted++;
 						}
@@ -899,15 +899,14 @@ class NameFixer
 	/**
 	 * Match a release filename to a PreDB filename or title.
 	 *
-	 * @param $release
+	 * @param         $release
 	 * @param boolean $echo
 	 * @param integer $namestatus
-	 * @param boolean $echooutput
 	 * @param integer $show
 	 *
 	 * @return int
 	 */
-	public function matchPredbFiles($release, $echo, $namestatus, $echooutput, $show)
+	public function matchPredbFiles($release, $echo, $namestatus, $show)
 	{
 		$matching = 0;
 		$pre = false;

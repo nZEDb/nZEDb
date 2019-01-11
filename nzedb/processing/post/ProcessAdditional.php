@@ -1276,7 +1276,7 @@ class ProcessAdditional
 					else if (strpos($file['name'], '.') != 0 && strlen($file['name']) > 0) {
 						$this->_release['filename'] = $file['name'];
 						$this->_release['releases_id'] = $this->_release['id'];
-						$this->_nameFixer->matchPredbFiles($this->_release, 1, 1, true, 1);
+						$this->_nameFixer->matchPredbFiles($this->_release, 1, 1, 1);
 					}
 				}
 			}
