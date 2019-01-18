@@ -322,7 +322,7 @@ class IRCScraper extends IRCClient
 		$data = [
 			'title' => $this->_curPre['title'],
 			'created' => $this->_curPre['predate']->format('Y-m-d H:i:s'),
-			'updated' => '0000-00-00 00:00:00',
+			'updated' => $this->_curPre['predate']->format('Y-m-d H:i:s'),
 		];
 
 
