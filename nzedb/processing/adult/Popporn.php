@@ -27,7 +27,7 @@ class Popporn extends AdultMovies
 	 */
 	const IF18 = 'http://www.popporn.com/popporn/4';
 	const POPURL = 'http://www.popporn.com';
-	const TRAILINGSEARCH = '/results/index.cfm?v=4&g=0&searchtext=';
+	const TRAILINGSEARCH = '/search?q=';
 
 	/**
 	 * Sets the directurl for the return results array

@@ -10,6 +10,12 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2019-02-04 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.15.0
+
+
+2019-01-12 niel
+	Fix: Update search suffix for poppcorn searches. Closes issue 2620.
 2019-01-07 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.14.0
 
