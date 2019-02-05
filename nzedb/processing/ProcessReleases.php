@@ -181,7 +181,8 @@ class ProcessReleases
 
 		$processReleases = microtime(true);
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho($this->pdo->log->header('Starting release update process (' . date('Y-m-d H:i:s') . ')'), true);
+			$this->pdo->log::doEcho($this->pdo->log::header('Starting release update process (' .
+				date('Y-m-d H:i:s', $processReleases) . ')'), true);
 		}
 
 		if (!file_exists(Settings::value('..nzbpath'))) {
