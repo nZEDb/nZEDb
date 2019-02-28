@@ -1006,7 +1006,7 @@ class Categorize extends Category
 
 	public function isXxxUHD()
 	{
-		if (preg_match('/^[\w-.]+(\d{2}\.\d{2}\.\d{2}).+(2160p)+[\w-.]+(M[PO][V4]-(KTR|GUSH|FaiLED|SEXORS|hUSHhUSH|YAPG))/i', $this->releaseName)) {
+		if (preg_match('/^[\w.-]+(\d{2}\.\d{2}\.\d{2}).+(2160p)+[\w.-]+(M[PO][V4]-(KTR|GUSH|FaiLED|SEXORS|hUSHhUSH|YAPG))/i', $this->releaseName)) {
 			$this->tmpCat = Category::XXX_UHD;
 			return true;
 		}

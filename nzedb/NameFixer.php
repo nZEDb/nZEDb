@@ -912,7 +912,7 @@ class NameFixer
 		$pre = false;
 
 		$matchPre = function(string $fileName) {
-			$success = preg_match('/(\d{2}\.\d{2}\.\d{2})+[\w-.]+[\w]$/i', $fileName, $match);
+			$success = preg_match('/(\d{2}\.\d{2}\.\d{2})+[\w.-]+[\w]$/i', $fileName, $match);
 
 			return $success === 1 ? $match : false;
 		};
