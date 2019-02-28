@@ -668,8 +668,8 @@ class simple_html_dom_node
 		// Notice the \[ starting the attbute?  and the @? following?  This implies that an attribute can begin with an @ sign that is not captured.
 		// This implies that an html attribute specifier may start with an @ sign that is NOT captured by the expression.
 		// farther study is required to determine of this should be documented or removed.
-		//		$pattern = "/([\w-:\*]*)(?:\#([\w-]+)|\.([\w-]+))?(?:\[@?(!?[\w-]+)(?:([!*^$]?=)[\"']?(.*?)[\"']?)?\])?([\/, ]+)/is";
-		$pattern = "/([\w-:\*]*)(?:\#([\w-]+)|\.([\w-]+))?(?:\[@?(!?[\w-:]+)(?:([!*^$]?=)[\"']?(.*?)[\"']?)?\])?([\/, ]+)/is";
+		//		$pattern = "/([\w:\*-]*)(?:\#([\w-]+)|\.([\w-]+))?(?:\[@?(!?[\w-]+)(?:([!*^$]?=)[\"']?(.*?)[\"']?)?\])?([\/, ]+)/is";
+		$pattern = "/([\w:\*-]*)(?:\#([\w-]+)|\.([\w-]+))?(?:\[@?(!?[\w:-]+)(?:([!*^$]?=)[\"']?(.*?)[\"']?)?\])?([\/, ]+)/is";
 		preg_match_all($pattern, trim($selector_string) . ' ', $matches, PREG_SET_ORDER);
 		if (is_object($debug_object)) {
 			$debug_object->debug_log(2, "Matches Array: ", $matches);
