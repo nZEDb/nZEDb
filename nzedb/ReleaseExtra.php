@@ -64,7 +64,7 @@ class ReleaseExtra
 		if (!empty($videos)) {
 			foreach ($videos as $video) {
 				if ($video->get('duration') !== null) {
-					$videoDuration = $general->get('duration')->getMilliseconds();
+					$videoDuration = $video->get('duration')->getMilliseconds();
 				}
 
 				if ($video->get('format') !== null) {

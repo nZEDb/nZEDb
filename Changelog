@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2019-03-01 niel
+	Fix: Use correct object to check for video duration. Closes issue 2625
 2019-02-06 niel
 	Fix: Use absolute paths for version specific configuration files, in tmux.conf. Closes issue 2623.
 2019-02-04 niel
