@@ -10,6 +10,10 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2019-03-04 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.16.0
+
+
 2019-03-01 niel
 	Fix: Use correct object to check for video duration. Closes issue 2625
 2019-02-06 niel
