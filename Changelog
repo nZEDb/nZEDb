@@ -11,6 +11,9 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2019-03-04 niel
+	Fix: Update some regexes that were using invalid syntax. This will prevent them from being
+		flagged as the errors they are with PCRE2 in PHP 7.3+.
+2019-03-03 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.16.0
 
 
