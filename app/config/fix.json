@@ -1,9 +1,0 @@
-{
-  "name": "Default Rule Set",
-  "rules": [],
-  "skip":[
-    "StringTextRename"
-  ],
-  "options": {
-  }
-}
