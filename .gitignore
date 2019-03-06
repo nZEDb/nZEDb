@@ -12,11 +12,20 @@ test.php
 *.orig
 
 /.idea/
-/app/libraries/*
-/app/resources/tmp/*
 /configuration/config.php
 /configuration/settings.php
-/libraries/*
+
+/laravel/node_modules
+/laravel/public/hot
+/laravel/public/storage
+/laravel/storage/*.key
+.env
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+
 /nzedb/config/ircscraper_settings.php
 /nzedb/config/ircscraper.php
 /nzedb/config/opensssl.php
@@ -29,5 +38,5 @@ test.php
 /resources/smarty/templates_c/*.php
 /resources/tmp/*
 /templates_c/*
-/libraries/*
+/vendor
 /www/themes/shared/libs/*
