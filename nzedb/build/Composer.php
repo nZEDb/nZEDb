@@ -41,6 +41,11 @@ class Composer
 			echo "done" . PHP_EOL;
 		}
 	}
+
+	public static function postUpdateCmd(Event $event)
+	{
+		echo __METHOD__ . ": Working on it!\n";
+	}
 }
 
 ?>
