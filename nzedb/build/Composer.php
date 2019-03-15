@@ -26,20 +26,25 @@ class Composer
 {
 	public static function postInstallCmd(Event $event)
 	{
-		$last = $output = $return = null;
+		$output = $return = null;
 		if (!file_exists(nZEDb_CONFIGS . 'settings.php')) {
 			copy(nZEDb_CONFIGS . 'settings.example.php', nZEDb_CONFIGS . 'settings.php');
 		}
 
 		if (getenv('COMPOSER_DEV_MODE') == 1) {
-			echo "Updating git hooks... ";
+			echo 'Updating git hooks... ';
 			$last = exec('build/git-hooks/addHooks.sh', $output, $return);
 			if ($return > 0) {
 				echo PHP_EOL;
 				exit($last);
 			}
-			echo "done" . PHP_EOL;
+			echo 'done' . PHP_EOL;
 		}
+	}
+
+	public static function postUpdateCmd(Event $event)
+	{
+		;
 	}
 }
 

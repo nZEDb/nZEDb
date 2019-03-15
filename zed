@@ -1,5 +1,3 @@
-#!/bin/bash
+#!/bin/sh
 
-pushd app
-../libraries/lithium/console/li3 "$@"
-popd
+php artisan "$@"

@@ -6,28 +6,36 @@
   ],
   "autoload": {
     "psr-4": {
+      "App\\": "app-laravel/app/",
       "nzedb\\": "nzedb/"
     },
     "classmap": [
+      "app-laravel/database/seeds",
+      "app-laravel/database/factories",
       "www/pages/",
       "libs/PEAR/Net_NNTP/NNTP/",
       "libs/"
     ]
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "laravel/tests/"
+    }
+  },
   "config": {
-    "sort-packages": false,
-    "optimize-autoloader": true,
     "fxp-asset": {
       "installer-paths": {
         "npm-asset-library": "www/themes/shared/libs",
         "bower-asset-library": "www/themes/shared/libs"
       }
     },
-    "process-timeout": 3600,
+    "optimize-autoloader": true,
     "preferred-install": {
       "*": "source"
     },
-    "vendor-dir": "libraries"
+    "process-timeout": 3600,
+    "sort-packages": false,
+    "vendor-dir": "vendor"
   },
   "description": "A Usenet Indexer",
   "extra": {
@@ -39,11 +47,9 @@
   "keywords": [
     "nZEDb",
     "usenet",
-    "indexer",
-    "lithium",
-    "li3"
+    "indexer"
   ],
-  "license": "GPL-3.0",
+  "license": "GPL-3.0-only",
   "minimum-stability": "dev",
   "name": "nzedb/nzedb",
   "non-feature-branches": [
@@ -52,27 +58,7 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/niel/li3_docs"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/niel/li3_fixtures"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/niel/li3_quality"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/niel/lithium"
-    },
-    {
-      "type": "vcs",
       "url": "https://github.com/nZEDb/Git.php"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/unionofrad/manual"
     },
     {
       "type": "vcs",
@@ -103,18 +89,19 @@
     "ext-zlib": "*",
     "b3rs3rk/steamfront": "dev-master",
     "barracudanetworks/forkdaemon-php": "^1.0.7",
+    "composer-plugin-api": "^1.0.0",
     "dborsatto/php-giantbomb": "dev-master",
     "fxp/composer-asset-plugin": "1.4.4",
+    "fideloper/proxy": "^4.0",
     "google/recaptcha": "^1.1.2",
     "guzzlehttp/guzzle": "^6.3",
     "james-heinrich/getid3": "^1.9.12",
     "joshpinkney/tv-maze-php-api": "dev-master",
+    "laravel/framework": "5.8.*",
     "mhor/php-mediainfo": "^5.0@dev",
     "moinax/tvdb": "^1.0.4",
-    "niel/li3_fixtures": "1.2.x-dev",
-    "niel/lithium": "dev-php7.2-updates",
-    "nzedb/Git.php": "dev-master",
-    "php": "~7.0",
+    "nzedb/git.php": "dev-master",
+    "php": "^7.1.3",
     "php-tmdb/api": "^2.1",
     "phpmailer/phpmailer": "^6.0.2",
     "smarty/smarty": "~3.1.29",
@@ -142,19 +129,37 @@
     "bower-asset/respond-1.4.x": "~1.4.2",
     "bower-asset/responsive-tables-js-1.0.x": "~1.0.6",
     "bower-asset/select2-4.0.x": "~4.0.2",
-    "bower-asset/slimScroll-1.3.x": "~1.3.7",
+    "bower-asset/slimscroll-1.3.x": "~1.3.7",
     "bower-asset/tinymce-builded": "^4.4"
   },
   "require-dev": {
-    "unionofrad/manual": "1.1.x-dev"
+    "beyondcode/laravel-dump-server": "^1.0",
+    "filp/whoops": "^2.0",
+    "fzaninotto/faker": "^1.4",
+    "laravel/tinker": "^1.0",
+    "mockery/mockery": "^1.0",
+    "phpunit/phpunit": "^7.5",
+    "way/generators": "dev-master"
   },
   "scripts": {
+    "post-autoload-dump": [
+      "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+      "@php artisan package:discover --ansi"
+    ],
+    "post-create-project-cmd": [
+      "@php artisan key:generate --ansi"
+    ],
     "post-install-cmd": [
-      "nzedb\\build\\Composer::postInstallCmd"
+      "nzedb\\build\\Composer::postInstallCmd",
+      "@php -r \"file_exists('app-laravel/app/.env') || copy('app-laravel/app/.env.example', 'app-laravel/app/.env');\"",
+      "@php -r \"file_exists('configuration/settings.php') || copy('configuration/settings.example.php', 'configuration/settings.php');\""
+    ],
+    "post-update-cmd": [
+      "nzedb\\build\\Composer::postUpdateCmd"
     ]
   },
   "suggest": {
-    "ext-php-yenc": "Improves yEnc decoding speed for PHP 7.0+ (and 5.6)",
+    "ext-php-yenc": "Improves yEnc decoding speed for PHP 7+ (and 5.6)",
     "ext-xdebug": "For developement work"
   },
   "type": "project"
