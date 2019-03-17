@@ -242,6 +242,11 @@ class Versions
 		return $this->_vers->git->commit->__toString();
 	}
 
+	public function getGitTagFromFile()
+	{
+		return $this->_vers->git->tag->__toString();
+	}
+
 	public function getGitHookPrecommit()
 	{
 		return $this->_vers->git->hooks->precommit->__toString();

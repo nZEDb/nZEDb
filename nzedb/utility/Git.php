@@ -42,7 +42,7 @@ class Git extends GitRepo
 		$defaults = [
 			'create'		=> false,
 			'initialise'	=> false,
-			'filepath'		=> Nzedb::ROOT,
+			'filepath'		=> Nzedb::BASE,
 		];
 		$options += $defaults;
 
@@ -107,6 +107,18 @@ class Git extends GitRepo
 		return $this->run('rev-parse HEAD');
 	}
 
+	public function getTagLatest(): string
+	{
+		if (empty($this->tagLatest)) {
+			$this->tagLatest = trim($this->describe('--tags --abbrev=0 HEAD'));
+			if (strtolower($this->tagLatest[0]) === 'v') {
+				$this->tagLatest = substr($this->tagLatest, 1);
+			}
+		}
+
+		return $this->tagLatest;
+	}
+
 	/**
 	 * @param string $gitObject
 	 *
@@ -161,18 +173,6 @@ class Git extends GitRepo
 	public function tag($options = null) : string
 	{
 		return $this->run("tag $options");
-	}
-
-	public function tagLatest() : string
-	{
-		if (empty($this->tagLatest)) {
-			$this->tagLatest = trim($this->describe('--tags --abbrev=0 HEAD'));
-			if (strtolower($this->tagLatest[0]) === 'v') {
-				$this->tagLatest = substr($this->tagLatest, 1);
-			}
-		}
-
-		return $this->tagLatest;
 	}
 }
 
