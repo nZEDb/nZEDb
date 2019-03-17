@@ -20,10 +20,11 @@
  */
 define('GIT_PRE_COMMIT', true);
 
-require_once realpath(dirname(__DIR__, 2) . '/app/config/bootstrap.php');
+//require_once realpath(dirname(__DIR__, 2) . '/app-laravel/bootstrap/app.php');
+require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 use nzedb\utility\Git;
-use app\extensions\util\Versions;
+use nzedb\utility\Versions;
 
 echo "Running pre-commit hooks\n";
 
@@ -43,7 +44,6 @@ if ($error === false) {
 	$branch = $git->active_branch();
 	if (in_array($branch, $git->mainBranches(), false)) {
 		// Only update versions, etc. on specific branches to lessen conflicts
-
 		if ($error === false) {
 			echo "Checking versions!\n";
 			try {
