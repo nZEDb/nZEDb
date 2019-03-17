@@ -31,13 +31,17 @@ if (!defined('nZEDb_ROOT')) {
 
 class Nzedb
 {
-	public const ROOT		= nZEDb_ROOT;
+	public const BASE		= nZEDb_ROOT;
 
-	public const CONFIGS	= Nzedb::ROOT . 'configuration' . DS;
+	public const CONFIGS	= Nzedb::BASE . 'configuration' . DS;
 
-	public const MISC		= Nzedb::ROOT . 'misc' . DS;
-
-	public const UPDATE		= Nzedb::MISC . 'update' . DS;
+	public const MISC		= Nzedb::BASE . 'misc' . DS;
 
 	public const NIX		= Nzedb::UPDATE . 'nix' . DS;
+
+	public const ROOT		= Nzedb::BASE;
+
+	public const UPDATE 	= Nzedb::MISC . 'update' . DS;
+
+	public const VERSIONS	= Nzedb::BASE . 'build' . DS . 'nzedb.xml';
 }
