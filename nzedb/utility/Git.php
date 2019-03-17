@@ -20,6 +20,8 @@
  */
 namespace nzedb\utility;
 
+use nzedb\Nzedb;
+
 /**
  * Class Git - Wrapper for various git operations.
  * @package nzedb\utility
@@ -34,7 +36,7 @@ class Git extends \GitRepo
 		$defaults = [
 			'create'		=> false,
 			'initialise'	=> false,
-			'filepath'		=> nZEDb_ROOT,
+			'filepath'		=> Nzedb::ROOT,
 		];
 		$options += $defaults;
 
