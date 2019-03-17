@@ -6,8 +6,16 @@
   ],
   "autoload": {
     "psr-4": {
-      "App\\": "app-laravel/app/",
-      "nzedb\\": "nzedb/"
+      "App\\": [
+        "app-laravel/app/",
+        "app/"
+      ],
+      "indexer\\": [
+        "app-indexer/"
+      ],
+      "nzedb\\": [
+        "nzedb/"
+      ]
     },
     "classmap": [
       "app-laravel/database/seeds",
@@ -35,7 +43,7 @@
     "preferred-install": {
       "*": "source"
     },
-    "vendor-dir": "libraries"
+    "vendor-dir": "vendor"
   },
   "description": "A Usenet Indexer",
   "extra": {
