@@ -31,7 +31,7 @@ class Version extends Command
      *
      * @var string
      */
-    protected $signature = 'version {show=all}';
+    protected $signature = 'version {target=all}';
 
     /**
      * The console command description.
@@ -63,13 +63,13 @@ class Version extends Command
     	$this->git = new Git();
     	$this->version = new Versions(Nzedb::VERSIONS);
 
-        $show = $this->argument('show');
+        $target = $this->argument('target');
 
-        if (\in_array($show, ['all', 'git'])) {
+        if (\in_array($target, ['all', 'git'])) {
 			$this->git();
 		}
 
-		if (\in_array($show, ['all', 'sql', 'db'])) {
+		if (\in_array($target, ['all', 'sql', 'db'])) {
 			$this->sql();
 		}
     }

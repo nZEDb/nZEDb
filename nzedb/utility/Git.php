@@ -32,7 +32,7 @@ class Git extends GitRepo
 	private $branch;
 	private $branches = [
 		'stable'      => ['0.x', 'Latest-testing', '\d+\.\d+\.\d+(\.\d+)?'],
-		'development' => ['dev', 'dev-test']
+		'development' => ['dev', 'dev-test', 'dev-laravel']
 	];
 	private $mainBranches = ['0.x', 'dev', 'Latest-testing', 'dev-test'];
 	private $tagLatest = '';
