@@ -10,6 +10,10 @@
         "app-laravel/app/",
         "app/"
       ],
+      "zed\\": [
+        "app-laravel/",
+        "app-zed/"
+      ],
       "indexer\\": [
         "app-indexer/"
       ],
@@ -102,6 +106,7 @@
     "b3rs3rk/steamfront": "dev-master",
     "barracudanetworks/forkdaemon-php": "^1.0.7",
     "dborsatto/php-giantbomb": "dev-master",
+    "doctrine/dbal": "^2.9",
     "fideloper/proxy": "^4.0",
     "fxp/composer-asset-plugin": "1.4.4",
     "google/recaptcha": "^1.1.2",
