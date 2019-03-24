@@ -79,25 +79,22 @@ class MigrationWithLoadData extends Migration
 					throw new \ErrorException("FAILED reading first line of '$file'");
 				} else {
 					$fields = trim($line);
+					$target = '/tmp/load.infile';
 
-					\copy($file, '/tmp/load.infile');
+					\copy($file, $target);
 
 					// Local keyword takes the file from the client's filesystem, not the server's
 					$local = $this->isDbLocal() ? '' : 'LOCAL ';
 					$enclosedby = empty($options['enclosedby']) ? '' : 'OPTIONALLY ENCLOSED BY "' . $options['enclosedby'] . '"';
-					$sql = 'LOAD DATA ' . $local . 'INFILE "/tmp/load.infile" IGNORE INTO TABLE `'
-					. $table . '` FIELDS TERMINATED BY "\t" ' . $enclosedby . ' LINES TERMINATED BY "\r\n" IGNORE 1 LINES (' . $fields . ')';
-
 
 					if (Nzedb::DEBUG || Misc::isCLI()) {
 						echo "Inserting: $table's data into table: ...";
 					}
 
 					$rowCount = DB::connection()->getpdo()->exec(
-						"LOAD DATA $local INFILE '/tmp/load.infile'
+						"LOAD DATA $local INFILE $target
 							INTO TABLE $table
-							FIELDS TERMINATED BY '\\t'
-							$enclosedby
+							FIELDS TERMINATED BY '\\t' $enclosedby
 							LINES TERMINATED BY '\\r\\n'
 							IGNORE 1 LINES ($fields)"
 					);
@@ -106,7 +103,7 @@ class MigrationWithLoadData extends Migration
 						echo " $rowCount rows affected\n";
 					}
 
-					\unlink('/tmp/load.infile');
+					\unlink($target);
 				}
 			} else {
 				throw new \ErrorException("Failed to open file: '$file'\n");
