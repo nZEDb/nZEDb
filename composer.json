@@ -103,6 +103,7 @@
     "ext-zlib": "*",
     "b3rs3rk/steamfront": "dev-master",
     "barracudanetworks/forkdaemon-php": "^1.0.7",
+    "composer-plugin-api": "^1.0.0",
     "dborsatto/php-giantbomb": "dev-master",
     "fxp/composer-asset-plugin": "1.4.4",
     "google/recaptcha": "^1.1.2",
