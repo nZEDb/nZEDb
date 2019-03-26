@@ -5,6 +5,7 @@ failed-login.log
 php_errors.log
 php-errors.log
 test.php
+.env
 
 # Editor temp files
 *#
@@ -12,14 +13,8 @@ test.php
 *.orig
 
 /.idea/
-/app/libraries/*
-/app/resources/tmp/*
 /configuration/config.php
 /configuration/settings.php
-/libraries/*
-/nzedb/config/ircscraper_settings.php
-/nzedb/config/ircscraper.php
-/nzedb/config/opensssl.php
 
 /nbproject/
 /nbproject/private/
@@ -29,5 +24,5 @@ test.php
 /resources/smarty/templates_c/*.php
 /resources/tmp/*
 /templates_c/*
-/libraries/*
+/vendor
 /www/themes/shared/libs/*
