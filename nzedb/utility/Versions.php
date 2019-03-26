@@ -12,10 +12,13 @@ class Versions
 	/**
 	 * These constants are bitwise for checking what was changed.
 	 */
-	const UPDATED_GIT_COMMIT	= 1;
-	const UPDATED_GIT_TAG		= 2;
-	const UPDATED_SQL_DB_PATCH	= 4;
-	const UPDATED_SQL_FILE_LAST	= 8;
+	const UPDATED_GIT_COMMIT = 1;
+
+	const UPDATED_GIT_TAG = 2;
+
+	const UPDATED_SQL_DB_PATCH = 4;
+
+	const UPDATED_SQL_FILE_LAST = 8;
 
 	/**
 	 * @var \nzedb\utility\Git instance variable.
@@ -49,6 +52,7 @@ class Versions
 
 	/**
 	 * Shortcut to the nzedb->versions node to make method work shorter.
+	 *
 	 * @var object SimpleXMLElement
 	 */
 	protected $_vers;
@@ -60,6 +64,7 @@ class Versions
 
 	/**
 	 * Class constructor initialises the SimpleXML object and sets a few properties.
+	 *
 	 * @param string $filepath Optional filespec for the XML file to use. Will use default otherwise.
 	 *
 	 * @throws \Exception If the XML is invalid.
@@ -91,20 +96,25 @@ class Versions
 
 	/**
 	 * Run all checks
+	 *
 	 * @param boolean $update Whether the XML should be updated by the check.
-	 * @return boolean	True if any of the checks actually caused an update (not if it indicated one was needed), flase otherwise
+	 *
+	 * @return boolean    True if any of the checks actually caused an update (not if it indicated one was needed), flase otherwise
 	 */
 	public function checkAll($update = true)
 	{
 		$this->checkGitTag($update);
 		$this->checkSQLDb($update);
 		$this->checkGitCommit($update);
+
 		return $this->hasChanged();
 	}
 
 	/**
 	 * Checks the git commit number against the XML's stored value.
+	 *
 	 * @param boolean $update Whether the XML should be updated by the check.
+	 *
 	 * @return integer|boolean The new git commit number, or false.
 	 */
 	public function checkGitCommit($update = true)
@@ -129,8 +139,10 @@ class Versions
 					$this->_changes |= self::UPDATED_GIT_COMMIT;
 				}
 			}
+
 			return $this->_vers->git->commit;
 		}
+
 		return false;
 	}
 
@@ -139,6 +151,7 @@ class Versions
 	 * Major.Minor.Revision[.fix] (**commit number is NOT revision**)
 	 *
 	 * @param boolean $update Whether the XML should be updated by the check.
+	 *
 	 * @return boolean The new git's latest version tag, or false.
 	 */
 	public function checkGitTag($update = true)
@@ -155,6 +168,7 @@ class Versions
 				$this->_vers->git->tag = '0.0.0';
 				$this->_changes |= self::UPDATED_GIT_TAG;
 			}
+
 			return $this->_vers->git->tag;
 		}
 
@@ -167,12 +181,14 @@ class Versions
 				$this->_changes |= self::UPDATED_GIT_TAG;
 			} else {
 				echo $this->out->primaryOver("Leaving tag version at ") .
-					 $this->out->headerOver($this->_vers->git->tag);
+					$this->out->headerOver($this->_vers->git->tag);
 			}
+
 			return $this->_vers->git->tag;
 		} else {
 			echo $this->out->primaryOver("Tag version is ") . $this->out->header($latest);
 		}
+
 		return false;
 	}
 
@@ -195,17 +211,19 @@ class Versions
 				$this->_vers->sql->db = $this->_vers->sql->file->__toString();
 				$this->_changes |= self::UPDATED_SQL_DB_PATCH;
 			}
+
 			return $this->_vers->patch->db;
 		}
+
 		return false;
 	}
 
 	/**
 	 * Checks the numeric value from the last SQL patch file, updating the versions file if desired.
 	 *
-	 * @param bool $update	Whether to update the versions file.
+	 * @param bool $update Whether to update the versions file.
 	 *
-	 * @return bool|int	False if there is a problem, otherwise the number from the last patch file.
+	 * @return bool|int    False if there is a problem, otherwise the number from the last patch file.
 	 */
 	public function checkSQLFileLatest($update = true)
 	{
@@ -220,7 +238,8 @@ class Versions
 		$files = Misc::getDirFiles($options);
 		natsort($files);
 
-		$last = (preg_match($options['regex'], end($files), $matches)) ? (int)$matches['patch'] : false;
+		$last = (preg_match($options['regex'], end($files), $matches)) ? (int)$matches['patch'] :
+			false;
 
 		if ($update) {
 			if ($last !== false && $this->_vers->sql->file->__toString() != $last) {
@@ -234,12 +253,18 @@ class Versions
 				$this->_changes |= self::UPDATED_SQL_DB_PATCH;
 			}
 		}
+
 		return $last;
 	}
 
 	public function getCommit()
 	{
 		return $this->_vers->git->commit->__toString();
+	}
+
+	public function getGitTagFromFile()
+	{
+		return $this->_vers->git->tag->__toString();
 	}
 
 	public function getGitHookPrecommit()
@@ -262,6 +287,7 @@ class Versions
 		if (empty($this->_gitHighestTag)) {
 			$this->checkGitTag();
 		}
+
 		return $this->_gitHighestTag;
 	}
 
@@ -299,6 +325,7 @@ class Versions
 
 	/**
 	 * Check whether the XML has been changed by one of the methods here.
+	 *
 	 * @return boolean True if the XML has been changed.
 	 */
 	public function hasChanged()
@@ -314,4 +341,5 @@ class Versions
 		}
 	}
 }
+
 ?>
