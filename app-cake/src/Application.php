@@ -21,6 +21,7 @@ use Cake\Http\BaseApplication;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
 
+
 /**
  * Application setup class.
  *
@@ -34,6 +35,8 @@ class Application extends BaseApplication
      */
     public function bootstrap()
     {
+        $this->addPlugin('Migrations');
+
         // Call parent to load bootstrap from files.
         parent::bootstrap();
 
@@ -52,7 +55,7 @@ class Application extends BaseApplication
          * Debug Kit should not be installed on a production system
          */
         if (Configure::read('debug')) {
-            $this->addPlugin(\DebugKit\Plugin::class);
+           //$this->addPlugin(\DebugKit\Plugin::class);
         }
     }
 
