@@ -31,32 +31,46 @@ use zed\Nzedb;
 
 class VersionCommand extends Command
 {
+	/**
+	 * @var \nzedb\utility\Git
+	 */
 	private $git;
 
-	private $version;
+	/**
+	 * @var  \Cake\Console\ConsoleIo
+	 */
+	private $versions;
 
-
-	public function execute(Arguments $args, ConsoleIo $io)
+	/**
+	 * @param \Cake\Console\Arguments $args
+	 * @param \Cake\Console\ConsoleIo $cio
+	 *
+	 * @return int
+	 */
+	public function execute(Arguments $args, ConsoleIo $cio) : int
 	{
-		$versions = new Versions(Nzedb::VERSIONS);
+		$this->git = new Git();
+		$this->versions = new Versions(Nzedb::VERSIONS);
 
 		$all = $args->getOption('all');
 
 		if ($all || $args->getOption('nzedb')) {
-			$this->nzedb($io);
+			$this->nzedb();
 		}
 
 		if ($all || $args->getOption('cake') || $args->getOption('framework')) {
-			$this->framework($io);
+			$this->framework();
 		}
 
 		if ($all || $args->getOption('git')) {
-			$this->git($io, $versions);
+			$this->git();
 		}
 
 		if ($all || $args->getOption('db') || $args->getOption('sql')) {
-			$this->sql($io, $versions);
+			$this->sql();
 		}
+
+		return static::CODE_SUCCESS;
 	}
 
 	/**
@@ -90,7 +104,7 @@ class VersionCommand extends Command
 				'boolean' => true
 			],
 			'nzedb'	=> [
-				'help' => 'Show all nZEDb info.',
+				'help' => 'Show nZEDb version.',
 				'boolean' => true
 			],
 			'sql'	=> [
@@ -103,59 +117,52 @@ class VersionCommand extends Command
 	}
 
 	/**
-	 * @param \Cake\Console\ConsoleIo $io
 	 *
-	 * @return int
+	 *
+	 * @return void
 	 */
-	protected function framework(ConsoleIo $io) : int
+	protected function framework() : void
 	{
-		$io->info('Framework version: ', 0);
-		$io->out(Configure::version());
-
-		return static::CODE_SUCCESS;
+		$this->cio->info('Framework version: ', 0);
+		$this->cio->out(Configure::version());
 	}
 
 	/**
-	 * @param \Cake\Console\ConsoleIo $io
 	 *
-	 * @return int
+	 * @return void
 	 */
-	protected function git(ConsoleIo $io, Versions $versions) : int
+	protected function git() : void
 	{
-		$git = new Git();
-		$io->info('Git information');
-		$io->hr();
-		$io->out('Latest Hash: ' . trim($git->getHeadHash()));
+		$this->cio->info('Git information');
+		$this->cio->hr();
+		$this->cio->out('Latest Hash: ' . trim($this->git->getHeadHash()));
 
-		$io->out('XML version: ' . $versions->getGitTagFromFile());
-		$io->out('Git version: ' . $git->getTagLatest());
-		$io->out('Git Branch : ' . $git->getBranch());
-		$io->out($io->nl(1));
-
-		return static::CODE_SUCCESS;
-	}
-
-	protected function nzedb(ConsoleIo $io)
-	{
-		$git = new Git();
-		$io->info('nZEDb version: ', 0);
-		$io->out($git->getTagLatest());
+		$this->cio->out('XML version: ' . $this->versions->getGitTagFromFile());
+		$this->cio->out('Git version: ' . $this->git->getTagLatest());
+		$this->cio->out('Git Branch : ' . $this->git->getBranch());
+		$this->cio->out($this->cio->nl(1));
 	}
 
 	/**
-	 * @param \Cake\Console\ConsoleIo $io
-	 * @param \nzedb\utility\Versions $versions
 	 *
-	 * @return int
+	 * @return void
 	 */
-	protected function sql(ConsoleIo $io, Versions $versions) : int
+	protected function nzedb() : void
 	{
-		$io->info('SQL versions');
-		$io->hr();
-		$io->out('XML version: ' . $versions->getSQLPatchFromFiles());
-		$io->out(' DB version: ' . $versions->getSQLPatchFromDb());
-		$io->out($io->nl(1));
+		$this->cio->info('nZEDb version: ', 0);
+		$this->cio->out($this->git->getTagLatest());
+	}
 
-		return static::CODE_SUCCESS;
+	/**
+	 *
+	 * @return void
+	 */
+	protected function sql() : void
+	{
+		$this->cio->info('SQL versions');
+		$this->cio->hr();
+		$this->cio->out('XML version: ' . $this->versions->getSQLPatchFromFiles());
+		$this->cio->out(' DB version: ' . $this->versions->getSQLPatchFromDb());
+		$this->cio->out($this->cio->nl(1));
 	}
 }
