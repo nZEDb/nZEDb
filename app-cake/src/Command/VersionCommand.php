@@ -32,6 +32,11 @@ use zed\Nzedb;
 class VersionCommand extends Command
 {
 	/**
+	 * @var \Cake\Console\ConsoleIo;
+	 */
+	private $cio;
+
+	/**
 	 * @var \nzedb\utility\Git
 	 */
 	private $git;
@@ -47,8 +52,9 @@ class VersionCommand extends Command
 	 *
 	 * @return int
 	 */
-	public function execute(Arguments $args, ConsoleIo $cio) : int
+	public function execute(Arguments $args, ConsoleIo $io) : int
 	{
+		$this->cio = $io;
 		$this->git = new Git();
 		$this->versions = new Versions(Nzedb::VERSIONS);
 
