@@ -35,6 +35,8 @@ class Nzedb
 
 	public const CONFIGS	= Nzedb::BASE . 'configuration' . DS;
 
+	public const COVERS		= Nzedb::RESOURCES . 'covers' . DS;
+
 	public const DEBUG		= true;
 
 	public const LARAVEL	= Nzedb::BASE . 'app-laravel' . DS;

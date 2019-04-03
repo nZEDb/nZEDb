@@ -47,9 +47,7 @@
   "keywords": [
     "nZEDb",
     "usenet",
-    "indexer",
-    "lithium",
-    "li3"
+    "indexer"
   ],
   "license": "GPL-3.0",
   "minimum-stability": "dev",
