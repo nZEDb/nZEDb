@@ -17,6 +17,28 @@ class SetupCommand extends Command
 	 */
 	protected $cio;
 
+	protected $descriptions = [
+		'database' => 'Here, we collect your database credentials and tests to make sure they work.' .
+			"\nYou must have created the Db already. We'll create the tables later." .
+			"\nIf using a unix-like operating system it is recommended to use sockets. The " .
+			"\nsocket path can be found in your my.cnf file." .
+			"\nEntering a socket path will prevent the host from being used." .
+			"\n\nDo not use your root user. Create a new user for nZEDb (i.e. `nzedb`)" .
+			"\nThe FILE permission must be given to your user, GRANT ALL does NOT include the " .
+			"\nFILE permission.",
+		'preflight' => 'Some quick checks before we get started. If any of these fail, they must be ' .
+			"\ncorrected before we can continue. You can make corrections in another screen " .
+			"\nand hit ENTER to refresh this screen."
+	];
+	private $dbDetails = [
+		'host' => null,
+		'port' => 3306,
+		'sock' => null,
+		'user' => 'nzedb',
+		'pass' => null,
+		'db'   => 'nzedb',
+	];
+
 	/**
 	 * @var \zed\Setup
 	 */
@@ -54,6 +76,16 @@ class SetupCommand extends Command
 
 		$this->setup = new Setup();
 		$this->step1();
+		$this->step2();
+		/*
+		$this->step3();
+		$this->step4();
+		$this->step5();
+		$this->step6();
+		$this->step7();
+		$this->step8();
+		$this->step9();
+		*/
 	}
 
 	protected function getStatus(bool $status) : string
@@ -61,18 +93,35 @@ class SetupCommand extends Command
 		return $status ? '<success>Passed</success>' : '<error>FAILED</error>';
 	}
 
-	protected function header() : void
+	protected function header(string $info, string $description = '') : void
 	{
 		\passthru('clear');
 		$this->cio->info('Setup nZEDb - You can quit this process at any time with CTRL-C');
 		$this->cio->hr();
 		$this->cio->out('');
+
+		$this->cio->info($info);
+		$this->cio->out($description);
+		if (!empty($description)) {
+			$this->cio->out('');
+		}
 	}
 
-	protected function outputChecklist(string $info): void
+	protected function inputDatabaseDetails(array &$db)
 	{
-		$this->header();
-		$this->cio->info($info);
+		$db['host'] = $this->cio->ask('Host - Name or IP (Empty if using Unix sockets)',
+			$db['host']);
+		$db['port'] = $this->cio->ask('Port number', $db['port']);
+		$db['sock'] = $this->cio->ask('Socket file (Leave empty if using Host)',
+			$db['sock']);
+		$db['user'] = $this->cio->ask('User name (Required)', 'nzedb', $db['user']);
+		$db['pass'] = $this->cio->ask('Password (Required)', $db['pass']);
+		$db['db'] = $this->cio->ask('Database name (Required)', $db['db']);
+	}
+
+	protected function outputChecklist(string $info, $description = ''): void
+	{
+		$this->header($info, $description);
 
 		$extensions = [
 			['Required PHP Extensions', 'Status'],
@@ -123,12 +172,30 @@ class SetupCommand extends Command
 		$this->cio->helper('Table')->output($misc);
 	}
 
+	protected function outputDatabaseDetails(array $details) : void
+	{
+		$this->cio->helper('Table')->output([
+			['Setting', 'Value'],
+			['Host', $details['host']],
+			['Port', $details['port']],
+			['Socket', $details['sock']],
+			['Username', $details['user']],
+			['Password', $details['pass']],
+			['Database', $details['db']],
+		]);
+	}
+
+	/**
+	 * Pre-flight checks
+	 *
+	 * @return void
+	 */
 	protected function step1() : void
 	{
 		$this->setup->runChecks();
 
 		while ($this->setup->error === true) {
-			$this->outputChecklist('Pre-start checklist');
+			$this->outputChecklist('Pre-start checklist', $this->descriptions['preflight']);
 			$this->cio->ask('Press ENTER to refresh.');
 
 			$this->setup->runChecks();
@@ -136,5 +203,72 @@ class SetupCommand extends Command
 
 		$this->outputChecklist('Pre-start checklist');
 		$this->cio->ask('Press ENTER to continue.');
+	}
+
+	/**
+	 * Get Database Details
+	 *
+	 * @return void
+	 */
+	protected function step2() : void
+	{
+		$details = &$this->dbDetails;
+		$info = 'Database credentials';
+		$confirm = 'y';
+
+		while ($confirm === 'y') {
+			$this->header($info, $this->descriptions['database']);
+			$this->inputDatabaseDetails($details);
+			$this->header($info);
+			$this->outputDatabaseDetails($details);
+			if ($this->validDbDetails()) {
+				$confirm = \strtolower($this->cio->ask('Change?', 'Y'));
+			}
+		}
+	}
+/*
+	protected function step3(): void
+	{
+		//;
+	}
+
+	protected function step4(): void
+	{
+		//;
+	}
+
+	protected function step5(): void
+	{
+		//;
+	}
+
+	protected function step6(): void
+	{
+		//;
+	}
+
+	protected function step7(): void
+	{
+		//;
+	}
+
+	protected function step8(): void
+	{
+		//;
+	}
+
+	protected function step9(): void
+	{
+		//;
+	}
+*/
+	protected function validDbDetails() : bool
+	{
+		$status = !empty($this->dbDetails['host']) && !empty($this->dbDetails['port']);
+		$status &= !empty($this->dbDetails['user']);
+		$status &= !empty($this->dbDetails['pass']);
+		$status |= !empty($this->dbDetails['sock']);
+
+		return $status;
 	}
 }
