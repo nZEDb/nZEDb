@@ -5,6 +5,7 @@ use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use Cake\Datasource\ConnectionManager;
 use zed\Setup;
 
 /**
@@ -75,7 +76,7 @@ class SetupCommand extends Command
 		$this->cio = $io;
 
 		$this->setup = new Setup();
-		$this->step1();
+		//$this->step1();
 		$this->step2();
 		/*
 		$this->step3();
@@ -212,17 +213,28 @@ class SetupCommand extends Command
 	 */
 	protected function step2() : void
 	{
-		$details = &$this->dbDetails;
+		$dbc = &$this->dbDetails;
 		$info = 'Database credentials';
-		$confirm = 'y';
 
-		while ($confirm === 'y') {
-			$this->header($info, $this->descriptions['database']);
-			$this->inputDatabaseDetails($details);
-			$this->header($info);
-			$this->outputDatabaseDetails($details);
-			if ($this->validDbDetails()) {
-				$confirm = \strtolower($this->cio->ask('Change?', 'Y'));
+		$connected = false;
+		while ($connected === false) {
+			$confirm = 'y';
+			while ($confirm == 'y') {
+				$this->header($info, $this->descriptions['database']);
+				$this->inputDatabaseDetails($dbc);
+
+				$this->header($info);
+				$this->outputDatabaseDetails($dbc);
+
+				if ($this->validDbDetails()) {
+					$confirm = \strtolower($this->cio->askChoice('Change?', ['Y', 'n'], 'Y'));
+				}
+			}
+
+			$connected = $this->testDbConnection();
+			if ($connected === false) {
+				$this->cio->warning('Unable to connect to the database.');
+				$this->cio->ask('Press ENTER to edit config.');
 			}
 		}
 	}
@@ -262,6 +274,37 @@ class SetupCommand extends Command
 		//;
 	}
 */
+	protected function testDbConnection() : bool
+	{
+		$db = & $this->dbDetails;
+		try {
+			ConnectionManager::setConfig('test-db',
+			[
+				'className'     => 'Cake\Database\Connection',
+				'driver'        => 'Cake\Database\Driver\Mysql',
+				'persistent'    => false,
+				'host'          => $db['host'],
+				'port'          => $db['port'],
+				'unix_socket'   => $db['sock'],
+				'username'      => $db['user'],
+				'password'      => $db['pass'],
+				'database'      => $db['db'],
+				'encoding'      => 'utf8mb4',
+				'timezone'      => 'UTC',
+				'cacheMetadata' => true,
+			]);
+			$connection = ConnectionManager::get('test-db');
+			$connection->execute('SELECT @@version;');
+			$connected = true;
+		} catch (\Exception $e) {
+			$connected = false;
+			$this->cio->error($e->getMessage());
+		}
+		ConnectionManager::drop('test-db');
+
+		return $connected;
+	}
+
 	protected function validDbDetails() : bool
 	{
 		$status = !empty($this->dbDetails['host']) && !empty($this->dbDetails['port']);
