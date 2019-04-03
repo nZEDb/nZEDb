@@ -19,7 +19,8 @@
  * @copyright 2015 nZEDb
  */
 require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'nzedb' . DIRECTORY_SEPARATOR . 'constants.php');
-require_once nZEDb_ROOT . 'app' . DS . 'config' . DS . 'bootstrap.php';
+require dirname(__DIR__) . '/vendor/autoload.php';
+require_once nZEDb_ROOT . 'app-cake' . DS . 'config' . DS . 'bootstrap.php';
 
 use nzedb\config\Configure;
 
@@ -28,13 +29,13 @@ try {
 } catch (\RuntimeException $e) {
 	if ($e->getCode() == 1) {
 		if (file_exists(nZEDb_WWW . 'config.php')) {
-			echo "Move: .../www/config.php to .../nzedb/config/config.php<br />\n Remove any line that says require_once 'automated.config.php';<br />\n";
+			echo "Move: .../www/config.php to .../configuration/config.php<br />\n Remove any line that says require_once 'automated.config.php';<br />\n";
 			if (file_exists(nZEDb_WWW . 'settings.php')) {
-				echo "Move: .../www/settings.php to  .../nzedb/config/settings.php<br />\n";
+				echo "Move: .../www/settings.php to  .../configuration/settings.php<br />\n";
 			}
 			exit();
-		} else if (is_dir("install")) {
-			header("location: install");
+		} else if (! file_exists(APP . '.env')) {
+			header('location: install.html');
 			exit();
 		}
 	}
@@ -44,9 +45,9 @@ if (function_exists('ini_set') && function_exists('ini_get')) {
 	ini_set('include_path', nZEDb_WWW . PATH_SEPARATOR . ini_get('include_path'));
 }
 
-$www_top = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']));
-if (strlen($www_top) == 1) {
-	$www_top = "";
+$www_top = str_replace('\\', '/', dirname($_SERVER['PHP_SELF']));
+if (strlen($www_top) === 1) {
+	$www_top = '';
 }
 
 // Used everywhere an href is output.

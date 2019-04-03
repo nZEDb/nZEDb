@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title>
+		<?php
+		echo $page_title;
+		?>
+	</title>
+	<link rel="shortcut icon" type="image/ico" href="../themes/shared/img/favicon.ico" />
+</head>
+<body style="align-items: center">
+<h1 id="logo">
+	<img alt="nZEDb" src="../themes/shared/img/logo.png" />
+</h1>
+
+<div>
+	<h2>Index Usenet. Now.</h2>
+
+	<p>Welcome to nZEDb.</p>
+	<p>Before getting started, you need to make sure that the server meets the minimum requirements. You will also need...</p>
+	<ol>
+		<li>Your database credentials.</li>
+		<li>Your news server credentials.</li>
+		<li>SSH & root ability on your server (in case you need to install missing packages).</li>
+		<li>You should consider copying <?php echo nZEDb_CONFIGS ?>settings.example.php to
+			<?php echo nZEDb_CONFIGS ?>settings.php and customising the settings (Default settings
+			should be fine for installing).</li>
+	</ol>
+    <br/>
+    <p>Once you have that information you can start the setup process from the command line using:</p>
+    <pre>`./zed setup`</pre>
+	<br/><br/>
+
+	<p>
+		<strong>
+			<div style="color: #ff0000">WARNING: </div>
+			This software is not practical for use on shared hosting. You should only use this on a server where YOU have the required privileges and knowledge to solve any challenges that might appear.
+		</strong>
+	</p>
+
+	<div class="footer">
+		<p>
+			<br />
+			nZEDb is released under GPL.
+		</p>
+	</div>
+</div>
+</body>
+</html>
