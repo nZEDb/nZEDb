@@ -14,11 +14,19 @@ use zed\Setup;
 class SetupCommand extends Command
 {
 	/**
+	 * @var \Closure
+	 */
+	protected $askAndValidate;
+
+	/**
 	 * @var \Cake\Console\ConsoleIo
 	 */
 	protected $cio;
 
 	protected $descriptions = [
+		'preflight' => 'Some quick checks before we get started. If any of these fail, they must be ' .
+			"\ncorrected before we can continue. You can make corrections in another screen " .
+			"\nand hit ENTER to refresh this screen.",
 		'database' => 'Here, we collect your database credentials and tests to make sure they work.' .
 			"\nYou must have created the Db already. We'll create the tables later." .
 			"\nIf using a unix-like operating system it is recommended to use sockets. The " .
@@ -27,10 +35,21 @@ class SetupCommand extends Command
 			"\n\nDo not use your root user. Create a new user for nZEDb (i.e. `nzedb`)" .
 			"\nThe FILE permission must be given to your user, GRANT ALL does NOT include the " .
 			"\nFILE permission.",
-		'preflight' => 'Some quick checks before we get started. If any of these fail, they must be ' .
-			"\ncorrected before we can continue. You can make corrections in another screen " .
-			"\nand hit ENTER to refresh this screen."
+		'cacert' => 'An openssl CA bundle file is recommended to verify the authenticity of remote' .
+			"\ncertificates when connecting to various servers using TLS/SSL. If you do not " .
+			"\nhave a CA bundle, you can download one from: " .
+			"\n        <comment>http://curl.haxx.se/docs/caextract.html</comment>" .
+			"\nIf you ae using Linux place the bundle in the /etc/ssl/certs/ directory."
 	];
+
+	private $cacerts = [
+		'cafile' => null,
+		'cahost' => null,
+		'capath' => null,
+		'capeer' => null,
+		'caself' => null,
+	];
+
 	private $dbDetails = [
 		'host' => null,
 		'port' => 3306,
@@ -77,9 +96,9 @@ class SetupCommand extends Command
 
 		$this->setup = new Setup();
 		//$this->step1();
-		$this->step2();
-		/*
+		//$this->step2();
 		$this->step3();
+		/*
 		$this->step4();
 		$this->step5();
 		$this->step6();
@@ -108,7 +127,17 @@ class SetupCommand extends Command
 		}
 	}
 
-	protected function inputDatabaseDetails(array &$db)
+	protected function inputCertificateDetails(array &$certs) : void
+	{
+		$certs['cafile'] = $this->cio->ask('Location of Certificate Authority file (e.g. /etc/ssl/certs/cacert.pem)');
+		$certs['capath'] = $this->cio->ask('Certificate  directory to search if the file above is not found. (e.g. /etc/ssl/certs/)');
+		$certs['capeer'] = $this->cio->askChoice('Verify Peer? (Requires the CA bundle file path to be set).', ['y', 'n'], 'N');
+		$certs['cahost'] = $this->cio->askChoice('Verify Host? (Requires the CA bundle file path to be set).', ['y', 'n'], 'N');
+		$certs['caself'] = $this->cio->askChoice('Allow self-signed certificates? This stops self-signed certificates from being verified (and failing)',
+			['y',	'n'], 'N');
+	}
+
+	protected function inputDatabaseDetails(array &$db) : void
 	{
 		$db['host'] = $this->cio->ask('Host - Name or IP (Empty if using Unix sockets)',
 			$db['host']);
@@ -118,6 +147,18 @@ class SetupCommand extends Command
 		$db['user'] = $this->cio->ask('User name (Required)', 'nzedb', $db['user']);
 		$db['pass'] = $this->cio->ask('Password (Required)', $db['pass']);
 		$db['db'] = $this->cio->ask('Database name (Required)', $db['db']);
+	}
+
+	protected function outputCertificateDetails(array $certs) : void
+	{
+		$this->cio->helper('Table')->output([
+				['Setting', 'Value'],
+				['Path to file', \strtoupper($certs['cafile'])],
+				['Search directory', \strtoupper($certs['capath'])],
+				['Verify Peer', \strtoupper($certs['capeer'])],
+				['Verify Host', \strtoupper($certs['cahost'])],
+				['Allow self-signing', \strtoupper($certs['caself'])],
+			]);
 	}
 
 	protected function outputChecklist(string $info, $description = ''): void
@@ -238,12 +279,21 @@ class SetupCommand extends Command
 			}
 		}
 	}
-/*
+
 	protected function step3(): void
 	{
-		//;
+		$valid = function () { return true; };
+
+		$this->askAndCheck(
+			[$this, 'inputCertificateDetails'],
+			[$this, 'outputCertificateDetails'],
+			$valid,
+			$this->cacerts,
+			'OpenSSL Certificates',
+			$this->descriptions['cacert']);
 	}
 
+/*
 	protected function step4(): void
 	{
 		//;
@@ -274,6 +324,7 @@ class SetupCommand extends Command
 		//;
 	}
 */
+
 	protected function testDbConnection() : bool
 	{
 		$db = & $this->dbDetails;
@@ -313,5 +364,26 @@ class SetupCommand extends Command
 		$status |= !empty($this->dbDetails['sock']);
 
 		return $status;
+	}
+
+	private function askAndCheck(callable $ask,
+								 callable $show,
+								 callable $valid,
+								 array &$data,
+								 string $info,
+								 string $description)
+	{
+		$confirm = 'y';
+		while ($confirm == 'y') {
+			$this->header($info, $description);
+			$ask($data);
+
+			$this->header($info);
+			$show($data);
+
+			if ($valid()) {
+				$confirm = \strtolower($this->cio->askChoice('Change?', ['Y', 'n'], 'Y'));
+			}
+		}
 	}
 }
