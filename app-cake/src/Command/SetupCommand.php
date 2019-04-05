@@ -254,6 +254,7 @@ class SetupCommand extends Command
 	 */
 	protected function step2() : void
 	{
+		/*
 		$dbc = &$this->dbDetails;
 		$info = 'Database credentials';
 
@@ -278,6 +279,15 @@ class SetupCommand extends Command
 				$this->cio->ask('Press ENTER to edit config.');
 			}
 		}
+		*/
+		$this->askAndCheck(
+			[$this, 'inputDatabaseDetails'],
+			[$this, 'outputDatabaseDetails'],
+			[$this, 'testDbConnection'],
+			$this->dbDetails,
+			'Database credentials',
+			$this->descriptions['database']
+		);
 	}
 
 	protected function step3(): void
@@ -290,7 +300,8 @@ class SetupCommand extends Command
 			$valid,
 			$this->cacerts,
 			'OpenSSL Certificates',
-			$this->descriptions['cacert']);
+			$this->descriptions['cacert']
+		);
 	}
 
 /*
