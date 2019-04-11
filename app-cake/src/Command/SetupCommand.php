@@ -39,7 +39,8 @@ class SetupCommand extends Command
 			"\ncertificates when connecting to various servers using TLS/SSL. If you do not " .
 			"\nhave a CA bundle, you can download one from: " .
 			"\n        <comment>http://curl.haxx.se/docs/caextract.html</comment>" .
-			"\nIf you ae using Linux place the bundle in the /etc/ssl/certs/ directory."
+			"\nIf you are using Linux place the bundle in the /etc/ssl/certs/ directory.",
+		'nntp' => 'Usenet server (NNTP) credentials.'
 	];
 
 	private $cacerts = [
@@ -304,12 +305,12 @@ class SetupCommand extends Command
 		);
 	}
 
-/*
 	protected function step4(): void
 	{
 		//;
 	}
 
+/*
 	protected function step5(): void
 	{
 		//;
