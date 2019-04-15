@@ -67,6 +67,8 @@ class Setup
 
 	public $pdo;
 
+	public $pdo_mysql;
+
 	public $pear;
 
 	public $phpVersion;
@@ -239,6 +241,7 @@ class Setup
 	private function testExtension(string $ext) : bool
 	{
 		$result = \extension_loaded($ext);
+		$this->$ext = $result;
 		$this->error = $this->error || $result;
 
 		return $result;
@@ -247,6 +250,9 @@ class Setup
 	private function testFunction(string $function) : bool
 	{
 		$result = \function_exists($function);
+		$this->$function = $result;
 		$this->error = $this->error || $result;
+
+		return $result;
 	}
 }
