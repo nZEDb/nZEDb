@@ -176,6 +176,7 @@ class SetupCommand extends Command
 			['JSON', $this->getStatus($this->setup->json)],
 			['OpenSSL', $this->getStatus($this->setup->openssl)],
 			['PDO', $this->getStatus($this->setup->pdo)],
+			['PDO MySQL', $this->getStatus($this->setup->pdo_mysql)],
 		];
 
 		$functions = [
@@ -186,6 +187,7 @@ class SetupCommand extends Command
 
 		$misc = [
 			['Miscelaneous requirements', 'Status'],
+			//['Session path (' . session_save_path() . ') is read/writeable', $this->getStatus($this->setup->sessionPathPerms)],
 			['Configuration path is writable', $this->getStatus($this->setup->configPath)],
 			['PHP\'s version >= ' . Nzedb::MIN_PHP_VER, $this->getStatus ($this->setup->phpVersion)],
 			['PHP\'s date.timezone is set', $this->getStatus($this->setup->phpTimeZone)],
@@ -236,17 +238,10 @@ class SetupCommand extends Command
 	 */
 	protected function step1() : void
 	{
-		$error = $this->setup->runChecks();
-
-		\var_dump($error);
-		\sleep(2);
-		while ($error !== false) {
+		while ($this->setup->runChecks() !== false) {
 			$this->outputChecklist('Pre-start checklist', $this->descriptions['preflight']);
 			$this->cio->ask('Press ENTER to refresh.');
 
-\var_dump($error);
-			$error = $this->setup->runChecks();
-\var_dump($error);
 			//exit('Correct the problems indicated above and run setup again!' . PHP_EOL);
 		}
 
@@ -261,32 +256,6 @@ class SetupCommand extends Command
 	 */
 	protected function step2() : void
 	{
-		/*
-		$dbc = &$this->dbDetails;
-		$info = 'Database credentials';
-
-		$connected = false;
-		while ($connected === false) {
-			$confirm = 'y';
-			while ($confirm == 'y') {
-				$this->header($info, $this->descriptions['database']);
-				$this->inputDatabaseDetails($dbc);
-
-				$this->header($info);
-				$this->outputDatabaseDetails($dbc);
-
-				if ($this->validDbDetails()) {
-					$confirm = \strtolower($this->cio->askChoice('Change?', ['Y', 'n'], 'Y'));
-				}
-			}
-
-			$connected = $this->testDbConnection();
-			if ($connected === false) {
-				$this->cio->warning('Unable to connect to the database.');
-				$this->cio->ask('Press ENTER to edit config.');
-			}
-		}
-		*/
 		$this->askAndCheck(
 			[$this, 'inputDatabaseDetails'],
 			[$this, 'outputDatabaseDetails'],
