@@ -6,6 +6,7 @@ use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Datasource\ConnectionManager;
+use zed\Nzedb;
 use zed\Setup;
 
 /**
@@ -96,9 +97,9 @@ class SetupCommand extends Command
 		$this->cio = $io;
 
 		$this->setup = new Setup();
-		//$this->step1();
+		$this->step1();
 		//$this->step2();
-		$this->step3();
+		//$this->step3();
 		/*
 		$this->step4();
 		$this->step5();
@@ -168,8 +169,10 @@ class SetupCommand extends Command
 
 		$extensions = [
 			['Required PHP Extensions', 'Status'],
+			['Curl', $this->getStatus($this->setup->curl)],
 			['Exif', $this->getStatus($this->setup->exif)],
 			['GD', $this->getStatus($this->setup->gd)],
+			['Iconv', $this->getStatus($this->setup->iconv)],
 			['JSON', $this->getStatus($this->setup->json)],
 			['OpenSSL', $this->getStatus($this->setup->openssl)],
 			['PDO', $this->getStatus($this->setup->pdo)],
@@ -178,18 +181,16 @@ class SetupCommand extends Command
 		$functions = [
 			['Required functions', 'Status'],
 			['Checking for crypt():', $this->getStatus($this->setup->crypt)],
-			['Checking for Curl support:', $this->getStatus($this->setup->curl)],
-			['Checking for iconv support:', $this->getStatus($this->setup->iconv)],
 			['Checking for SHA1', $this->getStatus($this->setup->sha1)],
 		];
 
 		$misc = [
 			['Miscelaneous requirements', 'Status'],
 			['Configuration path is writable', $this->getStatus($this->setup->configPath)],
-			['PHP\'s version >= ' . nZEDb_MINIMUM_PHP_VERSION, $this->getStatus ($this->setup->phpVersion)],
+			['PHP\'s version >= ' . Nzedb::MIN_PHP_VER, $this->getStatus ($this->setup->phpVersion)],
 			['PHP\'s date.timezone is set', $this->getStatus($this->setup->phpTimeZone)],
 			//['PHP\'s max_execution_time >= 120', $this->getStatus($this->setup->phpMaxExec)],
-			['PHP\'s memory_limit >= 1GB', $this->getStatus($this->setup->gd, true)],
+			['PHP\'s memory_limit >= 1GB', $this->getStatus($this->setup->gd)],
 			['PEAR is available', $this->getStatus($this->setup->pear)],
 			['Smarty\'s compile dir is writable', $this->getStatus($this->setup->smartyCache)],
 			['Anime covers directory is writable', $this->getStatus($this->setup->coversAnime)],
@@ -235,13 +236,18 @@ class SetupCommand extends Command
 	 */
 	protected function step1() : void
 	{
-		$this->setup->runChecks();
+		$error = $this->setup->runChecks();
 
-		while ($this->setup->error === true) {
+		\var_dump($error);
+		\sleep(2);
+		while ($error !== false) {
 			$this->outputChecklist('Pre-start checklist', $this->descriptions['preflight']);
 			$this->cio->ask('Press ENTER to refresh.');
 
-			$this->setup->runChecks();
+\var_dump($error);
+			$error = $this->setup->runChecks();
+\var_dump($error);
+			//exit('Correct the problems indicated above and run setup again!' . PHP_EOL);
 		}
 
 		$this->outputChecklist('Pre-start checklist');
