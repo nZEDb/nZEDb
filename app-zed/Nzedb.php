@@ -28,6 +28,8 @@ if (!defined('nZEDb_ROOT')) {
 	define('nZEDb_ROOT', realpath(dirname(__DIR__)) . DS);
 }
 
+require_once \nZEDb_ROOT . 'configuration' . DS . 'settings.php';
+
 
 class Nzedb
 {
@@ -39,7 +41,9 @@ class Nzedb
 
 	public const DEBUG		= true;
 
-	public const LARAVEL	= Nzedb::BASE . 'app-laravel' . DS;
+	public const LOGS		= Nzedb::RESOURCES . 'logs' . DS;
+
+	public const MIN_PHP_VER	= '7.1.3';
 
 	public const MISC		= Nzedb::BASE . 'misc' . DS;
 
