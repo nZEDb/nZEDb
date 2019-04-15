@@ -53,7 +53,7 @@ class Setup
 
 	public $curl;
 
-	public $error = true;
+	public $error = false;
 
 	public $exif;
 
@@ -101,7 +101,9 @@ class Setup
 	{
 		$this->isLocked();
 
-		$this->checkSession();
+		$this->error = false;
+		// Can't check session using cli user. Has to be www-data or whatever the equivalent is.
+		//$this->checkSession();
 
 		$this->checkPhp();
 		$this->checkPhpExtensions();
@@ -176,7 +178,7 @@ class Setup
 		//$this->phpMaxExec = (\ini_get('max_execution_time') >= 120); // In CLI this is always 0
 		$this->phpTimeZone = !empty(ini_get('date.timezone'));
 
-		$this->error = $this->phpTimeZone || $this->error;
+		$this->error = $this->error || !$this->phpTimeZone;
 	}
 
 	protected function checkPhpExtensions() : void
@@ -205,12 +207,11 @@ class Setup
 
 		if (!is_readable($sessionPath) || !is_writable($sessionPath)) {
 			$this->sessionPathPerms = false;
-			$this->error = true;
 		} else {
 			$this->sessionPathPerms = true;
 
-			$this->error = false;
 		}
+		$this->error = $this->error || !$this->sessionPathPerms;
 	}
 
 	protected function checkSmartyCache(): void
@@ -242,7 +243,7 @@ class Setup
 	{
 		$result = \extension_loaded($ext);
 		$this->$ext = $result;
-		$this->error = $this->error || $result;
+		$this->error = $this->error || !$result;
 
 		return $result;
 	}
@@ -251,7 +252,7 @@ class Setup
 	{
 		$result = \function_exists($function);
 		$this->$function = $result;
-		$this->error = $this->error || $result;
+		$this->error = $this->error || !$result;
 
 		return $result;
 	}
