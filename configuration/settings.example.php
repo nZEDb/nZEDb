@@ -6,6 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use nzedb\utility\Misc;
+use zed\Nzedb;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////// MISC ////////////////////////////////////////////////////
@@ -288,12 +289,12 @@ use nzedb\utility\Misc;
 
 /**
  * The folder to put the log files in. Put quotes, example : '/var/log/nZEDb/'
- * The default is in the nZEDb root folder /resources/logs/
+ * The default is from the nZEDb root folder .../resources/logs/
  *
  * @example '/var/log/nZEDb/'
  * @default nZEDb_LOGS
  */
-\define('nZEDb_LOGGING_LOG_FOLDER', nZEDb_LOGS);
+define('nZEDb_LOGGING_LOG_FOLDER', Nzedb::LOGS);
 
 /**
  * The name of the log file.
