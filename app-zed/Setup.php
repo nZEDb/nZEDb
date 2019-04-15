@@ -53,7 +53,7 @@ class Setup
 
 	public $curl;
 
-	public $error = false;
+	public $error = true;
 
 	public $exif;
 
@@ -95,17 +95,23 @@ class Setup
 		return false;
 	}
 
-	public function runChecks() : void
+	public function runChecks() : bool
 	{
 		$this->isLocked();
 
 		$this->checkSession();
+
 		$this->checkPhp();
+		$this->checkPhpExtensions();
+		$this->checkPhpFunctions();
+
 		$this->checkCoversPaths();
 		$this->checkConfigPath();
 		$this->checkPear();
 
 		$this->checkSmartyCache();
+
+		return $this->error;
 	}
 
 
@@ -122,7 +128,7 @@ class Setup
 	protected function checkConfigPath() : void
 	{
 		$this->configPath = \is_writable(Nzedb::CONFIGS);
-		$this->error |= !$this->configPath;
+		$this->error = $this->error || !$this->configPath;
 	}
 
 	protected function checkCoversPaths() : void
@@ -143,73 +149,51 @@ class Setup
 		foreach ($covers as $dir => $var) {
 			$field = 'covers' . $var;
 			$this->$field = \is_writable(Nzedb::COVERS . $dir);
-			$this->error |= ! $this->$field;
+			$this->error = $this->error || !$this->$field;
 		}
-	}
-
-	protected function checkCrypt() : void
-	{
-		$this->crypt = \function_exists('crypt');
-		$this->error |= !$this->crypt;
-	}
-
-	protected function checkIconv() : void
-	{
-		$this->iconv = \function_exists('iconv');
-		$this->error |= !$this->iconv;
-	}
-
-	protected function checkJson() : void
-	{
-		$this->json = \extension_loaded('json');
-		$this->error |= !$this->json;
 	}
 
 	protected function checkPhpMemorytLimit() : void
 	{
-		$unlimited = \ini_get('memory_limit') == -1;
+		$unlimited = ini_get('memory_limit') == -1;
 		$enough = $unlimited ?: Misc::returnBytes(ini_get('memory_limit')) >= 1073741824;
 		$this->phpMemoryLimit = $unlimited || $enough;
-	}
-
-	protected function checkPDO(): void
-	{
-		$this->pdo = \extension_loaded('PDO');
-		$this->error |= !$this->pdo;
 	}
 
 	protected function checkPear() : void
 	{
 		@include 'System.php';
 		$this->pear = \class_exists('System');
-		$this->error |= !$this->pear;
+		$this->error = $this->error || !$this->pear;
 	}
 
 	protected function checkPhp() : void
 	{
 		$this->checkPhpMemorytLimit();
-		$this->phpVersion = \version_compare(PHP_VERSION, nZEDb_MINIMUM_PHP_VERSION, '>=');
+		$this->phpVersion = version_compare(PHP_VERSION, Nzedb::MIN_PHP_VER) !== -1;
 		//$this->phpMaxExec = (\ini_get('max_execution_time') >= 120); // In CLI this is always 0
-		$this->phpTimeZone = \ini_get('date.timezone') !== '';
+		$this->phpTimeZone = !empty(ini_get('date.timezone'));
 
-		$this->error |= !$this->phpTimeZone;
-
-		$this->checkPhpExtensions();
+		$this->error = $this->phpTimeZone || $this->error;
 	}
 
 	protected function checkPhpExtensions() : void
 	{
+		$this->testExtension('curl');
+		$this->testExtension('exif');
+		$this->testExtension('gd');
+		$this->testExtension('iconv');
+		$this->testExtension('json');
+		$this->testExtension('pdo');
+		$this->testExtension('pdo_mysql');
 
-		$this->checkIconv();
-		$this->checkCrypt();
-		$this->checkSHA1();
-		$this->checkPDO();
-		$this->checkJson();
-
-		$this->curl = \function_exists('curl_init');
-		$this->exif = \extension_loaded('exif');
-		$this->gd = \function_exists('imagecreatetruecolor');
 		$this->openssl = \extension_loaded('openssl');
+	}
+
+	protected function checkPhpFunctions() : void
+	{
+		$this->testFunction('crypt');
+		$this->testFunction('sha1');
 	}
 
 	protected function checkSession() : void
@@ -218,23 +202,30 @@ class Setup
 		$sessionPath = $sessionPath ?: sys_get_temp_dir();
 
 		if (!is_readable($sessionPath) || !is_writable($sessionPath)) {
-			$this->error = true;
 			$this->sessionPathPerms = false;
-		}
-	}
+			$this->error = true;
+		} else {
+			$this->sessionPathPerms = true;
 
-	protected function checkSHA1() : void
-	{
-		$this->sha1 = \function_exists('sha1');
-		$this->error |= !$this->sha1;
+			$this->error = false;
+		}
 	}
 
 	protected function checkSmartyCache(): void
 	{
-		$this->smartyCache = is_writable(nZEDb_RES . 'smarty' . DS . 'templates_c');
-		$this->error |= !$this->smartyCache;
+		$this->smartyCache = is_writable(Nzedb::RESOURCES . 'smarty' . DS . 'templates_c');
+		$this->error = $this->error || !$this->smartyCache;
 	}
 
+	/**
+	 * Tests for the existence of a .lock file in the configuration directory.
+	 *
+	 * Throws an exception if the file exists, to prevent setup from making changes to the
+	 * configuration. Otherwise it returns normally allowing the app to make changes.
+	 *
+	 * @return void
+	 * @throws \ErrorException
+	 */
 	protected function isLocked() : void
 	{
 		if (file_exists(self::LOCK_FILE)) {
@@ -243,5 +234,19 @@ class Setup
 
 			throw new \ErrorException($message);
 		}
+	}
+
+	private function testExtension(string $ext) : bool
+	{
+		$result = \extension_loaded($ext);
+		$this->error = $this->error || $result;
+
+		return $result;
+	}
+
+	private function testFunction(string $function) : bool
+	{
+		$result = \function_exists($function);
+		$this->error = $this->error || $result;
 	}
 }
