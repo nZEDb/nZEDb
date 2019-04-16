@@ -24,7 +24,7 @@ class SetupCommand extends Command
 	 */
 	protected $cio;
 
-	protected $descriptions = [
+	protected static $descriptions = [
 		'preflight' => 'Some quick checks before we get started. If any of these fail, they must be ' .
 			"\ncorrected before we can continue. You can make corrections in another screen " .
 			"\nand hit ENTER to refresh this screen.",
