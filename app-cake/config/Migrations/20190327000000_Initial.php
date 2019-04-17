@@ -4240,7 +4240,6 @@ class Initial extends AbstractMigration
             )
             ->create();
 
-        //TODO add load table calls here.
 		$connection = ConnectionManager::get('default');
 		$db = new DB();
 		$db->loadDataInfile([
