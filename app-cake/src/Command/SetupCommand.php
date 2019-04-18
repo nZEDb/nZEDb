@@ -264,6 +264,10 @@ class SetupCommand extends Command
 			'Database credentials',
 			$this->descriptions['database']
 		);
+
+		// TODO: Try to connect to the server with credentials but without the DB_NAME. If
+		// successful, check for DB_NAME and create it if it doesn't exist. Output suitable
+		// errors at each stage. Drop all tables if it does exist, just as the web install does.
 	}
 
 	protected function step3(): void
