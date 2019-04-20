@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use app\models\SteamApps;
-use app\models\Settings;
+use zed\db\Settings;
 use b3rs3rk\steamfront\Main;
 use nzedb\db\DB;
 

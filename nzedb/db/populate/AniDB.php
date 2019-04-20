@@ -2,7 +2,7 @@
 
 namespace nzedb\db\populate;
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\ColorCLI;
 use nzedb\ReleaseImage;
 use nzedb\db\DB;

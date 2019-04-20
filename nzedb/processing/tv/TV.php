@@ -1,7 +1,7 @@
 <?php
 namespace nzedb\processing\tv;
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\Category;
 use nzedb\processing\Videos;
 use nzedb\utility\Country;

@@ -4,7 +4,7 @@ namespace nzedb\processing;
 use app\models\Groups as Group;
 use app\models\MultigroupPosters;
 use app\models\ReleasesGroups;
-use app\models\Settings;
+use zed\db\Settings;
 use app\models\Tables;
 use nzedb\Categorize;
 use nzedb\Category;

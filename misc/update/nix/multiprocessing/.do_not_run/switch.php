@@ -1,7 +1,7 @@
 <?php
 
 use app\models\Groups as Group;
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\Backfill;
 use nzedb\Binaries;
 use nzedb\Groups;

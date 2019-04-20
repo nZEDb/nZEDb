@@ -20,7 +20,7 @@
  */
 namespace nzedb\db;
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\ColorCLI;
 use nzedb\db\DB;
 use nzedb\utility\Git;

@@ -9,7 +9,7 @@
 
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\NameFixer;
 use nzedb\NNTP;
 use nzedb\PreDb;

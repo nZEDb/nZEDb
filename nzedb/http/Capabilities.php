@@ -21,7 +21,7 @@
 namespace nzedb\http;
 
 use app\extensions\util\Versions;
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\Category;
 use nzedb\Utility\Misc;
 use nzedb\db\DB;

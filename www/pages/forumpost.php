@@ -1,6 +1,6 @@
 <?php
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\Forum;
 
 if (!$page->users->isLoggedIn()) {

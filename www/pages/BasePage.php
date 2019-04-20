@@ -2,7 +2,7 @@
 
 require_once nZEDb_LIB . 'utility' . DS . 'SmartyUtils.php';
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\SABnzbd;
 use nzedb\Users;
 use nzedb\db\DB;

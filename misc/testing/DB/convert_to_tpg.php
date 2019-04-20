@@ -2,7 +2,7 @@
 require_once realpath(dirname(__DIR__, 3) . '/app/config/bootstrap.php');
 
 use app\models\Groups as Group;
-use app\models\Settings;
+use zed\db\Settings;
 use app\models\Tables;
 use nzedb\ConsoleTools;
 use nzedb\Groups;
@@ -19,7 +19,7 @@ $debug = false;
 $pdo = new DB();
 $groups = new Groups(['Settings' => $pdo]);
 $consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
-$DoPartRepair = (Settings::value('..partrepair') == '0') ? false : true;
+$DoPartRepair = Settings::value('..partrepair') !== '0';
 
 if ((!isset($argv[1])) || $argv[1] != 'true') {
 	exit($pdo->log->error("\nMandatory argument missing\n\n"

@@ -4,7 +4,7 @@ namespace nzedb\utility;
 require_once __DIR__ . '/../constants.php';
 
 use app\extensions\util\Versions;
-use app\models\Settings;
+use zed\db\Settings;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\SetCookie;

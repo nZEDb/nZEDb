@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\db\DB;
 use nzedb\processing\adult\ADE;
 use nzedb\processing\adult\ADM;

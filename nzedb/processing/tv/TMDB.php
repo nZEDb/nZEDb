@@ -1,7 +1,7 @@
 <?php
 namespace nzedb\processing\tv;
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\ColorCLI;
 use nzedb\ReleaseImage;
 use Tmdb\ApiToken;

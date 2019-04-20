@@ -19,7 +19,7 @@
 namespace nzedb\processing\post;
 
 use app\models\Groups as Group;
-use app\models\Settings;
+use zed\db\Settings;
 use lithium\analysis\Logger;
 use Mhor\MediaInfo\MediaInfo;
 use nzedb\Categorize;

@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use app\models\Settings;
+use zed\db\Settings;
 use DBorsatto\GiantBomb\Config;
 use DBorsatto\GiantBomb\Client;
 use nzedb\db\DB;

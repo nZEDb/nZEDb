@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use app\models\Settings;
+use zed\db\Settings;
 use app\extensions\util\Versions;
 use nzedb\db\DB;
 

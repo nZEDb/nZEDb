@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\db\DB;
 use nzedb\processing\PostProcess;
 use nzedb\utility\Misc;

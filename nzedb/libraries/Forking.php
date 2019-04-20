@@ -1,7 +1,7 @@
 <?php
 namespace nzedb\libraries;
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\Category;
 use nzedb\ColorCLI;
 use nzedb\MiscSorter;

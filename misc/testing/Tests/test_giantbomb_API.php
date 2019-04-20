@@ -3,7 +3,7 @@ require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR .
 
 // Test if your giantbomb key is working.
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\ColorCLI;
 
 $giantbombkey = Settings::value('APIs..giantbombkey');

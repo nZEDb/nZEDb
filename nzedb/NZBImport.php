@@ -3,7 +3,7 @@ namespace nzedb;
 
 
 use app\models\Groups;
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
 

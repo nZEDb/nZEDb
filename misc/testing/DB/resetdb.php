@@ -1,7 +1,7 @@
 <?php
 require_once realpath(dirname(__DIR__, 3) . '/app/config/bootstrap.php');
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\ConsoleTools;
 use nzedb\NZB;
 use nzedb\ReleaseImage;
