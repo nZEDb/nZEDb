@@ -20,7 +20,7 @@
  */
 require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'nzedb' . DIRECTORY_SEPARATOR . 'constants.php');
 require dirname(__DIR__) . '/vendor/autoload.php';
-require_once nZEDb_ROOT . 'app-cake' . DS . 'config' . DS . 'bootstrap.php';
+//require_once nZEDb_ROOT . 'app-cake' . DS . 'config' . DS . 'bootstrap.php';
 
 use nzedb\config\Configure;
 
@@ -33,9 +33,6 @@ try {
 			if (file_exists(nZEDb_WWW . 'settings.php')) {
 				echo "Move: .../www/settings.php to  .../configuration/settings.php<br />\n";
 			}
-			exit();
-		} else if (! file_exists(APP . '.env')) {
-			header('location: install.html');
 			exit();
 		}
 	}
