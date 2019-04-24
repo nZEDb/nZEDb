@@ -16,11 +16,28 @@
  *
  * @link <http://www.gnu.org/licenses/>.
  * @author niel
- * @copyright 2015 nZEDb
+ * @copyright 2015 - 2019 nZEDb
  */
-require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'nzedb' . DIRECTORY_SEPARATOR . 'constants.php');
-require dirname(__DIR__) . '/vendor/autoload.php';
-//require_once nZEDb_ROOT . 'app-cake' . DS . 'config' . DS . 'bootstrap.php';
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'nZEDbBase.php';
+require_once nZEDb_ROOT . 'nzedb' . DIRECTORY_SEPARATOR . 'constants.php';
+require_once nZEDb_ROOT . 'vendor' . DS . 'autoload.php';
+
+if (!file_exists(nZEDb_CONFIGS . 'install.lock')) {
+	header('Location: install');
+	exit();
+}
+
+if (function_exists('ini_set') && function_exists('ini_get')) {
+	ini_set('include_path', nZEDb_WWW . PATH_SEPARATOR . ini_get('include_path'));
+}
+
+$www_top = str_replace('\\', '/', dirname($_SERVER['PHP_SELF']));
+if (strlen($www_top) === 1) {
+	$www_top = '';
+}
+
+// Used everywhere an href is output.
+define('WWW_TOP', $www_top);
 
 use nzedb\config\Configure;
 
@@ -37,17 +54,5 @@ try {
 		}
 	}
 }
-
-if (function_exists('ini_set') && function_exists('ini_get')) {
-	ini_set('include_path', nZEDb_WWW . PATH_SEPARATOR . ini_get('include_path'));
-}
-
-$www_top = str_replace('\\', '/', dirname($_SERVER['PHP_SELF']));
-if (strlen($www_top) === 1) {
-	$www_top = '';
-}
-
-// Used everywhere an href is output.
-define('WWW_TOP', $www_top);
 
 ?>

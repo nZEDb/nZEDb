@@ -1,5 +1,6 @@
 <?php
 
+require_once nZEDb_ROOT . 'app-cake' . DS . 'config' . DS . 'bootstrap.php';
 require_once nZEDb_LIB . 'utility' . DS . 'SmartyUtils.php';
 
 use nzedb\SABnzbd;
