@@ -1,13 +1,14 @@
 <?php
 namespace nzedb;
 
-use zed\db\Settings;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
 use nzedb\processing\tv\TraktTv;
 use Tmdb\ApiToken;
 use Tmdb\Client as TmdbClient;
 use Tmdb\Exception\TmdbApiException;
+use zed\db\Settings;
+
 
 /**
  * Class Movie

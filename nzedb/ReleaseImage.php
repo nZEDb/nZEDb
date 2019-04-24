@@ -1,8 +1,9 @@
 <?php
 namespace nzedb;
 
-use nzedb\db\Settings;
 use nzedb\utility\Misc;
+use nzedb\db\Settings;
+
 
 /**
  * Resize/save/delete images to disk.
@@ -51,13 +52,8 @@ class ReleaseImage
 	 *
 	 * @param Settings $pdo
 	 */
-	public function __construct(&$pdo = null)
+	public function __construct()
 	{
-		// Creates the nZEDb_COVERS constant
-		if ($pdo === null) {
-			$pdo = new Settings();
-		}
-		//                                                            Table    |  Column
 		$this->audSavePath    = nZEDb_COVERS . 'audiosample' . DS; // releases    guid
 		$this->imgSavePath    = nZEDb_COVERS . 'preview'     . DS; // releases    guid
 		$this->jpgSavePath    = nZEDb_COVERS . 'sample'      . DS; // releases    guid

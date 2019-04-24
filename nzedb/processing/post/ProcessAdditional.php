@@ -19,7 +19,6 @@
 namespace nzedb\processing\post;
 
 use app\models\Groups as Group;
-use zed\db\Settings;
 use lithium\analysis\Logger;
 use Mhor\MediaInfo\MediaInfo;
 use nzedb\Categorize;
@@ -36,6 +35,8 @@ use nzedb\ReleaseImage;
 use nzedb\Releases;
 use nzedb\SphinxSearch;
 use nzedb\utility\Misc;
+use zed\db\Settings;
+
 
 class ProcessAdditional
 {

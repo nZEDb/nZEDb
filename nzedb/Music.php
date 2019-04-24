@@ -1,9 +1,10 @@
 <?php
 namespace nzedb;
 
-use zed\db\Settings;
 use libs\AmazonProductAPI;
 use nzedb\db\DB;
+use zed\db\Settings;
+
 
 /**
  * Class Music

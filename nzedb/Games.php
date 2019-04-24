@@ -1,10 +1,11 @@
 <?php
 namespace nzedb;
 
-use zed\db\Settings;
 use DBorsatto\GiantBomb\Config;
 use DBorsatto\GiantBomb\Client;
 use nzedb\db\DB;
+use zed\db\Settings;
+
 
 class Games
 {

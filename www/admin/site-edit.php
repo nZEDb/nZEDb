@@ -4,7 +4,6 @@ require_once './config.php';
 use zed\db\Settings;
 use nzedb\Category;
 use nzedb\SABnzbd;
-use nzedb\db\DB;
 use nzedb\utility\Misc;
 
 // new to get information on books groups

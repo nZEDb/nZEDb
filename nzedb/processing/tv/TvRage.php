@@ -4,6 +4,8 @@ namespace nzedb\processing\tv;
 use nzedb\utility\Misc;
 use nzedb\utility\Country;
 use nzedb\ReleaseImage;
+use zed\Nzedb;
+
 
 /**
  * Class TvRage - functions used to post process releases against TvRage
@@ -70,7 +72,7 @@ class TvRage extends TV
 	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
-		$this->xmlEpisodeInfoUrl = "http://services.tvrage.com/myfeeds/episodeinfo.php?key=" . TvRage::APIKEY;
+		$this->xmlEpisodeInfoUrl = 'http://services.tvrage.com/myfeeds/episodeinfo.php?key=' . TvRage::APIKEY;
 		$this->imgSavePath = nZEDb_COVERS . 'tvrage' . DS;
 	}
 

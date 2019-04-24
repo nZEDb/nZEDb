@@ -1,13 +1,14 @@
 <?php
 namespace nzedb;
 
-use zed\db\Settings;
 use nzedb\db\DB;
 use nzedb\processing\adult\ADE;
 use nzedb\processing\adult\ADM;
 use nzedb\processing\adult\AEBN;
 use nzedb\processing\adult\Hotmovies;
 use nzedb\processing\adult\Popporn;
+use zed\db\Settings;
+
 
 /**
  * Class XXX

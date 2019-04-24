@@ -2,10 +2,11 @@
 
 namespace nzedb\db\populate;
 
-use zed\db\Settings;
 use nzedb\ColorCLI;
 use nzedb\ReleaseImage;
 use nzedb\db\DB;
+use zed\db\Settings;
+
 
 class AniDB
 {

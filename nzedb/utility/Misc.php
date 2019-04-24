@@ -4,7 +4,6 @@ namespace nzedb\utility;
 require_once __DIR__ . '/../constants.php';
 
 use app\extensions\util\Versions;
-use zed\db\Settings;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\SetCookie;
@@ -12,6 +11,7 @@ use GuzzleHttp\Exception\RequestException;
 use nzedb\ColorCLI;
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
 use PHPMailer\PHPMailer\PHPMailer;
+use zed\db\Settings;
 
 
 /*
