@@ -3,7 +3,8 @@
 
 ## _Installation_:
 
-_Forewarning: Your MySQL server requires the SphinxSE plugin, this should be pre-installed on MariaDB._
+_Forewarning: Your Db server requires the SphinxSE plugin, this should be pre-installed on 
+MariaDB (Although you may have to enable it with the following SQL: INSTALL PLUGIN sphinx SONAME 'ha_sphinx.so';._
 
 _For MySQL or Percona, you might have to compile them. Please make sure you have this before continuing as this is required.  Please see the end of this file for instructions on compiling the Percona plugin._
 
