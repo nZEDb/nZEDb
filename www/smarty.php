@@ -21,6 +21,7 @@
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'nZEDbBase.php';
 require_once nZEDb_ROOT . 'nzedb' . DIRECTORY_SEPARATOR . 'constants.php';
 require_once nZEDb_ROOT . 'vendor' . DS . 'autoload.php';
+require_once nZEDb_ROOT . 'app-cake' . DS . 'config' . DS . 'bootstrap.php';
 
 if (!file_exists(nZEDb_CONFIGS . 'install.lock')) {
 	header('Location: install');

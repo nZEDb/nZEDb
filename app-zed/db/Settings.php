@@ -16,7 +16,6 @@
  * @author    niel
  * @copyright 2019 nZEDb
  */
-
 namespace zed\db;
 
 use Cake\ORM\TableRegistry;
