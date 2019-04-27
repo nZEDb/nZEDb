@@ -2,7 +2,7 @@
 namespace nzedb\processing;
 
 use app\models\Groups as Group;
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\Books;
 use nzedb\Category;
 use nzedb\Console;

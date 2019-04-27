@@ -5,7 +5,7 @@
 require_once realpath(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 use app\models\Groups as Group;
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\Binaries;
 use nzedb\Groups;
 use nzedb\NNTP;

@@ -20,8 +20,8 @@ if (isset($_REQUEST["id"])) {
 
 	switch ($action) {
 		case 'submit':
-			$coverLoc    = nZEDb_COVERS . "movies/" . $id . '-cover.jpg';
-			$backdropLoc = nZEDb_COVERS . "movies/" . $id . '-backdrop.jpg';
+			$coverLoc    = nZEDb_COVERS . 'movies' . DS . $id . '-cover.jpg';
+			$backdropLoc = nZEDb_COVERS . 'movies' . DS . $id . '-backdrop.jpg';
 
 			if ($_FILES['cover']['size'] > 0) {
 				$tmpName   = $_FILES['cover']['tmp_name'];

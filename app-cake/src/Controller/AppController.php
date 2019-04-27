@@ -27,6 +27,7 @@ use Cake\Event\Event;
  */
 class AppController extends Controller
 {
+	public $viewClass = 'App\View\SmartyView';
 
     /**
      * Initialization hook method.

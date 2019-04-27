@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../config.php';
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\MiscSorter;
 use nzedb\NameFixer;
 use nzedb\Nfo;

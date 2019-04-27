@@ -1,6 +1,6 @@
 <?php
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\Releases;
 use nzedb\http\API;
 use nzedb\db\DB;

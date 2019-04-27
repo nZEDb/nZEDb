@@ -2,7 +2,7 @@
 
 namespace nzedb\processing\post;
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\Category;
 use nzedb\NZB;
 use nzedb\db\DB;

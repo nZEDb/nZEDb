@@ -1,7 +1,7 @@
 <?php
 namespace nzedb\processing\tv;
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\libraries\TraktAPI;
 use nzedb\ReleaseImage;
 use nzedb\utility\Time;

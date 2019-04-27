@@ -12,6 +12,8 @@
  * @license       MIT License (https://opensource.org/licenses/mit-license.php)
  */
 
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'nZEDbBase.php';
+
 /**
  * Use the DS to separate the directories in other defines
  */
@@ -80,7 +82,7 @@ define('CACHE', TMP . 'cache' . DS);
  *
  * CakePHP should always be installed with composer, so look there.
  */
-define('CAKE_CORE_INCLUDE_PATH', dirname(ROOT) . DS . 'vendor' . DS . 'cakephp' . DS . 'cakephp');
+define('CAKE_CORE_INCLUDE_PATH', nZEDb_ROOT . 'vendor' . DS . 'cakephp' . DS . 'cakephp');
 
 /**
  * Path to the cake directory.

@@ -1,6 +1,6 @@
 <?php
 
-use app\models\Settings;
+use zed\db\Settings;
 
 $page->title = "Terms and Conditions";
 $page->meta_title = Settings::value('site.main.title') . " - Terms and conditions";

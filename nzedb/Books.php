@@ -1,9 +1,10 @@
 <?php
 namespace nzedb;
 
-use app\models\Settings;
 use libs\AmazonProductAPI;
 use nzedb\db\DB;
+use zed\db\Settings;
+
 
 /*
  * Class for processing book info.

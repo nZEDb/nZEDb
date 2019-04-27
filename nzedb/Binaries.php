@@ -2,7 +2,7 @@
 namespace nzedb;
 
 use app\models\Groups as Group;
-use app\models\Settings;
+use zed\db\Settings;
 use app\models\Tables;
 use nzedb\db\DB;
 use nzedb\processing\ProcessReleasesMultiGroup;

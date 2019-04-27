@@ -1,7 +1,7 @@
 <?php
 namespace nzedb;
 
-use app\models\Settings;
+use zed\db\Settings;
 
 /**
  * Categorizing of releases by name/group.

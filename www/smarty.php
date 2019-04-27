@@ -16,29 +16,16 @@
  *
  * @link <http://www.gnu.org/licenses/>.
  * @author niel
- * @copyright 2015 nZEDb
+ * @copyright 2015 - 2019 nZEDb
  */
-require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'nzedb' . DIRECTORY_SEPARATOR . 'constants.php');
-require dirname(__DIR__) . '/vendor/autoload.php';
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'nZEDbBase.php';
+require_once nZEDb_ROOT . 'nzedb' . DIRECTORY_SEPARATOR . 'constants.php';
+require_once nZEDb_ROOT . 'vendor' . DS . 'autoload.php';
 require_once nZEDb_ROOT . 'app-cake' . DS . 'config' . DS . 'bootstrap.php';
 
-use nzedb\config\Configure;
-
-try {
-	$config = new Configure('smarty');
-} catch (\RuntimeException $e) {
-	if ($e->getCode() == 1) {
-		if (file_exists(nZEDb_WWW . 'config.php')) {
-			echo "Move: .../www/config.php to .../configuration/config.php<br />\n Remove any line that says require_once 'automated.config.php';<br />\n";
-			if (file_exists(nZEDb_WWW . 'settings.php')) {
-				echo "Move: .../www/settings.php to  .../configuration/settings.php<br />\n";
-			}
-			exit();
-		} else if (! file_exists(APP . '.env')) {
-			header('location: install.html');
-			exit();
-		}
-	}
+if (!file_exists(nZEDb_CONFIGS . 'install.lock')) {
+	header('Location: install');
+	exit();
 }
 
 if (function_exists('ini_set') && function_exists('ini_get')) {
@@ -52,5 +39,21 @@ if (strlen($www_top) === 1) {
 
 // Used everywhere an href is output.
 define('WWW_TOP', $www_top);
+
+use nzedb\config\Configure;
+
+try {
+	$config = new Configure('smarty');
+} catch (\RuntimeException $e) {
+	if ($e->getCode() == 1) {
+		if (file_exists(nZEDb_WWW . 'config.php')) {
+			echo "Move: .../www/config.php to .../configuration/config.php<br />\n Remove any line that says require_once 'automated.config.php';<br />\n";
+			if (file_exists(nZEDb_WWW . 'settings.php')) {
+				echo "Move: .../www/settings.php to  .../configuration/settings.php<br />\n";
+			}
+			exit();
+		}
+	}
+}
 
 ?>

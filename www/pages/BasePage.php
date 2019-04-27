@@ -2,10 +2,12 @@
 
 require_once nZEDb_LIB . 'utility' . DS . 'SmartyUtils.php';
 
-use app\models\Settings;
 use nzedb\SABnzbd;
 use nzedb\Users;
 use nzedb\db\DB;
+use nzedb\utility\Misc;
+use zed\db\Settings;
+
 
 class BasePage
 {
@@ -95,6 +97,8 @@ class BasePage
 	public function __construct()
 	{
 		$this->https = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? true : false);
+
+		Misc::setCoversConstant(Settings::value('site.main.coverspath'));
 
 		session_set_cookie_params(0, '/', '', $this->https, true);
 		@session_start();

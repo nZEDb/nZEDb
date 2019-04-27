@@ -2,7 +2,7 @@
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 require_once nZEDb_LIB . 'utility' . DS . 'CopyFileTree.php';
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\db\DB;
 
 $reorg = nZEDb_MISC . 'testing' . DS . 'NZBs' . DS . 'nzb-reorg.php';

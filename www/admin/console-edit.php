@@ -23,7 +23,7 @@ if (isset($_REQUEST["id"])) {
 
 	switch ($action) {
 		case 'submit':
-			$coverLoc = nZEDb_COVERS . "console/" . $id . '.jpg';
+			$coverLoc = nZEDb_COVERS . 'console' . DS . $id . '.jpg';
 
 			if ($_FILES['cover']['size'] > 0) {
 				$tmpName   = $_FILES['cover']['tmp_name'];

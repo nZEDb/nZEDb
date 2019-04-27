@@ -1,6 +1,6 @@
 <?php
 
-use app\models\Settings;
+use zed\db\Settings;
 
 if (!$page->users->isLoggedIn()) {
 	$page->show403();

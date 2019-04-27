@@ -1,7 +1,7 @@
 <?php
 require_once './config.php';
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\Logging;
 use nzedb\Releases;
 

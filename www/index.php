@@ -3,12 +3,7 @@ require_once 'smarty.php';
 
 nzedb\utility\Misc::maintainanceCheck();
 
-if (!file_exists(nZEDb_CONFIGS . 'install.lock')) {
-	header('Location: install');
-	exit();
-}
-
-use app\models\Settings;
+use zed\db\Settings;
 
 $page = new Page();
 

@@ -1,6 +1,6 @@
 <?php
 
-use app\models\Settings;
+use zed\db\Settings;
 use nzedb\Category;
 use nzedb\Movie;
 use nzedb\UserMovies;

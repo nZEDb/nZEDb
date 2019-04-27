@@ -1,9 +1,10 @@
 <?php
 namespace nzedb;
 
-use app\models\Settings;
 use nzedb\db\DB;
 use libs\AmazonProductAPI;
+use zed\db\Settings;
+
 
 class Console
 {
