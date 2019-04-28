@@ -1,7 +1,7 @@
 <?php
 require_once './config.php';
 
-use app\models\Groups as Group;
+use Cake\ORM\TableRegistry;
 use nzedb\Groups;
 
 $page   = new AdminPage();
@@ -13,57 +13,47 @@ $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
 switch ($action) {
 	case 'submit':
-		if (empty($_POST['id'])) {
-			// Add a new group.
-			if ($_POST['name'] = Group::isValidName($_POST['name'])) {
-				// Only allow entries whose keys are valid columns.
-				$data = array_intersect_key($_POST, Group::schema()->fields());
-				try {
-					$newGroup = Group::create($data);
-				} catch (\InvalidArgumentException $e) {
-					throw new \InvalidArgumentException($e->getMessage() .
-						PHP_EOL .
-						'Thrown in group-edit.php');
-				} catch (\lithium\data\model\QueryException $e) {
-					if (stripos(
-							$e->getMessage(),
-							"Duplicate entry '{$data['name']}' for key 'ix_groups_name'")
-						!== false) {
-						if (\nZEDb_DEBUG || \nZEDb_ECHOCLI) {
-							$this->pdo->log("Cannot create group '{$data['name']}', as it already exists'!\n");
-						}
-					} else {
-						throw new \InvalidArgumentException(
-							"Cannot create group '{$data['name']}', as it already exists'!\n",
-							$e->getCode(),
-							$e
-						);
-					}
-				} catch (\Exception $e) {
-					throw new \RuntimeException(
-						$e->getMessage(),
-						$e->getCode(),
-						$e
-					);
-				}
+		// Get the valid columns for this table
+		$columns = array_flip(TableRegistry::getTableLocator()->get('Groups')->getSchema()->columns());
+		// Only allow entries whose keys are valid columns.
+		$data = array_intersect_key($_POST, $columns);
 
-				$newGroup->save();
+		$groups = TableRegistry::getTableLocator()->get('Groups');
+
+		if (empty($_POST['id'])) {
+			try {
+				$group = $groups->newEntity($data);
+				// Save the new group.
+				if ($groups->save($group) === false) {
+					throw new \ErrorException('Failed to save new group to the database');
+				}
+			} catch (\Exception $e) {
+				throw new \RuntimeException(
+					$e->getMessage(),
+					$e->getCode(),
+					$e
+				);
 			}
-		} else {
-			// Update an existing group.
-			$groups->update($_POST);
+		} else { // Update an existing group.
+			$group = $groups->get($data['id']);
+			$groups->patchEntity($group, $data);
+
+			if ($groups->save($group) === false) {
+				throw new \ErrorException('Failed to save new group to the database');
+			}
 		}
-		header("Location:" . WWW_TOP . "/group-list.php");
+
+		header('Location:' . WWW_TOP . '/group-list.php');
 		break;
 
 	case 'view':
 	default:
-		if (isset($_GET["id"])) {
-			$page->title = "Newsgroup Edit";
-			$id          = $_GET["id"];
+		if (isset($_GET['id'])) {
+			$page->title = 'Newsgroup Edit';
+			$id          = $_GET['id'];
 			$group       = Group::getAllByID($id);
 		} else {
-			$page->title = "Newsgroup Add";
+			$page->title = 'Newsgroup Add';
 			$group = [
 				'id'                    => '',
 				'name'                  => '',

@@ -8,6 +8,7 @@ if (!isset($_GET['action'])) {
 
 require_once './config.php';
 
+use Cake\ORM\TableRegistry;
 use nzedb\Binaries;
 use nzedb\Groups;
 use nzedb\Regexes;
@@ -77,8 +78,26 @@ switch ($_GET['action']) {
 	case 'group_edit_delete_single':
 		$id = (int)$_GET['group_id'];
 		session_write_close();
-		(new Groups($settings))->delete($id);
-		print "Group $id deleted.";
+		try {
+			$groups = TableRegistry::getTableLocator()->get('Groups');
+			$group = $groups->get($id);
+			$result = $groups->delete($group);
+		} catch (\Exception $e) {
+			if ($group->hasErrors()) {
+				$errors = 'Error list\n';
+				foreach ($group->getErrors() as $error) {
+					//var_dump($error);
+					$errors .= "$error\n";
+				}
+				print $errors;
+			} else {
+				//print "Failed to delete group: '{$group->name}'";
+				//print $e->getMessage();
+				print_r($group);
+			}
+			break;
+		}
+			print "Group '{$group->name}' deleted.";
 		break;
 
 	case 'toggle_group_active_status':
