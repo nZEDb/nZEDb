@@ -56,29 +56,9 @@
     "Latest-*"
   ],
   "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/niel/li3_docs"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/niel/li3_fixtures"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/niel/li3_quality"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/niel/lithium"
-    },
-    {
+     {
       "type": "vcs",
       "url": "https://github.com/nZEDb/Git.php"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/unionofrad/manual"
     },
     {
       "type": "vcs",
@@ -159,7 +139,6 @@
     "cakephp/cakephp-codesniffer": "^3.0",
     "cakephp/debug_kit": "^3.17.0",
     "josegonzalez/dotenv": "3.*",
-    "phpunit/phpunit": "^5|^6",
     "psy/psysh": "@stable"
   },
   "scripts": {
