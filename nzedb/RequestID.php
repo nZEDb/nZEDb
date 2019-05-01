@@ -17,7 +17,7 @@ abstract class RequestID
 	const IS_REQID_FALSE = 0; // releases.isrequestid is 0
 
 	/**
-	 * @var Groups
+	 * @var \nzedb\Groups
 	 */
 	public $groups;
 

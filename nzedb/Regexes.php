@@ -1,6 +1,7 @@
 <?php
 namespace nzedb;
 
+use App\Model\Table\GroupsTable as GroupData;
 use app\models\Groups as Group;
 use app\models\Tables;
 use nzedb\db\DB;
@@ -172,7 +173,7 @@ class Regexes
 	 */
 	public function testCollectionRegex($groupName, $regex, $limit)
 	{
-		$groupID = Group::getIDByName($groupName);
+		$groupID = (new GroupData)->getIDByName($groupName);
 
 		if (empty($groupID)) {
 			return [];
@@ -242,7 +243,7 @@ class Regexes
 	 */
 	public function testReleaseNamingRegex($groupName, $regex, $displayLimit, $queryLimit)
 	{
-		$groupID = Group::getIDByName($groupName);
+		$groupID = (new GroupData)->getIDByName($groupName);
 
 		if (empty($groupID)) {
 			return [];

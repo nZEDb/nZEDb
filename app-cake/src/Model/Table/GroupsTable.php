@@ -4,7 +4,10 @@ namespace App\Model\Table;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
+use zed\controllers\TableObject;
+
 
 /**
  * Groups Model
@@ -22,35 +25,84 @@ use Cake\Validation\Validator;
  */
 class GroupsTable extends Table
 {
-    /**
+	/**
+	 * Returns a rules checker object that will be used for validating
+	 * application integrity.
+	 *
+	 * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+	 *
+	 * @return \Cake\ORM\RulesChecker
+	 */
+	public function buildRules(RulesChecker $rules): RulesChecker
+	{
+		$rules->add($rules->isUnique(['name']));
+
+		return $rules;
+	}
+
+	/**
      * Initialize method
      *
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
-    {
-        parent::initialize($config);
+	public function initialize(array $config): void
+	{
+		parent::initialize($config);
 
-        $this->setTable('groups');
-        $this->setDisplayField('name');
-        $this->setPrimaryKey('id');
-/*  restore this when releases' model is created.
-        $this->belongsToMany('Releases', [
-            'foreignKey' => 'group_id',
-            'targetForeignKey' => 'release_id',
-            'joinTable' => 'releases_groups'
-        ]);
-*/
-    }
+		$this->setTable('groups');
+		$this->setDisplayField('name');
+		$this->setPrimaryKey('id');
+		$this->belongsToMany('Releases', [
+			'foreignKey' => 'group_id',
+			'targetForeignKey' => 'release_id',
+			'joinTable' => 'releases_groups'
+		]);
+	}
 
-    /**
+	public function getActive(): array
+	{
+		$query = $this->find()
+			->select([
+				'id',
+				'name',
+				'backfill_target',
+				'first_record',
+				'first_record_postdate',
+				'last_record',
+				'last_record_postdate',
+				'last_updated',
+				'minfilestoformrelease',
+				'minsizetoformrelease',
+				'active',
+				'backfill',
+				'description',
+			])
+			->where(['active' => true])
+			->order(['name']);
+		$set = $query->all();
+
+		return $set->toArray();
+	}
+
+	public function getIDByName(string $name)
+	{
+		$query = $this->find()
+			->select(['id'])
+			->where(['name' => $name])
+			->limit(1);
+
+		$entity = $query->all()->first();
+		return $entity === null ? '' : $entity->id;
+	}
+
+	/**
      * Default validation rules.
      *
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator): Validator
+	public function validationDefault(Validator $validator): Validator
     {
         $validator
             ->integer('id')
@@ -112,19 +164,5 @@ class GroupsTable extends Table
             ->allowEmptyString('description');
 
         return $validator;
-    }
-
-    /**
-     * Returns a rules checker object that will be used for validating
-     * application integrity.
-     *
-     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
-     * @return \Cake\ORM\RulesChecker
-     */
-    public function buildRules(RulesChecker $rules)
-    {
-        $rules->add($rules->isUnique(['name']));
-
-        return $rules;
     }
 }

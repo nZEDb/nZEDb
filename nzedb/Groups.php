@@ -2,12 +2,19 @@
 namespace nzedb;
 
 use app\models\Groups as Group;
+use App\Model\Table\GroupsTable as GroupsData;
+use Cake\Datasource\ConnectionManager;
+use Cake\Log\Log;
+use Cake\ORM\TableRegistry;
+use zed\controllers\TableObject;
 use zed\db\Settings;
 use app\models\Tables;
 use nzedb\db\DB;
 
 class Groups
 {
+	use TableObject;
+
 	/**
 	 * @var \nzedb\db\Settings
 	 */
@@ -31,6 +38,11 @@ class Groups
 	protected $cbppTableNames;
 
 	/**
+	 * @var \App\Model\Table\GroupsTable
+	 */
+	public $table;
+
+	/**
 	 * Construct.
 	 *
 	 * @param array $options Class instances.
@@ -45,6 +57,7 @@ class Groups
 
 		$this->pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->colorCLI = ($options['ColorCLI'] instanceof ColorCLI ? $options['ColorCLI'] : new ColorCLI());
+		$this->initialiseTableObject();
 	}
 
 	/**
@@ -54,15 +67,11 @@ class Groups
 	 */
 	public function getGroupsForSelect()
 	{
-		$groups = Group::getActive();
-		$temp_array = [];
+		$temp_array[-1] = '--Please Select--';
 
-		$temp_array[-1] = "--Please Select--";
-
-		if (is_array($groups)) {
-			foreach ($groups as $group) {
-				$temp_array[$group["name"]] = $group["name"];
-			}
+		$groups = $this->table->getActive();
+		foreach ($groups as $group) {
+			$temp_array[$group->name] = $group->name;
 		}
 
 		return $temp_array;
@@ -252,31 +261,25 @@ class Groups
 	 *
 	 * @return bool
 	 */
-	public function reset($id)
+	public function reset($id): bool
 	{
 		// Remove rows from collections / binaries / parts.
 		(new Binaries(['Groups' => $this, 'Settings' => $this->pdo]))->purgeGroup($id);
 
 		// Remove rows from part repair.
-		$this->pdo->queryExec("
-			DELETE mp
-			FROM missed_parts mp
-			WHERE mp.groups_id = {$id}"
-		);
+		$table = TableRegistry::getTableLocator()->get('MissedParts');
+		$query = $table->query();
+		$query->delete()->where(['groups_id' => $id]);
 
-		foreach ($this->cbpm AS $tablePrefix) {
-			$this->pdo->queryExec(
-				"DROP TABLE IF EXISTS {$tablePrefix}_{$id}"
-			);
+		$connection = ConnectionManager::get('default');
+		$sql = 'DROP TABLE IF EXISTS ';
+		foreach (self::$cbpm AS $tablePrefix) {
+			$table = $tablePrefix . '_' . $id;
+			//Log::write('debug', $sql . $table);
+			$connection->execute($sql . $table);
 		}
 
-		// Reset the group stats.
-		return $this->pdo->queryExec("
-			UPDATE groups
-			SET backfill_target = 1, first_record = 0, first_record_postdate = NULL, last_record = 0,
-				last_record_postdate = NULL, last_updated = NULL
-			WHERE id = {$id}"
-		);
+		return $this->resetFields(['id' => $id]);
 	}
 
 	/**
@@ -286,26 +289,47 @@ class Groups
 	 */
 	public function resetall()
 	{
-		foreach ($this->cbpm AS $tablePrefix) {
-			$this->pdo->queryExec("TRUNCATE TABLE {$tablePrefix}");
+		$connection = ConnectionManager::get('default');
+		$statement = $connection->prepare('TRUNCATE TABLE IF EXISTS :table');
+		foreach (self::$cbpm AS $tablePrefix) {
+			$statement->execute(['table' => $tablePrefix]);
+			$statement->closeCursor();
 		}
 
-		$groups = $this->pdo->queryDirect("SELECT id FROM groups");
+		$groups = $this->table->findAll()->select(['id']);
 
 		if ($groups instanceof \Traversable) {
+			$connection = ConnectionManager::get('default');
+			$statement = $connection->prepare('DROP TABLE IF EXISTS :table');
 			foreach ($groups AS $group) {
-				foreach ($this->cbpm AS $tablePrefix) {
-					$this->pdo->queryExec("DROP TABLE IF EXISTS {$tablePrefix}_{$group['id']}");
+				foreach (self::$cbpm AS $tablePrefix) {
+					$statement->execute(['table' => $tablePrefix . '_' . $group->id]);
+					$statement->closeCursor();
 				}
 			}
 		}
 
+		return $this->resetFields();
+	}
+
+	public function resetFields(array $condition = [])
+	{
+		$query = $this->table->query();
 		// Reset the group stats.
-		return $this->pdo->queryExec("
-			UPDATE groups
-			SET backfill_target = 1, first_record = 0, first_record_postdate = NULL,
-				last_record = 0, last_record_postdate = NULL, last_updated = NULL, active = 0"
-		);
+		$query->update()
+			->set([
+				'backfill_target'       => 1,
+				'first_record'          => 0,
+				'first_record_postdate' => null,
+				'last_record'           => 0,
+				'last_record_postdate'  => null,
+				'last_updated'          => null,
+				'active'                => false
+			])
+			->where($condition);
+		$result = $query->execute();
+
+		return $result->errorCode() == 0;
 	}
 
 	/**
@@ -377,7 +401,7 @@ class Groups
 
 			foreach ($groups as $group) {
 				if (preg_match($regFilter, $group['group']) > 0) {
-					$res = Group::getIDByName($group['group']);
+					$res = $this->table->getIDByName($group['group']);
 					if ($res === '') {
 						$this->add(
 							[

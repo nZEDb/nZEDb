@@ -1,7 +1,6 @@
 <?php
 namespace nzedb;
 
-use app\models\Groups as Group;
 use zed\db\Settings;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
@@ -23,7 +22,7 @@ class Releases
 	public $pdo;
 
 	/**
-	 * @var Groups
+	 * @var \nzedb\Groups
 	 */
 	public $groups;
 
@@ -851,7 +850,8 @@ class Releases
 			$this->showPasswords,
 			NZB::NZB_ADDED,
 			($maxAge > 0 ? sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $maxAge) : ''),
-			($groupName != -1 ? sprintf(' AND r.groups_id = %d ', Group::getIDByName($groupName)
+			($groupName != -1 ? sprintf(' AND r.groups_id = %d ',
+				$this->groups->table->getIDByName($groupName)
 			) : ''),
 			(array_key_exists($sizeFrom, $sizeRange) ? ' AND r.size > ' . (string)(104857600 * (int)$sizeRange[$sizeFrom]) . ' ' : ''),
 			(array_key_exists($sizeTo, $sizeRange) ? ' AND r.size < ' . (string)(104857600 * (int)$sizeRange[$sizeTo]) . ' ' : ''),

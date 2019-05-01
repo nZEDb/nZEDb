@@ -235,7 +235,7 @@ class RequestIDLocal extends RequestID
 		if (isset($this->groupIDCache[$groupName])) {
 			$groupID = $this->groupIDCache[$groupName];
 		} else {
-			$groupID = Group::getIDByName($groupName);
+			$groupID = $this->groups->table->getIDByName($groupName);
 		}
 		$check = $this->pdo->queryOneRow(
 			sprintf("

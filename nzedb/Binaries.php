@@ -2,16 +2,21 @@
 namespace nzedb;
 
 use app\models\Groups as Group;
-use zed\db\Settings;
-use app\models\Tables;
+use App\models\Tables;
+use Cake\ORM\TableRegistry;
 use nzedb\db\DB;
 use nzedb\processing\ProcessReleasesMultiGroup;
+use zed\controllers\TableObject;
+use zed\db\Settings;
+
 
 /**
  * Class Binaries
  */
 class Binaries
 {
+	use TableObject;
+
 	const OPTYPE_BLACKLIST          = 1;
 	const OPTYPE_WHITELIST          = 2;
 
@@ -30,17 +35,18 @@ class Binaries
 	public $blackList = [];
 
 	/**
-	 * Cache of white list regexes.
-	 * @var array
-	 */
-	public $whiteList = [];
-
-	/**
 	 * How many headers do we download per loop?
 	 *
 	 * @var int
 	 */
 	public $messageBuffer;
+
+	/**
+	 * Cache of white list regexes.
+	 *
+	 * @var array
+	 */
+	public $whiteList = [];
 
 	/**
 	 * @var ColorCLI
@@ -58,7 +64,7 @@ class Binaries
 	protected $_debugging;
 
 	/**
-	 * @var Groups
+	 * @var \nzedb\Groups
 	 */
 	protected $_groups;
 
@@ -258,6 +264,8 @@ class Binaries
 		];
 		$options += $defaults;
 
+		$this->initialiseTableObject();
+
 		$this->_echoCLI = ($options['Echo'] && nZEDb_ECHOCLI);
 
 		$this->_pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
@@ -311,7 +319,7 @@ class Binaries
 	public function updateAllGroups($maxHeaders = 100000)
 	{
 		/* @var $groups string[][] */
-		$groups = Group::getActive();
+		$groups = $this->_groups->table->getActive();
 
 		$groupCount = \count($groups);
 		if ($groupCount > 0) {
@@ -364,23 +372,23 @@ class Binaries
 	/**
 	 * Download new headers for a single group.
 	 *
-	 * @param array $groupMySQL Array of MySQL results for a single group.
+	 * @param \App\Model\Entity\Group $group Results for a single group.
 	 * @param int   $maxHeaders (Optional) How many headers to download max.
 	 *
 	 * @return void
 	 */
-	public function updateGroup($groupMySQL, $maxHeaders = 0)
+	public function updateGroup($group, $maxHeaders = 0)
 	{
 		$startGroup = microtime(true);
 
 		$this->logIndexerStart();
 
 		// Select the group on the NNTP server, gets the latest info on it.
-		$groupNNTP = $this->_nntp->selectGroup($groupMySQL['name']);
+		$groupNNTP = $this->_nntp->selectGroup($group->name);
 		if ($this->_nntp->isError($groupNNTP)) {
-			$groupNNTP = $this->_nntp->dataError($this->_nntp, $groupMySQL['name']);
+			$groupNNTP = $this->_nntp->dataError($this->_nntp, $group->name);
 			if ($groupNNTP->code == 411) {
-				$this->_groups->disableIfNotExist($groupMySQL['id']);
+				$this->_groups->disableIfNotExist($group['id']);
 			}
 			if ($this->_nntp->isError($groupNNTP)) {
 				return;
@@ -388,20 +396,20 @@ class Binaries
 		}
 
 		if ($this->_echoCLI) {
-			$this->_colorCLI->doEcho($this->_colorCLI->primary('Processing ' . $groupMySQL['name']), true);
+			$this->_colorCLI->doEcho($this->_colorCLI->primary('Processing ' . $group->name), true);
 		}
 
 		// Attempt to repair any missing parts before grabbing new ones.
-		if ($groupMySQL['last_record'] != 0) {
+		if ($group->last_record != 0) {
 			if ($this->_partRepair) {
 				if ($this->_echoCLI) {
 					$this->_colorCLI->doEcho($this->_colorCLI->primary('Part repair enabled. Checking for missing parts.'), true);
 				}
-				$this->partRepair($groupMySQL);
+				$this->partRepair($group);
 				$mgrPosters = $this->getMultiGroupPosters();
 				if ($this->allAsMgr === true || ! empty($mgrPosters)) {
 					$tableNames = ProcessReleasesMultiGroup::tableNames();
-					$this->partRepair($groupMySQL, $tableNames);
+					$this->partRepair($group, $tableNames);
 				}
 			} else if ($this->_echoCLI) {
 				$this->_colorCLI->doEcho($this->_colorCLI->primary('Part repair disabled by user.'), true);
@@ -409,22 +417,22 @@ class Binaries
 		}
 
 		// Generate postdate for first record, for those that upgraded.
-		if (($groupMySQL['first_record_postdate'] === null) && $groupMySQL['first_record'] != 0) {
-			$groupMySQL['first_record_postdate'] = $this->postdate($groupMySQL['first_record'], $groupNNTP);
+		if (($group->first_record_postdate === null) && $group->first_record != 0) {
+			$group->first_record_postdate = $this->postdate($group->first_record, $groupNNTP);
 
 			$this->_pdo->queryExec(
 				sprintf('
 					UPDATE groups
 					SET first_record_postdate = %s
 					WHERE id = %d',
-					$this->_pdo->from_unixtime($groupMySQL['first_record_postdate']),
-					$groupMySQL['id']
+					$this->_pdo->from_unixtime($group->first_record_postdate),
+					$group['id']
 				)
 			);
 		}
 
 		// Get first article we want aka the oldest.
-		if ($groupMySQL['last_record'] == 0) {
+		if ($group->last_record == 0) {
 			if ($this->_newGroupScanByDays) {
 				// For new newsgroups - determine here how far we want to go back using date.
 				$first = $this->daytopost($this->_newGroupDaysToScan, $groupNNTP);
@@ -443,7 +451,7 @@ class Binaries
 		// If this is not a new group, go from our newest to the servers newest.
 		} else {
 			// Set our oldest wanted to our newest local article.
-			$first = $groupMySQL['last_record'];
+			$first = $group->last_record;
 
 			// This is how many articles we will grab. (the servers newest minus our newest).
 			$totalCount = (string)($groupNNTP['last'] - $first);
@@ -485,7 +493,7 @@ class Binaries
 			if ($this->_echoCLI) {
 				$this->_colorCLI->doEcho(
 					$this->_colorCLI->primary(
-						($groupMySQL['last_record'] == 0
+						($group->last_record == 0
 							? 'New group ' . $groupNNTP['group'] . ' starting with ' .
 								($this->_newGroupScanByDays
 									? $this->_newGroupDaysToScan . ' days'
@@ -496,7 +504,7 @@ class Binaries
 						' Leaving ' . number_format($leaveOver) .
 						" for next pass.\nServer oldest: " . number_format($groupNNTP['first']) .
 						' Server newest: ' . number_format($groupNNTP['last']) .
-						' Local newest: ' . number_format($groupMySQL['last_record'])
+						' Local newest: ' . number_format($group->last_record)
 					), true
 				);
 			}
@@ -520,26 +528,26 @@ class Binaries
 					$this->_colorCLI->doEcho(
 						$this->_colorCLI->header(
 							"\nGetting " . number_format($last - $first + 1) . ' articles (' . number_format($first) .
-							' to ' . number_format($last) . ') from ' . $groupMySQL['name'] . " - (" .
+							' to ' . number_format($last) . ') from ' . $group->name . " - (" .
 							number_format($groupLast - $last) . " articles in queue)."
 						)
 					);
 				}
 
 				// Get article headers from newsgroup.
-				$scanSummary = $this->scan($groupMySQL, $first, $last);
+				$scanSummary = $this->scan($group, $first, $last);
 
 				// Check if we fetched headers.
 				if (!empty($scanSummary)) {
 
 					// If new group, update first record & postdate
-					if (is_null($groupMySQL['first_record_postdate']) && $groupMySQL['first_record'] == 0) {
-						$groupMySQL['first_record'] = $scanSummary['firstArticleNumber'];
+					if (is_null($group->first_record_postdate) && $group->first_record == 0) {
+						$group->first_record = $scanSummary['firstArticleNumber'];
 
 						if (isset($scanSummary['firstArticleDate'])) {
-							$groupMySQL['first_record_postdate'] = strtotime($scanSummary['firstArticleDate']);
+							$group->first_record_postdate = strtotime($scanSummary['firstArticleDate']);
 						} else {
-							$groupMySQL['first_record_postdate'] = $this->postdate($groupMySQL['first_record'], $groupNNTP);
+							$group->first_record_postdate = $this->postdate($group->first_record, $groupNNTP);
 						}
 
 						$this->_pdo->queryExec(
@@ -548,8 +556,8 @@ class Binaries
 								SET first_record = %s, first_record_postdate = %s
 								WHERE id = %d',
 								$scanSummary['firstArticleNumber'],
-								$this->_pdo->from_unixtime($this->_pdo->escapeString($groupMySQL['first_record_postdate'])),
-								$groupMySQL['id']
+								$this->_pdo->from_unixtime($this->_pdo->escapeString($group->first_record_postdate)),
+								$group['id']
 							)
 						);
 					}
@@ -566,7 +574,7 @@ class Binaries
 							WHERE id = %d',
 							$this->_pdo->escapeString($scanSummary['lastArticleNumber']),
 							$this->_pdo->from_unixtime($scanSummary['lastArticleDate']),
-							$groupMySQL['id']
+							$group['id']
 						)
 					);
 				} else {
@@ -577,7 +585,7 @@ class Binaries
 							SET last_record = %s, last_updated = NOW()
 							WHERE id = %d',
 							$this->_pdo->escapeString($last),
-							$groupMySQL['id']
+							$group['id']
 						)
 					);
 				}
@@ -592,7 +600,7 @@ class Binaries
 			if ($this->_echoCLI) {
 				$this->_colorCLI->doEcho(
 					$this->_colorCLI->primary(
-						PHP_EOL . 'Group ' . $groupMySQL['name'] . ' processed in ' .
+						PHP_EOL . 'Group ' . $group->name . ' processed in ' .
 						number_format(microtime(true) - $startGroup, 2) . ' seconds.'
 					), true
 				);
@@ -600,10 +608,10 @@ class Binaries
 		} else if ($this->_echoCLI) {
 			$this->_colorCLI->doEcho(
 				$this->_colorCLI->primary(
-					'No new articles for ' . $groupMySQL['name'] . ' (first ' . number_format($first) .
-					', last ' . number_format($last) . ', grouplast ' . number_format($groupMySQL['last_record']) .
+					'No new articles for ' . $group->name . ' (first ' . number_format($first) .
+					', last ' . number_format($last) . ', grouplast ' . number_format($group->last_record) .
 					', total ' . number_format($total) . ")\n" . 'Server oldest: ' . number_format($groupNNTP['first']) .
-					' Server newest: ' . number_format($groupNNTP['last']) . ' Local newest: ' . number_format($groupMySQL['last_record'])
+					' Server newest: ' . number_format($groupNNTP['last']) . ' Local newest: ' . number_format($group->last_record)
 				), true
 			);
 		}
@@ -1319,7 +1327,7 @@ class Binaries
 	public function postdate($post, array $groupData)
 	{
 		// Set table names
-		$groupID = Group::getIDByName($groupData['group']);
+		$groupID = $this->_groups->table->getIDByName($groupData['group']);
 		$group = [];
 		if ($groupID !== '') {
 			$group = Tables::getTPGNamesFromId($groupID);
@@ -1775,9 +1783,11 @@ class Binaries
 	 *
 	 * @return void
 	 */
-	public function purgeGroup($groupID)
+	public function purgeGroup($groupID): void
 	{
-		$this->_pdo->queryExec(sprintf('DELETE c FROM collections c WHERE c.groups_id = %d', $groupID));
+		$table = TableRegistry::getTableLocator()->get('Collections');
+		$query = $table->query();
+		$query->delete()->where(['groups_id' => $groupID])->execute();
 	}
 
 	/**
