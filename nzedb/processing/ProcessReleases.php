@@ -1,7 +1,6 @@
 <?php
 namespace nzedb\processing;
 
-use app\models\Groups as Group;
 use app\models\MultigroupPosters;
 use app\models\ReleasesGroups;
 use zed\db\Settings;
@@ -155,6 +154,21 @@ class ProcessReleases
 			echo $this->pdo->log->error(PHP_EOL . 'You have an invalid setting for completion. It cannot be higher than 100.');
 		}
 		$this->collectionTimeout = (int)Settings::value('indexer.processing.collection_timeout');
+	}
+
+	public function getAllOrOneActiveGroup($id = ''): array
+	{
+		if ($id === '') {
+			$query = $this->groups->table->find()
+				->select(['id'])
+				->where(['active' => true]);
+			$set = $query->all();
+			$groupIDs = $set->toArray();
+		} else {
+			$groupIDs = [$this->groups->table->newEntity(['id' => $id])];
+		}
+
+		return $groupIDs;
 	}
 
 	/**
@@ -388,24 +402,25 @@ class ProcessReleases
 		}
 	}
 
-	public function deleteUnwantedCollections($groupID)
+	/**
+	 * @param $groupID
+	 *
+	 * @return void
+	 */
+	public function deleteUnwantedCollections($groupID): void
 	{
 		$startTime = time();
 		$this->initiateTableNames($groupID);
 
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->header(
-					"Process Releases -> Delete collections smaller/larger than minimum size/file count from group/site setting."
+			$this->pdo->log::doEcho(
+				$this->pdo->log::header(
+					'Process Releases -> Delete collections smaller/larger than minimum size/file count from group/site setting.'
 				)
 			);
 		}
 
-		if ($groupID == '') {
-			$groupIDs = Group::getActiveIDs()->data();
-		} else {
-			$groupIDs = [['id' => $groupID]];
-		}
+		$groupIDs = $this->getAllOrOneActiveGroup($groupID);
 
 		$minSizeDeleted = $maxSizeDeleted = $minFilesDeleted = 0;
 
@@ -413,11 +428,11 @@ class ProcessReleases
 		$minSizeSetting = Settings::value('.release.minsizetoformrelease');
 		$minFilesSetting = Settings::value('.release.minfilestoformrelease');
 
-		foreach ($groupIDs as $groupID) {
+		foreach ($groupIDs as $group) {
 
 			$groupMinSizeSetting = $groupMinFilesSetting = 0;
 
-			$groupMinimums = Group::getAllByID($groupID['id']);
+			$groupMinimums = Group::getAllByID($group->id);
 			if ($groupMinimums !== false) {
 				if (!empty($groupMinimums['minsizetoformrelease']) && $groupMinimums['minsizetoformrelease'] > 0) {
 					$groupMinSizeSetting = (int)$groupMinimums['minsizetoformrelease'];
@@ -509,8 +524,8 @@ class ProcessReleases
 		}
 
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary(
+			$this->pdo->log::doEcho(
+				$this->pdo->log::primary(
 					'Deleted ' . ($minSizeDeleted + $maxSizeDeleted + $minFilesDeleted) . ' collections: ' . PHP_EOL .
 					$minSizeDeleted . ' smaller than, ' .
 					$maxSizeDeleted . ' bigger than, ' .
@@ -672,38 +687,27 @@ class ProcessReleases
 
 						if (preg_match_all('#(\S+):\S+#', $collection['xref'], $matches)) {
 							foreach ($matches[1] as $grp) {
-								//check if the group name is in a valid format
-								$grpTmp = Group::isValidName($grp);
-								if ($grpTmp !== false) {
+								// Create entity to check if the group name is in a valid format
+								$group = $this->groups->table->newEntity(
+									[
+										'name' => $grp,
+										'description' => 'Added by Release processing',
+										'active' => false,
+										'backfill' => false,
+										'minfilestoformrelease' => 0,
+										'minsizetoformrelease' => 0
+									]
+								);
+								if (!$group->hasErrors(false)) {
 									//check if the group already exists in database
-									$xrefGrpID = $this->groups->table->getIDByName($grpTmp);
+									$xrefGrpID = $this->groups->table->getIDByName($group->name);
 									if ($xrefGrpID === '') {
 										try {
-											$newGroup = Group::create(
-												[
-													'name'        => $grpTmp,
-													'description' => 'Added by Release processing',
-												]
-											);
+											$this->groups->table->save($group);
 										} catch (\InvalidArgumentException $e) {
 											throw new \InvalidArgumentException($e->getMessage() .
 												PHP_EOL .
 												'Thrown in ProcessReleases.php');
-										} catch (\lithium\data\model\QueryException $e) {
-											if (stripos(
-													$e->getMessage(),
-													"Duplicate entry '$grpTmp' for key 'ix_groups_name'")
-												!== false) {
-												if (\nZEDb_DEBUG || \nZEDb_ECHOCLI) {
-													$this->pdo->log->error("Cannot create group '$grpTmp', as it already exists'!\n");
-												}
-											} else {
-												throw new \InvalidArgumentException(
-													"Cannot create group '$grpTmp', as it already exists'!\n",
-													$e->getCode(),
-													$e
-												);
-											}
 										} catch (\Exception $e) {
 											throw new \RuntimeException(
 												$e->getMessage(),
@@ -711,8 +715,6 @@ class ProcessReleases
 												$e
 											);
 										}
-										$newGroup->save();
-										$xrefGrpID = $newGroup->id;
 									}
 
 									$relGroupsChk = ReleasesGroups::find('first',
@@ -720,7 +722,7 @@ class ProcessReleases
 											'conditions' =>
 												[
 													'releases_id' => $releaseID,
-													'groups_id'   => $xrefGrpID,
+													'groups_id'   => $group->id,
 												],
 											'fields'     => ['releases_id'],
 											'limit'      => 1,
@@ -731,7 +733,7 @@ class ProcessReleases
 										$relGroups = ReleasesGroups::create(
 											[
 												'releases_id' => $releaseID,
-												'groups_id'   => $xrefGrpID,
+												'groups_id'   => $group->id,
 											]
 										);
 										$relGroups->save();
@@ -1186,26 +1188,22 @@ class ProcessReleases
 	 * @void
 	 * @access public
 	 */
-	public function deletedReleasesByGroup($groupID = '')
+	public function deletedReleasesByGroup($groupID = ''): void
 	{
 		$startTime = time();
 		$minSizeDeleted = $maxSizeDeleted = $minFilesDeleted = 0;
 
 		if ($this->echoCLI) {
-			echo $this->pdo->log->header("Process Releases -> Delete releases smaller/larger than minimum size/file count from group/site setting.");
-		}
-
-		if ($groupID == '') {
-			$groupIDs = Group::getActiveIDs()->data();
-		} else {
-			$groupIDs = [['id' => $groupID]];
+			echo $this->pdo->log::header('Process Releases -> Delete releases smaller/larger than minimum size/file count from group/site setting.');
 		}
 
 		$maxSizeSetting = Settings::value('..maxsizetoformrelease');
 		$minSizeSetting = Settings::value('.release.minsizetoformrelease');
 		$minFilesSetting = Settings::value('.release.minfilestoformrelease');
 
-		foreach ($groupIDs as $groupID) {
+		$groupIDs = $this->getAllOrOneActiveGroup($groupID);
+
+		foreach ($groupIDs as $group) {
 			$releases = $this->pdo->queryDirect(
 				sprintf("
 					SELECT SQL_NO_CACHE r.guid, r.id
@@ -1214,7 +1212,7 @@ class ProcessReleases
 					WHERE r.groups_id = %d
 					AND greatest(IFNULL(g.minsizetoformrelease, 0), %d) > 0
 					AND r.size < greatest(IFNULL(g.minsizetoformrelease, 0), %d)",
-					$groupID['id'],
+					$group->id,
 					$minSizeSetting,
 					$minSizeSetting
 				)
@@ -1233,7 +1231,7 @@ class ProcessReleases
 						FROM releases
 						WHERE groups_id = %d
 						AND size > %d',
-						$groupID['id'],
+						$group->id,
 						$maxSizeSetting
 					)
 				);
@@ -1253,7 +1251,7 @@ class ProcessReleases
 					WHERE r.groups_id = %d
 					AND greatest(IFNULL(g.minfilestoformrelease, 0), %d) > 0
 					AND r.totalpart < greatest(IFNULL(g.minfilestoformrelease, 0), %d)",
-					$groupID['id'],
+					$group->id,
 					$minFilesSetting,
 					$minFilesSetting
 				)

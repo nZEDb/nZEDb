@@ -4,7 +4,6 @@
  */
 require_once realpath(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
-use app\models\Groups as Group;
 use zed\db\Settings;
 use nzedb\Binaries;
 use nzedb\Groups;
@@ -28,7 +27,7 @@ if (isset($argv[1]) && !is_numeric($argv[1])) {
 	$groupName = $argv[1];
 	echo $pdo->log->header("Updating group: $groupName");
 
-	$group = Group::getAllByName($groupName);
+	$group = (new Groups)->table->getAllByName($groupName);
 	if (is_array($group)) {
 		$binaries->updateGroup($group,
 			(isset($argv[2]) && is_numeric($argv[2]) && $argv[2] > 0 ? $argv[2] : $maxHeaders));

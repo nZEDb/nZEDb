@@ -34,7 +34,7 @@ class Backfill
 	protected $_debugging;
 
 	/**
-	 * @var Groups
+	 * @var \nzedb\Groups
 	 */
 	protected $_groups;
 
@@ -132,12 +132,42 @@ class Backfill
 	{
 		$res = [];
 		if ($groupName !== '') {
-			$grp = Group::getAllByName($groupName);
+			$grp = $this->_groups->table->getAllByName($groupName);
 			if ($grp) {
-				$res = [$grp];
+				$res = [$grp->toList()];
 			}
 		} else {
-			$res = Group::getBackfilling($type);
+			switch (\strtolower($type)) {
+				case '':
+				case 'normal':
+					$order = ['name' => 'ASC'];
+					break;
+				case 'date':
+					$order = ['first_record_postdate' => 'DESC'];
+					break;
+				default:
+					throw new \InvalidArgumentException("Order must be 'normal' or 'date'");
+			}
+
+			$query = $this->_groups->table->find()
+				->select([
+					'id',
+					'name',
+					'backfill_target',
+					'first_record',
+					'first_record_postdate',
+					'last_record',
+					'last_record_postdate',
+					'last_updated',
+					'minfilestoformrelease',
+					'minsizetoformrelease',
+					'active',
+					'backfill',
+					'description'])
+				->where(['active' => true, 'backfill' => true])
+				->order($order);
+			$query->enableHydration(false);
+			$res = $query->toList();
 		}
 
 		$groupCount = count($res);
