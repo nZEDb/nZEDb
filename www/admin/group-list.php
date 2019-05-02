@@ -36,7 +36,7 @@ $query = $groups->find('all')
 		'description',
 	])
 	->where($conditions)
-	->order('name')
+	->order(['name' => 'ASC'])
 	->limit(ITEMS_PER_PAGE)
 	->page($pageno);
 

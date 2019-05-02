@@ -50,31 +50,6 @@ switch ($_GET['action']) {
 		print "Regex $id deleted.";
 		break;
 
-	case 'group_edit_purge_all':
-		session_write_close();
-		(new Groups($settings))->purge();
-		print "All groups purged.";
-		break;
-
-	case 'group_edit_reset_all':
-		(new Groups($settings))->resetall();
-		print "All groups reset.";
-		break;
-
-	case 'group_edit_purge_single':
-		$id = (int)$_GET['group_id'];
-		session_write_close();
-		(new Groups($settings))->purge($id);
-		print "Group $id purged.";
-		break;
-
-	case 'group_edit_reset_single':
-		$id = (int)$_GET['group_id'];
-		session_write_close();
-		(new Groups($settings))->reset($id);
-		print "Group $id reset.";
-		break;
-
 	case 'group_edit_delete_single':
 		$id = (int)$_GET['group_id'];
 		session_write_close();
@@ -91,13 +66,45 @@ switch ($_GET['action']) {
 				}
 				print $errors;
 			} else {
-				//print "Failed to delete group: '{$group->name}'";
-				//print $e->getMessage();
-				print_r($group);
+				print "Failed to delete group: '{$group->name}'";
 			}
 			break;
 		}
-			print "Group '{$group->name}' deleted.";
+		print "Group '{$group->name}' deleted.";
+		break;
+
+	case 'group_edit_purge_all':
+		session_write_close();
+		(new Groups($settings))->purge();
+		print 'All groups purged.';
+		break;
+
+	case 'group_edit_purge_single':
+		$id = (int)$_GET['group_id'];
+		session_write_close();
+		try {
+			(new Groups($settings))->purge($id);
+		} catch (\Exception $e) {
+			print $e->getMessage();
+			exit();
+		}
+		print "Group $id purged.";
+		break;
+
+	case 'group_edit_reset_all':
+		(new Groups($settings))->resetall();
+		print 'All groups reset.';
+		break;
+
+	case 'group_edit_reset_single':
+		$id = (int)$_GET['group_id'];
+		session_write_close();
+		try {
+			(new Groups($settings))->reset($id);
+		} catch (\Exception $e) {
+			print $e->getMessage();
+		}
+		print "Group $id reset.";
 		break;
 
 	case 'toggle_group_active_status':
