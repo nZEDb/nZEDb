@@ -1,37 +1,61 @@
 <?php
 require_once './config.php';
 
+use Cake\ORM\TableRegistry;
 use nzedb\Binaries;
 use nzedb\Category;
 
 $page = new AdminPage();
 $bin  = new Binaries(['Settings' => $page->settings]);
-$error = '';
+$errors = '';
 $regex = ['id' => '', 'groupname' => '', 'regex' => '', 'description' => ''];
 
-switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
+$table = TableRegistry::getTableLocator()->get('Binaryblacklist');
+// Get the valid columns for this table
+$columns = array_flip($table->getSchema()->columns());
+
+$action = $_REQUEST['action'] ?? 'view';
+switch ($action) {
 	case 'submit':
-		if ($_POST["groupname"] == '') {
-			$error = "Group must be a valid usenet group";
-			break;
+		// Only allow entries whose keys are valid columns.
+		$data = array_intersect_key($_POST, $columns);
+
+		if ($data['id'] === '') {
+			try {
+				$entity = $table->newEntity($data);
+				if ($table->save($entity) === false) {
+					throw new \ErrorException('Failed to save new regex to the database');
+				}
+			} catch (\Exception $e) {
+				throw new \RuntimeException(
+					$e->getMessage(),
+					$e->getCode(),
+					$e
+				);
+			}
+		} else { // Update an existing group.
+			$entity = $table->get($data['id']);
+			$table->patchEntity($entity, $data);
+
+			if ($table->save($entity) === false) {
+				throw new \ErrorException('Failed to update the info to the database');
+			}
 		}
 
-		if ($_POST["regex"] == '') {
-			$error = "Regex cannot be empty";
-			break;
+		if ($entity->hasErrors(false)) {
+			foreach ($entity->getErrors() as $field => $error) {
+				$errors .= "Field: $field\n";
+				foreach ($error as $type => $reason) {
+					$errors .=  $reason . PHP_EOL;
+				}
+			}
 		}
 
-		if ($_POST["id"] == '') {
-			$bin->addBlacklist($_POST);
-		} else {
-			$ret = $bin->updateBlacklist($_POST);
-		}
-
-		header("Location:" . WWW_TOP . "/binaryblacklist-list.php");
+		header('Location:' . WWW_TOP . '/binaryblacklist-list.php');
 		break;
 
 	case 'addtest':
-		if (isset($_GET['regex']) && isset($_GET['groupname'])) {
+		if (isset($_GET['regex'], $_GET['groupname'])) {
 			$regex += [
 				'groupname' => $_GET['groupname'],
 				'regex' => $_GET['regex'],
@@ -43,22 +67,24 @@ switch ((isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view')) {
 
 	case 'view':
 	default:
-		if (isset($_GET["id"])) {
-			$page->title = "Binary Black/Whitelist Edit";
-			$regex = $bin->getBlacklistByID($_GET["id"]);
-		} else {
-			$page->title = "Binary Black/Whitelist Add";
-			$regex += [
-				'status' => 1,
-				'optype' => 1,
-				'msgcol' => 1
-			];
-		}
+		// Only allow entries whose keys are valid columns.
+		$data = array_intersect_key($_GET, $columns);
+		if (isset($data['id'])) {
+				$page->title = 'Binary Black/Whitelist Edit';
+				$regex = $bin->getBlacklistByID($data['id']);
+			} else {
+				$page->title = 'Binary Black/Whitelist Add';
+				$regex += [
+					'status' => 1,
+					'optype' => 1,
+					'msgcol' => 1
+				];
+			}
 		break;
 }
 
 $page->smarty->assign([
-		'error'        => $error,
+		'error'        => $errors,
 		'regex'        => $regex,
 		'status_ids'   => [Category::STATUS_ACTIVE, Category::STATUS_INACTIVE],
 		'status_names' => ['Yes', 'No'],

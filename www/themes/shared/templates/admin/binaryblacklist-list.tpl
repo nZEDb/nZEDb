@@ -21,7 +21,7 @@
 		<tr id="row-{$bin.id}" class="{cycle values=",alt"}">
 			<td>{$bin.id}</td>
 			<td>{$bin.groupname|replace:"alt.binaries":"a.b"}</td>
-			<td title="Edit this blacklist"><a href="{$smarty.const.WWW_TOP}/binaryblacklist-edit.php?id={$bin.id}">Edit</a></td>
+			<td title="Edit this entry"><a href="{$smarty.const.WWW_TOP}/binaryblacklist-edit.php?id={$bin.id}">Edit</a></td>
 			<td>{$bin.description|truncate:50:"...":true}</td>
 			<td title="Delete this blacklist"><a href="javascript:ajax_binaryblacklist_delete({$bin.id})" onclick="return confirm('Are you sure? This will delete the blacklist from this list.');" >Delete</a></td>
 			<td>{if $bin.optype==1}Black{else}White{/if}</td>
