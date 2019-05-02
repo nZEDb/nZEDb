@@ -136,7 +136,7 @@ class GroupsTable extends Table
 
         $validator
             ->scalar('name')
-			->regex('name','#^([\w-]+\.)+[\w-]+$#i', 'Group name failed regex requirement.', 'create')
+			->regex('name','#^([\w-]+\.)+[\w-]+$#i', 'Group name failed the regex test.', 'create')
             ->maxLength('name', 255)
             ->requirePresence('name', 'create')
             ->allowEmptyString('name', false,'Group name must be provided')
