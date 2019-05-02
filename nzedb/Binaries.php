@@ -6,7 +6,7 @@ use App\models\Tables;
 use Cake\ORM\TableRegistry;
 use nzedb\db\DB;
 use nzedb\processing\ProcessReleasesMultiGroup;
-use zed\controllers\TableObject;
+use zed\controllers\TableObjectTrait;
 use zed\db\Settings;
 
 
@@ -15,7 +15,7 @@ use zed\db\Settings;
  */
 class Binaries
 {
-	use TableObject;
+	use TableObjectTrait;
 
 	const OPTYPE_BLACKLIST          = 1;
 	const OPTYPE_WHITELIST          = 2;

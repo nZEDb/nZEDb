@@ -6,14 +6,14 @@ use App\Model\Table\GroupsTable as GroupsData;
 use Cake\Datasource\ConnectionManager;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
-use zed\controllers\TableObject;
+use zed\controllers\TableObjectTrait;
 use zed\db\Settings;
 use app\models\Tables;
 use nzedb\db\DB;
 
 class Groups
 {
-	use TableObject;
+	use TableObjectTrait;
 
 	/**
 	 * @var \nzedb\db\Settings
