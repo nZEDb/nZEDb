@@ -1,12 +1,11 @@
 <?php
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
+use ArrayObject;
+use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
-use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
-use zed\controllers\TableObject;
 
 
 /**
@@ -40,27 +39,7 @@ class GroupsTable extends Table
 		return $rules;
 	}
 
-	/**
-     * Initialize method
-     *
-     * @param array $config The configuration for the Table.
-     * @return void
-     */
-	public function initialize(array $config): void
-	{
-		parent::initialize($config);
-
-		$this->setTable('groups');
-		$this->setDisplayField('name');
-		$this->setPrimaryKey('id');
-		$this->belongsToMany('Releases', [
-			'foreignKey' => 'group_id',
-			'targetForeignKey' => 'release_id',
-			'joinTable' => 'releases_groups'
-		]);
-	}
-
-	public function getActive(): array
+	public function getAllByID($id)
 	{
 		$query = $this->find()
 			->select([
@@ -78,11 +57,36 @@ class GroupsTable extends Table
 				'backfill',
 				'description',
 			])
-			->where(['active' => true])
-			->order(['name']);
+			->where(['id' => $id])
+			->limit(1);
 		$set = $query->all();
 
-		return $set->toArray();
+		return $set->first();
+	}
+
+	public function getAllByName(string $name)
+	{
+		$query = $this->find()
+			->select([
+				'id',
+				'name',
+				'backfill_target',
+				'first_record',
+				'first_record_postdate',
+				'last_record',
+				'last_record_postdate',
+				'last_updated',
+				'minfilestoformrelease',
+				'minsizetoformrelease',
+				'active',
+				'backfill',
+				'description'])
+			->where(['name' => $name])
+			->limit(1);
+		$query->enableHydration(false);
+		$set = $query->all();
+
+		return $set->first();
 	}
 
 	public function getIDByName(string $name)
@@ -94,6 +98,28 @@ class GroupsTable extends Table
 
 		$entity = $query->all()->first();
 		return $entity === null ? '' : $entity->id;
+	}
+
+	/**
+	 * Initialize method
+	 *
+	 * @param array $config The configuration for the Table.
+	 *
+	 * @return void
+	 */
+	public function initialize(array $config): void
+	{
+		parent::initialize($config);
+
+		$this->setTable('groups');
+		$this->setDisplayField('name');
+		$this->setPrimaryKey('id');
+		$this->belongsToMany('Releases',
+			[
+				'foreignKey'       => 'groups_id',
+				'targetForeignKey' => 'release_id',
+				'joinTable'        => 'releases_groups'
+			]);
 	}
 
 	/**
@@ -118,11 +144,10 @@ class GroupsTable extends Table
 
         $validator
             ->integer('backfill_target')
-            ->requirePresence('backfill_target', 'create')
             ->allowEmptyString('backfill_target', false);
 
         $validator
-            ->requirePresence('first_record', 'create')
+			->integer('first_record')
             ->allowEmptyString('first_record', false);
 
         $validator
@@ -130,7 +155,7 @@ class GroupsTable extends Table
             ->allowEmptyDateTime('first_record_postdate');
 
         $validator
-            ->requirePresence('last_record', 'create')
+            ->integer('last_record')
             ->allowEmptyString('last_record', false);
 
         $validator
@@ -150,12 +175,10 @@ class GroupsTable extends Table
 
         $validator
             ->boolean('active')
-            ->requirePresence('active', 'create')
-            ->allowEmptyString('active', false);
+           ->allowEmptyString('active', false);
 
         $validator
             ->boolean('backfill')
-            ->requirePresence('backfill', 'create')
             ->allowEmptyString('backfill', false);
 
         $validator
