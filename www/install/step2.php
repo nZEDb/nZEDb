@@ -83,7 +83,7 @@ if ($page->isPostBack()) {
 
 	$validTypes = ['mysql'];
 	// Check if user selected a valid DB type.
-	if (!in_array($cfg->DB_SYSTEM, $validTypes)) {
+	if (!in_array($cfg->DB_SYSTEM, $validTypes, false)) {
 		$cfg->emessage = 'Invalid database system. Must be one of: [' . implode(', ', $validTypes) .
 			']; Not: ' . $cfg->DB_SYSTEM;
 		$cfg->error = true;
