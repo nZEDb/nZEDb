@@ -21,6 +21,7 @@
 namespace nzedb\db;
 
 use app\models\Settings;
+use mysql_xdevapi\Exception;
 use nzedb\ColorCLI;
 use nzedb\db\DB;
 use nzedb\utility\Git;
@@ -100,12 +101,21 @@ class DbUpdate
 		$local = $this->pdo->isLocalDb() ? '' : 'LOCAL ';
 		$enclosedby = empty($options['enclosedby']) ? '' : 'OPTIONALLY ENCLOSED BY "' .
 			$options['enclosedby'] . '"';
-		$sql = 'LOAD DATA ' .
-			$local . 'INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" ' . $enclosedby .
-			' LINES TERMINATED BY "\r\n" IGNORE 1 LINES (%s)';
+		$sql = 'LOAD DATA ' . $local . 'INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" ' .
+			$enclosedby . ' LINES TERMINATED BY "\r\n" IGNORE 1 LINES (%s)';
 		foreach ($files as $file) {
 			if ($show === true) {
 				echo "File: $file\n";
+			}
+
+			$fileTarget = '/tmp/' . pathinfo($file, PATHINFO_BASENAME);
+			if (\copy($file, $fileTarget)) // Copy to a directory accessible to all (for mysql user)
+			{
+				$file = $fileTarget;
+				\chmod($file, 0775);
+			} else {
+				echo 'Failed to copy file: ' . $file . '</br>' . \PHP_EOL;
+				//throw new \Exception('Copying file to /tmp failed!');
 			}
 
 			if (is_readable($file)) {
