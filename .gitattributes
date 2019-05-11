@@ -14,6 +14,7 @@
 *.bat			-binary text eol=crlf
 *.conf			-binary text eol=lf
 *.css			-binary text eol=lf -whitespace
+*.ctp			-binary text eol=lf -whitespace
 *.html			-binary text eol=lf
 *.js			-binary text -whitespace
 *.json			-binary text eol=lf
