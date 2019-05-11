@@ -1,9 +1,9 @@
 <?php
 namespace App\Controller;
 
-use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Http\Response;
+
 
 /**
  * Users Controller
@@ -19,7 +19,7 @@ class UsersController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add(): ?Response
+    public function add()
     {
         $user = $this->Users->newEntity();
         if ($this->request->is('post')) {
@@ -130,11 +130,6 @@ class UsersController extends AppController
 		));
 		/*
 		*/
-	}
-
-	public function register(): void
-	{
-		;
 	}
 
 	/**

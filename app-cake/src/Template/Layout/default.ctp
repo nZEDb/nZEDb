@@ -17,7 +17,7 @@ $appDescription = 'nZEDb, the usenet indexer';
 </head>
 <body>
 <header class="row">
-	<?= $this->element('UserBar') ?>
+	<?= $this->element('UserMenu') ?>
 
 	<div id="logo">
 		<?= $this->Html->image('logo.png',

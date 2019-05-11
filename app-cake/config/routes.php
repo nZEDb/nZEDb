@@ -13,9 +13,9 @@
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://cakephp.org CakePHP(tm) Project
- * @license       https://opensource.org/licenses/mit-license.php MIT License
+ * @copyright	 Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * @link		  https://cakephp.org CakePHP(tm) Project
+ * @license	   https://opensource.org/licenses/mit-license.php MIT License
  */
 use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Routing\RouteBuilder;
@@ -46,49 +46,53 @@ use Cake\Routing\Route\DashedRoute;
 Router::defaultRouteClass(DashedRoute::class);
 
 Router::scope('/', static function (RouteBuilder $routes) {
-    // Register scoped middleware for in scopes.
-    $routes->registerMiddleware('csrf', new CsrfProtectionMiddleware([
-        'httpOnly' => true
-    ]));
+	// Register scoped middleware for in scopes.
+	$routes->registerMiddleware('csrf', new CsrfProtectionMiddleware([
+		'httpOnly' => true
+	]));
 
-    /**
-     * Apply a middleware to the current route scope.
-     * Requires middleware to be registered via `Application::routes()` with `registerMiddleware()`
-     */
-    $routes->applyMiddleware('csrf');
+	/**
+	 * Apply a middleware to the current route scope.
+	 * Requires middleware to be registered via `Application::routes()` with `registerMiddleware()`
+	 */
+	$routes->applyMiddleware('csrf');
 
-    /**
-     * Here, we are connecting '/' (base path) to a controller called 'Pages',
-     * its action called 'display', and we pass a param to select the view file
-     * to use (in this case, src/Template/Pages/home.ctp)...
-     */
-    $routes->connect('/', ['controller' => 'Pages', 'action' => 'display', 'home']);
+	/**
+	 * Here, we are connecting '/' (base path) to a controller called 'Pages',
+	 * its action called 'display', and we pass a param to select the view file
+	 * to use (in this case, src/Template/Pages/home.ctp)...
+	 */
+	$routes->connect('/', ['controller' => 'Pages', 'action' => 'display', 'Home']);
 
-    /**
-     * ...and connect the rest of 'Pages' controller's URLs.
-     */
-    $routes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
+	$routes->connect('/register', ['controller' => 'Users', 'action' => 'add']);
+	$routes->connect('/join', ['controller' => 'Users', 'action' => 'add']);
 
-    /**
-     * Connect catchall routes for all controllers.
-     *
-     * Using the argument `DashedRoute`, the `fallbacks` method is a shortcut for
-     *
-     * ```
-     * $routes->connect('/:controller', ['action' => 'index'], ['routeClass' => 'DashedRoute']);
-     * $routes->connect('/:controller/:action/*', [], ['routeClass' => 'DashedRoute']);
-     * ```
-     *
-     * Any route class can be used with this method, such as:
-     * - DashedRoute
-     * - InflectedRoute
-     * - Route
-     * - Or your own route class
-     *
-     * You can remove these routes once you've connected the
-     * routes you want in your application.
-     */
-    $routes->fallbacks(DashedRoute::class);
+
+	/**
+	 * ...and connect the rest of 'Pages' controller's URLs.
+	 */
+	$routes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
+
+	/**
+	 * Connect catchall routes for all controllers.
+	 *
+	 * Using the argument `DashedRoute`, the `fallbacks` method is a shortcut for
+	 *
+	 * ```
+	 * $routes->connect('/:controller', ['action' => 'index'], ['routeClass' => 'DashedRoute']);
+	 * $routes->connect('/:controller/:action/*', [], ['routeClass' => 'DashedRoute']);
+	 * ```
+	 *
+	 * Any route class can be used with this method, such as:
+	 * - DashedRoute
+	 * - InflectedRoute
+	 * - Route
+	 * - Or your own route class
+	 *
+	 * You can remove these routes once you've connected the
+	 * routes you want in your application.
+	 */
+	$routes->fallbacks(DashedRoute::class);
 });
 
 /**
@@ -97,8 +101,8 @@ Router::scope('/', static function (RouteBuilder $routes) {
  *
  * ```
  * Router::scope('/api', function (RouteBuilder $routes) {
- *     // No $routes->applyMiddleware() here.
- *     // Connect API actions here.
+ *	 // No $routes->applyMiddleware() here.
+ *	 // Connect API actions here.
  * });
  * ```
  */

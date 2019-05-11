@@ -15,14 +15,18 @@ header {
 	min-height: 90%;
 }
 
-#userbar {
-	float: right;
-}
-
 #statusbar {
 	float: right;
 }
 
 #statusbar a {
+	color: red;
+}
+
+#usermenu {
+	float: right;
+}
+
+#usermenu a {
 	color: red;
 }

@@ -56,4 +56,6 @@ class Nzedb
 	public const UPDATE 	= Nzedb::MISC . 'update' . DS;
 
 	public const VERSIONS	= Nzedb::BASE . 'build' . DS . 'nzedb.xml';
+
+	public const WWW		= Nzedb::BASE . 'www' . DS;
 }

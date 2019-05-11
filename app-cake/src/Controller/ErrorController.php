@@ -28,7 +28,7 @@ class ErrorController extends AppController
      *
      * @return void
      */
-    public function initialize()
+    public function initialize(): void
     {
         $this->loadComponent('RequestHandler', [
             'enableBeforeRedirect' => false,

@@ -3,7 +3,7 @@ $this->set('statusbar', '');
 ?>
 
 <div class="row">
-	<div class="columns-1 large-12 text-center">
+	<div class="columns large-12 text-center">
 <h1>Login</h1>
 	<?= $this->Form->create() ?>
 		<?= $this->Form->control('username') ?>
