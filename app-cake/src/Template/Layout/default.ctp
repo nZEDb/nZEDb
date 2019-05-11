@@ -1,57 +1,41 @@
 <?php
-/**
- * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- *
- * Licensed under The MIT License
- * For full copyright and license information, please see the LICENSE.txt
- * Redistributions of files must retain the above copyright notice.
- *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://cakephp.org CakePHP(tm) Project
- * @since         0.10.0
- * @license       https://opensource.org/licenses/mit-license.php MIT License
- */
-
-$cakeDescription = 'CakePHP: the rapid development php framework';
+$appDescription = 'nZEDb, the usenet indexer';
 ?>
-<!DOCTYPE html>
+<?= $this->Html->docType('html5') ?>
+
 <html>
 <head>
-    <?= $this->Html->charset() ?>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        <?= $cakeDescription ?>:
-        <?= $this->fetch('title') ?>
-    </title>
-    <?= $this->Html->meta('icon') ?>
+	<?= $this->Html->charset() ?>
 
-    <?= $this->Html->css('base.css') ?>
-    <?= $this->Html->css('style.css') ?>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title><?= h($title) ?></title>
+	<?= $this->fetch('meta') ?>
+	<?= $this->Html->css(['base', 'style', 'nzedb'], ['block' => true]) ?>
+	<?= $this->fetch('css') ?>
+	<?= $this->fetch('script') ?>
 
-    <?= $this->fetch('meta') ?>
-    <?= $this->fetch('css') ?>
-    <?= $this->fetch('script') ?>
 </head>
 <body>
-    <nav class="top-bar expanded" data-topbar role="navigation">
-        <ul class="title-area large-3 medium-4 columns">
-            <li class="name">
-                <h1><a href=""><?= $this->fetch('title') ?></a></h1>
-            </li>
-        </ul>
-        <div class="top-bar-section">
-            <ul class="right">
-                <li><a target="_blank" href="https://book.cakephp.org/3.0/">Documentation</a></li>
-                <li><a target="_blank" href="https://api.cakephp.org/3.0/">API</a></li>
-            </ul>
-        </div>
-    </nav>
-    <?= $this->Flash->render() ?>
-    <div class="container clearfix">
-        <?= $this->fetch('content') ?>
-    </div>
-    <footer>
-    </footer>
+<header class="row">
+	<?= $this->element('UserBar') ?>
+
+	<div id="logo">
+		<?= $this->Html->image('logo.png',
+			['alt' => 'nZEDb Logo', 'class' => 'logoimg']) . PHP_EOL ?>
+		<em>A great usenet indexer</em>
+	</div>
+</header>
+
+<!--[if lt IE 10]>
+<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please
+	<a href="http://browsehappy.com/">upgrade your browser</a> or
+	<a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a>
+					   to improve your experience.</p>
+<![endif]-->
+
+<div class="container clearfix"><?= $this->fetch('content') ?>
+	<hr />
+</div>
+
 </body>
 </html>
