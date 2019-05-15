@@ -1,8 +1,10 @@
 <?php
 namespace App\Controller;
 
+use App\Model\Entity\Role;
 use Cake\Event\Event;
 use Cake\Http\Response;
+use zed\db\Settings;
 
 
 /**
@@ -21,7 +23,27 @@ class UsersController extends AppController
      */
     public function add()
     {
-        $user = $this->Users->newEntity();
+    	$identity = $this->request
+			->getAttribute('identity')
+			->getIdentifier();
+    	if ($identity->get('role') != Role::ADMIN) {
+			switch (Settings::value('..registerstatus')) {
+				case Settings::REGISTER_STATUS_CLOSED || Settings::REGISTER_STATUS_API_ONLY:
+					$this->Flash->error(__('Registrations are currently disabled.'));
+					$this->redirect(['controller' => 'Pages', 'action' => 'display', 'Home']);
+					break;
+				case Settings::REGISTER_STATUS_INVITE && empty($this->request->getData('Request.invitecode')):
+					$this->Flash->default(__('Registrations are currently by invitation only.'));
+					$this->redirect(['controller' => 'Pages', 'action' => 'display', 'Home']);
+					break;
+				case Settings::REGISTER_STATUS_OPEN:
+					break;
+				default:
+					throw new \InvalidArgumentException('Unknown registration status');
+			}
+		}
+
+		$user = $this->Users->newEntity();
         if ($this->request->is('post')) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
             if ($this->Users->save($user)) {
@@ -126,7 +148,7 @@ class UsersController extends AppController
 		$this->Authentication->logout();
 		return $this->redirect($this->request->getQuery(
 			'redirect',
-			['controller' => 'Pages', 'action' => 'display', 'home']
+			['controller' => 'Pages', 'action' => 'display', 'Home']
 		));
 		/*
 		*/
@@ -142,6 +164,7 @@ class UsersController extends AppController
 	 */
 	public function view($id = null)
 	{
+
 		$user = $this->Users->get($id,
 			[
 				'contain' => [
