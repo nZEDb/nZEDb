@@ -11,16 +11,17 @@ $menu_class = $this->Identity->isLoggedIn() ? ' class="dropdown-menu"' : '';
 		<ul class="dropdown-menu">
 			<!-- User image -->
 			<li class="user-header">
-				<p>Full Name Here</p>
+				<p><?= $this->Identity->get('firstname') ?> <?= $this->Identity->get('lastname') ?></p>
 			</li>
 			<!-- Menu Body -->
 			<!-- Menu Footer-->
 			<li class="user-footer"><a href="#" class="btn btn-default btn-flat">Profile</a></li>
-			<li><a href="#" class="btn btn-default btn-flat">Sign out</a></li>
+			<li><?= $this->Html->link('Sign out',
+					['controller' => 'Users', 'action' => 'logout'],
+					['class' => 'btn btn-default btn-flat']) ?></a></li>
 		</ul>
 
-	<!--li class="dropdown-menu"><?= $this->Html->link('Profile', ['controller' => 'Users', 'action' => 'view']) ?></li>
-		<li class="dropdown-menu"><?= $this->Html->link('Logout', ['controller' => 'Users', 'action' => 'logout']) ?></li-->
+	<!--li class="dropdown-menu"><?= $this->Html->link('Profile', ['controller' => 'Users', 'action' => 'view']) ?></li-->
 	</li>
 <?php else : ?>
 	<li class="user-body">
