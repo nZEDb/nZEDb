@@ -1,0 +1,237 @@
+/*
+ * Skin: nzedb midnight
+ * ------------
+ */
+
+/* Overrides of AdminLTE(.min).css */
+
+/* General Links */
+a {
+	color: red;
+}
+a:active,
+a:focus {
+	outline: none;
+	text-decoration: none;
+	color: red;
+}
+a:hover,
+.btn:hover {
+	color: whitesmoke;
+}
+
+.login-page, .register-page, .sidebar-mini > body {
+	height: auto;
+}
+
+.content-wrapper, .login-box > div {
+	/* Removing this causes a scrollbar when it is not needed! Something making a div go over 100%? */
+	height: 100%;
+}
+
+.content-wrapper {
+	background: black;
+	color: whitesmoke;
+}
+
+.logo {
+	min-height: 55px;
+}
+
+/* Skins specifics */
+
+.skin-nzedb-midnight .main-header .navbar {
+	background-color: black;
+}
+
+.skin-nzedb-midnight .main-header .navbar .nav > li > a {
+	color: #ffffff;
+}
+
+.main-footer {
+	background: black;
+	border-top: none;
+	color: whitesmoke;
+	padding: 10px;
+}
+
+.skin-nzedb-midnight .main-header .navbar .nav > li > a:hover,
+.skin-nzedb-midnight .main-header .navbar .nav > li > a:active,
+.skin-nzedb-midnight .main-header .navbar .nav > li > a:focus,
+.skin-nzedb-midnight .main-header .navbar .nav .open > a,
+.skin-nzedb-midnight .main-header .navbar .nav .open > a:hover,
+.skin-nzedb-midnight .main-header .navbar .nav .open > a:focus,
+.skin-nzedb-midnight .main-header .navbar .nav > .active > a {
+	background: rgba(0, 0, 0, 0.1);
+	color: #f6f6f6;
+}
+
+.skin-nzedb-midnight .main-header .navbar .sidebar-toggle {
+	color: #ffffff;
+}
+
+.skin-nzedb-midnight .main-header .navbar .sidebar-toggle:hover {
+	color: #f6f6f6;
+	background: rgba(0, 0, 0, 0.1);
+}
+
+.skin-nzedb-midnight .main-header .navbar .sidebar-toggle {
+	color: #fff;
+}
+
+.skin-nzedb-midnight .main-header .navbar .sidebar-toggle:hover {
+	background-color: #3A3A3A;
+}
+
+@media (max-width: 767px) {
+	.skin-nzedb-midnight .main-header .navbar .dropdown-menu li.divider {
+		background-color: rgba(255, 255, 255, 0.1);
+	}
+
+	.skin-nzedb-midnight .main-header .navbar .dropdown-menu li a {
+		color: #fff;
+	}
+
+	.skin-nzedb-midnight .main-header .navbar .dropdown-menu li a:hover {
+		background: #555299;
+	}
+}
+
+.skin-nzedb-midnight .main-header .logo {
+	background-color: black;
+	color: #ffffff;
+	border-bottom: 0 solid transparent;
+}
+
+.skin-nzedb-midnight .main-header .logo:hover {
+	background-color: #3A3A3A;
+}
+
+.skin-nzedb-midnight .main-header li.user-header {
+	background-color: #605ca8;
+}
+
+.skin-nzedb-midnight .content-header {
+	background: transparent;
+}
+
+.skin-nzedb-midnight .wrapper,
+.skin-nzedb-midnight .main-sidebar,
+.skin-nzedb-midnight .left-side {
+	background-color: black;
+}
+
+.skin-nzedb-midnight .user-panel > .info,
+.skin-nzedb-midnight .user-panel > .info > a {
+	color: #fff;
+}
+
+.skin-nzedb-midnight .sidebar-menu > li.header {
+	color: #4b646f;
+	background: #1a2226;
+}
+
+.skin-nzedb-midnight .sidebar-menu > li > a {
+	border-left: 3px solid transparent;
+}
+
+.skin-nzedb-midnight .sidebar-menu > li:hover > a,
+.skin-nzedb-midnight .sidebar-menu > li.active > a,
+.skin-nzedb-midnight .sidebar-menu > li.menu-open > a {
+	color: #ffffff;
+	background: #1e282c;
+}
+
+.skin-nzedb-midnight .sidebar-menu > li.active > a {
+	border-left-color: #605ca8;
+}
+
+.skin-nzedb-midnight .sidebar-menu > li > .treeview-menu {
+	margin: 0 1px;
+	background: #2c3b41;
+}
+
+.skin-nzedb-midnight .sidebar a {
+	color: #b8c7ce;
+}
+
+.skin-nzedb-midnight .sidebar a:hover {
+	text-decoration: none;
+}
+
+.skin-nzedb-midnight .sidebar-menu .treeview-menu > li > a {
+	color: #8aa4af;
+}
+
+.skin-nzedb-midnight .sidebar-menu .treeview-menu > li.active > a,
+.skin-nzedb-midnight .sidebar-menu .treeview-menu > li > a:hover {
+	color: #ffffff;
+}
+
+.skin-nzedb-midnight .sidebar-form {
+	border-radius: 3px;
+	border: 1px solid #374850;
+	margin: 10px 10px;
+}
+
+.skin-nzedb-midnight .sidebar-form input[type="text"],
+.skin-nzedb-midnight .sidebar-form .btn {
+	box-shadow: none;
+	background-color: #374850;
+	border: 1px solid transparent;
+	height: 35px;
+}
+
+.skin-nzedb-midnight .sidebar-form input[type="text"] {
+	color: #666;
+	border-top-left-radius: 2px;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 2px;
+}
+
+.skin-nzedb-midnight .sidebar-form input[type="text"]:focus,
+.skin-nzedb-midnight .sidebar-form input[type="text"]:focus + .input-group-btn .btn {
+	background-color: #fff;
+	color: #666;
+}
+
+.skin-nzedb-midnight .sidebar-form input[type="text"]:focus + .input-group-btn .btn {
+	border-left-color: #fff;
+}
+
+.skin-nzedb-midnight .sidebar-form .btn {
+	color: #999;
+	border-top-left-radius: 0;
+	border-top-right-radius: 2px;
+	border-bottom-right-radius: 2px;
+	border-bottom-left-radius: 0;
+}
+
+/*
+ * Page: Login & Register
+ * ----------------------
+ */
+.login-logo,
+.register-logo {
+	font-size: 35px;
+	text-align: center;
+	margin-bottom: 25px;
+	font-weight: 300;
+}
+
+.login-logo a,
+.register-logo a {
+	color: #444;
+}
+
+.login-page,
+.register-page {
+	background: black;
+}
+
+.login-box,
+.register-box {
+	width: 360px;
+	margin: 7% auto;
+}

@@ -1,41 +1,82 @@
-<?php
-$appDescription = 'nZEDb, the usenet indexer';
-?>
-<?= $this->Html->docType('html5') ?>
+<?php use Cake\Core\Configure; ?>
+<?= $this->element('default-head') ?>
 
-<html>
-<head>
-	<?= $this->Html->charset() ?>
+<body class="hold-transition skin-<?= Configure::read('Theme.skin') ?> sidebar-mini">
+<div class="wrapper">
 
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title><?= h($title) ?></title>
-	<?= $this->fetch('meta') ?>
-	<?= $this->Html->css(['base', 'style', 'nzedb'], ['block' => true]) ?>
-	<?= $this->fetch('css') ?>
-	<?= $this->fetch('script') ?>
+	<header class="main-header">
+		<!-- Logo -->
+		<a href="<?= $this->Url->build('/') ?>" class="logo">
+			<!-- logo for regular state and mobile devices -->
+			<span class="logo-lg"><?= Configure::read('Theme.logo.large') ?></span>
+		</a>
+		<!-- Header Navbar: style can be found in header.less -->
+		<?= $this->element('nav-top') ?>
+	</header>
 
-</head>
-<body>
-<header class="row">
-	<?= $this->element('UserMenu') ?>
+	<?php if ($this->Identity->isLoggedIn()) :
+		echo $this->element('aside-main-sidebar');
+	endif; ?>
 
-	<div id="logo">
-		<?= $this->Html->image('logo.png',
-			['alt' => 'nZEDb Logo', 'class' => 'logoimg']) . PHP_EOL ?>
-		<em>A great usenet indexer</em>
+	<!-- Content Wrapper. Contains page content -->
+	<div class="content-wrapper">
+
+		<?= $this->Flash->render() ?>
+
+		<?= $this->Flash->render('auth') ?>
+
+		<!--[if lt IE 10]>
+		<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please
+			<a href="http://browsehappy.com/">upgrade your browser</a> or
+			<a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a>
+			 to improve your experience.</p>
+		<![endif]-->
+
+		<?= $this->fetch('content') ?>
+
 	</div>
-</header>
+	<!-- /.content-wrapper -->
 
-<!--[if lt IE 10]>
-<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please
-	<a href="http://browsehappy.com/">upgrade your browser</a> or
-	<a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a>
-					   to improve your experience.</p>
-<![endif]-->
+	<?= $this->element('footer') ?>
 
-<div class="container clearfix"><?= $this->fetch('content') ?>
-	<hr />
+	<!-- Control Sidebar -->
+	<?= $this->element('aside-control-sidebar') ?>
+	<!-- /.control-sidebar -->
+
+	<!-- Add the sidebar's background. This div must be placed
+			 immediately after the control sidebar -->
+	<div class="control-sidebar-bg"></div>
 </div>
+<!-- ./wrapper -->
+
+<!-- jQuery 3 -->
+<?= $this->Html->script('AdminLTE./bower_components/jquery/dist/jquery.min') ?>
+<!-- Bootstrap 3.3.7 -->
+<?= $this->Html->script('AdminLTE./bower_components/bootstrap/dist/js/bootstrap.min') ?>
+<!-- AdminLTE App -->
+<?= $this->Html->script('AdminLTE.adminlte.min') ?>
+<!-- Slimscroll -->
+<?= $this->Html->script('AdminLTE./bower_components/jquery-slimscroll/jquery.slimscroll.min') ?>
+<!-- FastClick -->
+<?= $this->Html->script('AdminLTE./bower_components/fastclick/lib/fastclick') ?>
+
+<?= $this->fetch('scriptBottom') ?>
+
+<script type="text/javascript">
+		$(document).ready(function(){
+				$(".navbar .menu").slimscroll({
+						height: "200px",
+						alwaysVisible: false,
+						size: "3px"
+				}).css("width", "100%");
+
+		let a = $('a[href="<?= $this->Url->build() ?>"]');
+		if (!a.parent().hasClass('treeview') && !a.parent().parent().hasClass('pagination')) {
+						a.parent().addClass('active').parents('.treeview').addClass('active');
+				}
+				
+		});
+</script>
 
 </body>
 </html>

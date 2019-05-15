@@ -89,6 +89,8 @@
     "ext-zlib": "*",
     "b3rs3rk/steamfront": "dev-master",
     "barracudanetworks/forkdaemon-php": "^1.0.7",
+    "cakephp/authentication": "dev-master",
+    "cakephp/authorization": "dev-master",
     "cakephp/cakephp": "3.7.*",
     "cakephp/migrations": "^2.0.0",
     "cakephp/plugin-installer": "^1.0",
@@ -99,6 +101,7 @@
     "guzzlehttp/guzzle": "^6.3",
     "james-heinrich/getid3": "^1.9.12",
     "joshpinkney/tv-maze-php-api": "dev-master",
+    "maiconpinto/cakephp-adminlte-theme": "dev-master",
     "mhor/php-mediainfo": "^5.0@dev",
     "mobiledetect/mobiledetectlib": "2.*",
     "moinax/tvdb": "^1.0.4",
@@ -132,7 +135,7 @@
     "bower-asset/responsive-tables-js-1.0.x": "~1.0.6",
     "bower-asset/select2-4.0.x": "~4.0.2",
     "bower-asset/slimscroll-1.3.x": "~1.3.7",
-    "bower-asset/tinymce-builded": "^4.4"
+    "bower-asset/tinymce-builded": "^4.4",
   },
   "require-dev": {
     "cakephp/bake": "^1.9.0",

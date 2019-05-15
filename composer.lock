@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "9dda99d00d3fbc4f7fcf86cd8d5fb55e",
+    "content-hash": "25016c065fd55fb86dcee88485ad205c",
     "packages": [
         {
             "name": "aura/intl",
@@ -960,16 +960,16 @@
         },
         {
             "name": "bower-asset/select2-4.0.x",
-            "version": "4.0.6",
+            "version": "4.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/select2/select2.git",
-                "reference": "5dcc1022bffbccbf6894a26572f34627adaf7599"
+                "reference": "04fce559673684af8ec2912457a9d6380ea90314"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/select2/select2/zipball/5dcc1022bffbccbf6894a26572f34627adaf7599",
-                "reference": "5dcc1022bffbccbf6894a26572f34627adaf7599",
+                "url": "https://api.github.com/repos/select2/select2/zipball/04fce559673684af8ec2912457a9d6380ea90314",
+                "reference": "04fce559673684af8ec2912457a9d6380ea90314",
                 "shasum": ""
             },
             "type": "bower-asset-library",
@@ -983,7 +983,7 @@
                 "MIT"
             ],
             "description": "Select2 is a jQuery based replacement for select boxes. It supports searching, remote data sets, and infinite scrolling of results.",
-            "time": "2019-04-28T03:14:15+00:00"
+            "time": "2019-05-07T20:14:21+00:00"
         },
         {
             "name": "bower-asset/slimscroll-1.3.x",
@@ -1893,12 +1893,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "bf595424e4d442a190582e088985dc835a789071"
+                "reference": "ca2892a8c2778c1821899fd2c79932e3b895f2ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/bf595424e4d442a190582e088985dc835a789071",
-                "reference": "bf595424e4d442a190582e088985dc835a789071",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/ca2892a8c2778c1821899fd2c79932e3b895f2ad",
+                "reference": "ca2892a8c2778c1821899fd2c79932e3b895f2ad",
                 "shasum": ""
             },
             "require": {
@@ -1951,7 +1951,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2019-04-15T08:22:37+00:00"
+            "time": "2019-05-12T12:35:22+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -2081,12 +2081,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/JamesHeinrich/getID3.git",
-                "reference": "101a56cdb7fda763b7ac374a251e4f9363145006"
+                "reference": "6c84298e28eda9a4a206c4d0ef7098e20d3feb58"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JamesHeinrich/getID3/zipball/101a56cdb7fda763b7ac374a251e4f9363145006",
-                "reference": "101a56cdb7fda763b7ac374a251e4f9363145006",
+                "url": "https://api.github.com/repos/JamesHeinrich/getID3/zipball/6c84298e28eda9a4a206c4d0ef7098e20d3feb58",
+                "reference": "6c84298e28eda9a4a206c4d0ef7098e20d3feb58",
                 "shasum": ""
             },
             "require": {
@@ -2136,7 +2136,7 @@
                 "php",
                 "tags"
             ],
-            "time": "2019-04-22T18:54:04+00:00"
+            "time": "2019-05-12T21:50:31+00:00"
         },
         {
             "name": "joshpinkney/tv-maze-php-api",
@@ -2248,6 +2248,54 @@
                 "validation"
             ],
             "time": "2017-01-16T07:02:13+00:00"
+        },
+        {
+            "name": "maiconpinto/cakephp-adminlte-theme",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/maiconpinto/cakephp-adminlte-theme.git",
+                "reference": "4b8d7cd4ab895751176704f16443f4ace87b1fed"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/maiconpinto/cakephp-adminlte-theme/zipball/4b8d7cd4ab895751176704f16443f4ace87b1fed",
+                "reference": "4b8d7cd4ab895751176704f16443f4ace87b1fed",
+                "shasum": ""
+            },
+            "require": {
+                "cakephp/cakephp": "~3.0",
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.1"
+            },
+            "type": "cakephp-plugin",
+            "autoload": {
+                "psr-4": {
+                    "AdminLTE\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Maicon Pinto",
+                    "email": "maiconsilva.pinto@gmail.com",
+                    "homepage": "https://www.maiconpinto.com.br/",
+                    "role": "Author"
+                }
+            ],
+            "description": "CakePHP 3.x AdminLTE Theme.",
+            "homepage": "https://github.com/maiconpinto/cakephp-adminlte-theme",
+            "keywords": [
+                "cakephp",
+                "plugin",
+                "templates"
+            ],
+            "time": "2018-12-24T22:23:17+00:00"
         },
         {
             "name": "mhor/php-mediainfo",
@@ -3026,12 +3074,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "e2840bb38bddad7a0feaf85931e38fdcffdb2f81"
+                "reference": "7a293c9a4587a92e6a0e81edb0bea54071b1b99d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/e2840bb38bddad7a0feaf85931e38fdcffdb2f81",
-                "reference": "e2840bb38bddad7a0feaf85931e38fdcffdb2f81",
+                "url": "https://api.github.com/repos/symfony/console/zipball/7a293c9a4587a92e6a0e81edb0bea54071b1b99d",
+                "reference": "7a293c9a4587a92e6a0e81edb0bea54071b1b99d",
                 "shasum": ""
             },
             "require": {
@@ -3090,7 +3138,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2019-04-08T14:23:48+00:00"
+            "time": "2019-05-09T09:19:46+00:00"
         },
         {
             "name": "symfony/contracts",
@@ -3098,12 +3146,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/contracts.git",
-                "reference": "d3636025e8253c6144358ec0a62773cae588395b"
+                "reference": "30e42ac06446e2ee8d7616b84c2ee461fc3d33ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/contracts/zipball/d3636025e8253c6144358ec0a62773cae588395b",
-                "reference": "d3636025e8253c6144358ec0a62773cae588395b",
+                "url": "https://api.github.com/repos/symfony/contracts/zipball/30e42ac06446e2ee8d7616b84c2ee461fc3d33ae",
+                "reference": "30e42ac06446e2ee8d7616b84c2ee461fc3d33ae",
                 "shasum": ""
             },
             "require": {
@@ -3117,11 +3165,11 @@
             "suggest": {
                 "psr/cache": "When using the Cache contracts",
                 "psr/container": "When using the Service contracts",
-                "symfony/cache-contracts-implementation": "",
+                "symfony/cache-implementation": "",
                 "symfony/event-dispatcher-implementation": "",
-                "symfony/http-client-contracts-implementation": "",
-                "symfony/service-contracts-implementation": "",
-                "symfony/translation-contracts-implementation": ""
+                "symfony/http-client-implementation": "",
+                "symfony/service-implementation": "",
+                "symfony/translation-implementation": ""
             },
             "type": "library",
             "extra": {
@@ -3161,7 +3209,7 @@
                 "interoperability",
                 "standards"
             ],
-            "time": "2019-04-27T14:29:50+00:00"
+            "time": "2019-05-09T09:33:12+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -3232,12 +3280,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "6fa16ab8a5800c23772de2dc4efabc3bd6922309"
+                "reference": "82cd8a36584bc48ab4a2a35d971f830edfdc871f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/6fa16ab8a5800c23772de2dc4efabc3bd6922309",
-                "reference": "6fa16ab8a5800c23772de2dc4efabc3bd6922309",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/82cd8a36584bc48ab4a2a35d971f830edfdc871f",
+                "reference": "82cd8a36584bc48ab4a2a35d971f830edfdc871f",
                 "shasum": ""
             },
             "require": {
@@ -3247,7 +3295,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.3-dev"
+                    "dev-master": "4.4-dev"
                 }
             },
             "autoload": {
@@ -3274,7 +3322,7 @@
             ],
             "description": "Symfony Filesystem Component",
             "homepage": "https://symfony.com",
-            "time": "2019-03-27T09:50:42+00:00"
+            "time": "2019-05-09T07:23:25+00:00"
         },
         {
             "name": "symfony/options-resolver",
@@ -3502,12 +3550,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "c60ecf5ba842324433b46f58dc7afc4487dbab99"
+                "reference": "4e85fcc15b6579c7d01a65b947cfe88657293899"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/c60ecf5ba842324433b46f58dc7afc4487dbab99",
-                "reference": "c60ecf5ba842324433b46f58dc7afc4487dbab99",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/4e85fcc15b6579c7d01a65b947cfe88657293899",
+                "reference": "4e85fcc15b6579c7d01a65b947cfe88657293899",
                 "shasum": ""
             },
             "require": {
@@ -3526,7 +3574,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.3-dev"
+                    "dev-master": "4.4-dev"
                 }
             },
             "autoload": {
@@ -3553,7 +3601,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2019-04-06T14:04:46+00:00"
+            "time": "2019-05-09T07:23:25+00:00"
         },
         {
             "name": "zeebinz/rarinfo",
@@ -3992,12 +4040,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/ca-bundle.git",
-                "reference": "dd3f738f1b11ccbc2c6aba8e5240fa5d7a5c3fae"
+                "reference": "3a41bedd50d032bbff0cd0079c07f454f4a714f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/dd3f738f1b11ccbc2c6aba8e5240fa5d7a5c3fae",
-                "reference": "dd3f738f1b11ccbc2c6aba8e5240fa5d7a5c3fae",
+                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/3a41bedd50d032bbff0cd0079c07f454f4a714f3",
+                "reference": "3a41bedd50d032bbff0cd0079c07f454f4a714f3",
                 "shasum": ""
             },
             "require": {
@@ -4040,7 +4088,7 @@
                 "ssl",
                 "tls"
             ],
-            "time": "2019-03-26T10:08:35+00:00"
+            "time": "2019-05-05T15:21:27+00:00"
         },
         {
             "name": "composer/composer",
@@ -4048,12 +4096,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "dd40d74bf6041ddcefa1ebe46fb9117d031b1ccd"
+                "reference": "8288d2c456287d4ec2d746db1d285d6bd82d52ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/dd40d74bf6041ddcefa1ebe46fb9117d031b1ccd",
-                "reference": "dd40d74bf6041ddcefa1ebe46fb9117d031b1ccd",
+                "url": "https://api.github.com/repos/composer/composer/zipball/8288d2c456287d4ec2d746db1d285d6bd82d52ec",
+                "reference": "8288d2c456287d4ec2d746db1d285d6bd82d52ec",
                 "shasum": ""
             },
             "require": {
@@ -4120,7 +4168,7 @@
                 "dependency",
                 "package"
             ],
-            "time": "2019-04-10T11:11:57+00:00"
+            "time": "2019-05-09T06:38:34+00:00"
         },
         {
             "name": "composer/semver",
@@ -4704,12 +4752,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "78d9985d1107a705a1454c8cf79bcf0eecf085a7"
+                "reference": "a167aa206198570fc8957f7b3f2c6778b0a0e2ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/78d9985d1107a705a1454c8cf79bcf0eecf085a7",
-                "reference": "78d9985d1107a705a1454c8cf79bcf0eecf085a7",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/a167aa206198570fc8957f7b3f2c6778b0a0e2ad",
+                "reference": "a167aa206198570fc8957f7b3f2c6778b0a0e2ad",
                 "shasum": ""
             },
             "require": {
@@ -4747,7 +4795,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2019-04-28T20:06:06+00:00"
+            "time": "2019-05-12T13:26:26+00:00"
         },
         {
             "name": "psy/psysh",
@@ -4922,12 +4970,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "1d7c6576a578fb57723c8c0fbc716cb88dae4f13"
+                "reference": "802e6efe3fb26a34efda7ee344357ac963a3db4c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/1d7c6576a578fb57723c8c0fbc716cb88dae4f13",
-                "reference": "1d7c6576a578fb57723c8c0fbc716cb88dae4f13",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/802e6efe3fb26a34efda7ee344357ac963a3db4c",
+                "reference": "802e6efe3fb26a34efda7ee344357ac963a3db4c",
                 "shasum": ""
             },
             "require": {
@@ -4965,7 +5013,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2019-04-16T03:35:30+00:00"
+            "time": "2019-05-13T06:16:30+00:00"
         },
         {
             "name": "symfony/finder",
@@ -4973,12 +5021,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "5e2136f5d2caf276f7b4ba77a6be786988c1783c"
+                "reference": "dde9d15e9737de84aba97aceba08cb05631ec6df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/5e2136f5d2caf276f7b4ba77a6be786988c1783c",
-                "reference": "5e2136f5d2caf276f7b4ba77a6be786988c1783c",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/dde9d15e9737de84aba97aceba08cb05631ec6df",
+                "reference": "dde9d15e9737de84aba97aceba08cb05631ec6df",
                 "shasum": ""
             },
             "require": {
@@ -4987,7 +5035,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.3-dev"
+                    "dev-master": "4.4-dev"
                 }
             },
             "autoload": {
@@ -5014,7 +5062,7 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2019-04-06T14:04:46+00:00"
+            "time": "2019-05-09T07:23:25+00:00"
         },
         {
             "name": "symfony/polyfill-php72",
@@ -5077,12 +5125,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-dumper.git",
-                "reference": "8296e713485869de38a5f55ce2cce9a12fd107ad"
+                "reference": "34dac0586369f29f52fccff2317a251bb5218a77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/8296e713485869de38a5f55ce2cce9a12fd107ad",
-                "reference": "8296e713485869de38a5f55ce2cce9a12fd107ad",
+                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/34dac0586369f29f52fccff2317a251bb5218a77",
+                "reference": "34dac0586369f29f52fccff2317a251bb5218a77",
                 "shasum": ""
             },
             "require": {
@@ -5111,7 +5159,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.3-dev"
+                    "dev-master": "4.4-dev"
                 }
             },
             "autoload": {
@@ -5145,7 +5193,7 @@
                 "debug",
                 "dump"
             ],
-            "time": "2019-04-18T06:55:47+00:00"
+            "time": "2019-05-09T07:23:25+00:00"
         },
         {
             "name": "twig/twig",
@@ -5153,12 +5201,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "d7eaeead8b9d568099865505c1efe758a446b072"
+                "reference": "2e1e9528ce6274c1232ee26d0b96dd0e801a0f7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/d7eaeead8b9d568099865505c1efe758a446b072",
-                "reference": "d7eaeead8b9d568099865505c1efe758a446b072",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/2e1e9528ce6274c1232ee26d0b96dd0e801a0f7f",
+                "reference": "2e1e9528ce6274c1232ee26d0b96dd0e801a0f7f",
                 "shasum": ""
             },
             "require": {
@@ -5173,7 +5221,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.40-dev"
+                    "dev-master": "1.41-dev"
                 }
             },
             "autoload": {
@@ -5211,7 +5259,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2019-04-29T14:13:05+00:00"
+            "time": "2019-05-10T06:46:52+00:00"
         },
         {
             "name": "umpirsky/twig-php-function",
@@ -5317,12 +5365,13 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "b3rs3rk/steamfront": 20,
+        "cakephp/authentication": 20,
+        "cakephp/authorization": 20,
         "dborsatto/php-giantbomb": 20,
         "joshpinkney/tv-maze-php-api": 20,
         "mhor/php-mediainfo": 20,
         "nzedb/git.php": 20,
-        "cakephp/authentication": 20,
-        "cakephp/authorization": 20,
+        "maiconpinto/cakephp-adminlte-theme": 20,
         "psy/psysh": 0
     },
     "prefer-stable": false,

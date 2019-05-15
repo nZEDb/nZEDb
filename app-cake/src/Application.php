@@ -1,10 +1,15 @@
 <?php
 namespace App;
 
+
 use Authentication\AuthenticationService;
 use Authentication\AuthenticationServiceInterface;
 use Authentication\AuthenticationServiceProviderInterface;
 use Authentication\Middleware\AuthenticationMiddleware;
+use Authorization\AuthorizationService;
+use Authorization\AuthorizationServiceProviderInterface;
+use Authorization\Middleware\AuthorizationMiddleware;
+use Authorization\Policy\OrmResolver;
 use Cake\Core\Configure;
 use Cake\Core\Exception\MissingPluginException;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
@@ -23,7 +28,9 @@ use Psr\Http\Message\ServerRequestInterface;
  * This defines the bootstrapping logic and middleware layers you
  * want to use in your application.
  */
-class Application extends BaseApplication implements AuthenticationServiceProviderInterface
+class Application extends BaseApplication implements
+	AuthenticationServiceProviderInterface,
+	AuthorizationServiceProviderInterface
 {
 	/**
 	 * {@inheritDoc}
@@ -33,9 +40,11 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 		// Call parent to load bootstrap from files.
 		parent::bootstrap();
 
-		$this->addPlugin('Migrations');
+		$this->addPlugin('AdminLTE');
 
 		$this->addPlugin('Authentication');
+
+		//$this->addPlugin('Authorization');
 
 		if (PHP_SAPI === 'cli') {
 			try {
@@ -89,6 +98,14 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 		return $service;
 	}
 
+	public function getAuthorizationService(ServerRequestInterface $request,
+											ResponseInterface $response)
+	{
+		$resolver = new OrmResolver();
+
+		return new AuthorizationService($resolver);
+	}
+
 	/**
 	 * Setup the middleware queue your application will use.
 	 *
@@ -120,6 +137,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 			]
 		);
 
+		// Add authorization (after authentication if you are using that plugin too).
+		//$middlewareQueue->add(new AuthorizationMiddleware($this));
 
 		return $middlewareQueue;
 	}

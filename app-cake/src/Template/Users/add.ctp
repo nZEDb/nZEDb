@@ -3,8 +3,9 @@
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\User $user
  */
+$this->layout = 'register';
 ?>
-<div class="users form large-9 medium-8 columns content">
+<div class="users form ">
     <?= $this->Form->create($user) ?>
     <fieldset>
         <legend><?= __('Add User') ?></legend>
