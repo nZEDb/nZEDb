@@ -2,8 +2,9 @@
     <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar">
 
+		<div> </div>
         <!-- search form -->
-        <?php echo $this->element('aside/form'); ?>
+        <!--?php echo $this->element('aside/form'); ?-->
         <!-- /.search form -->
 
         <!-- sidebar menu: : style can be found in sidebar.less -->

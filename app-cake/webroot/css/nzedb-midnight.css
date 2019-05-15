@@ -34,8 +34,14 @@ a:hover,
 	color: whitesmoke;
 }
 
-.logo {
+
+element.style {
+}
+
+.main-header .logo {
+	line-height: 55px;
 	min-height: 55px;
+	padding: 0;
 }
 
 /* Skins specifics */
@@ -127,8 +133,11 @@ a:hover,
 }
 
 .skin-nzedb-midnight .sidebar-menu > li.header {
-	color: #4b646f;
-	background: #1a2226;
+	color: darkred;
+	background: #3A3A3A;
+	font-size: 14px;
+	margin-top: 15px;
+	text-align: center;
 }
 
 .skin-nzedb-midnight .sidebar-menu > li > a {
