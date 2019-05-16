@@ -10,9 +10,9 @@ class CreateSabnzb extends AbstractMigration
 	 * http://docs.phinx.org/en/latest/migrations.html#the-change-method
 	 * @return void
 	 */
-	public function change()
+	public function change(): void
 	{
-		$table = $this->table('sabnzb')
+		$table = $this->table('sabnzb', ['id' => false, 'primary_key' => ['user_id']])
 			->addColumn('user_id', 'integer', [
 				'comment' => 'FK to users.id',
 				'default' => null,
@@ -30,15 +30,11 @@ class CreateSabnzb extends AbstractMigration
 				'limit' => 255,
 				'null' => false,
 			])
-			->addColumn('apy_key_type', 'boolean', [
+			->addColumn('api_key_type', 'boolean', [
 				'default' => null,
 				'null' => false,
 			])
 			->addColumn('priority', 'boolean', [
-				'default' => null,
-				'null' => false,
-			])
-			->addColumn('queue_type', 'boolean', [
 				'default' => null,
 				'null' => false,
 			])

@@ -10,9 +10,9 @@ class CreateCouchpotato extends AbstractMigration
 	 * http://docs.phinx.org/en/latest/migrations.html#the-change-method
 	 * @return void
 	 */
-	public function change()
+	public function change(): void
 	{
-		$table = $this->table('couchpotato')
+		$table = $this->table('couchpotato', ['id' => false, 'primary_key' => ['user_id']])
 			->addColumn('user_id', 'integer', [
 				'comment' => 'FK to users.id',
 				'default' => null,
