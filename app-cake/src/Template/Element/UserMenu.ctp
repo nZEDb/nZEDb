@@ -15,7 +15,9 @@ $menu_class = $this->Identity->isLoggedIn() ? ' class="dropdown-menu"' : '';
 			</li>
 			<!-- Menu Body -->
 			<!-- Menu Footer-->
-			<li class="user-footer"><a href="#" class="btn btn-default btn-flat">Profile</a></li>
+			<li class="user-footer"><?= $this->Html->link('Profile',
+					['controller' => 'Users', 'action' => 'view'],
+					['class' => 'btn btn-default btn-flat']) ?></li>
 			<li><?= $this->Html->link('Sign out',
 					['controller' => 'Users', 'action' => 'logout'],
 					['class' => 'btn btn-default btn-flat']) ?></a></li>

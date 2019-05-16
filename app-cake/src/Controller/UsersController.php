@@ -16,6 +16,11 @@ use zed\db\Settings;
  */
 class UsersController extends AppController
 {
+	/**
+	 * @var \Authentication\Identity
+	 */
+	protected $identity;
+
     /**
      * Add method
      *
@@ -23,10 +28,7 @@ class UsersController extends AppController
      */
     public function add()
     {
-    	$identity = $this->request
-			->getAttribute('identity')
-			->getIdentifier();
-    	if ($identity->get('role') != Role::ADMIN) {
+    	if ($this->identity->role != Role::ADMIN) {
 			switch (Settings::value('..registerstatus')) {
 				case Settings::REGISTER_STATUS_CLOSED || Settings::REGISTER_STATUS_API_ONLY:
 					$this->Flash->error(__('Registrations are currently disabled.'));
@@ -122,6 +124,14 @@ class UsersController extends AppController
 		$this->set(compact('users'));
 	}
 
+	public function initialize(): void
+	{
+		parent::initialize();
+
+		$this->identity = $this->request
+			->getAttribute('identity');
+	}
+
 	public function login()
 	{
 		$result = $this->Authentication->getResult();
@@ -150,8 +160,6 @@ class UsersController extends AppController
 			'redirect',
 			['controller' => 'Pages', 'action' => 'display', 'Home']
 		));
-		/*
-		*/
 	}
 
 	/**
@@ -164,9 +172,13 @@ class UsersController extends AppController
 	 */
 	public function view($id = null)
 	{
+		if ($id === null || $this->identity->role != Role::ADMIN) {
+			$id = $this->identity->getIdentifier();
+		}
 
 		$user = $this->Users->get($id,
 			[
+				/*
 				'contain' => [
 					'Releases',
 					'ForumPosts',
@@ -178,6 +190,7 @@ class UsersController extends AppController
 					'UserRequests',
 					'UserSeries'
 				]
+				*/
 			]);
 
 		$this->set('user', $user);

@@ -55,68 +55,60 @@ use Cake\ORM\Entity;
  */
 class User extends Entity
 {
-    /**
-     * Fields that can be mass assigned using newEntity() or patchEntity().
-     *
-     * Note that when '*' is set to true, this allows all unspecified fields to
-     * be mass assigned. For security purposes, it is advised to set '*' to false
-     * (or remove it), and explicitly make individual fields accessible as needed.
-     *
-     * @var array
-     */
-    protected $_accessible = [
-        'username' => true,
-        'firstname' => true,
-        'lastname' => true,
-        'email' => true,
-        'password' => true,
-        'role' => true,
-        'host' => true,
-        'grabs' => true,
-        'rsstoken' => true,
-        'createddate' => true,
-        'resetguid' => true,
-        'lastlogin' => true,
-        'apiaccess' => true,
-        'invites' => true,
-        'invitedby' => true,
-        'movieview' => true,
-        'xxxview' => true,
-        'musicview' => true,
-        'consoleview' => true,
-        'bookview' => true,
-        'gameview' => true,
-        'saburl' => true,
-        'sabapikey' => true,
-        'sabapikeytype' => true,
-        'sabpriority' => true,
-        'queuetype' => true,
-        'nzbgeturl' => true,
-        'nzbgetusername' => true,
-        'nzbgetpassword' => true,
-        'userseed' => true,
-        'cp_url' => true,
-        'cp_api' => true,
-        'style' => true,
-        'forum_posts' => true,
-        'invitations' => true,
-        'release_comments' => true,
-        'user_downloads' => true,
-        'user_excluded_categories' => true,
-        'user_movies' => true,
-        'user_requests' => true,
-        'user_series' => true,
-        'releases' => true
-    ];
+	/**
+	 * Fields that can be mass assigned using newEntity() or patchEntity().
+	 *
+	 * Note that when '*' is set to true, this allows all unspecified fields to
+	 * be mass assigned. For security purposes, it is advised to set '*' to false
+	 * (or remove it), and explicitly make individual fields accessible as needed.
+	 *
+	 * @var array
+	 */
+	protected $_accessible = [
+		'username' => true,
+		'firstname' => true,
+		'lastname' => true,
+		'email' => true,
+		'password' => true,
+		'role' => true,
+		'host' => true,
+		'grabs' => true,
+		'rsstoken' => true,
+		'createddate' => true,
+		'resetguid' => true,
+		'lastlogin' => true,
+		'apiaccess' => true,
+		'invites' => true,
+		'invitedby' => true,
+		'movieview' => true,
+		'xxxview' => true,
+		'musicview' => true,
+		'consoleview' => true,
+		'bookview' => true,
+		'gameview' => true,
+		'userseed' => true,
+		'cp_url' => true,
+		'cp_api' => true,
+		'style' => true,
+		'forum_posts' => true,
+		'invitations' => true,
+		'release_comments' => true,
+		'user_downloads' => true,
+		'user_excluded_categories' => true,
+		'user_movies' => true,
+		'user_requests' => true,
+		'user_series' => true,
+		'releases' => true
+	];
 
-    /**
-     * Fields that are excluded from JSON versions of the entity.
-     *
-     * @var array
-     */
-    protected $_hidden = [
-        'password'
-    ];
+	/**
+	 * Fields that are excluded from JSON versions of the entity.
+	 *
+	 * @var array
+	 */
+	protected $_hidden = [
+		'password'
+	];
 
 	protected function _setPassword($value)
 	{

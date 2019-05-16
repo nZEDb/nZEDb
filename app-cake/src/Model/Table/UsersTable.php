@@ -73,7 +73,19 @@ class UsersTable extends Table
             'targetForeignKey' => 'release_id',
             'joinTable' => 'users_releases'
         ]);
-    }
+
+		$this->hasOne('Couchpotato', [
+			'foreignKey' => 'user_id'
+		]);
+
+		$this->hasOne('Nzbget', [
+			'foreignKey' => 'user_id'
+		]);
+
+		$this->hasOne('Sabnzb', [
+			'foreignKey' => 'user_id'
+		]);
+	}
 
     /**
      * Default validation rules.
