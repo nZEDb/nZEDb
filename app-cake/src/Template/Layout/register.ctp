@@ -11,6 +11,8 @@
 	<div class="register-box-body">
 		<p class="login-box-msg">Register a new membership</p>
 
+		<?= $this->Flash->render() ?>
+
 		<?= $this->fetch('content') ?>
 
 		<?php if (Configure::read('Theme.login.show_social')): ?>

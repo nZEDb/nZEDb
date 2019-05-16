@@ -11,6 +11,8 @@
 	<div class="login-box-body">
 		<p class="login-box-msg">Sign in to start your session</p>
 
+		<?= $this->Flash->render() ?>
+
 		<?= $this->fetch('content') ?>
 
 		<?php if (Configure::read('Theme.login.show_social')): ?>
