@@ -91,7 +91,7 @@
     "barracudanetworks/forkdaemon-php": "^1.0.7",
     "cakephp/authentication": "dev-master",
     "cakephp/authorization": "dev-master",
-    "cakephp/cakephp": "3.7.*",
+    "cakephp/cakephp": "3.8.*",
     "cakephp/migrations": "^2.0.0",
     "cakephp/plugin-installer": "^1.0",
     "composer-plugin-api": "^1.0.0",
@@ -135,7 +135,7 @@
     "bower-asset/responsive-tables-js-1.0.x": "~1.0.6",
     "bower-asset/select2-4.0.x": "~4.0.2",
     "bower-asset/slimscroll-1.3.x": "~1.3.7",
-    "bower-asset/tinymce-builded": "^4.4",
+    "bower-asset/tinymce-builded": "^4.4"
   },
   "require-dev": {
     "cakephp/bake": "^1.9.0",

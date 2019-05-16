@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "25016c065fd55fb86dcee88485ad205c",
+    "content-hash": "39ec7ac0b5580407c1ef06551ba7954c",
     "packages": [
         {
             "name": "aura/intl",
@@ -1415,16 +1415,16 @@
         },
         {
             "name": "cakephp/cakephp",
-            "version": "3.7.7",
+            "version": "3.8.0-RC1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cakephp/cakephp.git",
-                "reference": "b0aeff37f78e6cca7ed35bc0e49dedd6cf5fb3d6"
+                "reference": "da2821339221354a8fdb34dec5229d5f338068f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cakephp/cakephp/zipball/b0aeff37f78e6cca7ed35bc0e49dedd6cf5fb3d6",
-                "reference": "b0aeff37f78e6cca7ed35bc0e49dedd6cf5fb3d6",
+                "url": "https://api.github.com/repos/cakephp/cakephp/zipball/da2821339221354a8fdb34dec5229d5f338068f3",
+                "reference": "da2821339221354a8fdb34dec5229d5f338068f3",
                 "shasum": ""
             },
             "require": {
@@ -1500,7 +1500,7 @@
                 "rapid-development",
                 "validation"
             ],
-            "time": "2019-04-24T01:30:19+00:00"
+            "time": "2019-04-30T02:13:33+00:00"
         },
         {
             "name": "cakephp/chronos",
@@ -5369,9 +5369,9 @@
         "cakephp/authorization": 20,
         "dborsatto/php-giantbomb": 20,
         "joshpinkney/tv-maze-php-api": 20,
+        "maiconpinto/cakephp-adminlte-theme": 20,
         "mhor/php-mediainfo": 20,
         "nzedb/git.php": 20,
-        "maiconpinto/cakephp-adminlte-theme": 20,
         "psy/psysh": 0
     },
     "prefer-stable": false,
