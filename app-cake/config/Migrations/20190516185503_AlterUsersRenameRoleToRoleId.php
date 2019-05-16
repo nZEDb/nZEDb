@@ -3,7 +3,7 @@
 use Cake\Datasource\ConnectionManager;
 use Migrations\AbstractMigration;
 
-class AlterUsersChangeCreateddateToCreated extends AbstractMigration
+class AlterUsersRenameRoleToRoleId extends AbstractMigration
 {
 	/**
 	 * Change Method.
@@ -15,12 +15,14 @@ class AlterUsersChangeCreateddateToCreated extends AbstractMigration
 	public function change()
 	{
 		$table = $this->table('users');
-		$table->addTimestamps('created', 'updated')->update();
+		$table->addColumn('role_id', 'integer', ['after' => 'role', 'default' => 0, 'null' =>
+			false, 'comment' => 'FK to roles.id'])
+			->update();
 
 		$dbc = ConnectionManager::get('default');
-		$dbc->execute('UPDATE users SET created = createddate');
+		$dbc->execute('UPDATE users SET role_id = role');
 
 		$table = $this->table('users');
-		$table->removeColumn('createddate')->update();
+		$table->removeColumn('role')->update();
 	}
 }

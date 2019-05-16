@@ -3,16 +3,16 @@ use Migrations\AbstractMigration;
 
 class UpdateRolesAddDescriptions extends AbstractMigration
 {
-    /**
-     * Change Method.
-     *
-     * More information on this method is available here:
-     * http://docs.phinx.org/en/latest/migrations.html#the-change-method
-     * @return void
-     */
-    public function change()
-    {
-    	$table = \Cake\ORM\TableRegistry::getTableLocator()->get('Roles');
+	/**
+	 * Change Method.
+	 *
+	 * More information on this method is available here:
+	 * http://docs.phinx.org/en/latest/migrations.html#the-change-method
+	 * @return void
+	 */
+	public function change()
+	{
+		$table = \Cake\ORM\TableRegistry::getTableLocator()->get('Roles');
 
 		$query = $table->query();
 		$query->update()
