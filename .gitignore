@@ -16,6 +16,8 @@ test.php
 /configuration/config.php
 /configuration/settings.php
 
+*.lock
+
 /nbproject/
 /nbproject/private/
 /resources/*.csv
@@ -26,3 +28,4 @@ test.php
 /templates_c/*
 /vendor
 /www/themes/shared/libs/*
+
