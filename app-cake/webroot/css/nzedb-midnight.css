@@ -20,10 +20,6 @@ a:hover,
 	color: whitesmoke;
 }
 
-.login-page, .register-page, .sidebar-mini > body {
-	height: auto;
-}
-
 .content-wrapper, .login-box > div {
 	/* Removing this causes a scrollbar when it is not needed! Something making a div go over 100%? */
 	height: 100%;
@@ -34,8 +30,12 @@ a:hover,
 	color: whitesmoke;
 }
 
+.box-header > th {
+	color: red;
+}
 
-element.style {
+.login-page, .register-page, .sidebar-mini > body {
+	height: auto;
 }
 
 .main-header .logo {
@@ -215,6 +215,30 @@ element.style {
 	border-top-right-radius: 2px;
 	border-bottom-right-radius: 2px;
 	border-bottom-left-radius: 0;
+}
+
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+	border-top: 1px dotted #440000;
+	border-bottom: 1px dotted #440000;
+	padding: 1px;
+}
+
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th {
+	color: darkred;
+	font-size: 15px;
+}
+
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+	color: whitesmoke;
 }
 
 /*
