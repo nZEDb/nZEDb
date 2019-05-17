@@ -82,6 +82,10 @@ class UsersTable extends Table
 			'foreignKey' => 'user_id'
 		]);
 
+		$this->hasOne('Roles', [
+			'foreignKey' => 'role_id'
+		]);
+
 		$this->hasOne('Sabnzb', [
 			'foreignKey' => 'user_id'
 		]);
@@ -146,9 +150,9 @@ class UsersTable extends Table
             ->allowEmptyString('rsstoken', false);
 
         $validator
-            ->dateTime('createddate')
-            ->requirePresence('createddate', 'create')
-            ->allowEmptyDateTime('createddate', false);
+            ->dateTime('created')
+            ->requirePresence('created', 'create')
+            ->allowEmptyDateTime('created', false);
 
         $validator
             ->scalar('resetguid')
@@ -196,57 +200,14 @@ class UsersTable extends Table
             ->allowEmptyString('gameview', false);
 
         $validator
-            ->scalar('saburl')
-            ->maxLength('saburl', 255)
-            ->allowEmptyString('saburl');
-
-        $validator
-            ->scalar('sabapikey')
-            ->maxLength('sabapikey', 255)
-            ->allowEmptyString('sabapikey');
-
-        $validator
-            ->boolean('sabapikeytype')
-            ->allowEmptyString('sabapikeytype');
-
-        $validator
-            ->boolean('sabpriority')
-            ->allowEmptyString('sabpriority');
-
-        $validator
             ->boolean('queuetype')
             ->allowEmptyString('queuetype', false);
-
-        $validator
-            ->scalar('nzbgeturl')
-            ->maxLength('nzbgeturl', 255)
-            ->allowEmptyString('nzbgeturl');
-
-        $validator
-            ->scalar('nzbgetusername')
-            ->maxLength('nzbgetusername', 255)
-            ->allowEmptyString('nzbgetusername');
-
-        $validator
-            ->scalar('nzbgetpassword')
-            ->maxLength('nzbgetpassword', 255)
-            ->allowEmptyString('nzbgetpassword');
 
         $validator
             ->scalar('userseed')
             ->maxLength('userseed', 50)
             ->requirePresence('userseed', 'create')
             ->allowEmptyString('userseed', false);
-
-        $validator
-            ->scalar('cp_url')
-            ->maxLength('cp_url', 255)
-            ->allowEmptyString('cp_url');
-
-        $validator
-            ->scalar('cp_api')
-            ->maxLength('cp_api', 255)
-            ->allowEmptyString('cp_api');
 
         $validator
             ->scalar('style')

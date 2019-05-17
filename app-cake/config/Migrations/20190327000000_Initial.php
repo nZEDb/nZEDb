@@ -3860,6 +3860,7 @@ class Initial extends AbstractMigration
                 'null' => true,
             ])
             ->addColumn('style', 'string', [
+            	'comment' => 'User\'s chosen style/theme',
                 'default' => null,
                 'limit' => 255,
                 'null' => true,

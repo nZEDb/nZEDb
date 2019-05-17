@@ -1,6 +1,7 @@
 <?php
 namespace App\Model\Entity;
 
+use Authentication\IdentityInterface;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\ORM\Entity;
 
@@ -53,7 +54,7 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\UserSeries[] $user_series
  * @property \App\Model\Entity\Release[] $releases
  */
-class User extends Entity
+class User extends Entity implements IdentityInterface
 {
 	/**
 	 * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -109,6 +110,22 @@ class User extends Entity
 	protected $_hidden = [
 		'password'
 	];
+
+	/**
+	 * Authentication\IdentityInterface method
+	 */
+	public function getIdentifier()
+	{
+		return $this->id;
+	}
+
+	/**
+	 * Authentication\IdentityInterface method
+	 */
+	public function getOriginalData()
+	{
+		return $this;
+	}
 
 	protected function _setPassword($value)
 	{

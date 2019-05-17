@@ -27,7 +27,7 @@ class PagesController extends AppController
 	 * Displays a view
 	 *
 	 * @param array ...$path Path segments.
-	 * @return \Cake\Http\Response|null
+	 * @return \Cake\Http\Response|void
 	 * @throws \Cake\Http\Exception\ForbiddenException When a directory traversal attempt.
 	 * @throws \Cake\Http\Exception\NotFoundException When the view file could not
 	 *   be found or \Cake\View\Exception\MissingTemplateException in debug mode.
@@ -50,14 +50,8 @@ class PagesController extends AppController
 			$subpage = $path[1];
 		}
 		$title = $subpage ?? $page;
+
 		$this->set(compact('page', 'subpage', 'title'));
-
-/*
-
-		$this->Html->meta('keywords', $this->fetch('keywords'));
-
-		$this->Html->meta('description', $this->fetch('description'));
-*/
 
 		try {
 			$this->render(implode('/', $path));

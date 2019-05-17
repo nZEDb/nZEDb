@@ -28,7 +28,7 @@ class UsersController extends AppController
      */
     public function add()
     {
-    	if ($this->identity->role != Role::ADMIN) {
+    	if ($this->identity && $this->identity->role != Role::ADMIN) {
 			switch (Settings::value('..registerstatus')) {
 				case Settings::REGISTER_STATUS_CLOSED || Settings::REGISTER_STATUS_API_ONLY:
 					$this->Flash->error(__('Registrations are currently disabled.'));
@@ -128,8 +128,7 @@ class UsersController extends AppController
 	{
 		parent::initialize();
 
-		$this->identity = $this->request
-			->getAttribute('identity');
+		//$this->Authorization->authorizeModel('add');
 	}
 
 	public function login()
