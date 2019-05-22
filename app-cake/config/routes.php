@@ -66,7 +66,7 @@ Router::scope('/', static function (RouteBuilder $routes) {
 
 	$routes->connect('/join', ['controller' => 'Users', 'action' => 'add']);
 	$routes->connect('/logout', ['controller' => 'Users', 'action' => 'logout']);
-	$routes->connect('/profile/:id', ['controller' => 'Users', 'action' => 'view']);
+	$routes->connect('/profile/:id', ['controller' => 'Profiles', 'action' => 'view']);
 	$routes->connect('/register', ['controller' => 'Users', 'action' => 'add']);
 
 

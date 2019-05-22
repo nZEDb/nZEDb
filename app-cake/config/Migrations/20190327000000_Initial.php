@@ -4358,7 +4358,6 @@ class Initial extends AbstractMigration
 				'canpreview'       => 1
 			]);
 		$connection->execute('UPDATE user_roles SET id = id - 1');
-
 	}
 
     public function down()

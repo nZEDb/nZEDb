@@ -107,7 +107,7 @@ class UsersTable extends Table
             ->scalar('username')
             ->maxLength('username', 50)
             ->requirePresence('username', 'create')
-            ->allowEmptyString('username', false);
+            ->allowEmptyString('username', 'You must provide a username', false);
 
         $validator
             ->scalar('firstname')
@@ -122,17 +122,17 @@ class UsersTable extends Table
         $validator
             ->email('email')
             ->requirePresence('email', 'create')
-            ->allowEmptyString('email', false);
+            ->allowEmptyString('email', 'An e-mail is required', false);
 
         $validator
             ->scalar('password')
             ->maxLength('password', 255)
             ->requirePresence('password', 'create')
-            ->allowEmptyString('password', false);
+            ->allowEmptyString('password', 'A password is required', false);
 
         $validator
             ->integer('role')
-            ->allowEmptyString('role', false);
+            ->allowEmptyString('role', 'Role is required', false);
 
         $validator
             ->scalar('host')
@@ -141,18 +141,18 @@ class UsersTable extends Table
 
         $validator
             ->integer('grabs')
-            ->allowEmptyString('grabs', false);
+            ->allowEmptyString('grabs', 'Required', false);
 
         $validator
             ->scalar('rsstoken')
             ->maxLength('rsstoken', 32)
             ->requirePresence('rsstoken', 'create')
-            ->allowEmptyString('rsstoken', false);
+            ->allowEmptyString('rsstoken', 'Required', false);
 
         $validator
             ->dateTime('created')
             ->requirePresence('created', 'create')
-            ->allowEmptyDateTime('created', false);
+            ->allowEmptyDateTime('created');
 
         $validator
             ->scalar('resetguid')
@@ -169,7 +169,7 @@ class UsersTable extends Table
 
         $validator
             ->integer('invites')
-            ->allowEmptyString('invites', false);
+            ->allowEmptyString('invites');
 
         $validator
             ->integer('invitedby')
@@ -177,37 +177,37 @@ class UsersTable extends Table
 
         $validator
             ->integer('movieview')
-            ->allowEmptyString('movieview', false);
+            ->allowEmptyString('movieview');
 
         $validator
             ->integer('xxxview')
-            ->allowEmptyString('xxxview', false);
+            ->allowEmptyString('xxxview');
 
         $validator
             ->integer('musicview')
-            ->allowEmptyString('musicview', false);
+            ->allowEmptyString('musicview');
 
         $validator
             ->integer('consoleview')
-            ->allowEmptyString('consoleview', false);
+            ->allowEmptyString('consoleview');
 
         $validator
             ->integer('bookview')
-            ->allowEmptyString('bookview', false);
+            ->allowEmptyString('bookview');
 
         $validator
             ->integer('gameview')
-            ->allowEmptyString('gameview', false);
+            ->allowEmptyString('gameview');
 
         $validator
             ->boolean('queuetype')
-            ->allowEmptyString('queuetype', false);
+            ->allowEmptyString('queuetype');
 
         $validator
             ->scalar('userseed')
             ->maxLength('userseed', 50)
             ->requirePresence('userseed', 'create')
-            ->allowEmptyString('userseed', false);
+            ->allowEmptyString('userseed', 'Required', false);
 
         $validator
             ->scalar('style')

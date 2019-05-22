@@ -1,12 +1,14 @@
 <?php
 
-$menu_class = $this->Identity->isLoggedIn() ? ' class="dropdown-menu"' : '';
-
 ?>
 <?php if ($this->Identity->isLoggedIn()) : ?>
 	<li class="dropdown user user-menu">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-			<span class="hidden-xs"><?= $this->Identity->get('username') ?></span>
+			<span class="fa fa-user"> </span><span class="hidden-xs" style="vertical-align: top"><?=
+				$this->Identity->get('username')
+				?></span>
+			<span class="fa fa-angle-double-down pull-right" style="vertical-align: bottom;
+			font-size: 1.5em;"></span>
 		</a>
 		<ul class="dropdown-menu">
 			<!-- User image -->
@@ -16,14 +18,12 @@ $menu_class = $this->Identity->isLoggedIn() ? ' class="dropdown-menu"' : '';
 			<!-- Menu Body -->
 			<!-- Menu Footer-->
 			<li class="user-footer"><?= $this->Html->link('Profile',
-					['controller' => 'Users', 'action' => 'view'],
+					['controller' => 'Profiles', 'action' => 'view'],
 					['class' => 'btn btn-default btn-flat']) ?></li>
 			<li><?= $this->Html->link('Sign out',
 					['controller' => 'Users', 'action' => 'logout'],
 					['class' => 'btn btn-default btn-flat']) ?></a></li>
 		</ul>
-
-	<!--li class="dropdown-menu"><?= $this->Html->link('Profile', ['controller' => 'Users', 'action' => 'view']) ?></li-->
 	</li>
 <?php else : ?>
 	<li class="user-body">

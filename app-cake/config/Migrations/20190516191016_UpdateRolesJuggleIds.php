@@ -46,20 +46,20 @@ class UpdateRolesJuggleIds extends AbstractMigration
 
 		$roles->query()->update()
 			->set(['id' => 30])
-			->where(['id' => 4]) // Moderator
+			->where(['id' => 5])// Friend
 			->execute();
 		$users->query()->update()
 			->set(['role_id' => 30])
-			->where(['role_id' => 4])
+			->where(['role_id' => 5])
 			->execute();
 
 		$roles->query()->update()
 			->set(['id' => 40])
-			->where(['id' => 5]) // Friend
+			->where(['id' => 4]) // Moderator
 			->execute();
 		$users->query()->update()
 			->set(['role_id' => 40])
-			->where(['role_id' => 5])
+			->where(['role_id' => 4])
 			->execute();
 
 		$roles->query()->update()
