@@ -1,7 +1,7 @@
 <?php
 use Migrations\AbstractMigration;
 
-class CreateSabnzb extends AbstractMigration
+class CreateSabnzbd extends AbstractMigration
 {
 	/**
 	 * Change Method.
@@ -12,7 +12,7 @@ class CreateSabnzb extends AbstractMigration
 	 */
 	public function change(): void
 	{
-		$table = $this->table('sabnzb', ['id' => false, 'primary_key' => ['user_id']])
+		$table = $this->table('sabnzbd', ['id' => false, 'primary_key' => ['user_id']])
 			->addColumn('user_id', 'integer', [
 				'comment' => 'FK to users.id',
 				'default' => null,
@@ -20,7 +20,7 @@ class CreateSabnzb extends AbstractMigration
 				'null' => false,
 			])
 			->addColumn('url', 'string', [
-				'comment' => 'url to Sabnzb server',
+				'comment' => 'url to Sabnzbd server',
 				'default' => null,
 				'limit' => 255,
 				'null' => false,

@@ -7,6 +7,7 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
+	<p class="pull-right"><?= $this->Html->link('Edit', ['controller' => 'Profiles', 'action' => 'edit']) ?></p>
 	<h1>Profile for <?= $profile->username ?></h1>
 </section>
 
@@ -42,37 +43,21 @@
 							<td><?= h($profile->password) ?></td>
 						</tr>
 						<tr>
-							<th scope="row"><?= __('Host') ?></th>
-							<td><?= h($profile->host) ?></td>
-						</tr>
-						<tr>
-							<th scope="row"><?= __('RSS token') ?></th>
-							<td><?= h($profile->rsstoken) ?></td>
-						</tr>
-						<tr>
-							<th scope="row"><?= __('Reset GUUID') ?></th>
-							<td><?= h($profile->resetguid) ?></td>
-						</tr>
-						<tr>
-							<th scope="row"><?= __('Userseed') ?></th>
-							<td><?= h($profile->userseed) ?></td>
-						</tr>
-						<tr>
 							<th scope="row"><?= __('Style/Theme') ?></th>
 							<td><?= h(empty($profile->style) ? __('Site Default') : __
 								($profile->style)) ?></td>
 						</tr>
 						<tr>
-							<th scope="row"><?= __('Grabs') ?></th>
-							<td><?= $this->Number->format($profile->grabs) ?></td>
-						</tr>
-						<tr>
-							<th scope="row"><?= __('Invites') ?></th>
-							<td><?= $this->Number->format($profile->invites) ?></td>
+							<th scope="row"><?= __('Host') ?></th>
+							<td><?= h($profile->host) ?></td>
 						</tr>
 						<tr>
 							<th scope="row"><?= __('Invitedby') ?></th>
 							<td><?= $this->Number->format($profile->invitedby) ?></td>
+						</tr>
+						<tr>
+							<th scope="row"><?= __('Reset GUUID') ?></th>
+							<td><?= h($profile->resetguid) ?></td>
 						</tr>
 						<tr>
 							<th scope="row"><?= __('Book view') ?></th>
@@ -97,6 +82,22 @@
 						<tr>
 							<th scope="row"><?= __('XXX view') ?></th>
 							<td><?= $this->Number->format($profile->xxxview) ?></td>
+						</tr>
+						<tr>
+							<th scope="row"><?= __('Grabs') ?></th>
+							<td><?= $this->Number->format($profile->grabs) ?></td>
+						</tr>
+						<tr>
+							<th scope="row"><?= __('Invites') ?></th>
+							<td><?= $this->Number->format($profile->invites) ?></td>
+						</tr>
+						<tr>
+							<th scope="row"><?= __('Userseed') ?></th>
+							<td><?= h($profile->userseed) ?></td>
+						</tr>
+						<tr>
+							<th scope="row"><?= __('RSS token') ?></th>
+							<td><?= h($profile->rsstoken) ?></td>
 						</tr>
 						<tr>
 							<th scope="row"><?= __('Createddate') ?></th>
@@ -124,34 +125,34 @@
 							<td><?= $profile->queuetype ? __('SABnzb') : __('NZBGet'); ?></td>
 						</tr>
 						<!-- todo display only SABnzb or nzbget depending on queue type above -->
-						<?php if ($profile->queuetype === 0) : ?>
+						<?php if ($profile->queuetype == 0) : ?>
 						<tr>
-							<th scope="row"><?= __('Nzbgeturl') ?></th>
+							<th scope="row"><?= __('NZBGet URL') ?></th>
 							<td><?= h($profile->nzbgeturl) ?></td>
 						</tr>
 						<tr>
-							<th scope="row"><?= __('Nzbgetusername') ?></th>
+							<th scope="row"><?= __('NZBGet user name') ?></th>
 							<td><?= h($profile->nzbgetusername) ?></td>
 						</tr>
 						<tr>
-							<th scope="row"><?= __('Nzbgetpassword') ?></th>
+							<th scope="row"><?= __('NZBGet password') ?></th>
 							<td><?= h($profile->nzbgetpassword) ?></td>
 						</tr>
 						<?php else : ?>
 						<tr>
-							<th scope="row"><?= __('Saburl') ?></th>
+							<th scope="row"><?= __('SABnzbd URL') ?></th>
 							<td><?= h($profile->saburl) ?></td>
 						</tr>
 						<tr>
-							<th scope="row"><?= __('Sabapikey') ?></th>
+							<th scope="row"><?= __('SABnzbd API key') ?></th>
 							<td><?= h($profile->sabapikey) ?></td>
 						</tr>
 						<tr>
-							<th scope="row"><?= __('Sabapikeytype') ?></th>
+							<th scope="row"><?= __('SABnzbd API key type') ?></th>
 							<td><?= $profile->sabapikeytype ? __('Yes') : __('No'); ?></td>
 						</tr>
 						<tr>
-							<th scope="row"><?= __('Sabpriority') ?></th>
+							<th scope="row"><?= __('SABnzbd priority') ?></th>
 							<td><?= $profile->sabpriority ? __('Yes') : __('No'); ?></td>
 						</tr>
 						<?php endif; ?>

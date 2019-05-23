@@ -19,7 +19,7 @@ class Copy3rdPartyAppSettingsIntoNewTables extends AbstractMigration
 		);
 
 		$connection->execute(
-			'INSERT INTO nzedb_cake.sabnzb (user_id, url, api_key, api_key_type, priority) SELECT id, saburl, sabapikey, sabapikeytype, sabpriority FROM nzedb_cake.users WHERE saburl IS NOT NULL AND sabapikey IS NOT NULL ORDER BY id'
+			'INSERT INTO nzedb_cake.sabnzbd (user_id, url, api_key, api_key_type, priority) SELECT id, saburl, sabapikey, sabapikeytype, sabpriority FROM nzedb_cake.users WHERE saburl IS NOT NULL AND sabapikey IS NOT NULL ORDER BY id'
 		);
 
 	}
