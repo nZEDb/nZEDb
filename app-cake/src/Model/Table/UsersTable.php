@@ -97,7 +97,7 @@ class UsersTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
+    public function validationDefault(Validator $validator): Validator
     {
         $validator
             ->nonNegativeInteger('id')
@@ -146,7 +146,7 @@ class UsersTable extends Table
         $validator
             ->scalar('rsstoken')
             ->maxLength('rsstoken', 32)
-            ->requirePresence('rsstoken', 'create')
+            ->requirePresence('rsstoken', true)
             ->allowEmptyString('rsstoken', 'Required', false);
 
         $validator
@@ -204,12 +204,6 @@ class UsersTable extends Table
             ->allowEmptyString('queuetype');
 
         $validator
-            ->scalar('userseed')
-            ->maxLength('userseed', 50)
-            ->requirePresence('userseed', 'create')
-            ->allowEmptyString('userseed', 'Required', false);
-
-        $validator
             ->scalar('style')
             ->maxLength('style', 255)
             ->allowEmptyString('style');
@@ -227,8 +221,9 @@ class UsersTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->isUnique(['username']));
-        $rules->add($rules->isUnique(['email']));
+		$rules->add($rules->isUnique(['email']));
+		$rules->add($rules->isUnique(['rsstoken']));
 
-        return $rules;
+		return $rules;
     }
 }
