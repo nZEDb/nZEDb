@@ -1251,27 +1251,6 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Interpretation of mysql's UUID method.
-	 * Return uuid v4 string. http://www.php.net/manual/en/function.uniqid.php#94959
-	 *
-	 * @return string
-	 */
-	public function uuid()
-	{
-		return sprintf(
-			'%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-			mt_rand(0, 0xffff),
-			mt_rand(0, 0xffff),
-			mt_rand(0, 0xffff),
-			mt_rand(0, 0x0fff) | 0x4000,
-			mt_rand(0, 0x3fff) | 0x8000,
-			mt_rand(0, 0xffff),
-			mt_rand(0, 0xffff),
-			mt_rand(0, 0xffff)
-		);
-	}
-
-	/**
 	 * Use the 'vendor' and 'version' fields to check if the server meets the minimum required
 	 * version for the DBMS's vendor.
 	 *

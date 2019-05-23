@@ -4,6 +4,7 @@ namespace App\Model\Entity;
 use Authentication\IdentityInterface;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\ORM\Entity;
+use Ramsey\Uuid\Uuid;
 
 
 /**
@@ -110,6 +111,22 @@ class User extends Entity implements IdentityInterface
 	protected $_hidden = [
 		'password'
 	];
+
+	/**
+	 * User constructor.
+	 *
+	 * @param array $properties
+	 * @param array $options
+	 */
+	public function __construct(array $properties = [], array $options = [])
+	{
+		parent::__construct($properties, $options);
+
+		if (empty($this->rsstoken) || !Uuid::isValid(Uuid::fromString($this->rsstoken)))
+		{
+			$this->rsstoken = Uuid::uuid1()->getHex();
+		}
+	}
 
 	/**
 	 * Authentication\IdentityInterface method
