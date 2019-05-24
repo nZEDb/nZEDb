@@ -1,7 +1,7 @@
 <?php
 use Migrations\AbstractMigration;
 
-class AlterUsersDropUserseed extends AbstractMigration
+class AlterUsersDropUserseedAndResetguid extends AbstractMigration
 {
     /**
      * Change Method.
@@ -13,7 +13,8 @@ class AlterUsersDropUserseed extends AbstractMigration
     public function change()
     {
         $table = $this->table('users');
-        $table->removeColumn('userseed');
-        $table->update();
+		$table->removeColumn('userseed');
+		$table->removeColumn('resetguid');
+		$table->update();
     }
 }
