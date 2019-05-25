@@ -9,14 +9,45 @@
 a {
 	color: red;
 }
+
 a:active,
 a:focus {
 	outline: none;
 	text-decoration: none;
 	color: red;
 }
+
 a:hover,
 .btn:hover {
+	color: whitesmoke;
+}
+
+input {
+	display: inline;
+}
+
+label {
+	background-color: darkred;
+	#border: 1px;
+	color: whitesmoke;
+	display: inline;
+	padding: 0px 6px;
+}
+
+legend {
+	color: red;
+}
+
+.box-header {
+	color: darkred;
+}
+
+.box-header > th {
+	color: red;
+}
+
+.content-wrapper {
+	background: black;
 	color: whitesmoke;
 }
 
@@ -25,17 +56,34 @@ a:hover,
 	height: 100%;
 }
 
-.content-wrapper {
-	background: black;
-	color: whitesmoke;
+.form-control {
+	color: #000;
+	display: inline;
+	height: inherit;
+	#padding: 0px 12px;
+	#width: inherit;
 }
 
-.box-header > th {
-	color: red;
+.form-group {
+	#margin-bottom: 5px;
+	#height: 22px;
 }
 
-.login-page, .register-page, .sidebar-mini > body {
+.login-page,
+.register-page,
+.sidebar-mini > body {
 	height: auto;
+}
+
+.login-page div a:hover,
+.register-page div a:hover {
+	color: salmon;
+}
+
+.login-page label,
+.register-page label {
+	background-color: whitesmoke;
+	color: salmon;
 }
 
 .main-header .logo {
@@ -134,7 +182,7 @@ a:hover,
 
 .skin-nzedb-midnight .sidebar-menu > li.header {
 	color: darkred;
-	background: #3A3A3A;
+	background: black;
 	font-size: 14px;
 	margin-top: 15px;
 	text-align: center;
@@ -225,7 +273,7 @@ a:hover,
 .table > tfoot > tr > td {
 	border-top: 1px dotted #440000;
 	border-bottom: 1px dotted #440000;
-	padding: 1px;
+	padding: 0px;
 }
 
 .table > thead > tr > th,
@@ -239,6 +287,12 @@ a:hover,
 .table > tbody > tr > td,
 .table > tfoot > tr > td {
 	color: whitesmoke;
+}
+
+th, label {
+	background-color: black;
+	color: darkred;
+	max-width: 75px;
 }
 
 /*
@@ -266,5 +320,5 @@ a:hover,
 .login-box,
 .register-box {
 	width: 360px;
-	margin: 7% auto;
+	margin: 7pc auto;
 }

@@ -69,7 +69,7 @@ class UsersController extends AppController
 	 */
 	public function beforeFilter(Event $event): ?Response
 	{
-		$this->Authentication->allowUnauthenticated(['login', 'logout', 'add']);
+		$this->Authentication->allowUnauthenticated(['add', 'forgotten', 'login', 'logout', ]);
 
 		return parent::beforeFilter($event);
 	}
@@ -119,6 +119,11 @@ class UsersController extends AppController
 		}
 		$releases = $this->Users->Releases->find('list', ['limit' => 200]);
 		$this->set(compact('user', 'releases'));
+	}
+
+	public function forgotten(): void
+	{
+		;
 	}
 
 	/**
