@@ -30,13 +30,28 @@ use Cake\Validation\Validator;
  */
 class UsersTable extends Table
 {
-    /**
+	public function findFromEmail(Query $query, array $options): Query
+	{
+		return $query->where(['email' => $options['email']]);
+	}
+
+	public function findFromId(Query $query, array $options)
+	{
+		return $query->where(['id' => $options['id']]);
+	}
+
+	public function findFromUsername(Query $query, array $options)
+	{
+		return $query->where(['username' => $options['username']]);
+	}
+
+	/**
      * Initialize method
      *
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
         parent::initialize($config);
 

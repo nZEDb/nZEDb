@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "e9a04893994baf96b26aa61648f28b0d",
+    "content-hash": "861d62b3a36ae8070d1c028189316aff",
     "packages": [
         {
             "name": "aura/intl",
@@ -2074,6 +2074,57 @@
                 "url"
             ],
             "time": "2019-04-01T06:40:32+00:00"
+        },
+        {
+            "name": "ivanamat/cakephp3-captcha",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ivanamat/cakephp3-captcha.git",
+                "reference": "6f1b0ab53ce2389a0dbb5e7de3e37f1b90af1c25"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ivanamat/cakephp3-captcha/zipball/6f1b0ab53ce2389a0dbb5e7de3e37f1b90af1c25",
+                "reference": "6f1b0ab53ce2389a0dbb5e7de3e37f1b90af1c25",
+                "shasum": ""
+            },
+            "require": {
+                "cakephp/cakephp": "~3.0",
+                "php": ">=5.4.16"
+            },
+            "type": "cakephp-plugin",
+            "autoload": {
+                "psr-4": {
+                    "Captcha\\": "src"
+                },
+                "classmap": [
+                    "Lib/ReCaptcha"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ivan Amat",
+                    "homepage": "http://www.ivanamat.es",
+                    "role": "Author"
+                }
+            ],
+            "description": "CakePHP 3.x - reCAPTCHA plugin",
+            "homepage": "https://github.com/ivanamat/cakephp3-captcha",
+            "keywords": [
+                "cake3",
+                "cakephp",
+                "cakephp3",
+                "captcha",
+                "google",
+                "plugin",
+                "recaptcha"
+            ],
+            "time": "2016-08-29T18:37:53+00:00"
         },
         {
             "name": "james-heinrich/getid3",
@@ -5441,6 +5492,7 @@
         "mhor/php-mediainfo": 20,
         "nzedb/git.php": 20,
         "ramsey/uuid": 20,
+        "ivanamat/cakephp3-captcha": 20,
         "psy/psysh": 0
     },
     "prefer-stable": false,

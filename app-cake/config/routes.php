@@ -69,6 +69,9 @@ Router::scope('/', static function (RouteBuilder $routes) {
 	$routes->connect('/forgot', ['controller' => 'Users', 'action' => 'forgotten']);
 	$routes->connect('/profile/:id', ['controller' => 'Profiles', 'action' => 'view']);
 	$routes->connect('/register', ['controller' => 'Users', 'action' => 'add']);
+	$routes->connect('/reset/:id', ['controller' => 'Users', 'action' => 'reset'])
+		->setPatterns(['id' => '[0-9a-fA-F{32}'])
+		->setPass(['uid']);
 
 
 	/**

@@ -1,11 +1,17 @@
 <?php
 namespace App\Controller;
 
+use App\Model\Entity\Setting;
 use App\Model\Entity\Role;
+use App\Model\Table\SettingsTable;
 use Cake\Event\Event;
 use Cake\Http\Response;
+use Cake\Mailer\MailerAwareTrait;
+use Cake\ORM\TableRegistry;
+use Cake\Routing\Router;
+use Cake\Validation\Validator;
 use DateTime;
-use zed\db\Settings;
+use Ramsey\Uuid\Uuid;
 
 
 /**
@@ -17,6 +23,8 @@ use zed\db\Settings;
  */
 class UsersController extends AppController
 {
+	use MailerAwareTrait;
+
 	/**
 	 * @var \Authentication\Identity
 	 */
@@ -30,16 +38,18 @@ class UsersController extends AppController
     public function add()
     {
     	if ($this->identity && $this->identity->role != Role::ADMIN) {
-			switch (Settings::value('..registerstatus')) {
-				case Settings::REGISTER_STATUS_CLOSED || Settings::REGISTER_STATUS_API_ONLY:
+    		$this->loadModel('Settings');
+    		$setting = SettingsTable::getValue('..registerstatus');
+			switch ($setting) {
+				case Setting::REGISTER_STATUS_CLOSED || Setting::REGISTER_STATUS_API_ONLY:
 					$this->Flash->error(__('Registrations are currently disabled.'));
-					$this->redirect(['controller' => 'Pages', 'action' => 'display', 'Home']);
+					$this->redirect('/');
 					break;
-				case Settings::REGISTER_STATUS_INVITE && empty($this->request->getData('Request.invitecode')):
+				case Setting::REGISTER_STATUS_INVITE && empty($this->request->getData('Request.invitecode')):
 					$this->Flash->default(__('Registrations are currently by invitation only.'));
 					$this->redirect(['controller' => 'Pages', 'action' => 'display', 'Home']);
 					break;
-				case Settings::REGISTER_STATUS_OPEN:
+				case Setting::REGISTER_STATUS_OPEN:
 					break;
 				default:
 					throw new \InvalidArgumentException('Unknown registration status');
@@ -52,12 +62,13 @@ class UsersController extends AppController
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('The user has been saved.'));
 
+				$this->getMailer('User')->send('welcome', [$user]);
+
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The user could not be saved. Please, try again.'));
         }
-        $releases = $this->Users->Releases->find('list', ['limit' => 200]);
-        $this->set(compact('user', 'releases'));
+        $this->set(compact('user'));
     }
 
 	/**
@@ -107,7 +118,9 @@ class UsersController extends AppController
 		$user = $this->Users->get($id,
 			[
 				'contain' => ['Releases']
-			]);
+			]
+		);
+
 		if ($this->request->is(['patch', 'post', 'put'])) {
 			$user = $this->Users->patchEntity($user, $this->request->getData());
 			if ($this->Users->save($user)) {
@@ -123,7 +136,54 @@ class UsersController extends AppController
 
 	public function forgotten(): void
 	{
-		;
+		// If they're logged in forgotten password is not possible.
+		if ($this->identity !== null && $this->identity->getIdentifier() !== null)
+		{
+			$this->redirect('/');
+		}
+
+		if ($this->request->is(['post'])) {
+			$data = $this->request->getData('Post.email');
+
+			$validator = new Validator();
+			$validator->add('email', 'validFormat', [
+					'rule' => 'email',
+					'message' => 'Invalid e-mail format'
+				]);
+			$errors = $validator->errors(['email' => $data]);
+
+			if (empty($errors)) {
+				$query = $this->Users->findFromEmail($data);
+			} else {
+				$query = $this->Users->findFromUsername($data);
+			}
+
+			$query->select(['id', 'username', 'email'])
+				->first();
+			$user = $query->all();
+
+			if ($user !== null) {
+				$uid = Uuid::uuid4()->getHex();
+
+				$url = Router::url([
+						'controller' => 'Users',
+						'action'     => 'reset',
+						'id'         => $uid
+					],
+					true
+				);
+
+				$query = TableRegistry::getTableLocator()->get('PasswordResets')->query();
+				$query->insert(['id', 'uid'])
+					->values([$user->id, $uid])
+					->execute();
+
+				$this->set(['user' => $user, 'url' => $url]);
+
+			$email = $this->getMailer('User');
+			$email->send('forgotten', [$user]);
+			}
+		}
 	}
 
 	/**
@@ -178,6 +238,14 @@ class UsersController extends AppController
 			'redirect',
 			['controller' => 'Pages', 'action' => 'display', 'Home']
 		));
+	}
+
+	public function reset(): void
+	{
+		// If they're logged in, reset is not possible.
+		if ($this->identity !== null && $this->identity->getIdentifier() !== null) {
+			$this->redirect('/');
+		}
 	}
 
 	/**
