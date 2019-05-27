@@ -23,35 +23,6 @@ use Cake\ORM\TableRegistry;
 
 class Settings
 {
-	public const REGISTER_STATUS_OPEN = 0;
-
-	public const REGISTER_STATUS_INVITE = 1;
-
-	public const REGISTER_STATUS_CLOSED = 2;
-
-	public const REGISTER_STATUS_API_ONLY = 3;
-
-	public const ERR_BADUNRARPATH = -1;
-
-	public const ERR_BADFFMPEGPATH = -2;
-
-	public const ERR_BADMEDIAINFOPATH = -3;
-
-	public const ERR_BADNZBPATH = -4;
-
-	public const ERR_DEEPNOUNRAR = -5;
-
-	public const ERR_BADTMPUNRARPATH = -6;
-
-	public const ERR_BADNZBPATH_UNREADABLE = -7;
-
-	public const ERR_BADNZBPATH_UNSET = -8;
-
-	public const ERR_BAD_COVERS_PATH = -9;
-
-	public const ERR_BAD_YYDECODER_PATH = -10;
-
-
 	/**
 	 * @param $setting
 	 *
@@ -105,6 +76,7 @@ class Settings
 	 * @param null $setting
 	 *
 	 * @return string
+	 * @deprecated Use \App\Model\Table\SettingsTable::getValue() instead.
 	 */
 	public static function value($setting = null): string
 	{

@@ -1,9 +1,9 @@
 <?php
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 
 /**
@@ -20,6 +20,24 @@ use Cake\Validation\Validator;
  */
 class SettingsTable extends Table
 {
+	/**
+	 * Returns the value of the specified setting, or null.
+	 *
+	 * @param string|array $setting Section, subsection, and name values as dotted string or an array.
+	 *
+	 * @return string|null	The value of the specified setting, or null.
+	 */
+	public static function getValue($setting): ?string
+	{
+		$table = TableRegistry::getTableLocator()->get('Settings');
+		$query = $table->find()
+			->select(['value'])
+			->where(self::dottedToArray($setting))
+			->first();
+
+		return $query->value;
+	}
+
     /**
      * Initialize method
      *
@@ -92,4 +110,39 @@ class SettingsTable extends Table
 
         return $rules;
     }
+
+	/**
+	 * @param $setting
+	 *
+	 * @return array|bool
+	 */
+	protected static function dottedToArray($setting)
+	{
+		$result = [];
+		switch (true) {
+			case is_string($setting):
+				$array = explode('.', $setting);
+				$count = count($array);
+				if ($count > 3) {
+					$result = false;
+				} else {
+
+					while (3 - $count > 0) {
+						array_unshift($array, '');
+						$count++;
+					}
+
+					[$result['section'], $result['subsection'], $result['name']] = $array;
+				}
+				break;
+			case \is_array($setting):
+				$result = $setting;
+				break;
+			default:
+				$result = false;
+				break;
+		}
+
+		return $result;
+	}
 }
