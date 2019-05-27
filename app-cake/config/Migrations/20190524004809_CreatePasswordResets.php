@@ -11,7 +11,7 @@ class CreatePasswordResets extends AbstractMigration
      * http://docs.phinx.org/en/latest/migrations.html#the-change-method
      * @return void
      */
-    public function change()
+    public function change(): void
     {
         $table = $this->table('password_resets', ['id' => false, 'primary_key' => ['user_id']])
 			->addColumn('user_id',
@@ -27,13 +27,19 @@ class CreatePasswordResets extends AbstractMigration
 				'string', [
 					'comment' => 'Unique ID created for reset process',
 					'default' => '',
-					'limit'   => 36,
+					'limit'   => 32,
 					'null'    => false,
 				]
 			)
+			->addColumn('created', 'datetime', [
+				'comment' => 'timestamp of when created',
+				'default' => 'CURRENT_TIMESTAMP',
+				'null' => false
+			])
 			->addPrimaryKey(['user_id'])
 			->addIndex(['uid'], ['unique' => true, 'name' => 'ux_uid'])
-		;
-        $table->create();
+			->addIndex(['created'], ['unique' => false, 'name' => 'ix_created']);
+
+		$table->create();
     }
 }
