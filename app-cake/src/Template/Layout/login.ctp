@@ -5,7 +5,7 @@
 <body class="hold-transition skin-<?= Configure::read('Theme.skin') ?> login-page">
 <div class="login-box">
 	<div class="login-logo">
-		<a href="<?= $this->Url->build() ?>"><?= Configure::read('Theme.logo.large') ?></a>
+		<a href="<?= $this->Url->build('/') ?>"><?= Configure::read('Theme.logo.large') ?></a>
 	</div>
 	<!-- /.login-logo -->
 	<div class="login-box-body">
@@ -24,11 +24,14 @@
 			<!-- /.social-auth-links -->
 		<?php endif ?>
 
-		<?php if (Configure::read('Theme.login.show_remember')): ?>
-			<a href="#">I forgot my password</a><br>
-		<?php endif ?>
+		<div class="pull-left">
+			<a href="<?= $this->Url->build('/forgot') ?>" class="">I forgot my password</a>
+		</div>
 		<?php if (Configure::read('Theme.login.show_register')): ?>
-			<a href="register.html" class="text-center">Register a new membership</a>
+
+		<div class="pull-right">
+			<a href = "<?= $this->Url->build('/register') ?>" class="" >Create a new account</a>
+		</div>
 		<?php endif ?>
 
 	</div>

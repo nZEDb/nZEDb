@@ -1,6 +1,7 @@
 <?php
 $this->layout = 'login';
-?>
+
+use Cake\Core\Configure; ?>
 <?= $this->Form->create() ?>
 
 <form action="<?= $this->Url->build(['controller' => 'users', 'action' => 'login']) ?>" method="post">
@@ -13,6 +14,8 @@ $this->layout = 'login';
 		<span class="glyphicon glyphicon-lock form-control-feedback"></span>
 	</div>
 	<div class="row">
+		<?php if (Configure::read('Theme.login.show_remember')): ?>
+
 		<div class="col-xs-8">
 			<div class="checkbox icheck">
 				<label>
@@ -20,8 +23,9 @@ $this->layout = 'login';
 				</label>
 			</div>
 		</div>
+		<?php endif; ?>
 		<!-- /.col -->
-		<div class="col-xs-4">
+		<div class="col-xs-4 pull-right">
 			<button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
 		</div>
 		<!-- /.col -->

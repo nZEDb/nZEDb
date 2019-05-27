@@ -32,7 +32,7 @@
 						</tr>
 						<tr>
 							<th scope="row"><?= __('Role') ?></th>
-							<td><?= $this->Number->format($profile->role) ?></td>
+							<td><?= $this->Number->format($profile->role_id) ?></td>
 						</tr>
 						<tr>
 							<th scope="row"><?= __('Email') ?></th>
