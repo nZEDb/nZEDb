@@ -25,6 +25,9 @@ use Cake\Core\Configure; ?>
 		</div>
 		<?php endif; ?>
 		<!-- /.col -->
+
+		<?= $this->element('recaptcha') ?>
+
 		<div class="col-xs-4 pull-right">
 			<button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
 		</div>

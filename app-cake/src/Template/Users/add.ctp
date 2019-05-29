@@ -17,6 +17,9 @@ $this->layout = 'register';
             echo $this->Form->control('password');
         ?>
     </fieldset>
-    <?= $this->Form->button(__('Submit')) ?>
+
+	<?= $this->element('recaptcha') ?>
+
+	<?= $this->Form->button(__('Submit')) ?>
     <?= $this->Form->end() ?>
 </div>

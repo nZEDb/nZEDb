@@ -43,6 +43,7 @@ use Cake\Mailer\Email;
 use Cake\Mailer\TransportFactory;
 use Cake\Utility\Inflector;
 use Cake\Utility\Security;
+use zed\Nzedb;
 
 /**
  * Uncomment block of code below if you want to use `.env` file during development.
@@ -155,13 +156,6 @@ Log::setConfig(Configure::consume('Log'));
 Security::setSalt(Configure::consume('Security.salt'));
 
 /*
- * The default crypto extension in 3.0 is OpenSSL.
- * If you are migrating from 2.x uncomment this code to
- * use a more compatible Mcrypt based implementation
- */
-//Security::engine(new \Cake\Utility\Crypto\Mcrypt());
-
-/*
  * Setup detectors for mobile and tablet.
  */
 ServerRequest::addDetector('mobile', function ($request) {
@@ -203,3 +197,15 @@ Type::build('timestamp')
 //Inflector::rules('transliteration', ['/å/' => 'aa']);
 
 Configure::load('adminlte', 'default');
+
+try {
+	$configPath = Nzedb::CONFIGS;
+	Configure::config('nzedb', new PhpConfig($configPath));
+
+	if (file_exists($configPath . 'recaptcha.php')) {
+		Configure::load('recaptcha', 'nzedb');
+		Configure::write('Captcha.secret', Configure::readOrFail('recaptcha.keys.secret'));
+	}
+} catch (\Exception $e) {
+	exit($e->getMessage() . "\n");
+}

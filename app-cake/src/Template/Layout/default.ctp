@@ -1,4 +1,5 @@
 <?php use Cake\Core\Configure; ?>
+<?= $this->Html->docType('html5') ?>
 <?= $this->element('default-head') ?>
 
 <body class="hold-transition skin-<?= Configure::read('Theme.skin') ?> sidebar-mini">
@@ -25,11 +26,9 @@
 
 		<?= $this->Flash->render('auth') ?>
 
-		<!--[if lt IE 10]>
+		<!--[if lt IE 11]>
 		<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please
-			<a href="http://browsehappy.com/">upgrade your browser</a> or
-			<a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a>
-			 to improve your experience.</p>
+			<a href="https://brave.com/nze714">upgrade your browser</a> to improve your experience.</p>
 		<![endif]-->
 
 		<?= $this->fetch('content') ?>

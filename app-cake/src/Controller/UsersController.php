@@ -143,45 +143,56 @@ class UsersController extends AppController
 		}
 
 		if ($this->request->is(['post'])) {
-			$data = $this->request->getData('Post.email');
+			$ip = getenv('REMOTE_ADDR');
+			$gRecaptchaResponse = $this->request->data['g-recaptcha-response'];
 
-			$validator = new Validator();
-			$validator->add('email', 'validFormat', [
-					'rule' => 'email',
-					'message' => 'Invalid e-mail format'
-				]);
-			$errors = $validator->errors(['email' => $data]);
+			$captcha = $this->Captcha->check($ip, $gRecaptchaResponse);
 
-			if (empty($errors)) {
-				$query = $this->Users->findFromEmail($data);
-			} else {
-				$query = $this->Users->findFromUsername($data);
-			}
+			if ($captcha->errorCodes === null) {
+				$data = $this->request->getData('Post.email');
 
-			$query->select(['id', 'username', 'email'])
-				->first();
-			$user = $query->all();
+				$validator = new Validator();
+				$validator->add('email',
+					'validFormat',
+					[
+						'rule'    => 'email',
+						'message' => 'Invalid e-mail format'
+					]);
+				$errors = $validator->errors(['email' => $data]);
 
-			if ($user !== null) {
-				$uid = Uuid::uuid4()->getHex();
+				if (empty($errors)) {
+					$query = $this->Users->findFromEmail($data);
+				} else {
+					$query = $this->Users->findFromUsername($data);
+				}
 
-				$url = Router::url([
+				$query->select(['id', 'username', 'email'])
+					->first();
+				$user = $query->all();
+
+				if ($user !== null) {
+					$uid = Uuid::uuid4()->getHex();
+
+					$url = Router::url([
 						'controller' => 'Users',
 						'action'     => 'reset',
 						'id'         => $uid
 					],
-					true
-				);
+						true
+					);
 
-				$query = TableRegistry::getTableLocator()->get('PasswordResets')->query();
-				$query->insert(['id', 'uid'])
-					->values([$user->id, $uid])
-					->execute();
+					$query = TableRegistry::getTableLocator()->get('PasswordResets')->query();
+					$query->insert(['id', 'uid'])
+						->values([$user->id, $uid])
+						->execute();
 
-				$this->set(['user' => $user, 'url' => $url]);
+					$this->set(['user' => $user, 'url' => $url]);
 
-			$email = $this->getMailer('User');
-			$email->send('forgotten', [$user]);
+					$email = $this->getMailer('User');
+					$email->send('forgotten', [$user]);
+				}
+			} else {
+				// TODO deal with recaptcha errors.
 			}
 		}
 	}
@@ -200,6 +211,8 @@ class UsersController extends AppController
 	public function initialize(): void
 	{
 		parent::initialize();
+
+		$this->loadComponent('Captcha.Captcha');
 
 		//$this->Authorization->authorizeModel('add');
 	}

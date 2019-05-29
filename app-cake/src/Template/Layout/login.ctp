@@ -1,7 +1,7 @@
 <?php use Cake\Core\Configure; ?>
 <?= $this->Html->docType('html5') ?>
-<?= $this->element('default-head') ?>
-
+<?= $this->element('head-default') ?>
+<html>
 <body class="hold-transition skin-<?= Configure::read('Theme.skin') ?> login-page">
 <div class="login-box">
 	<div class="login-logo">
@@ -39,7 +39,7 @@
 </div>
 <!-- /.login-box -->
 
-<?= $this->element('default-tail') ?>
+<?= $this->element('tail-default') ?>
 
 <script>
 	$(function () {
