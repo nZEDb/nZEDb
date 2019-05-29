@@ -48,18 +48,26 @@
 </div>
 <!-- ./wrapper -->
 
-<!-- jQuery 3 -->
-<?= $this->Html->script('AdminLTE./bower_components/jquery/dist/jquery.min') ?>
-<!-- Bootstrap 3.3.7 -->
-<?= $this->Html->script('AdminLTE./bower_components/bootstrap/dist/js/bootstrap.min') ?>
-<!-- AdminLTE App -->
-<?= $this->Html->script('AdminLTE.adminlte.min') ?>
-<!-- Slimscroll -->
-<?= $this->Html->script('AdminLTE./bower_components/jquery-slimscroll/jquery.slimscroll.min') ?>
-<!-- FastClick -->
-<?= $this->Html->script('AdminLTE./bower_components/fastclick/lib/fastclick') ?>
-
 <?= $this->fetch('scriptBottom') ?>
+
+<?php
+	$javaScripts =
+	[
+		'AdminLTE.adminlte.min', // AdminLTE App
+		'AdminLTE./bower_components/jquery/dist/jquery', // jQuery 3
+		'AdminLTE./bower_components/bootstrap/dist/js/bootstrap', // Bootstrap 3.3.7
+		'AdminLTE./bower_components/jquery-slimscroll/jquery.slimscroll', // Slimscroll
+	];
+	$debug = Configure::read('debug');
+?>
+
+<?php foreach ($javaScripts as $script) : ?>
+
+<?= $this->Html->script($script . ($debug === true ? '' : '.min')) ?>
+
+<?php endforeach; ?>
+
+<?= $this->Html->script('AdminLTE./bower_components/fastclick/lib/fastclick') ?>
 
 <script type="text/javascript">
 		$(document).ready(function(){
