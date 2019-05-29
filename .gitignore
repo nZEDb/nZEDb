@@ -15,6 +15,7 @@ test.php
 /.idea/
 /configuration/config.php
 /configuration/settings.php
+/configuration/recaptcha.php
 
 *.lock
 
@@ -28,4 +29,3 @@ test.php
 /templates_c/*
 /vendor
 /www/themes/shared/libs/*
-
