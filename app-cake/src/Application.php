@@ -1,14 +1,12 @@
 <?php
 namespace App;
 
-
 use Authentication\AuthenticationService;
 use Authentication\AuthenticationServiceInterface;
 use Authentication\AuthenticationServiceProviderInterface;
 use Authentication\Middleware\AuthenticationMiddleware;
 use Authorization\AuthorizationService;
 use Authorization\AuthorizationServiceProviderInterface;
-use Authorization\Middleware\AuthorizationMiddleware;
 use Authorization\Policy\OrmResolver;
 use Cake\Core\Configure;
 use Cake\Core\Exception\MissingPluginException;
@@ -17,7 +15,6 @@ use Cake\Http\BaseApplication;
 use Cake\Http\MiddlewareQueue;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
-use Cake\Routing\Router;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -129,17 +126,28 @@ class Application extends BaseApplication implements
 			// you might want to disable this cache in case your routing is extremely simple
 			->add(new RoutingMiddleware($this, '_cake_routes_'));
 
-		// Add the authentication middleware to the middleware queue
-		$middlewareQueue->add(new AuthenticationMiddleware($this),
-			[
-				'unauthenticatedRedirect'	=> Router::url('users:login'),
-				'queryParam'				=> 'redirect',
-			]
-		);
-
+		// Add authentication to the middleware queue
+		$middlewareQueue->add(new AuthenticationMiddleware($this, [
+			'unauthenticatedRedirect' => '/users/login',
+			'queryParam'              => 'redirect',
+		]));
+/*
 		// Add authorization (after authentication if you are using that plugin too).
-		//$middlewareQueue->add(new AuthorizationMiddleware($this));
-
+		$middlewareQueue->add(new AuthorizationMiddleware($this, [
+			'unauthorizedHandler' => [
+				'className'  => 'Authorization.Redirect',
+				'url'        => '/users/login',
+				'queryParam' => 'redirectUrl',
+				'exceptions' => [
+					MissingIdentityException::class,
+					UnauthenticatedException::class,
+				],
+			],
+			'skipAuthorization' => [
+				'login',
+			]
+		]));
+*/
 		return $middlewareQueue;
 	}
 }

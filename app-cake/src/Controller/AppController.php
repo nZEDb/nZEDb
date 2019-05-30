@@ -2,7 +2,9 @@
 namespace App\Controller;
 
 use Cake\Controller\Controller;
+use Cake\Core\Configure;
 use Cake\Event\Event;
+
 
 /**
  * Application Controller
@@ -18,6 +20,17 @@ class AppController extends Controller
 	 * @var \Authentication\AuthenticationServiceInterface
 	 */
 	public $Authentication;
+
+	/**
+	 * @var \Authorization\Controller\Component\AuthorizationComponent
+	 */
+	public $Authorization;
+
+	/**
+	 * @var \Authentication\Identity
+	 */
+	protected $identity;
+
 
 	/**
 	 * Initialization hook method.
@@ -38,11 +51,22 @@ class AppController extends Controller
 
 		$this->loadComponent('Flash');
 
-		$this->loadComponent('Authentication.Authentication',
-			[
-				'logoutRedirect' => '/users/login'  // Default is false
+		$this->loadComponent('Authentication.Authentication', [
+			'logoutRedirect' => '/users/login'  // Default is false
+		]);
+/*
+		$this->loadComponent('Authorization.Authorization', [
+			'skipAuthorization' => [
+				'display',
+				'join',
+				'login',
+				'logout',
+				'register'
 			]
-		);
+		]);
+*/
+		$this->identity = $this->request->getAttribute('identity');
+
 
 		/*
 		 * Enable the following component for recommended CakePHP security settings.
