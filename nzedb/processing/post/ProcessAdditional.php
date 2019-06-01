@@ -906,7 +906,7 @@ class ProcessAdditional
 			// Check if it's a rar/zip.
 			if ($this->_NZBHasCompressedFile === false &&
 				preg_match(
-					'/\.(part\d+|r\d+|rar|0+|0*10?|zipr\d{2,3}|zipx?)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
+					'/\.(part\d+|[rz]\d+|rar|0+|0*10?|zipr\d{2,3}|zipx?)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
 					$this->_currentNZBFile['title']
 				)
 			) {
@@ -1026,7 +1026,7 @@ class ProcessAdditional
 
 			// Probably not a rar/zip.
 			if (!preg_match(
-				'/\.(part\d+|r\d+|rar|0+|0*10?|zipr\d{2,3}|zipx?)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
+				'/\.(part\d+|[rz]\d+|rar|0+|0*10?|zipr\d{2,3}|zipx?)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
 				$nzbFile['title']
 			)
 			) {
@@ -1276,7 +1276,7 @@ class ProcessAdditional
 					else if (strpos($file['name'], '.') != 0 && strlen($file['name']) > 0) {
 						$this->_release['filename'] = $file['name'];
 						$this->_release['releases_id'] = $this->_release['id'];
-						$this->_nameFixer->matchPredbFiles($this->_release, 1, 1, true, 1);
+						$this->_nameFixer->matchPredbFiles($this->_release, 1, 1, 1);
 					}
 				}
 			}
@@ -2235,7 +2235,7 @@ class ProcessAdditional
 
 				if ($mediaInfoContainer !== null) {
 					// Insert it into the DB.
-					$this->_releaseExtra->addFull($this->_release['id'], $mediaInfoContainer->__toXML());
+					$this->_releaseExtra->addFull($this->_release['id'], $mediaInfoContainer);
 					$this->_releaseExtra->addFromMediaInfoContainer($this->_release['id'], $mediaInfoContainer);
 
 					if ($this->_echoCLI) {

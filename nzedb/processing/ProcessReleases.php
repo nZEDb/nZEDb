@@ -181,7 +181,8 @@ class ProcessReleases
 
 		$processReleases = microtime(true);
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho($this->pdo->log->header('Starting release update process (' . date('Y-m-d H:i:s') . ')'), true);
+			$this->pdo->log::doEcho($this->pdo->log::header('Starting release update process (' .
+				date('Y-m-d H:i:s', $processReleases) . ')'), true);
 		}
 
 		if (!file_exists(Settings::value('..nzbpath'))) {
@@ -688,6 +689,27 @@ class ProcessReleases
 											throw new \InvalidArgumentException($e->getMessage() .
 												PHP_EOL .
 												'Thrown in ProcessReleases.php');
+										} catch (\lithium\data\model\QueryException $e) {
+											if (stripos(
+													$e->getMessage(),
+													"Duplicate entry '$grpTmp' for key 'ix_groups_name'")
+												!== false) {
+												if (\nZEDb_DEBUG || \nZEDb_ECHOCLI) {
+													$this->pdo->log->error("Cannot create group '$grpTmp', as it already exists'!\n");
+												}
+											} else {
+												throw new \InvalidArgumentException(
+													"Cannot create group '$grpTmp', as it already exists'!\n",
+													$e->getCode(),
+													$e
+												);
+											}
+										} catch (\Exception $e) {
+											throw new \RuntimeException(
+												$e->getMessage(),
+												$e->getCode(),
+												$e
+											);
 										}
 										$newGroup->save();
 										$xrefGrpID = $newGroup->id;

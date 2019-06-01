@@ -24,13 +24,14 @@ System Administration know-how. nZEDb is not plug-n-play software. Installation 
 
 	4GB RAM, 2 cores(threads) and 20GB disk space minimum.
 
-If you wish to use more than 5 threads a quad core CPU is beneficial.
+If you wish to use more than 5 threads a quad core CPU is beneficial. While nZEDb can run with 
+these minimums, you will have very limited performance. 
 
 The overall speed of nZEDb is largely governed by performance of the database. As many of the database tables should be held within system RAM as possible. See Database Section below.
 
 ### Software
 
-	PHP 7.0+ (and various modules)
+	PHP (current actively supported versions and various modules)
     MariaDB 10.0 (strongly preferred database choice)
 The installation guides have more detailed software requirements.
 

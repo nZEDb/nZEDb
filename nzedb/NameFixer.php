@@ -874,7 +874,7 @@ class NameFixer
 					echo $this->pdo->log->header($n . number_format($total) . ' releases to process.');
 
 					foreach ($query as $row) {
-						$success = $this->matchPredbFiles($row, 1, 1, true, $show);
+						$success = $this->matchPredbFiles($row, 1, 1, $show);
 						if ($success === 1) {
 							$counted++;
 						}
@@ -899,21 +899,20 @@ class NameFixer
 	/**
 	 * Match a release filename to a PreDB filename or title.
 	 *
-	 * @param $release
+	 * @param         $release
 	 * @param boolean $echo
 	 * @param integer $namestatus
-	 * @param boolean $echooutput
 	 * @param integer $show
 	 *
 	 * @return int
 	 */
-	public function matchPredbFiles($release, $echo, $namestatus, $echooutput, $show)
+	public function matchPredbFiles($release, $echo, $namestatus, $show)
 	{
 		$matching = 0;
 		$pre = false;
 
 		$matchPre = function(string $fileName) {
-			$success = preg_match('/(\d{2}\.\d{2}\.\d{2})+[\w-.]+[\w]$/i', $fileName, $match);
+			$success = preg_match('/(\d{2}\.\d{2}\.\d{2})+[\w.-]+[\w]$/i', $fileName, $match);
 
 			return $success === 1 ? $match : false;
 		};
@@ -926,7 +925,7 @@ class NameFixer
 			if (\is_array($match1)) {
 				$result = $this->pdo->queryOneRow(sprintf("SELECT filename AS filename FROM predb WHERE MATCH(filename) AGAINST ('$match1[0]' IN BOOLEAN MODE)"));
 
-				if ($result['filename'] != '') { // Using loose comparison here to catch null and ''
+				if (!empty($result['filename'])) {
 					$match2 = $matchPre($result['filename']);
 					if (\is_array($match2) && $match1[0] === $match2[0]) {
 						\similar_text($match1[1], $match2[1], $percentage);

@@ -10,6 +10,42 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+3019-03-25 niel
+	Fix: Reduce the size of tmux table's 'value' column from 19000 to a more reasonable size (1000).
+2019-03-04 niel
+	Fix: Update some regexes that were using invalid syntax. This will prevent them from being
+		flagged as the errors they are with PCRE2 in PHP 7.3+.
+2019-03-03 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.16.0
+
+
+2019-03-01 niel
+	Fix: Use correct object to check for video duration. Closes issue 2625
+2019-02-06 niel
+	Fix: Use absolute paths for version specific configuration files, in tmux.conf. Closes issue 2623.
+2019-02-04 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.15.0
+
+
+2019-01-12 niel
+	Fix: Update search suffix for poppcorn searches. Closes issue 2620.
+2019-01-07 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.14.0
+
+
+2019-01-05 Bart39
+	Fix: Invalid object type in ProcessAdditional::getMediaInfo.
+2018-12-27 niel
+	Fix: Use empty() to check for '' and NULL for filename in NameFixer::matchPredbFiles().
+2018-12-24 niel
+	Fix: Removed extra tab in categories tsv file that caused XXX->UHD to have incorrect parent ID.
+	Chg: Increased size of xref field in collections and multigroup_collections to avoid truncation.
+		**NOTE** There is no patch for existing installs yet. This will be coming when I get my
+		backup server fixed as it handles validating the SQL etc.
+2018-12-20 niel
+	Fix Correct pd.predate to pd.created in viewnzb.tpl file for Alpha and Default themes
+2018-12-19 niel
+	Chg: Add 'z' to regexes detecting RAR parts i.e. z01 as a suffix.
 2018-12-11 DariusIII
 	Fix: Fix inserting of new mediainfo xml into releaseextrafull table (fixes issue #2609)
 2018-12-10 niel

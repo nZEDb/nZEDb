@@ -207,7 +207,7 @@ CREATE TABLE         collections (
   subject               VARCHAR(255)        NOT NULL DEFAULT '',
   fromname              VARCHAR(255)        NOT NULL DEFAULT '',
   date                  DATETIME            DEFAULT NULL,
-  xref                  VARCHAR(510)        NOT NULL DEFAULT '',
+  xref                  VARCHAR(4096)       NOT NULL DEFAULT '',
   totalfiles            INT(11) UNSIGNED    NOT NULL DEFAULT '0',
   groups_id             INT(11) UNSIGNED    NOT NULL DEFAULT '0',
   collectionhash        VARCHAR(255)        NOT NULL DEFAULT '0',
@@ -500,7 +500,7 @@ CREATE TABLE         multigroup_collections (
   subject        VARCHAR(255)        NOT NULL DEFAULT '' COMMENT 'Collection subject',
   fromname       VARCHAR(255)        NOT NULL DEFAULT '' COMMENT 'Collection poster',
   date           DATETIME            DEFAULT NULL COMMENT 'Collection post date',
-  xref           VARCHAR(510)        NOT NULL DEFAULT '' COMMENT 'Groups collection is posted in',
+  xref           VARCHAR(4096)       NOT NULL DEFAULT '' COMMENT 'Groups collection is posted in',
   totalfiles     INT(11) UNSIGNED    NOT NULL DEFAULT '0' COMMENT 'Total number of files',
   groups_id      INT(11) UNSIGNED    NOT NULL DEFAULT '0' COMMENT 'FK to groups.id',
   collectionhash VARCHAR(255)        NOT NULL DEFAULT '0' COMMENT 'MD5 hash of the collection',
@@ -1008,7 +1008,7 @@ DROP TABLE IF EXISTS tmux;
 CREATE TABLE tmux (
   id          INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   setting     VARCHAR(64)      NOT NULL,
-  value       VARCHAR(19000)            DEFAULT NULL,
+  value       VARCHAR(1000)    DEFAULT NULL,
   updateddate TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE INDEX ix_tmux_setting (setting)
