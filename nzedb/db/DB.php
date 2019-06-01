@@ -254,8 +254,6 @@ class DB extends \PDO
 		if (defined('nZEDb_SQL_DELETE_QUICK') && nZEDb_SQL_DELETE_QUICK) {
 			$this->sqlDeleteQuick = ' QUICK ';
 		}
-
-		return $this->pdo;
 	}
 
 	public function __destruct()

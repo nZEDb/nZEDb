@@ -4,29 +4,39 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program (see LICENSE.txt in the base directory.  If
  * not, see:
  *
  * @link      <http://www.gnu.org/licenses/>.
  * @author    niel
- * @copyright 2016 nZEDb
+ * @copyright 2019 nZEDb
  */
+require_once __DIR__ . '/../app/config/bootstrap.php';
 
-use nzedb\config\Configure;
-use nzedb\utility\Misc;
+$baseDir = shell_exec('php ' .__DIR__ . '/../nZEDbBase.php');
 
+$dsn = 'mysql:unix_socket=' . DB_SOCKET . ';dbname=' . DB_NAME;
 
-if (!defined('HAS_WHICH')) {
-	define('HAS_WHICH', Misc::hasWhich() ? true : false);
-}
+$dbc = new PDO($dsn, DB_USER, DB_PASSWORD);
 
-new Configure('indexer');
+//var_dump($dbc);
 
+return [
+	'paths'        => [
+		'migrations' => $baseDir . '/resources/db/migrations'
+	],
+	'environments' => [
+		'default_migration_table' => 'phinxlog',
+		'default_database'        => 'dev',
+		'dev'                     => [
+			'name'	=> DB_NAME,
+			'connection' => $dbc,
+		]
+	]
+];
 ?>
