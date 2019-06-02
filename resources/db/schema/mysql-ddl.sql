@@ -99,7 +99,7 @@ CREATE TABLE binaries (
   filenumber     INT UNSIGNED        NOT NULL DEFAULT '0',
   totalparts     INT(11) UNSIGNED    NOT NULL DEFAULT 0,
   currentparts   INT UNSIGNED        NOT NULL DEFAULT 0,
-  binaryhash     BINARY(16)          NOT NULL DEFAULT '0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
+  binaryhash     BINARY(16)          NOT NULL DEFAULT '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
   partcheck      TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
   partsize       BIGINT UNSIGNED     NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
