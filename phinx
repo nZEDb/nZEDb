@@ -1,0 +1,3 @@
+#!/bin/sh
+
+libraries/robmorgan/phinx/bin/phinx "$@" -c cli/phinx.php

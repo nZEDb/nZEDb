@@ -121,14 +121,14 @@ class Misc
 	 * Get list of files/directories from supplied directory.
 	 *
 	 * @param array $options
-	 *        'dir'        => boolean, include directory paths
-	 *        'ext'        => file suffix, no full stop (period) separator should be used.
-	 *        'path'    => The path to list from. If left empty it will use whatever the current working directory is.
-	 *        'regex'    => Regular expressions that the full path must match to be included,
+	 *        'dir'		=> boolean, include directory paths
+	 *        'ext'		=> file suffix, no full stop (period) separator should be used.
+	 *        'path'	=> The path to list from. If left empty it will use whatever the current working directory is.
+	 *        'regex'	=> Regular expressions that the full path must match to be included,
 	 *
 	 * @return array    Always returns array of path-names in unix format (even on Windows).
 	 */
-	public static function getDirFiles(array $options = null)
+	public static function getDirFiles(array $options = null): array
 	{
 		$defaults = [
 			'dir'   => false,

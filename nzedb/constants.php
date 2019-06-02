@@ -4,7 +4,9 @@
 
 define('nZEDb_MINIMUM_PHP_VERSION', '7.0.20');
 
-define('DS', DIRECTORY_SEPARATOR);
+if (!defined('DS')) {
+	define('DS', DIRECTORY_SEPARATOR);
+}
 
 // These are file path constants
 define('nZEDb_ROOT', realpath(dirname(__DIR__)) . DS);

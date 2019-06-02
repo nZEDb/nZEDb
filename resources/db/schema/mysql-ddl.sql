@@ -1,14 +1,9 @@
 DROP TABLE IF EXISTS anidb_episodes;
 CREATE TABLE anidb_episodes (
-  anidbid       INT(10) UNSIGNED        NOT NULL
-  COMMENT 'ID of title from AniDB',
-  episodeid     INT(10) UNSIGNED        NOT NULL DEFAULT '0'
-  COMMENT 'anidb id for this episode',
-  episode_no    SMALLINT(5) UNSIGNED    NOT NULL
-  COMMENT 'Numeric version of episode (leave 0 for combined episodes).',
-  episode_title VARCHAR(255)
-                COLLATE utf8_unicode_ci NOT NULL
-  COMMENT 'Title of the episode (en, x-jat)',
+  anidbid       INT(10) UNSIGNED        NOT NULL COMMENT 'ID of title from AniDB',
+  episodeid     INT(10) UNSIGNED        NOT NULL DEFAULT '0' COMMENT 'anidb id for this episode',
+  episode_no    SMALLINT(5) UNSIGNED    NOT NULL  COMMENT 'Numeric version of episode (leave 0 for combined episodes).',
+  episode_title VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Title of the episode (en, x-jat)',
   airdate       DATE                    NOT NULL,
   PRIMARY KEY (anidbid, episodeid)
 )
@@ -606,6 +601,21 @@ CREATE TABLE parts (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
+
+
+DROP TABLE IF EXISTS  phinxlog;
+CREATE TABLE phinxlog
+(
+    version        BIGINT(20)   NOT NULL,
+    migration_name VARCHAR(100) NULL,
+    start_time     TIMESTAMP    NULL,
+    end_time       TIMESTAMP    NULL,
+    breakpoint     TINYINT(1)   NOT NULL,
+    PRIMARY KEY (version)
+)
+    ENGINE = MyISAM
+    DEFAULT CHARSET = utf8
+    COLLATE = utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS multigroup_parts;

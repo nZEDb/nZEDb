@@ -9,6 +9,6 @@ if ($argc > 1) {
 	}
 }
 
-exit(dirname(__FILE__));
+exit(__DIR__);
 
 ?>
