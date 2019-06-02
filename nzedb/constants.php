@@ -2,7 +2,7 @@
 // YOU SHOULD NOT EDIT ANYTHING IN THIS FILE,
 // COPY .../nzedb/config/settings.example.php TO .../nzedb/config/settings.php AND EDIT THAT FILE!
 
-define('nZEDb_MINIMUM_PHP_VERSION', '7.0.20');
+define('nZEDb_MINIMUM_PHP_VERSION', '7.1.0');
 
 if (!defined('DS')) {
 	define('DS', DIRECTORY_SEPARATOR);

@@ -115,7 +115,7 @@
     "niel/li3_fixtures": "1.2.x-dev",
     "niel/lithium": "dev-php7.2-updates",
     "nzedb/git.php": "dev-master",
-    "php": "~7.0",
+    "php": "~7.1",
     "php-tmdb/api": "^2.1",
     "phpmailer/phpmailer": "^6.0.2",
     "robmorgan/phinx": "dev-master",
