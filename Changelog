@@ -11,6 +11,9 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2019-06-03 niel
+	Fix: Increase size of imdbid fields in movieinfo, releases, and user_movies tables to bring us
+		inline with IMDb's latest entries.
+2019-06-03 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.17.0
 
 
@@ -20,8 +23,8 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 2019-05-09 niel
 	Add: Backport change from CakePHP/Laravel that copies TSV files to /tmp before trying to LOAD
-		 INFILE them. This should resolve any permission issues as /tmp is readable by anyone by
-		 default.
+		INFILE them. This should resolve any permission issues as /tmp is readable by anyone by
+		default.
 
 
 2019-03-25 niel
