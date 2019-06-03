@@ -118,7 +118,7 @@ class Update extends \app\extensions\console\Command
 
 	public function migrate()
 	{
-		\passthru(\nZEDb_ROOT . 'phinx migrate', $tatus);
+		\passthru(\nZEDb_ROOT . 'phinx migrate', $status);
 
 		return $status;
 	}
