@@ -10,7 +10,21 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
-3019-03-25 niel
+2019-06-03 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.17.0
+
+
+2019-06-02 niel
+	Add: Phinx package to handle Db updates in future.
+
+
+2019-05-09 niel
+	Add: Backport change from CakePHP/Laravel that copies TSV files to /tmp before trying to LOAD
+		 INFILE them. This should resolve any permission issues as /tmp is readable by anyone by
+		 default.
+
+
+2019-03-25 niel
 	Fix: Reduce the size of tmux table's 'value' column from 19000 to a more reasonable size (1000).
 2019-03-04 niel
 	Fix: Update some regexes that were using invalid syntax. This will prevent them from being
