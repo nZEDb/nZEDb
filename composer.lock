@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ba74ca5d0268c5dc2d526ce6c7c017e5",
+    "content-hash": "f8d8c38fa8779050f6d3f6a90ebdaebf",
     "packages": [
         {
             "name": "b3rs3rk/steamfront",
@@ -1572,16 +1572,16 @@
         },
         {
             "name": "composer/installers",
-            "version": "v1.6.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "cfcca6b1b60bc4974324efb5783c13dca6932b5b"
+                "reference": "4aa453ad54f76c4db02b6ad3574e17795c51fb23"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/cfcca6b1b60bc4974324efb5783c13dca6932b5b",
-                "reference": "cfcca6b1b60bc4974324efb5783c13dca6932b5b",
+                "url": "https://api.github.com/repos/composer/installers/zipball/4aa453ad54f76c4db02b6ad3574e17795c51fb23",
+                "reference": "4aa453ad54f76c4db02b6ad3574e17795c51fb23",
                 "shasum": ""
             },
             "require": {
@@ -1637,6 +1637,7 @@
                 "RadPHP",
                 "SMF",
                 "Thelia",
+                "Whmcs",
                 "WolfCMS",
                 "agl",
                 "aimeos",
@@ -1688,7 +1689,7 @@
                 "zend",
                 "zikula"
             ],
-            "time": "2018-08-27T06:10:37+00:00"
+            "time": "2019-05-15T06:46:42+00:00"
         },
         {
             "name": "dborsatto/php-giantbomb",
@@ -3768,7 +3769,7 @@
         "ext-spl": "*",
         "ext-xmlwriter": "*",
         "ext-zlib": "*",
-        "php": "~7.0"
+        "php": "~7.1"
     },
     "platform-dev": []
 }
