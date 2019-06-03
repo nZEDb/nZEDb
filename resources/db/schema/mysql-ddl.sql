@@ -1,14 +1,9 @@
 DROP TABLE IF EXISTS anidb_episodes;
 CREATE TABLE anidb_episodes (
-  anidbid       INT(10) UNSIGNED        NOT NULL
-  COMMENT 'ID of title from AniDB',
-  episodeid     INT(10) UNSIGNED        NOT NULL DEFAULT '0'
-  COMMENT 'anidb id for this episode',
-  episode_no    SMALLINT(5) UNSIGNED    NOT NULL
-  COMMENT 'Numeric version of episode (leave 0 for combined episodes).',
-  episode_title VARCHAR(255)
-                COLLATE utf8_unicode_ci NOT NULL
-  COMMENT 'Title of the episode (en, x-jat)',
+  anidbid       INT(10) UNSIGNED        NOT NULL COMMENT 'ID of title from AniDB',
+  episodeid     INT(10) UNSIGNED        NOT NULL DEFAULT '0' COMMENT 'anidb id for this episode',
+  episode_no    SMALLINT(5) UNSIGNED    NOT NULL  COMMENT 'Numeric version of episode (leave 0 for combined episodes).',
+  episode_title VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Title of the episode (en, x-jat)',
   airdate       DATE                    NOT NULL,
   PRIMARY KEY (anidbid, episodeid)
 )
@@ -99,7 +94,7 @@ CREATE TABLE binaries (
   filenumber     INT UNSIGNED        NOT NULL DEFAULT '0',
   totalparts     INT(11) UNSIGNED    NOT NULL DEFAULT 0,
   currentparts   INT UNSIGNED        NOT NULL DEFAULT 0,
-  binaryhash     BINARY(16)          NOT NULL DEFAULT '0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
+  binaryhash     BINARY(16)          NOT NULL DEFAULT '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
   partcheck      TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
   partsize       BIGINT UNSIGNED     NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
@@ -608,6 +603,21 @@ CREATE TABLE parts (
   AUTO_INCREMENT = 1;
 
 
+DROP TABLE IF EXISTS  phinxlog;
+CREATE TABLE phinxlog
+(
+    version        BIGINT(20)   NOT NULL,
+    migration_name VARCHAR(100) NULL,
+    start_time     TIMESTAMP    NULL,
+    end_time       TIMESTAMP    NULL,
+    breakpoint     TINYINT(1)   NOT NULL,
+    PRIMARY KEY (version)
+)
+    ENGINE = MyISAM
+    DEFAULT CHARSET = utf8
+    COLLATE = utf8_unicode_ci;
+
+
 DROP TABLE IF EXISTS multigroup_parts;
 CREATE TABLE multigroup_parts LIKE parts;
 
@@ -1008,7 +1018,7 @@ DROP TABLE IF EXISTS tmux;
 CREATE TABLE tmux (
   id          INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   setting     VARCHAR(64)      NOT NULL,
-  value       VARCHAR(19000)            DEFAULT NULL,
+  value       VARCHAR(1000)    DEFAULT NULL,
   updateddate TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE INDEX ix_tmux_setting (setting)

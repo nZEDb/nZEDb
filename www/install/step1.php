@@ -1,6 +1,6 @@
 <?php
 /**
- * Remember!! Keeps these files simple until after the requirements checks are met.
+ * Remember!! Keep these files simple until after the requirements checks are met.
  * No point having a check for PHP version if we can't get to that page because of higher version
  * requirements.
  */

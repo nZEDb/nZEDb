@@ -1,0 +1,36 @@
+paths:
+    migrations: '%%PHINX_CONFIG_DIR%%/resources/db/migrations'
+    seeds: '%%PHINX_CONFIG_DIR%%/resources/db/seeds'
+
+environments:
+    default_migration_table: phinxlog
+    default_database: development
+    production:
+        adapter: mysql
+        host: '%%PHINX_DBHOST%%'
+        name: '%%PHINX_DBNAME%%'
+        user: '%%PHINX_DBUSER%%'
+        pass: '%%PHINX_DBPASS%%'
+        unix_socket: '%%PHINX_SOCKET%%'
+        port: 3306
+        charset: utf8
+
+    development:
+        adapter: mysql
+        host: '%%PHINX_DBHOST%%'
+        name: '%%PHINX_DBNAME%%'
+        user: '%%PHINX_DBUSER%%'
+        pass: '%%PHINX_DBPASS%%'
+        port: 3306
+        charset: utf8
+
+    testing:
+        adapter: mysql
+        host: '%%PHINX_DBHOST%%'
+        name: '%%PHINX_DBNAME%%'
+        user: '%%PHINX_DBUSER%%'
+        pass: '%%PHINX_DBPASS%%'
+        port: 3306
+        charset: utf8
+
+version_order: creation

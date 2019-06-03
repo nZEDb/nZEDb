@@ -61,14 +61,11 @@ class Versions extends \lithium\core\BaseObject
 		parent::__construct($config += $defaults);
 	}
 
-	public function checkGitTag($update = false)
-	{
-		$this->checkGitTagInFile($update);
-	}
-
 	/**
-	 * Checks the git's latest version tag against the XML's stored value. Version should be
+	 * Checks git's latest version tag against the XML's stored value. Version should be
 	 * Major.Minor.Revision[.fix][-dev|-RCx]
+	 *
+	 * @param  boolean $update	Wether to update the file.
 	 *
 	 * @return string|false version string if matched or false.
 	 */

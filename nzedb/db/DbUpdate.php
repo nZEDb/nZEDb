@@ -20,7 +20,7 @@
  */
 namespace nzedb\db;
 
-use app\models\Settings;
+use app\models\Settings as SettingsTable;
 use nzedb\ColorCLI;
 use nzedb\db\DB;
 use nzedb\utility\Git;
@@ -100,32 +100,47 @@ class DbUpdate
 		$local = $this->pdo->isLocalDb() ? '' : 'LOCAL ';
 		$enclosedby = empty($options['enclosedby']) ? '' : 'OPTIONALLY ENCLOSED BY "' .
 			$options['enclosedby'] . '"';
-		$sql = 'LOAD DATA ' .
-			$local . 'INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" ' . $enclosedby .
-			' LINES TERMINATED BY "\r\n" IGNORE 1 LINES (%s)';
+		$sql = 'LOAD DATA ' . $local . 'INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" ' .
+			$enclosedby . ' LINES TERMINATED BY "\r\n" IGNORE 1 LINES (%s)';
 		foreach ($files as $file) {
-			if ($show === true) {
+			if ($show === true)
+			{
 				echo "File: $file\n";
 			}
 
+			$fileTarget = '/tmp/' . pathinfo($file, PATHINFO_BASENAME);
+			if (\copy($file, $fileTarget)) // Copy to a directory accessible to all (for mysql user)
+			{
+				$file = $fileTarget;
+				\chmod($file, 0775);
+			} else {
+				echo 'Failed to copy file: ' . $file . '</br>' . \PHP_EOL;
+				//throw new \Exception('Copying file to /tmp failed!');
+			}
+
 			if (is_readable($file)) {
-				if (preg_match($options['regex'], $file, $matches)) {
+				if (preg_match($options['regex'], $file, $matches))
+				{
 					$table = $matches['table'];
 					// Get the first line of the file which holds the columns used.
 					$handle = @fopen($file, "r");
-					if (is_resource($handle)) {
+					if (is_resource($handle))
+					{
 						$line = fgets($handle);
 						fclose($handle);
-						if ($line === false) {
+						if ($line === false)
+						{
 							echo "FAILED reading first line of '$file'\n";
 							continue;
 						}
 						$fields = trim($line);
 
-						if ($show === true) {
+						if ($show === true)
+						{
 							echo "Inserting data into table: '$table'\n";
 						}
-						if (Misc::isWin()) {
+						if (Misc::isWin())
+						{
 							$file = str_replace("\\", '\/', $file);
 						}
 						$this->pdo->exec(sprintf($sql, $file, $table, $fields));
@@ -181,7 +196,7 @@ class DbUpdate
 				} else {
 					echo $this->log->header('Processing patch file: ' . $file);
 					$this->splitSQL($file, ['local' => $local, 'data' => $options['data']]);
-					$current = (integer)Settings::value('..sqlpatch');
+					$current = (integer)SettingsTable::value('..sqlpatch');
 					$current++;
 					$this->pdo->queryExec("UPDATE settings SET value = '$current' WHERE setting = 'sqlpatch';");
 					$newName = $matches['drive'] . $matches['path'] .
@@ -209,7 +224,7 @@ class DbUpdate
 		];
 		$options += $defaults;
 
-		$currentVersion = Settings::value('..sqlpatch');
+		$currentVersion = SettingsTable::value('..sqlpatch');
 		if (!is_numeric($currentVersion)) {
 			exit("Bad sqlpatch value: '$currentVersion'\n");
 		}
