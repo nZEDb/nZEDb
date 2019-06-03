@@ -1,5 +1,6 @@
 <?php
 namespace nzedb\db;
+include_once__DIR__ . '/../../settings.php';
 
 use nzedb\ColorCLI;
 use nzedb\ConsoleTools;
