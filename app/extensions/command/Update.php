@@ -22,6 +22,7 @@ use app\extensions\util\Git;
 use app\extensions\util\Versions;
 use lithium\console\command\Help;
 use nzedb\db\DbUpdate;
+use Phinx\Console\PhinxApplication;
 use Smarty;
 
 
@@ -100,7 +101,7 @@ class Update extends \app\extensions\console\Command
 			$this->out('Up to date.', 'info');
 		}
 
-		//return $this->migrate();
+		return $this->migrate();
 	}
 
 	public function git()
@@ -116,11 +117,21 @@ class Update extends \app\extensions\console\Command
 		return trim($this->git->pull());
 	}
 
-	public function migrate()
+	/**
+	 * Runs Phinx's migrate command.
+	 *
+	 * @return int
+	 */
+	public function migrate(): int
 	{
-		\passthru(\nZEDb_ROOT . 'phinx migrate', $status);
+		array_splice($_SERVER['argv'], 1, 1); // take out 'update'
+		// Add the configuration file path.
+		$_SERVER['argv'][] = '-c';
+		$_SERVER['argv'][] = '../configuration' . DS . 'phinx.php';
 
-		return $status;
+		// Instantiate and run the phinx app.
+		$app = new PhinxApplication();
+		return $app->run();
 	}
 
 	public function nzedb()

@@ -20,7 +20,11 @@ require_once __DIR__ . '/../app/config/bootstrap.php';
 
 $baseDir = shell_exec('php ' .__DIR__ . '/../nZEDbBase.php');
 
-$dsn = 'mysql:unix_socket=' . DB_SOCKET . ';dbname=' . DB_NAME;
+if (!empty(DB_SOCKET)) {
+	$dsn = DB_SYSTEM . ':unix_socket=' . DB_SOCKET . ';dbname=' . DB_NAME;
+} else {
+	$dsn = DB_SYSTEM . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
+}
 
 $dbc = new PDO($dsn, DB_USER, DB_PASSWORD);
 
