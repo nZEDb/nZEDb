@@ -100,7 +100,7 @@ class Update extends \app\extensions\console\Command
 			$this->out('Up to date.', 'info');
 		}
 
-		return $this->migrate();
+		//return $this->migrate();
 	}
 
 	public function git()
