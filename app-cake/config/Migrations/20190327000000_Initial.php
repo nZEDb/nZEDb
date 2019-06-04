@@ -1922,7 +1922,7 @@ class Initial extends AbstractMigration
 					'integer',
 					[
 						'default' => null,
-						'limit'   => 7,
+						'limit'   => 8,
 						'null'    => false,
 						'signed'  => false,
 					])
@@ -3600,7 +3600,7 @@ class Initial extends AbstractMigration
 					'integer',
 					[
 						'default' => null,
-						'limit'   => 7,
+						'limit'   => 8,
 						'null'    => true,
 						'signed'  => false,
 					])
@@ -4711,7 +4711,7 @@ class Initial extends AbstractMigration
 					'integer',
 					[
 						'default' => null,
-						'limit'   => 7,
+						'limit'   => 8,
 						'null'    => true,
 						'signed'  => false,
 					])
