@@ -18,7 +18,6 @@
  */
 namespace App\Command;
 
-
 use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
@@ -48,7 +47,7 @@ class VersionCommand extends Command
 
 	/**
 	 * @param \Cake\Console\Arguments $args
-	 * @param \Cake\Console\ConsoleIo $cio
+	 * @param \Cake\Console\ConsoleIo $io
 	 *
 	 * @return int
 	 */
@@ -118,6 +117,8 @@ class VersionCommand extends Command
 				'boolean' => true
 			],
 		]);
+
+		$parser->setDescription('Version Information.');
 
 		return $parser;
 	}

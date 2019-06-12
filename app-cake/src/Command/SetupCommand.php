@@ -78,6 +78,8 @@ class SetupCommand extends Command
     {
         $parser = parent::buildOptionParser($parser);
 
+		$parser->setDescription('Setup nZEDb configuration,');
+
         return $parser;
     }
 
