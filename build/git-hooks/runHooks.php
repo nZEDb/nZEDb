@@ -20,7 +20,7 @@
  */
 define('GIT_PRE_COMMIT', true);
 
-require_once realpath(dirname(__DIR__, 2) . '/app/config/bootstrap.php');
+require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 use nzedb\utility\Git;
 use app\extensions\util\Versions;
@@ -49,8 +49,6 @@ if ($error === false) {
 			try {
 				$vers = new Versions();
 				$vers->checkGitTagInFile(true);
-				$vers->checkSQLFileLatest(false);
-				$vers->checkSQLDb(false);
 				$vers->save();
 
 				$git->add(nZEDb_VERSIONS);
