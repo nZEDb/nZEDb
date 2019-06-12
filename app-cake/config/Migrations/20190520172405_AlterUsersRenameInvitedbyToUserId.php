@@ -15,7 +15,7 @@ class AlterUsersRenameInvitedbyToUserId extends AbstractMigration
     public function change()
     {
 		$table = $this->table('users');
-		$table->addColumn('user_id',
+		$table->addColumn('parent_id',
 			'integer',
 			[
 				'after'   => 'invites',
@@ -26,7 +26,7 @@ class AlterUsersRenameInvitedbyToUserId extends AbstractMigration
 			->update();
 
 		$dbc = ConnectionManager::get('default');
-		$dbc->execute('UPDATE users SET user_id = invitedby');
+		$dbc->execute('UPDATE users SET parent_id = invitedby');
 
 		$table = $this->table('users');
 		$table->removeColumn('invitedby')->update();
