@@ -3,7 +3,7 @@
 	<table class="input">
 		<tr>
 			<td></td>
-			<td>Enter the full 7 digit IMDB id into the box below and click Add.</td>
+			<td>Enter the full 7 or 8 digit IMDB id into the box below and click Add.</td>
 		</tr>
 		<tr>
 			<td><label for="title">IMDB ID:</label></td>
