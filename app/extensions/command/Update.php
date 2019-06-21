@@ -124,14 +124,22 @@ class Update extends \app\extensions\console\Command
 	 */
 	public function migrate(): int
 	{
-		array_splice($_SERVER['argv'], 1, 1); // take out 'update'
-		// Add the configuration file path.
-		$_SERVER['argv'][] = '-c';
-		$_SERVER['argv'][] = '../configuration' . DS . 'phinx.php';
+		$oldArgv = $_SERVER['argv'];
+		// Build the command for phinx. This is needed for the application to read the parameters.
+		$_SERVER['argv'] = 	[
+			'phinx',
+			'migrate',
+			'-c',
+			\nZEDb_CONFIGS . 'phinx.php'];
 
 		// Instantiate and run the phinx app.
 		$app = new PhinxApplication();
-		return $app->run();
+
+		$result = $app->run();
+
+		$_SERVER['argv'][] = $oldArgv;
+
+		return $result;
 	}
 
 	public function nzedb()
