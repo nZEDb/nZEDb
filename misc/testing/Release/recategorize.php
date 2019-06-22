@@ -87,7 +87,7 @@ function categorizeRelease($where, $update = true, $echooutput = false)
 							SET iscategorized = 1,
 								videos_id = 0,
 								tv_episodes_id = 0,
-								imdbid = NULL,
+								imdbid = -1,
 								musicinfo_id = NULL,
 								consoleinfo_id = NULL,
 								gamesinfo_id = 0,

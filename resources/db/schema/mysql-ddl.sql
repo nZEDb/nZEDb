@@ -720,7 +720,7 @@ CREATE TABLE         releases (
   categories_id     INT                            NOT NULL DEFAULT '0010',
   videos_id         MEDIUMINT(11) UNSIGNED         NOT NULL DEFAULT '0' COMMENT 'FK to videos.id of the parent series.',
   tv_episodes_id    MEDIUMINT(11) SIGNED           NOT NULL DEFAULT '0' COMMENT 'FK to tv_episodes.id for the episode.',
-  imdbid            MEDIUMINT(8) UNSIGNED ZEROFILL NULL,
+  imdbid            MEDIUMINT(8) UNSIGNED ZEROFILL NOT NULL DEFAULT '-1',
   xxxinfo_id        INT SIGNED                     NOT NULL DEFAULT '0',
   musicinfo_id      INT(11) SIGNED               NULL COMMENT 'FK to musicinfo.id',
   consoleinfo_id    INT(11) SIGNED               NULL COMMENT 'FK to consoleinfo.id',

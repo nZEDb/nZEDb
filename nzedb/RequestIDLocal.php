@@ -275,7 +275,7 @@ class RequestIDLocal extends RequestID
 			$this->pdo->queryExec(
 				sprintf('
 					UPDATE releases SET
-						videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL, consoleinfo_id = NULL,
+						videos_id = 0, tv_episodes_id = 0, imdbid = 0, musicinfo_id = NULL, consoleinfo_id = NULL,
 						bookinfo_id = NULL, anidbid = NULL, predb_id = %d, reqidstatus = %d, isrenamed = 1,
 						iscategorized = 1, searchname = %s, categories_id = %d
 					WHERE id = %d',
