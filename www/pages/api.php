@@ -139,13 +139,13 @@ switch ($function) {
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 
 		$siteIdArr = [
-			'id'     => (isset($_GET['vid']) ? $_GET['vid'] : '0'),
-			'tvdb'   => (isset($_GET['tvdbid']) ? $_GET['tvdbid'] : '0'),
-			'trakt'  => (isset($_GET['traktid']) ? $_GET['traktid'] : '0'),
-			'tvrage' => (isset($_GET['rid']) ? $_GET['rid'] : '0'),
-			'tvmaze' => (isset($_GET['tvmazeid']) ? $_GET['tvmazeid'] : '0'),
-			'imdb'   => (isset($_GET['imdbid']) ? $_GET['imdbid'] : '0'),
-			'tmdb'   => (isset($_GET['tmdbid']) ? $_GET['tmdbid'] : '0')
+			'id'     => $_GET['vid'] ?? '0',
+			'tvdb'   => $_GET['tvdbid'] ?? '0',
+			'trakt'  => $_GET['traktid'] ?? '0',
+			'tvrage' => $_GET['rid'] ?? '0',
+			'tvmaze' => $_GET['tvmazeid'] ?? '0',
+			'imdb'   => $_GET['imdbid'] ?? '0',
+			'tmdb'   => $_GET['tmdbid'] ?? '0'
 		];
 
 		// Process season only queries or Season and Episode/Airdate queries

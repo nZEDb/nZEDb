@@ -345,7 +345,7 @@ class TraktTv extends TV
 	 */
 	public function formatShowInfo($show)
 	{
-		preg_match('/tt(?P<imdbid>\d{6,7})$/i', $show['ids']['imdb'], $imdb);
+		preg_match('/tt(?P<imdbid>\d{6,8})$/i', $show['ids']['imdb'], $imdb);
 		$this->posterUrl =
 			(isset($show['images']['poster']['thumb'])
 				? $show['images']['poster']['thumb']
@@ -369,7 +369,7 @@ class TraktTv extends TV
 			'publisher' => (string)$show['network'],
 			'country'   => (string)strtoupper($show['country']),
 			'source'    => (int)parent::SOURCE_TRAKT,
-			'imdb'      => (int)(isset($imdb['imdbid']) ? $imdb['imdbid'] : 0),
+			'imdb'      => (int)($imdb['imdbid'] ?? 0),
 			'tvdb'      => (int)(isset($show['ids']['tvdb']) ? $show['ids']['tvdb'] : 0),
 			'trakt'     => (int)$show['ids']['trakt'],
 			'tvrage'    => (int)(isset($show['ids']['tvrage']) ? $show['ids']['tvrage'] : 0),
