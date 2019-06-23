@@ -159,14 +159,14 @@ function preName($argv, $argc)
 						if ($propername == true) {
 							$pdo->queryExec(
 								sprintf(
-									"UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = -1, musicinfo_id = NULL, consoleinfo_id = NULL, bookinfo_id = NULL, anidbid = NULL, "
+									"UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL, consoleinfo_id = NULL, bookinfo_id = NULL, anidbid = NULL, "
 									. "iscategorized = 1, isrenamed = 1, searchname = %s, categories_id = %d, predb_id = " . $preid . " WHERE id = %d", $pdo->escapeString($cleanName), $determinedcat, $row['id']
 								)
 							);
 						} else {
 							$pdo->queryExec(
 								sprintf(
-									"UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = -1, musicinfo_id = NULL, consoleinfo_id = NULL, bookinfo_id = NULL, anidbid = NULL,  "
+									"UPDATE releases SET videos_id = 0, tv_episodes_id = 0, imdbid = NULL, musicinfo_id = NULL, consoleinfo_id = NULL, bookinfo_id = NULL, anidbid = NULL,  "
 									. "iscategorized = 1, searchname = %s, categories_id = %d, predb_id = " . $preid . " WHERE id = %d", $pdo->escapeString($cleanName), $determinedcat, $row['id']
 								)
 							);

@@ -31,14 +31,11 @@ class ResizeImdbidColumns extends AbstractMigration
      */
     public function change()
     {
-    	$this->execute('UPDATE movieinfo SET imdbid = -1 WHERE imdbid IS NULL');
-		$this->execute('ALTER TABLE movieinfo CHANGE COLUMN imdbid imdbid MEDIUMINT(8) UNSIGNED ZEROFILL NOT NULL');
+		$this->execute('ALTER TABLE movieinfo CHANGE COLUMN imdbid imdbid INT(8) UNSIGNED ZEROFILL NULL DEFAULT NULL');
 
-		$this->execute('UPDATE releases SET imdbid = -1 WHERE imdbid IS NULL');
-		$this->execute('ALTER TABLE releases CHANGE COLUMN imdbid imdbid MEDIUMINT(8) UNSIGNED ZEROFILL NOT NULL');
+		$this->execute('ALTER TABLE releases CHANGE COLUMN imdbid imdbid INT(8) UNSIGNED ZEROFILL NULL DEFAULT NULL');
 
-		$this->execute('UPDATE user_movies SET imdbid = -1 WHERE imdbid IS NULL');
-		$this->execute('ALTER TABLE user_movies CHANGE COLUMN imdbid imdbid MEDIUMINT(8) UNSIGNED ZEROFILL NOT NULL');
+		$this->execute('ALTER TABLE user_movies CHANGE COLUMN imdbid imdbid INT(8) UNSIGNED ZEROFILL NULL DEFAULT NULL');
     }
 }
 

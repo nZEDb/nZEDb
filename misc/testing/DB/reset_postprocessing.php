@@ -41,7 +41,7 @@ if (isset($argv[1]) && $argv[1] === "all") {
 				$pdo->queryExec(
 					sprintf("
 						UPDATE releases
-						SET consoleinfo_id = NULL, gamesinfo_id = 0, imdbid = -1, musicinfo_id = NULL,
+						SET consoleinfo_id = NULL, gamesinfo_id = 0, imdbid = NULL, musicinfo_id = NULL,
 							bookinfo_id = NULL, videos_id = 0, tv_episodes_id = 0, xxxinfo_id = 0, passwordstatus = -1, haspreview = -1,
 							jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1
 						WHERE id = %d",
@@ -131,7 +131,7 @@ if (isset($argv[1]) && ($argv[1] === "movies" || $argv[1] === "all")) {
 	$concount = 0;
 	if ($qry instanceof \Traversable) {
 		foreach ($qry as $releases) {
-			$pdo->queryExec("UPDATE releases SET imdbid = -1 WHERE id = " . $releases['id']);
+			$pdo->queryExec("UPDATE releases SET imdbid = NULL WHERE id = " . $releases['id']);
 			$consoletools->overWritePrimary("Resetting Movie Releases:  " . $consoletools->percentString(++$concount, $total));
 		}
 	}

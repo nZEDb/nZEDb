@@ -741,7 +741,7 @@ class Forking extends \fork_daemon
 						SELECT id
 						FROM releases
 						WHERE nzbstatus = %d
-						AND imdbid = -1
+						AND imdbid IS NULL
 						AND categories_id BETWEEN %d AND %d
 						%s %s
 						LIMIT 1',
@@ -769,7 +769,7 @@ class Forking extends \fork_daemon
 					SELECT leftguid AS id, %d AS renamed
 					FROM releases
 					WHERE nzbstatus = %d
-					AND imdbid = -1
+					AND imdbid IS NULL
 					AND categories_id BETWEEN ' . Category::MOVIE_ROOT . ' AND ' . Category::MOVIE_OTHER . '
 					%s %s
 					GROUP BY leftguid
