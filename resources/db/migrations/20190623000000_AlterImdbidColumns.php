@@ -2,7 +2,7 @@
 use Phinx\Migration\AbstractMigration;
 
 
-class ResizeImdbidColumns extends AbstractMigration
+class AlterImdbidColumns extends AbstractMigration
 {
     /**
      * Change Method.
