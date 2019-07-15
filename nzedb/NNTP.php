@@ -5,6 +5,8 @@ use app\extensions\util\Yenc;
 use app\models\Settings;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
+use PEAR_Exception;
+
 
 /**
  * Class for connecting to the usenet, retrieving articles and article headers,
@@ -22,24 +24,12 @@ class NNTP extends \Net_NNTP_Client
 	protected $_colorCLI;
 
 	/**
-	 * @var Logger
-	 * @access protected
-	 */
-	protected $_debugging;
-
-	/**
-	 * Log/echo debug?
+	 * Is header compression enabled for the session?
+	 *
 	 * @var bool
 	 * @access protected
 	 */
-	protected $_debugBool;
-
-	/**
-	 * Echo to cli?
-	 * @var bool
-	 * @access protected
-	 */
-	protected $_echo;
+	protected $_compressionEnabled = false;
 
 	/**
 	 * Does the server support XFeature GZip header compression?
@@ -47,13 +37,6 @@ class NNTP extends \Net_NNTP_Client
 	 * @access protected
 	 */
 	protected $_compressionSupported = true;
-
-	/**
-	 * Is header compression enabled for the session?
-	 * @var bool
-	 * @access protected
-	 */
-	protected $_compressionEnabled = false;
 
 	/**
 	 * Currently selected group.
@@ -77,6 +60,36 @@ class NNTP extends \Net_NNTP_Client
 	protected $_currentServer = NNTP_SERVER;
 
 	/**
+	 * @var Logger
+	 * @access protected
+	 */
+	protected $_debugging;
+
+	/**
+	 * Log/echo debug?
+	 *
+	 * @var bool
+	 * @access protected
+	 */
+	protected $_debugBool;
+
+	/**
+	 * Echo to cli?
+	 *
+	 * @var bool
+	 * @access protected
+	 */
+	protected $_echo;
+
+	/**
+	 * How many times should we try to reconnect to the NNTP server?
+	 *
+	 * @var int
+	 * @access protected
+	 */
+	protected $_nntpRetries;
+
+	/**
 	 * Are we allowed to post to usenet?
 	 * @var bool
 	 * @access protected
@@ -84,11 +97,44 @@ class NNTP extends \Net_NNTP_Client
 	protected $_postingAllowed = false;
 
 	/**
-	 * How many times should we try to reconnect to the NNTP server?
-	 * @var int
+	 * Use the simple_php_yenc_decode extension for decoding yEnc articles?
+	 *
+	 * @var bool
+	 */
+	protected $_yEncExtension = false;
+
+	/**
+	 * If on unix, hide yydecode CLI output.
+	 *
+	 * @var string
 	 * @access protected
 	 */
-	protected $_nntpRetries;
+	protected $_yEncSilence;
+
+	/**
+	 * Path to temp yEnc input storage file.
+	 *
+	 * @var string
+	 * @access protected
+	 */
+	protected $_yEncTempInput;
+
+	/**
+	 * Path to temp yEnc output storage file.
+	 *
+	 * @var string
+	 * @access protected
+	 */
+	protected $_yEncTempOutput;
+
+	/**
+	 * Path to yyDecoder binary.
+	 *
+	 * @var bool|string
+	 * @access protected
+	 */
+	protected $_yyDecoderPath;
+
 
 	/**
 	 * Default constructor.
@@ -99,6 +145,8 @@ class NNTP extends \Net_NNTP_Client
 	 */
 	public function __construct(array $options = [])
 	{
+		parent::__construct();
+
 		$defaults = [
 			'Echo'      => true,
 			'Logger' => null,
@@ -112,15 +160,11 @@ class NNTP extends \Net_NNTP_Client
 
 		$this->_debugBool = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->_debugBool) {
-			try {
-				$this->_debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->pdo->log]));
-			} catch (LoggerException $error) {
-				$this->_debugBool = false;
-			}
+			$this->_debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->pdo->log]));
 		}
 
 		$dummy = Settings::value('..nntpretries');
-		$this->_nntpRetries = ($dummy != '') ? (int)$dummy : 0 + 1;
+		$this->_nntpRetries = empty($dummy) ? 1 : (int)$dummy;
 	}
 
 	/**
@@ -129,7 +173,7 @@ class NNTP extends \Net_NNTP_Client
 	 *
 	 * @access public
 	 */
-	public function __destruct()
+	protected function __destruct()
 	{
 		$this->doQuit();
 	}
@@ -301,9 +345,9 @@ class NNTP extends \Net_NNTP_Client
 	 *
 	 * @param  bool $force Force quit even if not connected?
 	 *
-	 * @return mixed On success : (bool)   Did we successfully disconnect from usenet?
+	 * @return true|\PEAR\PEAR_Error On success : (bool)   Did we successfully disconnect from
+	 * usenet?
 	 *               On Failure : (object) PEAR_Error.
-	 *
 	 * @access public
 	 */
 	public function doQuit($force = false)
@@ -316,7 +360,7 @@ class NNTP extends \Net_NNTP_Client
 				$this->_debugging->log(get_class(), __FUNCTION__, "Disconnecting from " . $this->_currentServer, Logger::LOG_INFO);
 			}
 			// Disconnect from usenet.
-			return parent::disconnect();
+			return $this->disconnect();
 		}
 		return true;
 	}
@@ -324,11 +368,11 @@ class NNTP extends \Net_NNTP_Client
 	/**
 	 * Reset some properties when disconnecting from usenet.
 	 *
-	 * @void
+	 * @return void
 	 *
 	 * @access protected
 	 */
-	protected function _resetProperties()
+	protected function _resetProperties(): void
 	{
 		$this->_compressionEnabled = false;
 		$this->_compressionSupported = true;
@@ -343,7 +387,7 @@ class NNTP extends \Net_NNTP_Client
 	 *
 	 * @access public
 	 */
-	public function enableCompression()
+	public function enableCompression(): void
 	{
 		if (!Settings::value('..compressedheaders') == 1) {
 			return;
@@ -435,7 +479,8 @@ class NNTP extends \Net_NNTP_Client
 			return $connected;
 		}
 
-		// Enabled header compression if not enabled.
+		// Enabled header compression if not enabled. TODO make this a per connection test, not
+		// per command.
 		$this->_enableCompression();
 
 		// Send XOVER command to NNTP with wanted articles.
@@ -924,8 +969,8 @@ class NNTP extends \Net_NNTP_Client
 	 * @param int    $lineLength Line length to use (can be up to 254 characters).
 	 * @param bool   $crc32      Pass True to include a CRC checksum in the trailer to allow decoders to verify data integrity.
 	 *
-	 * @return mixed On success: (string) yEnc encoded string.
-	 *               On failure: (bool)   False.
+	 * @return string|false	On success: (string) yEnc encoded string.
+	 *						On failure: (bool)   False.
 	 *
 	 * @access public
 	 */
@@ -992,7 +1037,7 @@ class NNTP extends \Net_NNTP_Client
 	 */
 	public function decodeYEnc($string)
 	{
-		trigger_error('Deprecated. Use app\extensions\util\Yenc::decode instead.' . PHP_EOL);
+		//trigger_error('Deprecated. Use app\extensions\util\Yenc::decode instead.' . PHP_EOL);
 		$crc = '';
 		// Extract the yEnc string itself.
 		if (preg_match("/=ybegin.*size=([^ $]+).*\\r\\n(.*)\\r\\n=yend.*size=([^ $\\r\\n]+)(.*)/ims", $string, $encoded)) {
@@ -1057,7 +1102,7 @@ class NNTP extends \Net_NNTP_Client
 	 * @return string The decoded yEnc string, or the input string, if it's not yEnc.
 	 * @access protected
 	 */
-	protected function _decodeIgnoreYEnc(&$data)
+	protected function _decodeIgnoreYEnc(&$data): string
 	{
 		trigger_error('Deprecated. Use app\extensions\util\Yenc::decodeIgnore instead.' . PHP_EOL);
 		if (preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $data, $input)) {
@@ -1112,40 +1157,6 @@ class NNTP extends \Net_NNTP_Client
 	}
 
 	/**
-	 * Path to yyDecoder binary.
-	 * @var bool|string
-	 * @access protected
-	 */
-	protected $_yyDecoderPath;
-
-	/**
-	 * If on unix, hide yydecode CLI output.
-	 * @var string
-	 * @access protected
-	 */
-	protected $_yEncSilence;
-
-	/**
-	 * Path to temp yEnc input storage file.
-	 * @var string
-	 * @access protected
-	 */
-	protected $_yEncTempInput;
-
-	/**
-	 * Path to temp yEnc output storage file.
-	 * @var string
-	 * @access protected
-	 */
-	protected $_yEncTempOutput;
-
-	/**
-	 * Use the simple_php_yenc_decode extension for decoding yEnc articles?
-	 * @var bool
-	 */
-	protected $_yEncExtension = false;
-
-	/**
 	 * Split a string into lines of 510 chars ending with \r\n.
 	 * Usenet limits lines to 512 chars, with \r\n that leaves us 510.
 	 *
@@ -1156,7 +1167,7 @@ class NNTP extends \Net_NNTP_Client
 	 *
 	 * @access protected
 	 */
-	protected function _splitLines($string, $compress = false)
+	protected function _splitLines($string, $compress = false): string
 	{
 		// Check if the length is longer than 510 chars.
 		if (strlen($string) > 510) {
