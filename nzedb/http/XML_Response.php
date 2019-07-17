@@ -18,9 +18,7 @@
  * @author    ruhllatio
  * @copyright 2016 nZEDb
  */
-
 namespace nzedb\http;
-
 
 use nzedb\Category;
 use nzedb\utility\Misc;
@@ -116,29 +114,30 @@ class XML_Response
 	}
 
 	/**
-	 * @return bool|void
+	 * @return string|bool
 	 */
 	public function returnXML()
 	{
+		$result = false;
 		if ($this->xml) {
 			switch ($this->type) {
 				case 'caps':
-					return $this->returnCaps();
+					$result = $this->returnCaps();
 					break;
 				case 'api':
 					$this->namespace = 'newznab';
-					return $this->returnApiRss();
+					$result = $this->returnApiRss();
 					break;
 				case 'rss':
 					$this->namespace = 'nZEDb';
-					return $this->returnApiRss();
+					$result = $this->returnApiRss();
 					break;
 				case 'reg':
-					return $this->returnReg();
+					$result = $this->returnReg();
 					break;
 			}
 		}
-		return false;
+		return $result;
 	}
 
 	/**
@@ -146,7 +145,7 @@ class XML_Response
 	 *
 	 * @return string The XML Formatted string data
 	 */
-	protected function returnCaps()
+	protected function returnCaps(): string
 	{
 		$w =& $this->xml;
 		$s = $this->server;
@@ -169,7 +168,7 @@ class XML_Response
 	 *
 	 * @return string The XML Formatted string data
 	 */
-	protected function returnApiRss()
+	protected function returnApiRss(): string
 	{
 		$w =& $this->xml;
 		$w->startDocument('1.0', 'UTF-8');
@@ -191,7 +190,7 @@ class XML_Response
 	/**
 	 * @return string The XML formatted registration information
 	 */
-	protected function returnReg()
+	protected function returnReg(): string
 	{
 		$this->xml->startDocument('1.0', 'UTF-8');
 		$this->xml->startElement('register');
@@ -206,9 +205,12 @@ class XML_Response
 
 	/**
 	 * Starts a new element, loops through the attribute data and ends the element
+	 *
 	 * @param array $element An array with the name of the element and the attribute data
+	 *
+	 * @return void
 	 */
-	protected function addNode(array $element)
+	protected function addNode(array $element): void
 	{
 		$this->xml->startElement($element['name']);
 		foreach($element['data'] AS $attr => $val) {
@@ -219,9 +221,12 @@ class XML_Response
 
 	/**
 	 * Starts a new element, loops through the attribute data and ends the element
+	 *
 	 * @param array $element An array with the name of the element and the attribute data
+	 *
+	 * @return void
 	 */
-	protected function addNodes($element)
+	protected function addNodes($element): void
 	{
 		$this->xml->startElement($element['name']);
 		foreach($element['data'] AS $elem => $value) {
@@ -234,18 +239,24 @@ class XML_Response
 
 	/**
 	 * Adds the site category listing to the XML feed
+	 *
+	 * @return void
 	 */
-	protected function writeCategoryListing()
+	protected function writeCategoryListing(): void
 	{
 		$this->xml->startElement('categories');
-		foreach ($this->server['categories'] AS $p) {
+
+		foreach ($this->server['categories'] AS $p)
+		{
 			$this->xml->startElement('category');
 			$this->xml->writeAttribute('id', $p['id']);
 			$this->xml->writeAttribute('name', html_entity_decode($p['title']));
 			if ($p['description'] != '') {
 				$this->xml->writeAttribute('description', html_entity_decode($p['description']));
 			}
-			foreach($p['subcatlist'] AS $c) {
+
+			foreach($p['subcatlist'] AS $c)
+			{
 				$this->xml->startElement('subcat');
 				$this->xml->writeAttribute('id', $c['id']);
 				$this->xml->writeAttribute('name', html_entity_decode($c['title']));
@@ -261,8 +272,9 @@ class XML_Response
 	/**
 	 * Adds RSS Atom information to the XML
 	 *
+	 * @return void
 	 */
-	protected function includeRssAtom()
+	protected function includeRssAtom(): void
 	{
 		switch($this->namespace) {
 			case 'newznab':
@@ -281,9 +293,9 @@ class XML_Response
 	}
 
 	/**
-	 *
+	 * @return void
 	 */
-	protected function includeRssAtomLink()
+	protected function includeRssAtomLink(): void
 	{
 		$this->xml->startElement('atom:link');
 		$this->xml->startAttribute('href');
@@ -300,8 +312,10 @@ class XML_Response
 
 	/**
 	 * Writes the channel information for the feed
+	 *
+	 * @return void
 	 */
-	protected function includeMetaInfo()
+	protected function includeMetaInfo(): void
 	{
 		$server = $this->server['server'];
 
@@ -329,8 +343,10 @@ class XML_Response
 
 	/**
 	 * Adds nZEDB logo data to the XML
+	 *
+	 * @return void
 	 */
-	protected function includeImage()
+	protected function includeImage(): void
 	{
 		$this->xml->startElement('image');
 		$this->xml->writeAttribute('url', $this->server['server']['url'] . 'themes/shared/img/logo.png');
@@ -345,8 +361,10 @@ class XML_Response
 
 	/**
 	 * Adds total count of releases to the XML
+	 *
+	 * @return void
 	 */
-	public function includeTotalRows()
+	public function includeTotalRows(): void
 	{
 		$this->xml->startElement($this->namespace.":response");
 		$this->xml->writeAttribute('offset', $this->offset);
@@ -354,7 +372,7 @@ class XML_Response
 		$this->xml->endElement();
 	}
 
-    public function includeLimits()
+    public function includeLimits(): void
     {
         $this->xml->startElement($this->namespace.':apilimits');
         $this->xml->writeAttribute('apiCurrent', $this->parameters['apirequests']);
@@ -366,8 +384,10 @@ class XML_Response
 
 	/**
 	 * Loop through the releases and add their info to the XML stream
+	 *
+	 * @return void
 	 */
-	public function includeReleases()
+	public function includeReleases(): void
 	{
 		if(is_array($this->releases) && !empty($this->releases)) {
 			foreach ($this->releases AS $this->release) {
@@ -381,8 +401,10 @@ class XML_Response
 
 	/**
 	 * Writes the primary release information
+	 *
+	 * @return void
 	 */
-	public function includeReleaseMain()
+	public function includeReleaseMain(): void
 	{
 		$this->xml->writeElement('title', $this->release['searchname']);
 		$this->xml->startElement('guid');
@@ -419,8 +441,10 @@ class XML_Response
 
 	/**
 	 * Writes the Zed (newznab) specific attributes
+	 *
+	 * @return void
 	 */
-	protected function setZedAttributes()
+	protected function setZedAttributes(): void
 	{
 		$this->writeZedAttr('category', $this->release['categories_id']);
 		$this->writeZedAttr('size', $this->release['size']);
@@ -465,37 +489,48 @@ class XML_Response
 
 	/**
 	 * Writes the TV Specific attributes
+	 *
+	 * @return void
 	 */
-	protected function setTvAttr()
+	protected function setTvAttr(): void
 	{
 		if (!empty($this->release['title'])) {
 			$this->writeZedAttr('title', $this->release['title']);
 		}
+
 		if (isset($this->release['series']) && $this->release['series'] > 0) {
 			$this->writeZedAttr('season', $this->release['series']);
 		}
+
 		if (isset($this->release['episode']) && $this->release['episode'] > 0) {
 			$this->writeZedAttr('episode', $this->release['episode']);
 		}
+
 		if (!empty($this->release['firstaired'])) {
 			$this->writeZedAttr('tvairdate', $this->release['firstaired']);
 		}
+
 		if (isset($this->release['tvdb']) && $this->release['tvdb'] > 0) {
 			$this->writeZedAttr('tvdbid', $this->release['tvdb']);
 		}
+
 		if (isset($this->release['trakt']) && $this->release['trakt'] > 0) {
 			$this->writeZedAttr('traktid', $this->release['trakt']);
 		}
+
 		if (isset($this->release['tvrage']) && $this->release['tvrage'] > 0) {
 			$this->writeZedAttr('tvrageid', $this->release['tvrage']);
 			$this->writeZedAttr('rageid', $this->release['tvrage']);
 		}
+
 		if (isset($this->release['tvmaze']) && $this->release['tvmaze'] > 0) {
 			$this->writeZedAttr('tvmazeid', $this->release['tvmaze']);
 		}
+
 		if (isset($this->release['imdb']) && $this->release['imdb'] > 0) {
 			$this->writeZedAttr('imdbid', str_pad($this->release['imdb'], 7, '0', STR_PAD_LEFT));
 		}
+
 		if (isset($this->release['tmdb']) && $this->release['tmdb'] > 0) {
 			$this->writeZedAttr('tmdbid', $this->release['tmdb']);
 		}
@@ -506,8 +541,10 @@ class XML_Response
 	 *
 	 * @param string $name The namespaced attribute name tag
 	 * @param string $value The namespaced attribute value
+	 *
+	 * @return void
 	 */
-	protected function writeZedAttr($name, $value)
+	protected function writeZedAttr($name, $value): void
 	{
 		$this->xml->startElement($this->namespace . ":attr");
 		$this->xml->writeAttribute('name', $name);
@@ -518,8 +555,10 @@ class XML_Response
 	/**
 	 * Writes the cData (HTML format) for the RSS feed
 	 * Also calls supplementary cData writes depending upon post process
+	 *
+	 * @return void
 	 */
-	protected function writeRssCdata()
+	protected function writeRssCdata(): void
 	{
 		$this->cdata = '';
 
@@ -602,8 +641,10 @@ class XML_Response
 
 	/**
 	 * Writes the Movie Info for the RSS feed cData
+	 *
+	 * @return void
 	 */
-	protected function writeRssMovieInfo()
+	protected function writeRssMovieInfo(): void
 	{
 		$r = $this->release;
 
@@ -623,8 +664,10 @@ class XML_Response
 
 	/**
 	 * Writes the Music Info for the RSS feed cData
+	 *
+	 * @return void
 	 */
-	protected function writeRssMusicInfo()
+	protected function writeRssMusicInfo(): void
 	{
 		$r = $this->release;
 		$tData = $cDataUrl = '';
@@ -663,8 +706,10 @@ class XML_Response
 
 	/**
 	 * Writes the Console Info for the RSS feed cData
+	 *
+	 * @return void
 	 */
-	protected function writeRssConsoleInfo()
+	protected function writeRssConsoleInfo(): void
 	{
 		$r = $this->release;
 		$gamesCol = ['co_genre', 'co_publisher', 'year', 'co_review'];
@@ -687,7 +732,7 @@ class XML_Response
 	 *
 	 * @return string The HTML format cData
 	 */
-	protected function buildCdata($columns)
+	protected function buildCdata($columns): string
 	{
 		$r = $this->release;
 
