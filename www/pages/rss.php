@@ -56,6 +56,9 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 		$uid = $page->userdata["id"];
 		$rssToken = $page->userdata["rsstoken"];
 		$maxRequests = $page->userdata['apirequests'];
+		$downloadLimit = $page->userdata['downloadrequests'];
+        $apiRequests = $page->users->getApiRequests($uid);
+        $grabs = $page->userdata['grabs'];
 	} else {
 		if (Settings::value('..registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
 			$res = $page->users->getById(0);
@@ -74,14 +77,17 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 		$uid = $res["id"];
 		$rssToken = $res['rsstoken'];
 		$maxRequests = $res['apirequests'];
+		$downloadLimit = $res['downloadrequests'];
+		$apiRequests = $page->users->getApiRequests($uid);
 		$username = $res['username'];
+		$grabs = $page->users->getDownloadRequests($uid);
 
 		if ($page->users->isDisabled($username)) {
 			Misc::showApiError(101);
 		}
 	}
 
-	if ($page->users->getApiRequests($uid) > $maxRequests) {
+	if ($apiRequests > $maxRequests) {
 		Misc::showApiError(500, 'You have reached your daily limit for API requests!');
 	} else {
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
@@ -107,7 +113,11 @@ if (!isset($_GET["t"]) && !isset($_GET["show"]) && !isset($_GET["anidb"])) {
 			'del'      => (isset($_GET['del']) && $_GET['del'] == '1' ? '1' : '0'),
 			'extended' => 1,
 			'uid'      => $uid,
-			'token'    => $rssToken
+			'token'    => $rssToken,
+            'apilimit'    => $maxRequests,
+            'apirequests' => $apiRequests,
+            'downloadlimit' => $downloadLimit,
+            'grabs' => $grabs,
 		];
 
 	if ($userCat == -3) {

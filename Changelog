@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2019-07-17 DariusIII
+	Chg: Add newznab:apilimit to API and RSS XML response with limits and current api hits and grabs
 2019-06-19 niel
 	Mrg: PR 2631, from Wally73 - Update movie-add.php for larger IMDb IDs.
 2019-06-03 niel

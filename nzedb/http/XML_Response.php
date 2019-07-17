@@ -179,6 +179,7 @@ class XML_Response
 		$this->includeMetaInfo();
 		$this->includeImage();
 		$this->includeTotalRows();
+		$this->includeLimits();
 		$this->includeReleases();
 		$w->endElement(); // End channel
 		$w->endElement(); // End RSS
@@ -352,6 +353,16 @@ class XML_Response
 		$this->xml->writeAttribute('total', isset($this->releases[0]['_totalrows']) ? $this->releases[0]['_totalrows'] : 0);
 		$this->xml->endElement();
 	}
+
+    public function includeLimits()
+    {
+        $this->xml->startElement($this->namespace.':apilimits');
+        $this->xml->writeAttribute('apiCurrent', $this->parameters['apirequests']);
+        $this->xml->writeAttribute('apiMax', $this->parameters['apilimit']);
+        $this->xml->writeAttribute('grabCurrent', $this->parameters['grabs']);
+        $this->xml->writeAttribute('grabMax', $this->parameters['downloadlimit']);
+        $this->xml->endElement();
+    }
 
 	/**
 	 * Loop through the releases and add their info to the XML stream

@@ -54,7 +54,7 @@ if (isset($_GET['t'])) {
 
 $uid = $apiKey = '';
 $result = $catExclusions = [];
-$maxRequests = 0;
+$maxRequests = $apiRequests = $downloadLimit = $grabs = 0;
 
 // Page is accessible only by the apikey.
 if ($function != 'c' && $function != 'r') {
@@ -75,12 +75,15 @@ if ($function != 'c' && $function != 'r') {
 	$uid = $result['id'];
 	$catExclusions = $page->users->getCategoryExclusion($uid);
 	$maxRequests = $result['apirequests'];
+	$downloadLimit = $result['downloadrequests'];
 }
 
 // Record user access to the api, if its been called by a user (i.e. capabilities request do not require a user to be logged in or key provided).
 if ($uid != '') {
 	$page->users->updateApiAccessed($uid);
 	$apiRequests = $page->users->getApiRequests($uid);
+	$grabs = $page->users->getDownloadRequests($uid);
+
 	if ($apiRequests > $maxRequests) {
 		Misc::showApiError(429, 'Request limit reached (' . $apiRequests . '/' . $maxRequests .
 			')');
@@ -100,6 +103,10 @@ $params['extended'] = (isset($_GET['extended']) && $_GET['extended'] == 1 ? '1' 
 $params['del'] = (isset($_GET['del']) && $_GET['del'] == 1 ? '1' : '0');
 $params['uid'] = $uid;
 $params['token'] = $apiKey;
+$params['apilimit'] = $maxRequests;
+$params['apirequests'] = $apiRequests;
+$params['grabs'] = $grabs;
+$params['downloadlimit'] = $downloadLimit;
 
 switch ($function) {
 	// Search releases.
