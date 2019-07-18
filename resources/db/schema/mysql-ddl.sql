@@ -458,7 +458,7 @@ CREATE TABLE missed_parts (
 DROP TABLE IF EXISTS movieinfo;
 CREATE TABLE movieinfo (
   id          INT(10) UNSIGNED               NOT NULL AUTO_INCREMENT,
-  imdbid      MEDIUMINT(7) UNSIGNED ZEROFILL NOT NULL,
+  imdbid      INT(8)  UNSIGNED ZEROFILL NULL DEFAULT NULL COMMENT 'IMDb id with tt trimmed',
   tmdbid      INT(10) UNSIGNED               NOT NULL DEFAULT 0,
   title       VARCHAR(255)                   NOT NULL DEFAULT '',
   tagline     VARCHAR(1024)                  NOT NULL DEFAULT '',
@@ -720,7 +720,7 @@ CREATE TABLE         releases (
   categories_id     INT                            NOT NULL DEFAULT '0010',
   videos_id         MEDIUMINT(11) UNSIGNED         NOT NULL DEFAULT '0' COMMENT 'FK to videos.id of the parent series.',
   tv_episodes_id    MEDIUMINT(11) SIGNED           NOT NULL DEFAULT '0' COMMENT 'FK to tv_episodes.id for the episode.',
-  imdbid            MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
+  imdbid INT(8) UNSIGNED ZEROFILL NULL DEFAULT NULL COMMENT 'IMDb id with tt trimmed',
   xxxinfo_id        INT SIGNED                     NOT NULL DEFAULT '0',
   musicinfo_id      INT(11) SIGNED               NULL COMMENT 'FK to musicinfo.id',
   consoleinfo_id    INT(11) SIGNED               NULL COMMENT 'FK to consoleinfo.id',
@@ -1186,7 +1186,7 @@ DROP TABLE IF EXISTS user_movies;
 CREATE TABLE user_movies (
   id          INT(16) UNSIGNED               NOT NULL AUTO_INCREMENT,
   user_id     INT(16)                        NOT NULL,
-  imdbid      MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
+  imdbid INT(8) UNSIGNED ZEROFILL NULL DEFAULT NULL COMMENT 'IMDb id with tt trimmed',
   categories  VARCHAR(64)                    NULL DEFAULT NULL COMMENT 'List of categories for user movies',
   createddate DATETIME                       NOT NULL,
   PRIMARY KEY (id),

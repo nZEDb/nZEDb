@@ -1,3 +1,3 @@
 #!/bin/sh
 
-libraries/robmorgan/phinx/bin/phinx "$@" -c cli/phinx.php
+./libraries/robmorgan/phinx/bin/phinx "$@" -c configuration/phinx.php

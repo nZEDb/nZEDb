@@ -371,7 +371,7 @@ class TMDB extends TV
 		$this->posterUrl = isset($show['poster_path']) ? 'https:' . $this->helper->getUrl($show['poster_path']) : '';
 
 		if (isset($show['external_ids']['imdb_id'])) {
-			preg_match('/tt(?P<imdbid>\d{6,7})$/i', $show['external_ids']['imdb_id'], $imdb);
+			preg_match('/tt(?P<imdbid>\d{6,8})$/i', $show['external_ids']['imdb_id'], $imdb);
 		}
 
 		return [
@@ -382,7 +382,7 @@ class TMDB extends TV
 			'publisher' => isset($show['network']) ? (string)$show['network'] : '',
 			'country'   => isset($show['origin_country'][0]) ? $show['origin_country'][0] : '',
 			'source'    => parent::SOURCE_TMDB,
-			'imdb'      => isset($imdb['imdbid']) ? (int)$imdb['imdbid'] : 0,
+			'imdb'      => (int)($imdb['imdbid'] ?? 0),
 			'tvdb'      => isset($show['external_ids']['tvdb_id']) ? (int)$show['external_ids']['tvdb_id'] : 0,
 			'trakt'     => 0,
 			'tvrage'    => isset($show['external_ids']['tvrage_id']) ? (int)$show['external_ids']['tvrage_id'] : 0,

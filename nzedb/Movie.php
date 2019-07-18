@@ -317,7 +317,7 @@ class Movie
 					LEFT JOIN releases r USING (imdbid)
 					WHERE r.nzbstatus = 1
 					AND m.title != ''
-					AND m.imdbid != '0000000'
+					AND m.imdbid != 0
 					AND r.passwordstatus %s
 					%s %s %s %s
 					GROUP BY m.imdbid
@@ -1148,7 +1148,7 @@ class Movie
 				// Try to get a name/year.
 				if ($this->parseMovieSearchName($arr['searchname']) === false) {
 					//We didn't find a name, so set to all 0's so we don't parse again.
-					$this->pdo->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d %s", $arr["id"], $this->catWhere));
+					$this->pdo->queryExec(sprintf("UPDATE releases SET imdbid = 0 WHERE id = %d %s", $arr["id"], $this->catWhere));
 					continue;
 
 				} else {
@@ -1214,7 +1214,7 @@ class Movie
 					}
 
 					// We failed to get an IMDB id from all sources.
-					$this->pdo->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d %s", $arr["id"], $this->catWhere));
+					$this->pdo->queryExec(sprintf("UPDATE releases SET imdbid = 0 WHERE id = %d %s", $arr["id"], $this->catWhere));
 				}
 			}
 		}

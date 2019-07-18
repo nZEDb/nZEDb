@@ -22,20 +22,18 @@ $path2covers = nZEDb_COVERS . 'movies' . DS;
 $dirItr = new \RecursiveDirectoryIterator($path2covers);
 $itr = new \RecursiveIteratorIterator($dirItr, \RecursiveIteratorIterator::LEAVES_ONLY);
 foreach ($itr as $filePath) {
-	if (is_file($filePath) && preg_match('/-cover\.jpg/', $filePath)) {
-		preg_match('/(\d+)-cover\.jpg/', basename($filePath), $match);
-		if (isset($match[1])) {
-			$run = $pdo->queryDirect("UPDATE movieinfo SET cover = 1 WHERE cover = 0 AND imdbid = " . $match[1]);
-			if ($run->rowCount() >= 1) {
-				$covers++;
-			} else {
-				$run = $pdo->queryDirect("SELECT imdbid FROM movieinfo WHERE imdbid = " . $match[1]);
-				if ($run->rowCount() == 0) {
-					echo $pdo->log->info($filePath . " not found in db.");
-				}
+	if (is_file($filePath) && preg_match('/(\d+)-cover\.jpg/', basename($filePath), $match) === 1) {
+		$run = $pdo->queryDirect('UPDATE movieinfo SET cover = 1 WHERE cover = 0 AND imdbid = ' . $match[1]);
+		if ($run->rowCount() >= 1) {
+			$covers++;
+		} else {
+			$run = $pdo->queryDirect('SELECT imdbid FROM movieinfo WHERE imdbid = ' . $match[1]);
+			if ($run->rowCount() == 0) {
+				echo $pdo->log->info($filePath . ' not found in db.');
 			}
 		}
 	}
+
 	if (is_file($filePath) && preg_match('/-backdrop\.jpg/', $filePath)) {
 		preg_match('/(\d+)-backdrop\.jpg/', basename($filePath), $match1);
 		if (isset($match1[1])) {
