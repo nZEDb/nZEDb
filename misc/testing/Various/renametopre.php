@@ -154,8 +154,7 @@ function preName($argv, $argc)
 						$propername = true;
 					}
 				if ($cleanName != $row['name'] && $cleanName != $row['searchname']) {
-					if (strlen(utf8_decode($cleanName)) <= 3) {
-					} else {
+					if (strlen(utf8_decode($cleanName)) > 3) {
 						$determinedcat = $category->determineCategory($row["groups_id"], $cleanName);
 						if ($propername == true) {
 							$pdo->queryExec(

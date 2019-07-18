@@ -54,7 +54,7 @@ if (isset($_GET['t'])) {
 
 $uid = $apiKey = '';
 $result = $catExclusions = [];
-$maxRequests = 0;
+$maxRequests = $apiRequests = $downloadLimit = $grabs = 0;
 
 // Page is accessible only by the apikey.
 if ($function != 'c' && $function != 'r') {
@@ -75,12 +75,15 @@ if ($function != 'c' && $function != 'r') {
 	$uid = $result['id'];
 	$catExclusions = $page->users->getCategoryExclusion($uid);
 	$maxRequests = $result['apirequests'];
+	$downloadLimit = $result['downloadrequests'];
 }
 
 // Record user access to the api, if its been called by a user (i.e. capabilities request do not require a user to be logged in or key provided).
 if ($uid != '') {
 	$page->users->updateApiAccessed($uid);
 	$apiRequests = $page->users->getApiRequests($uid);
+	$grabs = $page->users->getDownloadRequests($uid);
+
 	if ($apiRequests > $maxRequests) {
 		Misc::showApiError(429, 'Request limit reached (' . $apiRequests . '/' . $maxRequests .
 			')');
@@ -100,6 +103,10 @@ $params['extended'] = (isset($_GET['extended']) && $_GET['extended'] == 1 ? '1' 
 $params['del'] = (isset($_GET['del']) && $_GET['del'] == 1 ? '1' : '0');
 $params['uid'] = $uid;
 $params['token'] = $apiKey;
+$params['apilimit'] = $maxRequests;
+$params['apirequests'] = $apiRequests;
+$params['grabs'] = $grabs;
+$params['downloadlimit'] = $downloadLimit;
 
 switch ($function) {
 	// Search releases.
@@ -139,13 +146,13 @@ switch ($function) {
 		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 
 		$siteIdArr = [
-			'id'     => (isset($_GET['vid']) ? $_GET['vid'] : '0'),
-			'tvdb'   => (isset($_GET['tvdbid']) ? $_GET['tvdbid'] : '0'),
-			'trakt'  => (isset($_GET['traktid']) ? $_GET['traktid'] : '0'),
-			'tvrage' => (isset($_GET['rid']) ? $_GET['rid'] : '0'),
-			'tvmaze' => (isset($_GET['tvmazeid']) ? $_GET['tvmazeid'] : '0'),
-			'imdb'   => (isset($_GET['imdbid']) ? $_GET['imdbid'] : '0'),
-			'tmdb'   => (isset($_GET['tmdbid']) ? $_GET['tmdbid'] : '0')
+			'id'     => $_GET['vid'] ?? '0',
+			'tvdb'   => $_GET['tvdbid'] ?? '0',
+			'trakt'  => $_GET['traktid'] ?? '0',
+			'tvrage' => $_GET['rid'] ?? '0',
+			'tvmaze' => $_GET['tvmazeid'] ?? '0',
+			'imdb'   => $_GET['imdbid'] ?? '0',
+			'tmdb'   => $_GET['tmdbid'] ?? '0'
 		];
 
 		// Process season only queries or Season and Episode/Airdate queries

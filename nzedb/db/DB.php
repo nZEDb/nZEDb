@@ -2,6 +2,11 @@
 namespace nzedb\db;
 include_once__DIR__ . '/../../settings.php';
 
+$file = __DIR__ . '/../../configuration/settings.php';
+if (\file_exists($file)) {
+	include_once $file;
+}
+
 use nzedb\ColorCLI;
 use nzedb\ConsoleTools;
 use nzedb\Logger;
