@@ -1013,11 +1013,13 @@ class Binaries
 				$binariesUpdate[$binaryID]['Parts']++;
 			}
 
-			// Strip the < and >, saves space in DB.
-			$this->header['Message-ID'][0] = "'";
+			// Strip the <, saves space in DB, and prefix it with an open-single-quote (the trim
+			// will add the closing one.
+			$this->header['Message-id'][0] = "'";
+			$this->header['Message-id'][\strlen($this->header['Message-id']) - 1] = "'";
 
 			$partsQuery .=
-				'(' . $binaryID . ',' . $this->header['Number'] . ',' . rtrim($this->header['Message-ID'], '>') . "'," .
+				'(' . $binaryID . ',' . $this->header['Number'] . ',' . $this->header['Message-id'] .
 				$this->header['matches'][2] . ',' . $this->header['Bytes'] . '),';
 		}
 
@@ -1604,7 +1606,7 @@ class Binaries
 		$field = [
 			self::BLACKLIST_FIELD_SUBJECT   => $msg['Subject'],
 			self::BLACKLIST_FIELD_FROM      => $msg['From'],
-			self::BLACKLIST_FIELD_MESSAGEID => $msg['Message-ID']
+			self::BLACKLIST_FIELD_MESSAGEID => $msg['Message-id']
 		];
 
 		// Try white lists first.

@@ -412,7 +412,7 @@ class NNTP extends \Net_NNTP_Client
 	 *        'Subject'    => string(18) "This is an example"
 	 *        'From'       => string(19) "Example@example.com"
 	 *        'Date'       => string(24) "26 Jun 2014 13:08:22 GMT"
-	 *        'Message-ID' => string(57) "<part1of1.uS*yYxQvtAYt$5t&wmE%UejhjkCKXBJ!@example.local>"
+	 *        'Message-id' => string(57) "<part1of1.uS*yYxQvtAYt$5t&wmE%UejhjkCKXBJ!@example.local>"
 	 *        'References' => string(0)  ""
 	 *        'Bytes'      => string(3)  "123"
 	 *        'Lines'      => string(1)  "9"
@@ -476,8 +476,8 @@ class NNTP extends \Net_NNTP_Client
 		$iterator = 0;
 
 		// Loop over strings of headers.
-		foreach ($data as $key => &$header) {
-
+		foreach ($data as $key => &$header)
+		{
 			// Split the individual headers by tab.
 			$header = explode("\t", $header);
 
@@ -486,18 +486,18 @@ class NNTP extends \Net_NNTP_Client
 				continue;
 			}
 
-			// Temp array to store the header.
-			$headerArray = $overview;
-
 			// Loop over the overview format and insert the individual header elements.
-			foreach ($overview as $name => $element) {
-				// Strip Xref:
+			$headerArray = [];
+			foreach ($overview as $name => $element)
+			{
+				// Strip 'Xref: '
 				if ($element === true) {
-					$header[$iterator] = substr($header[$iterator], 6);
+					$header[$iterator] = substr_replace($header[$iterator], '', 0,6);
 				}
 				$name = \ucfirst(\strtolower($name));
 				$headerArray[$name] = $header[$iterator++];
 			}
+
 			// Add the individual header array back to the return array.
 			$header = $headerArray;
 			$iterator = 0;
