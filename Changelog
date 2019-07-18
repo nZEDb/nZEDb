@@ -10,6 +10,12 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2019-07-18 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.17.0
+
+
+2019-07-18
+	Fix: Ensure DB.php has Settings.php loaded if available.
 2019-07-17 DariusIII
 	Chg: Add newznab:apilimit to API and RSS XML response with limits and current api hits and grabs
 2019-06-19 niel

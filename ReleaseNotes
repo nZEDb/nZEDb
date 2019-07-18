@@ -2,6 +2,17 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
+0.8.18.0 2019-07-18
+Added:
+	* Add newznab:apilimit to API and RSS XML response with limits and current api hits and grabs.
+
+Fixed:
+	* Increase size of imdbid fields in movieinfo, releases, and user_movies tables to bring us
+	  inline with IMDb's latest entries.
+	* Update movie-add.php for larger IMDb IDs (PR 2631).
+	* Broken include_once in DB.php
+
+
 0.8.17.1 2019-06-03
 Fixed:
 	* Typo in variable name.
