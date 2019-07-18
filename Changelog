@@ -11,6 +11,9 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2019-07-18 niel
+	Fix: Remove include_once that was made superfluous.
+	Chg: 'Optimisations' for NNTP::getXOVER().
+2019-07-18 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.17.0
 
 

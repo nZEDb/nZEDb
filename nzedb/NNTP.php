@@ -476,7 +476,7 @@ class NNTP extends \Net_NNTP_Client
 		$iterator = 0;
 
 		// Loop over strings of headers.
-		foreach ($data as $key => $header) {
+		foreach ($data as $key => &$header) {
 
 			// Split the individual headers by tab.
 			$header = explode("\t", $header);
@@ -495,10 +495,11 @@ class NNTP extends \Net_NNTP_Client
 				if ($element === true) {
 					$header[$iterator] = substr($header[$iterator], 6);
 				}
+				$name = \ucfirst(\strtolower($name));
 				$headerArray[$name] = $header[$iterator++];
 			}
 			// Add the individual header array back to the return array.
-			$data[$key] = $headerArray;
+			$header = $headerArray;
 			$iterator = 0;
 		}
 		// Return the array of headers.

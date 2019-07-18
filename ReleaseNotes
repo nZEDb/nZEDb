@@ -2,6 +2,14 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
+0.8.18.1 2019-07-18
+Changed:
+	* 'Optimisations' for NNTP::getXOVER().
+
+Fixed:
+	* Remove include_once that was made superfluous.
+
+
 0.8.18.0 2019-07-18
 Added:
 	* Add newznab:apilimit to API and RSS XML response with limits and current api hits and grabs.
