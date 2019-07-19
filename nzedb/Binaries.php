@@ -1013,14 +1013,20 @@ class Binaries
 				$binariesUpdate[$binaryID]['Parts']++;
 			}
 
-			// Strip the <, saves space in DB, and prefix it with an open-single-quote (the trim
-			// will add the closing one.
-			$this->header['Message-id'][0] = "'";
-			$this->header['Message-id'][\strlen($this->header['Message-id']) - 1] = "'";
+			// Strip the < and >, saves space in DB, and wrap it with single-quotes.
+			$this->header['Message-id'] = substr($this->header['Message-id'], 1, -1);
 
-			$partsQuery .=
-				'(' . $binaryID . ',' . $this->header['Number'] . ',' . $this->header['Message-id'] .
-				$this->header['matches'][2] . ',' . $this->header['Bytes'] . '),';
+			$partsQuery .= '(' .
+				$binaryID .
+				',' .
+				$this->header['Number'] .
+				", '" .
+				$this->header['Message-id'] .
+				"', " .
+				$this->header['matches'][2] .
+				',' .
+				$this->header['Bytes'] .
+				'),';
 		}
 
 		unset($headers); // Reclaim memory.
