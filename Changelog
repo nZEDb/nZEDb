@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2019-07-19 niel
+	Fix: Missing ',' in SQL, hopefully reduce overhead formatting 'Message-Id'. Closes Issue 2633.
 2019-07-18 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.17.2
 
