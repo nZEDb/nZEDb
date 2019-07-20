@@ -1096,7 +1096,7 @@ class NameFixer
 					continue;
 				case "Filenames, ":
 					$this->fileCheck($release, $echo, $type, $namestatus, $show);
-					continue;
+					break;
 				default:
 					$this->tvCheck($release, $echo, $type, $namestatus, $show);
 					$this->movieCheck($release, $echo, $type, $namestatus, $show);
