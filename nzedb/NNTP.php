@@ -405,14 +405,13 @@ class NNTP extends \Net_NNTP_Client
 	 * Pass a XOVER command to the NNTP provider, return array of articles using the overview format as array keys.
 	 *
 	 * @note This is a faster implementation of getOverview.
-	 *
 	 * Example successful return:
 	 *    array(9) {
 	 *        'Number'     => string(9)  "679871775"
 	 *        'Subject'    => string(18) "This is an example"
 	 *        'From'       => string(19) "Example@example.com"
 	 *        'Date'       => string(24) "26 Jun 2014 13:08:22 GMT"
-	 *        'Message-id' => string(57) "<part1of1.uS*yYxQvtAYt$5t&wmE%UejhjkCKXBJ!@example.local>"
+	 *        'Message-Id' => string(57) "<part1of1.uS*yYxQvtAYt$5t&wmE%UejhjkCKXBJ!@example.local>"
 	 *        'References' => string(0)  ""
 	 *        'Bytes'      => string(3)  "123"
 	 *        'Lines'      => string(1)  "9"
@@ -420,11 +419,11 @@ class NNTP extends \Net_NNTP_Client
 	 *    }
 	 *
 	 * @param string $range Range of articles to get the overview for. Examples follow:
-	 *                      Single article number:         "679871775"
-	 *                      Range of article numbers:      "679871775-679999999"
-	 *                      All newer than article number: "679871775-"
-	 *                      All older than article number: "-679871775"
-	 *                      Message-ID:                    "<part1of1.uS*yYxQvtAYt$5t&wmE%UejhjkCKXBJ!@example.local>"
+	 *                      Single article number:			"679871775"
+	 *                      Range of article numbers:		"679871775-679999999"
+	 *                      All newer than article number:	"679871775-"
+	 *                      All older than article number:	"-679871775"
+	 *                      Message-ID:						"<part1of1.uS*yYxQvtAYt$5t&wmE%UejhjkCKXBJ!@example.local>"
 	 *
 	 * @return array|object Multi-dimensional Array of headers on success, PEAR object on failure.
 	 */
@@ -494,7 +493,7 @@ class NNTP extends \Net_NNTP_Client
 				if ($element === true) {
 					$header[$iterator] = substr_replace($header[$iterator], '', 0,6);
 				}
-				$name = \ucfirst(\strtolower($name));
+				$name = \ucwords(\strtolower($name));
 				$headerArray[$name] = $header[$iterator++];
 			}
 
@@ -529,12 +528,12 @@ class NNTP extends \Net_NNTP_Client
 	 * @param string $groupName   The name of the group the articles are in.
 	 * @param mixed  $identifiers (string) Message-ID.
 	 *                            (int)    Article number.
-	 *                            (array)  Article numbers or Message-ID's (can contain both in the same array)
+	 *                            (array)  Article numbers or Message-ID's (can contain both in
+	 *                            the same array)
 	 * @param bool   $alternate   Use the alternate NNTP provider?
 	 *
 	 * @return mixed On success : (string) The article bodies.
 	 *               On failure : (object) PEAR_Error.
-	 *
 	 * @access public
 	 */
 	public function getMessages($groupName, $identifiers, $alternate = false)
@@ -555,7 +554,7 @@ class NNTP extends \Net_NNTP_Client
 
 			$loops = $messageSize = 0;
 
-			// Loop over the message-ID's or article numbers.
+			// Loop over the Message-ID's or article numbers.
 			foreach ($identifiers as $wanted) {
 
 				/* This is to attempt to prevent string size overflow.
@@ -625,7 +624,7 @@ class NNTP extends \Net_NNTP_Client
 				}
 			}
 
-			// If it's a string check if it's a valid message-ID.
+			// If it's a string check if it's a valid Message-ID.
 		} else if (is_string($identifiers) || is_numeric($identifiers)) {
 			$body = $this->_getMessage($groupName, $identifiers);
 			if ($alternate === true && $this->isError($body)) {
@@ -638,7 +637,7 @@ class NNTP extends \Net_NNTP_Client
 		} else {
 			$message = 'Wrong Identifier type, array, int or string accepted. This type of var was passed: ' . gettype($identifiers);
 			if ($this->_debugBool) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_WARNING);
+				$this->_debugging->log(__CLASS__, __FUNCTION__, $message, Logger::LOG_WARNING);
 			}
 			return $this->throwError($this->pdo->log->error($message));
 		}
@@ -655,7 +654,7 @@ class NNTP extends \Net_NNTP_Client
 	 * associated values, optionally decode the body using yEnc.
 	 *
 	 * @param string $groupName  The name of the group the article is in.
-	 * @param mixed  $identifier (string)The message-ID of the article to download.
+	 * @param mixed  $identifier (string) The Message-ID of the article to download.
 	 *                           (int) The article number.
 	 * @param bool   $yEnc       Attempt to yEnc decode the body.
 	 *
@@ -684,9 +683,9 @@ class NNTP extends \Net_NNTP_Client
 			}
 		}
 
-		// Check if it's an article number or message-ID.
+		// Check if it's an article number or Message-ID.
 		if (!is_numeric($identifier)) {
-			// If it's a message-ID, check if it has the required triangular brackets.
+			// If it's a Message-ID, check if it has the required angle-brackets.
 			$identifier = $this->_formatMessageID($identifier);
 		}
 
@@ -739,7 +738,7 @@ class NNTP extends \Net_NNTP_Client
 	 * Download a full article header.
 	 *
 	 * @param string $groupName  The name of the group the article is in.
-	 * @param mixed $identifier (string) The message-ID of the article to download.
+	 * @param mixed $identifier (string) The Message-ID of the article to download.
 	 *                          (int)    The article number.
 	 *
 	 * @return mixed On success : (array)  The header.
@@ -767,9 +766,9 @@ class NNTP extends \Net_NNTP_Client
 			}
 		}
 
-		// Check if it's an article number or message-id.
+		// Check if it's an article number or Message-ID.
 		if (!is_numeric($identifier)) {
-			// Verify we have the required triangular brackets if it is a message-id.
+			// Verify we have the required triangular brackets if it is a Message-ID.
 			$identifier = $this->_formatMessageID($identifier);
 		}
 
@@ -1358,7 +1357,7 @@ class NNTP extends \Net_NNTP_Client
 	 *
 	 * @param  string $messageID The Message-ID with or without brackets.
 	 *
-	 * @return string            Message-ID with brackets.
+	 * @return string            Message-ID with angle-brackets.
 	 *
 	 * @access protected
 	 */
@@ -1385,7 +1384,7 @@ class NNTP extends \Net_NNTP_Client
 	 * Download an article body (an article without the header).
 	 *
 	 * @param string $groupName The name of the group the article is in.
-	 * @param mixed $identifier (string) The message-ID of the article to download.
+	 * @param mixed $identifier (string) The Message-ID of the article to download.
 	 *                          (int)    The article number.
 	 *
 	 * @return string On success : (string) The article's body.
@@ -1402,15 +1401,16 @@ class NNTP extends \Net_NNTP_Client
 			// If there was an error selecting the group, return PEAR error object.
 			if ($this->isError($summary)) {
 				if ($this->_debugBool) {
-					$this->_debugging->log(get_class(), __FUNCTION__, $summary->getMessage(), Logger::LOG_WARNING);
+					$this->_debugging->log(__CLASS__, __FUNCTION__, $summary->getMessage(),
+						Logger::LOG_WARNING);
 				}
 				return $summary;
 			}
 		}
 
-		// Check if this is an article number or message-id.
+		// Check if this is an article number or Message-ID.
 		if (!is_numeric($identifier)) {
-			// It's a message-id so check if it has the triangular brackets.
+			// It's a Message-ID so check if it has the angle-brackets.
 			$identifier = $this->_formatMessageID($identifier);
 		}
 
