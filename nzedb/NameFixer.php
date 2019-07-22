@@ -1093,7 +1093,7 @@ class NameFixer
 					$this->nfoCheckMus($release, $echo, $type, $namestatus, $show);
 					$this->nfoCheckTY($release, $echo, $type, $namestatus, $show);
 					$this->nfoCheckG($release, $echo, $type, $namestatus, $show);
-					continue;
+					break;
 				case "Filenames, ":
 					$this->fileCheck($release, $echo, $type, $namestatus, $show);
 					break;
