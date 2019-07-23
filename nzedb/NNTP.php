@@ -907,7 +907,8 @@ class NNTP extends \Net_NNTP_Client
 	}
 
 	/**
-	 * Pass a XOVER command to the NNTP provider, return array of articles using the overview format as array keys.
+	 * Pass an XOVER command to the NNTP provider, return array of articles using the overview
+	 * format as array keys.
 	 *
 	 * @note This is a faster implementation of getOverview.
 	 * Example successful return:
@@ -998,7 +999,7 @@ class NNTP extends \Net_NNTP_Client
 				if ($element === true) {
 					$header[$iterator] = substr_replace($header[$iterator], '', 0, 6);
 				}
-				$name = \ucwords(\strtolower($name));
+				$name = \ucwords(\strtolower($name), '-_');
 				$headerArray[$name] = $header[$iterator++];
 			}
 
