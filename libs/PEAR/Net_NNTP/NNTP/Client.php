@@ -872,7 +872,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	 *   - ':bytes' - metadata item.
 	 *   - ':lines' - metadata item.
 	 *
-	 * The server may send more fields form it's database...
+	 * The server may send more fields from its database...
 	 *
 	 * <b>Non-standard!</b><br>
 	 * This method uses non-standard commands, which is not part
@@ -1038,7 +1038,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 					'Subject'    => false,
 					'From'       => false,
 					'Date'       => false,
-					'Message-ID' => false,
+					'Message-Id' => false,
 					'References' => false,
 					':bytes'     => false,
 					':lines'     => false
