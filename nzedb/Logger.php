@@ -534,13 +534,14 @@ class Logger
 	 *
 	 * @access private
 	 */
-	private function rotateLog()
+	private function rotateLog(): void
 	{
-		// Check if we need to rotate the log if it exceeds max size..
-		$logSize = filesize($this->logPath);
+		// Check if we need to rotate the log if it exceeds max size (in MB)...
+		$logSize = \file_exists($this->logPath) ? filesize($this->logPath) : false;
 		if ($logSize === false) {
-			return;
-		} else if ($logSize >= ($this->maxLogSize * 1024 * 1024)) {
+			$this->initiateLog();
+			$this->openFile();
+		} else if ($logSize >= ($this->maxLogSize * 1048576)) {
 			$this->closeFile();
 			$this->compressLog();
 			$this->initiateLog();
