@@ -11,11 +11,14 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2019-09-06 niel
+	Chg: Updated Lithium framework to official 1.2 version (we've been using a custom version to
+		provide PHP 7.3 support).
+2019-09-06 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.19.0
 
 
 2019-07-21 niel
-	* Fix: .../nzedb/NameFixer.php, Convert 'continue' to 'break' in switch statement.
+	Fix: .../nzedb/NameFixer.php, Convert 'continue' to 'break' in switch statement.
 2019-07-19 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.18.3
 
