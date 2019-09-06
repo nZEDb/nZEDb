@@ -20,7 +20,7 @@ namespace app\extensions\util;
 
 use \GitRepo;
 
-class Git extends \lithium\core\BaseObject
+class Git extends \lithium\core\ObjectDeprecated
 {
 	/**
 	 * @var \GitRepo object
