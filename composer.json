@@ -113,7 +113,7 @@
     "mhor/php-mediainfo": "^5.0@dev",
     "moinax/tvdb": "^1.0.4",
     "niel/li3_fixtures": "1.2.x-dev",
-    "niel/lithium": "dev-php7.2-updates",
+    "unionofrad/lithium": "^1.2",
     "nzedb/git.php": "dev-master",
     "php": "~7.1",
     "php-tmdb/api": "^2.1",
