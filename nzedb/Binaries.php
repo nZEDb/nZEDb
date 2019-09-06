@@ -1014,14 +1014,14 @@ class Binaries
 			}
 
 			// Strip the < and >, saves space in DB, and wrap it with single-quotes.
-			$this->header['Message-id'] = substr($this->header['Message-id'], 1, -1);
+			$this->header['Message-Id'] = substr($this->header['Message-Id'], 1, -1);
 
 			$partsQuery .= '(' .
 				$binaryID .
 				',' .
 				$this->header['Number'] .
 				", '" .
-				$this->header['Message-id'] .
+				$this->header['Message-Id'] .
 				"', " .
 				$this->header['matches'][2] .
 				',' .
@@ -1612,7 +1612,7 @@ class Binaries
 		$field = [
 			self::BLACKLIST_FIELD_SUBJECT   => $msg['Subject'],
 			self::BLACKLIST_FIELD_FROM      => $msg['From'],
-			self::BLACKLIST_FIELD_MESSAGEID => $msg['Message-id']
+			self::BLACKLIST_FIELD_MESSAGEID => $msg['Message-Id']
 		];
 
 		// Try white lists first.

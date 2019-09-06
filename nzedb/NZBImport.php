@@ -292,7 +292,7 @@ class NZBImport
 			}
 
 			// Make a fake message array to use to check the blacklist.
-			$msg = ["Subject" => (string)$file->attributes()->subject, "From" => (string)$file->attributes()->poster, "Message-ID" => ""];
+			$msg = ["Subject" => (string)$file->attributes()->subject, "From" => (string) $file->attributes()->poster, "'Message-ID'" => ""];
 
 			// Get the group names, groups_id, check if it's blacklisted.
 			$groupArr = [];

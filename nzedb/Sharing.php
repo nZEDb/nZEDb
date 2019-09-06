@@ -41,7 +41,7 @@ class Sharing
 	 *      -------------------------------------------
 	 *      shared        Has this comment been shared or have we received it from another site. (0 not shared, 1 shared, 2 received)
 	 *      shareid       Unique identifier to know if we already have the comment or not.
-	 *      nzb_guid      Guid of the NZB's first message-id.
+	 *      nzb_guid      Guid of the NZB's first 'Message-Id'.
 	 */
 
 	/**
@@ -444,7 +444,7 @@ class Sharing
 					}
 
 					// Insert the comment, if we got it, update the site to increment comment count.
-					if ($this->insertNewComment($header['Message-id'], $matches['guid'])) {
+					if ($this->insertNewComment($header['Message-Id'], $matches['guid'])) {
 						$this->pdo->queryExec(
 							sprintf('
 								UPDATE sharing_sites SET comments = comments + 1, last_time = NOW(), site_name = %s WHERE site_guid = %s',

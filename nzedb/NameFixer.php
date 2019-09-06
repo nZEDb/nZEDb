@@ -970,7 +970,6 @@ class NameFixer
 	 */
 	protected function _cleanMatchFiles()
 	{
-
 		// first strip all non-printing chars  from filename
 		$this->_fileName = $this->text->stripNonPrintingChars($this->_fileName);
 
@@ -980,27 +979,28 @@ class NameFixer
 				case strpos($this->_fileName, '.') !== false:
 					//some filenames start with a period that ends up creating bad matches so we don't process them
 					$this->_fileName = $this->text->cutStringUsingLast('.', $this->_fileName, "left", false);
-					continue;
+					break;
 
 				//if filename has a .part001, send it back to the function to cut the next period
 				case preg_match('/\.part\d+$/', $this->_fileName):
 					$this->_fileName = $this->text->cutStringUsingLast('.', $this->_fileName, "left", false);
-					continue;
+					break;
 
 				//if filename has a .vol001, send it back to the function to cut the next period
 				case preg_match('/\.vol\d+(\+\d+)?$/', $this->_fileName):
 					$this->_fileName = $this->text->cutStringUsingLast('.', $this->_fileName, "left", false);
-					continue;
+					break;
 
 				//if filename contains a slash, cut the string and keep string to the right of the last slash to remove dir
 				case strpos($this->_fileName, '\\') !== false:
 					$this->_fileName = $this->text->cutStringUsingLast('\\', $this->_fileName, "right", false);
-					continue;
+					break;
 
 				// A lot of obscured releases have one NFO file properly named with a track number (Audio) at the front of it
 				// This will strip out the track and match it to its pre title
 				case preg_match('/^\d{2}-/', $this->_fileName):
 					$this->_fileName = preg_replace('/^\d{2}-/', '', $this->_fileName);
+					break;
 			}
 		}
 	}
@@ -1093,10 +1093,10 @@ class NameFixer
 					$this->nfoCheckMus($release, $echo, $type, $namestatus, $show);
 					$this->nfoCheckTY($release, $echo, $type, $namestatus, $show);
 					$this->nfoCheckG($release, $echo, $type, $namestatus, $show);
-					continue;
+					break;
 				case "Filenames, ":
 					$this->fileCheck($release, $echo, $type, $namestatus, $show);
-					continue;
+					break;
 				default:
 					$this->tvCheck($release, $echo, $type, $namestatus, $show);
 					$this->movieCheck($release, $echo, $type, $namestatus, $show);

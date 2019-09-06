@@ -5,6 +5,8 @@ use app\extensions\util\Yenc;
 use app\models\Settings;
 use nzedb\db\DB;
 use nzedb\utility\Misc;
+use PEAR_Exception;
+
 
 /**
  * Class for connecting to the usenet, retrieving articles and article headers,
@@ -22,24 +24,12 @@ class NNTP extends \Net_NNTP_Client
 	protected $_colorCLI;
 
 	/**
-	 * @var Logger
-	 * @access protected
-	 */
-	protected $_debugging;
-
-	/**
-	 * Log/echo debug?
+	 * Is header compression enabled for the session?
+	 *
 	 * @var bool
 	 * @access protected
 	 */
-	protected $_debugBool;
-
-	/**
-	 * Echo to cli?
-	 * @var bool
-	 * @access protected
-	 */
-	protected $_echo;
+	protected $_compressionEnabled = false;
 
 	/**
 	 * Does the server support XFeature GZip header compression?
@@ -47,13 +37,6 @@ class NNTP extends \Net_NNTP_Client
 	 * @access protected
 	 */
 	protected $_compressionSupported = true;
-
-	/**
-	 * Is header compression enabled for the session?
-	 * @var bool
-	 * @access protected
-	 */
-	protected $_compressionEnabled = false;
 
 	/**
 	 * Currently selected group.
@@ -77,6 +60,36 @@ class NNTP extends \Net_NNTP_Client
 	protected $_currentServer = NNTP_SERVER;
 
 	/**
+	 * @var Logger
+	 * @access protected
+	 */
+	protected $_debugging;
+
+	/**
+	 * Log/echo debug?
+	 *
+	 * @var bool
+	 * @access protected
+	 */
+	protected $_debugBool;
+
+	/**
+	 * Echo to cli?
+	 *
+	 * @var bool
+	 * @access protected
+	 */
+	protected $_echo;
+
+	/**
+	 * How many times should we try to reconnect to the NNTP server?
+	 *
+	 * @var int
+	 * @access protected
+	 */
+	protected $_nntpRetries;
+
+	/**
 	 * Are we allowed to post to usenet?
 	 * @var bool
 	 * @access protected
@@ -84,11 +97,44 @@ class NNTP extends \Net_NNTP_Client
 	protected $_postingAllowed = false;
 
 	/**
-	 * How many times should we try to reconnect to the NNTP server?
-	 * @var int
+	 * Use the simple_php_yenc_decode extension for decoding yEnc articles?
+	 *
+	 * @var bool
+	 */
+	protected $_yEncExtension = false;
+
+	/**
+	 * If on unix, hide yydecode CLI output.
+	 *
+	 * @var string
 	 * @access protected
 	 */
-	protected $_nntpRetries;
+	protected $_yEncSilence;
+
+	/**
+	 * Path to temp yEnc input storage file.
+	 *
+	 * @var string
+	 * @access protected
+	 */
+	protected $_yEncTempInput;
+
+	/**
+	 * Path to temp yEnc output storage file.
+	 *
+	 * @var string
+	 * @access protected
+	 */
+	protected $_yEncTempOutput;
+
+	/**
+	 * Path to yyDecoder binary.
+	 *
+	 * @var bool|string
+	 * @access protected
+	 */
+	protected $_yyDecoderPath;
+
 
 	/**
 	 * Default constructor.
@@ -99,6 +145,8 @@ class NNTP extends \Net_NNTP_Client
 	 */
 	public function __construct(array $options = [])
 	{
+		parent::__construct();
+
 		$defaults = [
 			'Echo'      => true,
 			'Logger' => null,
@@ -112,15 +160,11 @@ class NNTP extends \Net_NNTP_Client
 
 		$this->_debugBool = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->_debugBool) {
-			try {
-				$this->_debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->pdo->log]));
-			} catch (LoggerException $error) {
-				$this->_debugBool = false;
-			}
+			$this->_debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->pdo->log]));
 		}
 
 		$dummy = Settings::value('..nntpretries');
-		$this->_nntpRetries = ($dummy != '') ? (int)$dummy : 0 + 1;
+		$this->_nntpRetries = empty($dummy) ? 1 : (int)$dummy;
 	}
 
 	/**
@@ -132,6 +176,123 @@ class NNTP extends \Net_NNTP_Client
 	public function __destruct()
 	{
 		$this->doQuit();
+	}
+
+	/**
+	 * Restart the NNTP connection if an error occurs in the selectGroup
+	 * function, if it does not restart display the error.
+	 *
+	 * @param NNTP   $nntp  Instance of class NNTP.
+	 * @param string $group Name of the group.
+	 * @param bool   $comp  Use compression or not?
+	 *
+	 * @return mixed On success : (array)  The group summary.
+	 *               On Failure : (object) PEAR_Error.
+	 * @access public
+	 */
+	public function dataError($nntp, $group, $comp = true)
+	{
+		// Disconnect.
+		$nntp->doQuit();
+		// Try reconnecting. This uses another round of max retries.
+		if ($nntp->doConnect($comp) !== true) {
+			if ($this->_debugBool) {
+				$this->_debugging->log(get_class(),
+					__FUNCTION__,
+					'Unable to reconnect to usenet!',
+					Logger::LOG_NOTICE);
+			}
+
+			return $this->throwError('Unable to reconnect to usenet!');
+		}
+
+		// Try re-selecting the group.
+		$data = $nntp->selectGroup($group);
+		if ($this->isError($data)) {
+			$message = "Code {$data->code}: {$data->message}\nSkipping group: {$group}";
+			if ($this->_debugBool) {
+				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
+			}
+
+			if ($this->_echo) {
+				$this->pdo->log->doEcho($this->pdo->log->error($message), true);
+			}
+			$nntp->doQuit();
+		}
+
+		return $data;
+	}
+
+	/**
+	 * yDecodes an encoded string and either writes the result to a file or returns it as a string.
+	 *
+	 * @param string $string yEncoded string to decode.
+	 *
+	 * @return mixed On success: (string) The decoded string.
+	 *               On failure: (object) PEAR_Error.
+	 * @access     public
+	 * @deprecated use app\extensions\util\Yenc::decode instead.
+	 */
+	public function decodeYEnc($string)
+	{
+		//trigger_error('Deprecated. Use app\extensions\util\Yenc::decode instead.' . PHP_EOL);
+		$crc = '';
+		// Extract the yEnc string itself.
+		if (preg_match("/=ybegin.*size=([^ $]+).*\\r\\n(.*)\\r\\n=yend.*size=([^ $\\r\\n]+)(.*)/ims",
+			$string,
+			$encoded)) {
+			if (preg_match('/crc32=([^ $\\r\\n]+)/ims', $encoded[4], $trailer)) {
+				$crc = trim($trailer[1]);
+			}
+			$headerSize = $encoded[1];
+			$trailerSize = $encoded[3];
+			$encoded = $encoded[2];
+		} else {
+			return false;
+		}
+
+		// Remove line breaks from the string.
+		$encoded = trim(str_replace("\r\n", '', $encoded));
+
+		// Make sure the header and trailer file sizes match up.
+		if ($headerSize != $trailerSize) {
+			$message = 'Header and trailer file sizes do not match. This is a violation of the yEnc specification.';
+			if ($this->_debugBool) {
+				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
+			}
+
+			return $this->throwError($message);
+		}
+
+		// Decode.
+		$decoded = '';
+		$encodedLength = strlen($encoded);
+		for ($chr = 0; $chr < $encodedLength; $chr++) {
+			$decoded .= ($encoded[$chr] !== '=' ? chr(ord($encoded[$chr]) - 42) :
+				chr((ord($encoded[++$chr]) - 64) - 42));
+		}
+
+		// Make sure the decoded file size is the same as the size specified in the header.
+		if (strlen($decoded) != $headerSize) {
+			$message = 'Header file size and actual file size do not match. The file is probably corrupt.';
+			if ($this->_debugBool) {
+				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
+			}
+
+			return $this->throwError($message);
+		}
+
+		// Check the CRC value
+		if ($crc !== '' && (strtolower($crc) !== strtolower(sprintf("%04X", crc32($decoded))))) {
+			$message = 'CRC32 checksums do not match. The file is probably corrupt.';
+			if ($this->_debugBool) {
+				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
+			}
+
+			return $this->throwError($message);
+		}
+
+		return $decoded;
 	}
 
 	/**
@@ -301,9 +462,9 @@ class NNTP extends \Net_NNTP_Client
 	 *
 	 * @param  bool $force Force quit even if not connected?
 	 *
-	 * @return mixed On success : (bool)   Did we successfully disconnect from usenet?
+	 * @return true|\PEAR\PEAR_Error On success : (bool)   Did we successfully disconnect from
+	 * usenet?
 	 *               On Failure : (object) PEAR_Error.
-	 *
 	 * @access public
 	 */
 	public function doQuit($force = false)
@@ -316,34 +477,18 @@ class NNTP extends \Net_NNTP_Client
 				$this->_debugging->log(get_class(), __FUNCTION__, "Disconnecting from " . $this->_currentServer, Logger::LOG_INFO);
 			}
 			// Disconnect from usenet.
-			return parent::disconnect();
+			return $this->disconnect();
 		}
 		return true;
 	}
 
 	/**
-	 * Reset some properties when disconnecting from usenet.
-	 *
-	 * @void
-	 *
-	 * @access protected
-	 */
-	protected function _resetProperties()
-	{
-		$this->_compressionEnabled = false;
-		$this->_compressionSupported = true;
-		$this->_currentGroup = '';
-		$this->_postingAllowed = false;
-		parent::_resetProperties();
-	}
-
-	/**
 	 * Attempt to enable compression if the admin enabled the site setting.
-	 * @note This can be used to enable compression if the server was connected without compression.
 	 *
+	 * @note   This can be used to enable compression if the server was connected without compression.
 	 * @access public
 	 */
-	public function enableCompression()
+	public function enableCompression(): void
 	{
 		if (!Settings::value('..compressedheaders') == 1) {
 			return;
@@ -352,41 +497,400 @@ class NNTP extends \Net_NNTP_Client
 	}
 
 	/**
-	 * @param string $group    Name of the group to select.
-	 * @param bool   $articles (optional) experimental! When true the article numbers is returned in 'articles'.
-	 * @param bool   $force    Force a refresh to get updated data from the usenet server.
+	 * yEncodes a string and returns it.
 	 *
-	 * @return mixed On success : (array)  Group information.
-	 *               On failure : (object) PEAR_Error.
+	 * @param string $string     String to encode.
+	 * @param string $filename   Name to use as the filename in the yEnc header (this does not have to be an actual file).
+	 * @param int    $lineLength Line length to use (can be up to 254 characters).
+	 * @param bool   $crc32      Pass True to include a CRC checksum in the trailer to allow decoders to verify data integrity.
 	 *
+	 * @return string|false    On success: (string) yEnc encoded string.
+	 *                        On failure: (bool)   False.
+	 * @access     public
+	 * @deprecated use app\extensions\util\Yenc::encode instead.
+	 */
+	public function encodeYEnc($string, $filename, $lineLength = 128, $crc32 = true)
+	{
+		trigger_error('Deprecated. Use app\extensions\util\Yenc::encode instead.' . PHP_EOL);
+		// yEnc 1.3 draft doesn't allow line lengths of more than 254 bytes.
+		if ($lineLength > 254) {
+			$lineLength = 254;
+		}
+
+		if ($lineLength < 1) {
+			$message = $lineLength . ' is not a valid line length.';
+			if ($this->_debugBool) {
+				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
+			}
+
+			return $this->throwError($message);
+		}
+
+		$encoded = '';
+		$stringLength = strlen($string);
+		// Encode each character of the string one at a time.
+		for ($i = 0; $i < $stringLength; $i++) {
+			$value = ((ord($string{$i}) + 42) % 256);
+
+			// Escape NULL, TAB, LF, CR, space, . and = characters.
+			if ($value == 0 ||
+				$value == 9 ||
+				$value == 10 ||
+				$value == 13 ||
+				$value == 32 ||
+				$value == 46 ||
+				$value == 61) {
+				$encoded .= ('=' . chr(($value + 64) % 256));
+			} else {
+				$encoded .= chr($value);
+			}
+		}
+
+		$encoded =
+			'=ybegin line=' .
+			$lineLength .
+			' size=' .
+			$stringLength .
+			' name=' .
+			trim($filename) .
+			"\r\n" .
+			trim(chunk_split($encoded, $lineLength)) .
+			"\r\n=yend size=" .
+			$stringLength;
+
+		// Add a CRC32 checksum if desired.
+		if ($crc32 === true) {
+			$encoded .= ' crc32=' . strtolower(sprintf("%04X", crc32($string)));
+		}
+
+		return $encoded . "\r\n";
+	}
+
+	/**
+	 * Download a full article, the body and the header, return an array with named keys and their
+	 * associated values, optionally decode the body using yEnc.
+	 *
+	 * @param string $groupName The name of the group the article is in.
+	 * @param mixed  $identifier (string) The Message-ID of the article to download.
+	 *                           (int) The article number.
+	 * @param bool   $yEnc Attempt to yEnc decode the body.
+	 *
+	 * @return mixed  On success : (array)  The article.
+	 *                On failure : (object) PEAR_Error.
 	 * @access public
 	 */
-	public function selectGroup($group, $articles = false, $force = false)
+	public function get_Article($groupName, $identifier, $yEnc = false)
 	{
-		$connected = $this->_checkConnection(false);
+		$connected = $this->_checkConnection();
 		if ($connected !== true) {
 			return $connected;
 		}
 
-		// Check if the current selected group is the same, or if we have not selected a group or if a fresh summary is wanted.
-		if ($force || $this->_currentGroup !== $group || is_null($this->_selectedGroupSummary)) {
-			$this->_currentGroup = $group;
-			return parent::selectGroup($group, $articles);
-		} else {
-			return $this->_selectedGroupSummary;
+		// Make sure the requested group is already selected, if not select it.
+		if (parent::group() !== $groupName) {
+			// Select the group.
+			$summary = $this->selectGroup($groupName);
+			// If there was an error selecting the group, return PEAR error object.
+			if ($this->isError($summary)) {
+				if ($this->_debugBool) {
+					$this->_debugging->log(get_class(),
+						__FUNCTION__,
+						$summary->getMessage(),
+						Logger::LOG_NOTICE);
+				}
+
+				return $summary;
+			}
 		}
+
+		// Check if it's an article number or Message-ID.
+		if (!is_numeric($identifier)) {
+			// If it's a Message-ID, check if it has the required angle-brackets.
+			$identifier = $this->_formatMessageID($identifier);
+		}
+
+		// Download the article.
+		$article = parent::getArticle($identifier);
+		// If there was an error downloading the article, return a PEAR error object.
+		if ($this->isError($article)) {
+			if ($this->_debugBool) {
+				$this->_debugging->log(get_class(),
+					__FUNCTION__,
+					$article->getMessage(),
+					Logger::LOG_NOTICE);
+			}
+
+			return $article;
+		}
+
+		$ret = $article;
+		// Make sure the article is an array and has more than 1 element.
+		if (count($article) > 0) {
+			$ret = [];
+			$body = '';
+			$emptyLine = false;
+			foreach ($article as $line) {
+				// If we found the empty line it means we are done reading the header and we will start reading the body.
+				if (!$emptyLine) {
+					if ($line === '') {
+						$emptyLine = true;
+						continue;
+					}
+
+					// Use the line type of the article as the array key (From, Subject, etc..).
+					if (preg_match('/([A-Z-]+?): (.*)/i', $line, $matches)) {
+						// If the line type takes more than 1 line, append the rest of the content to the same key.
+						if (array_key_exists($matches[1], $ret)) {
+							$ret[$matches[1]] .= $matches[2];
+						} else {
+							$ret[$matches[1]] = $matches[2];
+						}
+					}
+					// Now we have the header, so get the body from the rest of the lines.
+				} else {
+					$body .= $line;
+				}
+			}
+			// Finally we decode the message using yEnc.
+			$ret['Message'] = ($yEnc ? Yenc::decodeIgnore($body) : $body);
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * Download a full article header.
+	 *
+	 * @param string $groupName The name of the group the article is in.
+	 * @param mixed  $identifier (string) The Message-ID of the article to download.
+	 *                           (int)    The article number.
+	 *
+	 * @return mixed On success : (array)  The header.
+	 *               On failure : (object) PEAR_Error.
+	 * @access public
+	 */
+	public function get_Header($groupName, $identifier)
+	{
+		$connected = $this->_checkConnection();
+		if ($connected !== true) {
+			return $connected;
+		}
+
+		// Make sure the requested group is already selected, if not select it.
+		if (parent::group() !== $groupName) {
+			// Select the group.
+			$summary = $this->selectGroup($groupName);
+			// Return PEAR error object on failure.
+			if ($this->isError($summary)) {
+				if ($this->_debugBool) {
+					$this->_debugging->log(get_class(),
+						__FUNCTION__,
+						$summary->getMessage(),
+						Logger::LOG_NOTICE);
+				}
+
+				return $summary;
+			}
+		}
+
+		// Check if it's an article number or Message-ID.
+		if (!is_numeric($identifier)) {
+			// Verify we have the required triangular brackets if it is a Message-ID.
+			$identifier = $this->_formatMessageID($identifier);
+		}
+
+		// Download the header.
+		$header = parent::getHeader($identifier);
+		// If we failed, return PEAR error object.
+		if ($this->isError($header)) {
+			if ($this->_debugBool) {
+				$this->_debugging->log(get_class(),
+					__FUNCTION__,
+					$header->getMessage(),
+					Logger::LOG_NOTICE);
+			}
+
+			return $header;
+		}
+
+		$ret = $header;
+		if (count($header) > 0) {
+			$ret = [];
+			// Use the line types of the header as array keys (From, Subject, etc).
+			foreach ($header as $line) {
+				if (preg_match('/([A-Z-]+?): (.*)/i', $line, $matches)) {
+					// If the line type takes more than 1 line, re-use the same array key.
+					if (array_key_exists($matches[1], $ret)) {
+						$ret[$matches[1]] .= $matches[2];
+					} else {
+						$ret[$matches[1]] = $matches[2];
+					}
+				}
+			}
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * Fetch valid groups.
+	 * Returns a list of valid groups (that the client is permitted to select) and associated information.
+	 *
+	 * @param string $wildMat (optional) http://tools.ietf.org/html/rfc3977#section-4
+	 *
+	 * @return array|object Pear error on failure, array with groups on success.
+	 * @access public
+	 */
+	public function getGroups($wildMat = null)
+	{
+		// Enabled header compression if not enabled.
+		$this->_enableCompression();
+
+		return parent::getGroups($wildMat);
+	}
+
+	/**
+	 * Download multiple article bodies and string them together.
+	 *
+	 * @param string $groupName The name of the group the articles are in.
+	 * @param mixed  $identifiers (string) Message-ID.
+	 *                            (int)    Article number.
+	 *                            (array)  Article numbers or Message-ID's (can contain both in the same array)
+	 * @param bool   $alternate Use the alternate NNTP provider?
+	 *
+	 * @return mixed On success : (string) The article bodies.
+	 *               On failure : (object) PEAR_Error.
+	 * @access public
+	 */
+	public function getMessages($groupName, $identifiers, $alternate = false)
+	{
+		$connected = $this->_checkConnection();
+		if ($connected !== true) {
+			return $connected;
+		}
+
+		// String to hold all the bodies.
+		$body = '';
+
+		$aConnected = false;
+		$nntp = ($alternate === true ?
+			new NNTP(['Echo' => $this->_echo, 'Settings' => $this->pdo]) : null);
+
+		// Check if the msgIds are in an array.
+		if (is_array($identifiers)) {
+
+			$loops = $messageSize = 0;
+
+			// Loop over the Message-ID's or article numbers.
+			foreach ($identifiers as $wanted) {
+
+				/* This is to attempt to prevent string size overflow.
+				 * We get the size of 1 body in bytes, we increment the loop on every loop,
+				 * then we multiply the # of loops by the first size we got and check if it
+				 * exceeds 1.7 billion bytes (less than 2GB to give us headroom).
+				 * If we exceed, return the data.
+				 * If we don't do this, these errors are fatal.
+				 */
+				if ((++$loops * $messageSize) >= 1700000000) {
+					return $body;
+				}
+
+				// Download the body.
+				$message = $this->_getMessage($groupName, $wanted);
+
+				// Append the body to $body.
+				if (!$this->isError($message)) {
+					$body .= $message;
+
+					if ($messageSize === 0) {
+						$messageSize = strlen($message);
+					}
+					// If there is an error try the alternate provider or return the PEAR error.
+				} else {
+					// Check if admin has enabled alternate in site->edit.
+					if ($alternate === true) {
+						if ($aConnected === false) {
+							// Check if the current connected server is the alternate or not.
+							if ($this->_currentServer === NNTP_SERVER) {
+								// It's the main so connect to the alternate.
+								$aConnected = $nntp->doConnect(true, true);
+							} else {
+								// It's the alternate so connect to the main.
+								$aConnected = $nntp->doConnect();
+							}
+						}
+						// If we connected successfully to usenet try to download the article body.
+						if ($aConnected === true) {
+							$newBody = $nntp->_getMessage($groupName, $wanted);
+							// Check if we got an error.
+							if ($nntp->isError($newBody)) {
+								if ($aConnected) {
+									$nntp->doQuit();
+								}
+								// If we got some data, return it.
+								if ($body !== '') {
+									return $body;
+								}
+								if ($this->_debugBool) {
+									$this->_debugging->log(get_class(),
+										__FUNCTION__,
+										$newBody->getMessage(),
+										Logger::LOG_NOTICE);
+								}
+
+								// Return the error.
+								return $newBody;
+							}
+							// Append the alternate body to the main body.
+							$body .= $newBody;
+						}
+					} else {
+						// If we got some data, return it.
+						if ($body !== '') {
+							return $body;
+						}
+
+						return $message;
+					}
+				}
+			}
+			// If it's a string check if it's a valid Message-ID.
+		} else {
+			if (is_string($identifiers) || is_numeric($identifiers)) {
+				$body = $this->_getMessage($groupName, $identifiers);
+				if ($alternate === true && $this->isError($body)) {
+					$nntp->doConnect(true, true);
+					$body = $nntp->_getMessage($groupName, $identifiers);
+					$aConnected = true;
+				}
+				// Else return an error.
+			} else {
+				$message = 'Wrong Identifier type, array, int or string accepted. This type of var was passed: ' .
+					gettype($identifiers);
+				if ($this->_debugBool) {
+					$this->_debugging->log(__CLASS__, __FUNCTION__, $message, Logger::LOG_WARNING);
+				}
+
+				return $this->throwError($this->pdo->log->error($message));
+			}
+		}
+
+		if ($aConnected === true) {
+			$nntp->doQuit();
+		}
+
+		return $body;
 	}
 
 	/**
 	 * Fetch an overview of article(s) in the currently selected group.
 	 *
 	 * @param string $range
-	 * @param bool $names
-	 * @param bool $forceNames
+	 * @param bool   $names
+	 * @param bool   $forceNames
 	 *
 	 * @return mixed On success : (array)  Multidimensional array with article headers.
 	 *               On failure : (object) PEAR_Error.
-	 *
 	 * @access public
 	 */
 	public function getOverview($range = null, $names = true, $forceNames = true)
@@ -398,21 +902,22 @@ class NNTP extends \Net_NNTP_Client
 
 		// Enabled header compression if not enabled.
 		$this->_enableCompression();
+
 		return parent::getOverview($range, $names, $forceNames);
 	}
 
 	/**
-	 * Pass a XOVER command to the NNTP provider, return array of articles using the overview format as array keys.
+	 * Pass an XOVER command to the NNTP provider, return array of articles using the overview
+	 * format as array keys.
 	 *
 	 * @note This is a faster implementation of getOverview.
-	 *
 	 * Example successful return:
 	 *    array(9) {
 	 *        'Number'     => string(9)  "679871775"
 	 *        'Subject'    => string(18) "This is an example"
 	 *        'From'       => string(19) "Example@example.com"
 	 *        'Date'       => string(24) "26 Jun 2014 13:08:22 GMT"
-	 *        'Message-id' => string(57) "<part1of1.uS*yYxQvtAYt$5t&wmE%UejhjkCKXBJ!@example.local>"
+	 *        'Message-Id' => string(57) "<part1of1.uS*yYxQvtAYt$5t&wmE%UejhjkCKXBJ!@example.local>"
 	 *        'References' => string(0)  ""
 	 *        'Bytes'      => string(3)  "123"
 	 *        'Lines'      => string(1)  "9"
@@ -436,7 +941,8 @@ class NNTP extends \Net_NNTP_Client
 			return $connected;
 		}
 
-		// Enabled header compression if not enabled.
+		// Enabled header compression if not enabled. TODO make this a per connection test, not
+		// per command.
 		$this->_enableCompression();
 
 		// Send XOVER command to NNTP with wanted articles.
@@ -488,13 +994,12 @@ class NNTP extends \Net_NNTP_Client
 
 			// Loop over the overview format and insert the individual header elements.
 			$headerArray = [];
-			foreach ($overview as $name => $element)
-			{
+			foreach ($overview as $name => $element) {
 				// Strip 'Xref: '
 				if ($element === true) {
-					$header[$iterator] = substr_replace($header[$iterator], '', 0,6);
+					$header[$iterator] = substr_replace($header[$iterator], '', 0, 6);
 				}
-				$name = \ucfirst(\strtolower($name));
+				$name = \ucwords(\strtolower($name), '-_');
 				$headerArray[$name] = $header[$iterator++];
 			}
 
@@ -502,330 +1007,43 @@ class NNTP extends \Net_NNTP_Client
 			$header = $headerArray;
 			$iterator = 0;
 		}
+
 		// Return the array of headers.
 		return $data;
 	}
 
 	/**
-	 * Fetch valid groups.
-	 *
-	 * Returns a list of valid groups (that the client is permitted to select) and associated information.
-	 *
-	 * @param string $wildMat (optional) http://tools.ietf.org/html/rfc3977#section-4
-	 *
-	 * @return array|object Pear error on failure, array with groups on success.
-	 * @access public
-	 */
-	public function getGroups($wildMat = null)
-	{
-		// Enabled header compression if not enabled.
-		$this->_enableCompression();
-		return parent::getGroups($wildMat);
-	}
-
-	/**
-	 * Download multiple article bodies and string them together.
-	 *
-	 * @param string $groupName   The name of the group the articles are in.
-	 * @param mixed  $identifiers (string) Message-ID.
-	 *                            (int)    Article number.
-	 *                            (array)  Article numbers or Message-ID's (can contain both in the same array)
-	 * @param bool   $alternate   Use the alternate NNTP provider?
-	 *
-	 * @return mixed On success : (string) The article bodies.
-	 *               On failure : (object) PEAR_Error.
-	 *
-	 * @access public
-	 */
-	public function getMessages($groupName, $identifiers, $alternate = false)
-	{
-		$connected = $this->_checkConnection();
-		if ($connected !== true) {
-			return $connected;
-		}
-
-		// String to hold all the bodies.
-		$body = '';
-
-		$aConnected = false;
-		$nntp = ($alternate === true ? new NNTP(['Echo' => $this->_echo, 'Settings' => $this->pdo]) : null);
-
-		// Check if the msgIds are in an array.
-		if (is_array($identifiers)) {
-
-			$loops = $messageSize = 0;
-
-			// Loop over the message-ID's or article numbers.
-			foreach ($identifiers as $wanted) {
-
-				/* This is to attempt to prevent string size overflow.
-				 * We get the size of 1 body in bytes, we increment the loop on every loop,
-				 * then we multiply the # of loops by the first size we got and check if it
-				 * exceeds 1.7 billion bytes (less than 2GB to give us headroom).
-				 * If we exceed, return the data.
-				 * If we don't do this, these errors are fatal.
-				 */
-				if ((++$loops * $messageSize) >= 1700000000) {
-					return $body;
-				}
-
-				// Download the body.
-				$message = $this->_getMessage($groupName, $wanted);
-
-				// Append the body to $body.
-				if (!$this->isError($message)) {
-					$body .= $message;
-
-					if ($messageSize === 0) {
-						$messageSize = strlen($message);
-					}
-
-				// If there is an error try the alternate provider or return the PEAR error.
-				} else {
-					// Check if admin has enabled alternate in site->edit.
-					if ($alternate === true) {
-						if ($aConnected === false) {
-							// Check if the current connected server is the alternate or not.
-							if ($this->_currentServer === NNTP_SERVER) {
-								// It's the main so connect to the alternate.
-								$aConnected = $nntp->doConnect(true, true);
-							} else {
-								// It's the alternate so connect to the main.
-								$aConnected = $nntp->doConnect();
-							}
-						}
-						// If we connected successfully to usenet try to download the article body.
-						if ($aConnected === true) {
-							$newBody = $nntp->_getMessage($groupName, $wanted);
-							// Check if we got an error.
-							if ($nntp->isError($newBody)) {
-								if ($aConnected) {
-									$nntp->doQuit();
-								}
-								// If we got some data, return it.
-								if ($body !== '') {
-									return $body;
-								}
-								if ($this->_debugBool) {
-									$this->_debugging->log(get_class(), __FUNCTION__, $newBody->getMessage(), Logger::LOG_NOTICE);
-								}
-								// Return the error.
-								return $newBody;
-							}
-							// Append the alternate body to the main body.
-							$body .= $newBody;
-						}
-					} else {
-						// If we got some data, return it.
-						if ($body !== '') {
-							return $body;
-						}
-						return $message;
-					}
-				}
-			}
-
-			// If it's a string check if it's a valid message-ID.
-		} else if (is_string($identifiers) || is_numeric($identifiers)) {
-			$body = $this->_getMessage($groupName, $identifiers);
-			if ($alternate === true && $this->isError($body)) {
-				$nntp->doConnect(true, true);
-				$body = $nntp->_getMessage($groupName, $identifiers);
-				$aConnected = true;
-			}
-
-			// Else return an error.
-		} else {
-			$message = 'Wrong Identifier type, array, int or string accepted. This type of var was passed: ' . gettype($identifiers);
-			if ($this->_debugBool) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_WARNING);
-			}
-			return $this->throwError($this->pdo->log->error($message));
-		}
-
-		if ($aConnected === true) {
-			$nntp->doQuit();
-		}
-
-		return $body;
-	}
-
-	/**
-	 * Download a full article, the body and the header, return an array with named keys and their
-	 * associated values, optionally decode the body using yEnc.
-	 *
-	 * @param string $groupName  The name of the group the article is in.
-	 * @param mixed  $identifier (string)The message-ID of the article to download.
-	 *                           (int) The article number.
-	 * @param bool   $yEnc       Attempt to yEnc decode the body.
-	 *
-	 * @return mixed  On success : (array)  The article.
-	 *                On failure : (object) PEAR_Error.
-	 *
-	 * @access public
-	 */
-	public function get_Article($groupName, $identifier, $yEnc = false)
-	{
-		$connected = $this->_checkConnection();
-		if ($connected !== true) {
-			return $connected;
-		}
-
-		// Make sure the requested group is already selected, if not select it.
-		if (parent::group() !== $groupName) {
-			// Select the group.
-			$summary = $this->selectGroup($groupName);
-			// If there was an error selecting the group, return PEAR error object.
-			if ($this->isError($summary)) {
-				if ($this->_debugBool) {
-					$this->_debugging->log(get_class(), __FUNCTION__, $summary->getMessage(), Logger::LOG_NOTICE);
-				}
-				return $summary;
-			}
-		}
-
-		// Check if it's an article number or message-ID.
-		if (!is_numeric($identifier)) {
-			// If it's a message-ID, check if it has the required triangular brackets.
-			$identifier = $this->_formatMessageID($identifier);
-		}
-
-		// Download the article.
-		$article = parent::getArticle($identifier);
-		// If there was an error downloading the article, return a PEAR error object.
-		if ($this->isError($article)) {
-			if ($this->_debugBool) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $article->getMessage(), Logger::LOG_NOTICE);
-			}
-			return $article;
-		}
-
-		$ret = $article;
-		// Make sure the article is an array and has more than 1 element.
-		if (count($article) > 0) {
-			$ret = [];
-			$body = '';
-			$emptyLine = false;
-			foreach ($article as $line) {
-				// If we found the empty line it means we are done reading the header and we will start reading the body.
-				if (!$emptyLine) {
-					if ($line === '') {
-						$emptyLine = True;
-						continue;
-					}
-
-					// Use the line type of the article as the array key (From, Subject, etc..).
-					if (preg_match('/([A-Z-]+?): (.*)/i', $line, $matches)) {
-						// If the line type takes more than 1 line, append the rest of the content to the same key.
-						if (array_key_exists($matches[1], $ret)) {
-							$ret[$matches[1]] .= $matches[2];
-						} else {
-							$ret[$matches[1]] = $matches[2];
-						}
-					}
-
-					// Now we have the header, so get the body from the rest of the lines.
-				} else {
-					$body .= $line;
-				}
-			}
-			// Finally we decode the message using yEnc.
-			$ret['Message'] = ($yEnc ? Yenc::decodeIgnore($body) : $body);
-		}
-		return $ret;
-	}
-
-	/**
-	 * Download a full article header.
-	 *
-	 * @param string $groupName  The name of the group the article is in.
-	 * @param mixed $identifier (string) The message-ID of the article to download.
-	 *                          (int)    The article number.
-	 *
-	 * @return mixed On success : (array)  The header.
-	 *               On failure : (object) PEAR_Error.
-	 *
-	 * @access public
-	 */
-	public function get_Header($groupName, $identifier)
-	{
-		$connected = $this->_checkConnection();
-		if ($connected !== true) {
-			return $connected;
-		}
-
-		// Make sure the requested group is already selected, if not select it.
-		if (parent::group() !== $groupName) {
-			// Select the group.
-			$summary = $this->selectGroup($groupName);
-			// Return PEAR error object on failure.
-			if ($this->isError($summary)) {
-				if ($this->_debugBool) {
-					$this->_debugging->log(get_class(), __FUNCTION__, $summary->getMessage(), Logger::LOG_NOTICE);
-				}
-				return $summary;
-			}
-		}
-
-		// Check if it's an article number or message-id.
-		if (!is_numeric($identifier)) {
-			// Verify we have the required triangular brackets if it is a message-id.
-			$identifier = $this->_formatMessageID($identifier);
-		}
-
-		// Download the header.
-		$header = parent::getHeader($identifier);
-		// If we failed, return PEAR error object.
-		if ($this->isError($header)) {
-			if ($this->_debugBool) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $header->getMessage(), Logger::LOG_NOTICE);
-			}
-			return $header;
-		}
-
-		$ret = $header;
-		if (count($header) > 0) {
-			$ret = [];
-			// Use the line types of the header as array keys (From, Subject, etc).
-			foreach ($header as $line) {
-				if (preg_match('/([A-Z-]+?): (.*)/i', $line, $matches)) {
-					// If the line type takes more than 1 line, re-use the same array key.
-					if (array_key_exists($matches[1], $ret)) {
-						$ret[$matches[1]] .= $matches[2];
-					} else {
-						$ret[$matches[1]] = $matches[2];
-					}
-				}
-			}
-		}
-		return $ret;
-	}
-
-	/**
 	 * Post an article to usenet.
 	 *
-	 * @param string $groups   mixed   (array)  Groups. ie.: $groups = array('alt.test', 'alt.testing', 'free.pt');
-	 *                          (string) Group.  ie.: $groups = 'alt.test';
-	 * @param string $subject  string  The subject.     ie.: $subject = 'Test article';
-	 * @param string $body     string  The message.     ie.: $message = 'This is only a test, please disregard.';
-	 * @param string $from     string  The poster.      ie.: $from = '<anon@anon.com>';
-	 * @param $extra    string  Extra, separated by \r\n
+	 * @param string $groups                     mixed   (array)  Groups. ie.: $groups = array('alt.test', 'alt.testing', 'free.pt');
+	 *                                           (string) Group.  ie.: $groups = 'alt.test';
+	 * @param string $subject                    string  The subject.     ie.: $subject = 'Test article';
+	 * @param string $body                       string  The message.     ie.: $message = 'This is only a test, please disregard.';
+	 * @param string $from                       string  The poster.      ie.: $from = '<anon@anon.com>';
+	 * @param        $extra                      string  Extra, separated by \r\n
 	 *                                           ie.: $extra  = 'Organization: <nZEDb>\r\nNNTP-Posting-Host: <127.0.0.1>';
-	 * @param $yEnc     bool    Encode the message with yEnc?
-	 * @param $compress bool    Compress the message with GZip?
+	 * @param        $yEnc                       bool    Encode the message with yEnc?
+	 * @param        $compress                   bool    Compress the message with GZip?
 	 *
 	 * @return          mixed   On success : (bool)   True.
 	 *                          On failure : (object) PEAR_Error.
-	 *
 	 * @access public
 	 */
-	public function postArticle($groups, $subject, $body, $from, $yEnc = true, $compress = true, $extra = '')
+	public function postArticle($groups,
+								$subject,
+								$body,
+								$from,
+								$yEnc = true,
+								$compress = true,
+								$extra = '')
 	{
 		if (!$this->_postingAllowed) {
-			$message = 'You do not have the right to post articles on server ' . $this->_currentServer;
+			$message = 'You do not have the right to post articles on server ' .
+				$this->_currentServer;
 			if ($this->_debugBool) {
 				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
 			}
+
 			return $this->throwError($this->pdo->log->error($message));
 		}
 
@@ -840,6 +1058,7 @@ class NNTP extends \Net_NNTP_Client
 			if ($this->_debugBool) {
 				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_WARNING);
 			}
+
 			return $this->throwError($this->pdo->log->error($message));
 		}
 
@@ -848,6 +1067,7 @@ class NNTP extends \Net_NNTP_Client
 			if ($this->_debugBool) {
 				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_WARNING);
 			}
+
 			return $this->throwError($this->pdo->log->error($message));
 		}
 
@@ -860,7 +1080,7 @@ class NNTP extends \Net_NNTP_Client
 		if ($yEnc) {
 			$bin = $compress ? gzdeflate($body, 4) : $body;
 			$body = Yenc::encode($bin, $subject);
-		// If not yEnc, then check if the body is 510+ chars, split it at 510 chars and separate with \r\n
+			// If not yEnc, then check if the body is 510+ chars, split it at 510 chars and separate with \r\n
 		} else {
 			$body = $this->_splitLines($body, $compress);
 		}
@@ -876,189 +1096,86 @@ class NNTP extends \Net_NNTP_Client
 	}
 
 	/**
-	 * Restart the NNTP connection if an error occurs in the selectGroup
-	 * function, if it does not restart display the error.
+	 * @param string $group    Name of the group to select.
+	 * @param bool   $articles (optional) experimental! When true the article numbers is returned in 'articles'.
+	 * @param bool   $force    Force a refresh to get updated data from the usenet server.
 	 *
-	 * @param NNTP   $nntp  Instance of class NNTP.
-	 * @param string $group Name of the group.
-	 * @param bool   $comp Use compression or not?
-	 *
-	 * @return mixed On success : (array)  The group summary.
-	 *               On Failure : (object) PEAR_Error.
-	 *
+	 * @return mixed On success : (array)  Group information.
+	 *               On failure : (object) PEAR_Error.
 	 * @access public
 	 */
-	public function dataError($nntp, $group, $comp = true)
+	public function selectGroup($group, $articles = false, $force = false)
 	{
-		// Disconnect.
-		$nntp->doQuit();
-		// Try reconnecting. This uses another round of max retries.
-		if ($nntp->doConnect($comp) !== true) {
-			if ($this->_debugBool) {
-				$this->_debugging->log(get_class(), __FUNCTION__, 'Unable to reconnect to usenet!', Logger::LOG_NOTICE);
-			}
-			return $this->throwError('Unable to reconnect to usenet!');
+		$connected = $this->_checkConnection(false);
+		if ($connected !== true) {
+			return $connected;
 		}
 
-		// Try re-selecting the group.
-		$data = $nntp->selectGroup($group);
-		if ($this->isError($data)) {
-			$message = "Code {$data->code}: {$data->message}\nSkipping group: {$group}";
-			if ($this->_debugBool) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
-			}
+		// Check if the current selected group is the same, or if we have not selected a group or if a fresh summary is wanted.
+		if ($force || $this->_currentGroup !== $group || is_null($this->_selectedGroupSummary)) {
+			$this->_currentGroup = $group;
 
-			if ($this->_echo) {
-				$this->pdo->log->doEcho($this->pdo->log->error($message), true);
-			}
-			$nntp->doQuit();
-		}
-		return $data;
-	}
-
-	/**
-	 * yEncodes a string and returns it.
-	 *
-	 * @deprecated use app\extensions\util\Yenc::encode instead.
-	 * @param string $string     String to encode.
-	 * @param string $filename   Name to use as the filename in the yEnc header (this does not have to be an actual file).
-	 * @param int    $lineLength Line length to use (can be up to 254 characters).
-	 * @param bool   $crc32      Pass True to include a CRC checksum in the trailer to allow decoders to verify data integrity.
-	 *
-	 * @return mixed On success: (string) yEnc encoded string.
-	 *               On failure: (bool)   False.
-	 *
-	 * @access public
-	 */
-	public function encodeYEnc($string, $filename, $lineLength = 128, $crc32 = true)
-	{
-		trigger_error('Deprecated. Use app\extensions\util\Yenc::encode instead.' . PHP_EOL);
-		// yEnc 1.3 draft doesn't allow line lengths of more than 254 bytes.
-		if ($lineLength > 254) {
-			$lineLength = 254;
-		}
-
-		if ($lineLength < 1) {
-			$message = $lineLength . ' is not a valid line length.';
-			if ($this->_debugBool) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
-			}
-			return $this->throwError($message);
-		}
-
-		$encoded = '';
-		$stringLength = strlen($string);
-		// Encode each character of the string one at a time.
-		for ($i = 0; $i < $stringLength; $i++) {
-			$value = ((ord($string{$i}) + 42) % 256);
-
-			// Escape NULL, TAB, LF, CR, space, . and = characters.
-			if ($value == 0 || $value == 9 || $value == 10 || $value == 13 || $value == 32 || $value == 46 || $value == 61) {
-				$encoded .= ('=' . chr(($value + 64) % 256));
-			} else {
-				$encoded .= chr($value);
-			}
-		}
-
-		$encoded =
-			'=ybegin line=' .
-			$lineLength .
-			' size=' .
-			$stringLength .
-			' name=' .
-			trim($filename) .
-			"\r\n" .
-			trim(chunk_split($encoded, $lineLength)) .
-			"\r\n=yend size=" .
-			$stringLength;
-
-		// Add a CRC32 checksum if desired.
-		if ($crc32 === true) {
-			$encoded .= ' crc32=' . strtolower(sprintf("%04X", crc32($string)));
-		}
-
-		return $encoded . "\r\n";
-	}
-
-	/**
-	 * yDecodes an encoded string and either writes the result to a file or returns it as a string.
-	 *
-	 * @deprecated use app\extensions\util\Yenc::decode instead.
-	 *
-	 * @param string $string yEncoded string to decode.
-	 *
-	 * @return mixed On success: (string) The decoded string.
-	 *               On failure: (object) PEAR_Error.
-	 * @access public
-	 */
-	public function decodeYEnc($string)
-	{
-		trigger_error('Deprecated. Use app\extensions\util\Yenc::decode instead.' . PHP_EOL);
-		$crc = '';
-		// Extract the yEnc string itself.
-		if (preg_match("/=ybegin.*size=([^ $]+).*\\r\\n(.*)\\r\\n=yend.*size=([^ $\\r\\n]+)(.*)/ims", $string, $encoded)) {
-			if (preg_match('/crc32=([^ $\\r\\n]+)/ims', $encoded[4], $trailer)) {
-				$crc = trim($trailer[1]);
-			}
-			$headerSize  = $encoded[1];
-			$trailerSize = $encoded[3];
-			$encoded     = $encoded[2];
-
+			return parent::selectGroup($group, $articles);
 		} else {
-			return false;
+			return $this->_selectedGroupSummary;
 		}
+	}
 
-		// Remove line breaks from the string.
-		$encoded = trim(str_replace("\r\n", '', $encoded));
 
-		// Make sure the header and trailer file sizes match up.
-		if ($headerSize != $trailerSize) {
-			$message = 'Header and trailer file sizes do not match. This is a violation of the yEnc specification.';
-			if ($this->_debugBool) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
+	/**
+	 * Check if we are still connected. Reconnect if not.
+	 *
+	 * @param bool $reSelectGroup Select back the group after connecting?
+	 *
+	 * @return mixed On success: (bool)   True;
+	 *               On failure: (object) PEAR_Error
+	 * @access protected
+	 */
+	protected function _checkConnection($reSelectGroup = true)
+	{
+		$currentGroup = $this->_currentGroup;
+		// Check if we are connected.
+		if (parent::_isConnected()) {
+			$retVal = true;
+		} else {
+			switch ($this->_currentServer) {
+				case NNTP_SERVER:
+					if (is_resource($this->_socket)) {
+						$this->doQuit(true);
+					}
+					$retVal = $this->doConnect();
+					break;
+				case NNTP_SERVER_A:
+					if (is_resource($this->_socket)) {
+						$this->doQuit(true);
+					}
+					$retVal = $this->doConnect(true, true);
+					break;
+				default:
+					$retVal = $this->throwError('Wrong server constant used in NNTP checkConnection()!');
 			}
-			return $this->throwError($message);
-		}
 
-		// Decode.
-		$decoded = '';
-		$encodedLength = strlen($encoded);
-		for ($chr = 0; $chr < $encodedLength; $chr++) {
-			$decoded .= ($encoded[$chr] !== '=' ? chr(ord($encoded[$chr]) - 42) : chr((ord($encoded[++$chr]) - 64) - 42));
-		}
-
-		// Make sure the decoded file size is the same as the size specified in the header.
-		if (strlen($decoded) != $headerSize) {
-			$message = 'Header file size and actual file size do not match. The file is probably corrupt.';
-			if ($this->_debugBool) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
+			if ($retVal === true && $reSelectGroup) {
+				$group = $this->selectGroup($currentGroup);
+				if ($this->isError($group)) {
+					$retVal = $group;
+				}
 			}
-			return $this->throwError($message);
 		}
 
-		// Check the CRC value
-		if ($crc !== '' && (strtolower($crc) !== strtolower(sprintf("%04X", crc32($decoded))))) {
-			$message = 'CRC32 checksums do not match. The file is probably corrupt.';
-			if ($this->_debugBool) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
-			}
-			return $this->throwError($message);
-		}
-
-		return $decoded;
+		return $retVal;
 	}
 
 	/**
 	 * Decode a string of text encoded with yEnc. Ignores all errors.
 	 *
-	 * @deprecated use app\extensions\util\Yenc::decodeIgnore instead.
-	 *
-	 * @param  string $data The encoded text to decode.
+	 * @param string $data The encoded text to decode.
 	 *
 	 * @return string The decoded yEnc string, or the input string, if it's not yEnc.
-	 * @access protected
+	 * @access     protected
+	 * @deprecated use app\extensions\util\Yenc::decodeIgnore instead.
 	 */
-	protected function _decodeIgnoreYEnc(&$data)
+	protected function _decodeIgnoreYEnc(&$data): string
 	{
 		trigger_error('Deprecated. Use app\extensions\util\Yenc::decodeIgnore instead.' . PHP_EOL);
 		if (preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $data, $input)) {
@@ -1068,124 +1185,75 @@ class NNTP extends \Net_NNTP_Client
 				$input =
 					trim(
 						preg_replace(
-							'/\r\n/im', '',
+							'/\r\n/im',
+							'',
 							preg_replace(
-								'/(^=yEnd.*)/im', '',
+								'/(^=yEnd.*)/im',
+								'',
 								preg_replace(
-									'/(^=yPart.*\\r\\n)/im', '',
+									'/(^=yPart.*\\r\\n)/im',
+									'',
 									preg_replace('/(^=yBegin.*\\r\\n)/im', '', $input[1], 1),
-								1),
-							1)
+									1),
+								1)
 						)
 					);
 
 				$length = strlen($input);
 				for ($chr = 0; $chr < $length; $chr++) {
-					$data .= ($input[$chr] !== '=' ? chr(ord($input[$chr]) - 42) : chr((ord($input[++$chr]) - 64) - 42));
+					$data .= ($input[$chr] !== '=' ? chr(ord($input[$chr]) - 42) :
+						chr((ord($input[++$chr]) - 64) - 42));
 				}
-
-			} else if ($this->_yEncExtension) {
-				$data = \simple_yenc_decode($input[1]);
 			} else {
-				$inFile = $this->_yEncTempInput . mt_rand(0, 999999);
-				$ouFile = $this->_yEncTempOutput . mt_rand(0, 999999);
-				file_put_contents($inFile, $input[1]);
-				file_put_contents($ouFile, '');
-				Misc::runCmd(
-					"'" .
-					$this->_yyDecoderPath .
-					"' '" .
-					$inFile .
-					"' -o '" .
-					$ouFile .
-					"' -f -b" .
-					$this->_yEncSilence
-				);
-				$data = file_get_contents($ouFile);
-				if ($data === false) {
-					$data = $this->throwError('Error getting data from yydecode.');
+				if ($this->_yEncExtension) {
+					$data = \simple_yenc_decode($input[1]);
+				} else {
+					$inFile = $this->_yEncTempInput . mt_rand(0, 999999);
+					$ouFile = $this->_yEncTempOutput . mt_rand(0, 999999);
+					file_put_contents($inFile, $input[1]);
+					file_put_contents($ouFile, '');
+					Misc::runCmd(
+						"'" .
+						$this->_yyDecoderPath .
+						"' '" .
+						$inFile .
+						"' -o '" .
+						$ouFile .
+						"' -f -b" .
+						$this->_yEncSilence
+					);
+					$data = file_get_contents($ouFile);
+					if ($data === false) {
+						$data = $this->throwError('Error getting data from yydecode.');
+					}
+					unlink($inFile);
+					unlink($ouFile);
 				}
-				unlink($inFile);
-				unlink($ouFile);
 			}
 		}
+
 		return $data;
-	}
-
-	/**
-	 * Path to yyDecoder binary.
-	 * @var bool|string
-	 * @access protected
-	 */
-	protected $_yyDecoderPath;
-
-	/**
-	 * If on unix, hide yydecode CLI output.
-	 * @var string
-	 * @access protected
-	 */
-	protected $_yEncSilence;
-
-	/**
-	 * Path to temp yEnc input storage file.
-	 * @var string
-	 * @access protected
-	 */
-	protected $_yEncTempInput;
-
-	/**
-	 * Path to temp yEnc output storage file.
-	 * @var string
-	 * @access protected
-	 */
-	protected $_yEncTempOutput;
-
-	/**
-	 * Use the simple_php_yenc_decode extension for decoding yEnc articles?
-	 * @var bool
-	 */
-	protected $_yEncExtension = false;
-
-	/**
-	 * Split a string into lines of 510 chars ending with \r\n.
-	 * Usenet limits lines to 512 chars, with \r\n that leaves us 510.
-	 *
-	 * @param string $string   The string to split.
-	 * @param bool   $compress Compress the string with gzip?
-	 *
-	 * @return string The split string.
-	 *
-	 * @access protected
-	 */
-	protected function _splitLines($string, $compress = false)
-	{
-		// Check if the length is longer than 510 chars.
-		if (strlen($string) > 510) {
-			// If it is, split it @ 510 and terminate with \r\n.
-			$string = chunk_split($string, 510, "\r\n");
-		}
-
-		// Compress the string if requested.
-		return ($compress ? gzdeflate($string, 4) : $string);
 	}
 
 	/**
 	 * Try to see if the NNTP server implements XFeature GZip Compression,
 	 * change the compression bool object if so.
 	 *
-	 * @param bool $secondTry     This is only used if enabling compression fails, the function will call itself to retry.
+	 * @param bool $secondTry This is only used if enabling compression fails, the function will call itself to retry.
+	 *
 	 * @return mixed On success : (bool)   True:  The server understood and compression is enabled.
 	 *                            (bool)   False: The server did not understand, compression is not enabled.
 	 *               On failure : (object) PEAR_Error.
-	 *
 	 * @access protected
 	 */
 	protected function _enableCompression($secondTry = false)
 	{
 		if ($this->_compressionEnabled === true) {
 			return true;
-		} else if ($this->_compressionSupported === false) {
-			return false;
+		} else {
+			if ($this->_compressionSupported === false) {
+				return false;
+			}
 		}
 
 		// Send this command to the usenet server.
@@ -1194,31 +1262,153 @@ class NNTP extends \Net_NNTP_Client
 		// Check if it's good.
 		if ($this->isError($response)) {
 			if ($this->_debugBool) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $response->getMessage(), Logger::LOG_NOTICE);
+				$this->_debugging->log(get_class(),
+					__FUNCTION__,
+					$response->getMessage(),
+					Logger::LOG_NOTICE);
 			}
 			$this->_compressionSupported = false;
+
 			return $response;
-		} else if ($response !== 290) {
-			if ($secondTry === false) {
-				// Retry.
-				$this->cmdQuit();
-				if ($this->_checkConnection()) {
-					return $this->_enableCompression(true);
+		} else {
+			if ($response !== 290) {
+				if ($secondTry === false) {
+					// Retry.
+					$this->cmdQuit();
+					if ($this->_checkConnection()) {
+						return $this->_enableCompression(true);
+					}
 				}
-			}
-			$msg = "Sent 'XFEATURE COMPRESS GZIP' to server, got '$response: " . $this->_currentStatusResponse() . "'";
-			if ($this->_debugBool) {
-				$this->_debugging->log(get_class(), __FUNCTION__, $msg, Logger::LOG_NOTICE);
-			}
-			$this->_compressionSupported = false;
+				$msg = "Sent 'XFEATURE COMPRESS GZIP' to server, got '$response: " .
+					$this->_currentStatusResponse() .
+					"'";
+				if ($this->_debugBool) {
+					$this->_debugging->log(get_class(), __FUNCTION__, $msg, Logger::LOG_NOTICE);
+				}
+				$this->_compressionSupported = false;
 
-			return false;
-
+				return false;
+			}
 		}
 
 		$this->_compressionEnabled = true;
 		$this->_compressionSupported = true;
+
 		return true;
+	}
+
+	/**
+	 * Check if the Message-ID has the required opening and closing brackets.
+	 *
+	 * @param string $messageID The Message-ID with or without brackets.
+	 *
+	 * @return string            Message-ID with angle-brackets.
+	 * @access protected
+	 */
+	protected function _formatMessageID($messageID)
+	{
+		$messageID = (string)$messageID;
+		if (strlen($messageID) < 1) {
+			return false;
+		}
+
+		// Check if the first char is <, if not add it.
+		if ($messageID[0] !== '<') {
+			$messageID = ('<' . $messageID);
+		}
+
+		// Check if the last char is >, if not add it.
+		if (substr($messageID, -1) !== '>') {
+			$messageID .= '>';
+		}
+
+		return $messageID;
+	}
+
+	/**
+	 * Download an article body (an article without the header).
+	 *
+	 * @param string $groupName  The name of the group the article is in.
+	 * @param mixed  $identifier (string) The Message-ID of the article to download.
+	 *                           (int)    The article number.
+	 *
+	 * @return string On success : (string) The article's body.
+	 *               On failure : (object) PEAR_Error.
+	 * @access protected
+	 */
+	protected function _getMessage($groupName, $identifier)
+	{
+		// Make sure the requested group is already selected, if not select it.
+		if (parent::group() !== $groupName) {
+			// Select the group.
+			$summary = $this->selectGroup($groupName);
+			// If there was an error selecting the group, return PEAR error object.
+			if ($this->isError($summary)) {
+				if ($this->_debugBool) {
+					$this->_debugging->log(__CLASS__,__FUNCTION__,$summary->getMessage(),Logger::LOG_WARNING);
+				}
+
+				return $summary;
+			}
+		}
+
+		// Check if this is an article number or Message-ID.
+		if (!is_numeric($identifier)) {
+			// It's a Message-ID so check if it has the angle-brackets.
+			$identifier = $this->_formatMessageID($identifier);
+		}
+
+		// Tell the news server we want the body of an article.
+		$response = $this->_sendCommand('BODY ' . $identifier);
+		if ($this->isError($response)) {
+			return $response;
+		}
+
+		$body = '';
+		switch ($response) {
+			// 222, RFC977: 'n <a> article retrieved - body follows'
+			case NET_NNTP_PROTOCOL_RESPONSECODE_BODY_FOLLOWS:
+
+				// Continue until connection is lost
+				while (!feof($this->_socket)) {
+
+					// Retrieve and append up to 1024 characters from the server.
+					$line = fgets($this->_socket, 1024);
+
+					// If the socket is empty/ an error occurs, false is returned.
+					// Since the socket is blocking, the socket should not be empty, so it's definitely an error.
+					if ($line === false) {
+						return $this->throwError('Failed to read line from socket.', null);
+					}
+
+					// Check if the line terminates the text response.
+					if ($line === ".\r\n") {
+						if ($this->_debugBool) {
+							$this->_debugging->log(get_class(),
+								__FUNCTION__,
+								'Fetched body for article ' . $identifier,
+								Logger::LOG_INFO
+							);
+						}
+
+						// Attempt to yEnc decode and return the body.
+						return Yenc::decodeIgnore($body);
+					}
+
+					// Check for line that starts with double period, remove one.
+					if ($line[0] === '.' && $line[1] === '.') {
+						$line = substr($line, 1);
+					}
+
+					// Add the line to the rest of the lines.
+					$body .= $line;
+				}
+
+				return $this->throwError('End of stream! Connection lost?', null);
+
+			default:
+				return $this->_handleErrorResponse($response);
+		}
 	}
 
 	/**
@@ -1228,7 +1418,6 @@ class NNTP extends \Net_NNTP_Client
 	 *
 	 * @return self    Our overridden function when compression is enabled.
 	 *         parent  Parent function when no compression.
-	 *
 	 * @access protected
 	 */
 	protected function _getTextResponse()
@@ -1276,8 +1465,10 @@ class NNTP extends \Net_NNTP_Client
 					// Don't sleep on last iteration.
 					if (!empty($buffer)) {
 						break;
-					} else if ($i < 2) {
-						usleep(10000);
+					} else {
+						if ($i < 2) {
+							usleep(10000);
+						}
 					}
 				}
 
@@ -1294,22 +1485,27 @@ class NNTP extends \Net_NNTP_Client
 								$this->pdo->log->primaryOver(
 									'Received ' . round($bytesReceived / 1024) .
 									'KB from group (' . $this->group() . ').'
-								), true
+								),
+								true
 							);
 						}
 
 						// Split the string of headers into an array of individual headers, then return it.
 						$deComp = explode("\r\n", trim($deComp));
+
 						return $deComp;
 					} else {
 						$message = 'Decompression of OVER headers failed.';
 						if ($this->_debugBool) {
-							$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
+							$this->_debugging->log(get_class(),
+								__FUNCTION__,
+								$message,
+								Logger::LOG_NOTICE);
 						}
 						$message = $this->throwError($this->pdo->log->error($message), 1000);
+
 						return $message;
 					}
-
 				} else {
 					// The buffer was not empty, so we know this was not the real ending, so reset $possibleTerm.
 					$possibleTerm = false;
@@ -1328,9 +1524,13 @@ class NNTP extends \Net_NNTP_Client
 				if (empty($buffer)) {
 					$message = 'Error fetching data from usenet server while downloading OVER headers.';
 					if ($this->_debugBool) {
-						$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
+						$this->_debugging->log(get_class(),
+							__FUNCTION__,
+							$message,
+							Logger::LOG_NOTICE);
 					}
 					$message = $this->throwError($this->pdo->log->error($message), 1000);
+
 					return $message;
 				}
 			}
@@ -1350,161 +1550,44 @@ class NNTP extends \Net_NNTP_Client
 			$this->_debugging->log(get_class(), __FUNCTION__, $message, Logger::LOG_NOTICE);
 		}
 		$message = $this->throwError($this->pdo->log->error($message), 1000);
+
 		return $message;
 	}
 
 	/**
-	 * Check if the Message-ID has the required opening and closing brackets.
+	 * Reset some properties when disconnecting from usenet.
 	 *
-	 * @param  string $messageID The Message-ID with or without brackets.
-	 *
-	 * @return string            Message-ID with brackets.
-	 *
+	 * @return void
 	 * @access protected
 	 */
-	protected function _formatMessageID($messageID)
+	protected function _resetProperties(): void
 	{
-		$messageID = (string)$messageID;
-		if (strlen($messageID) < 1) {
-			return false;
-		}
-
-		// Check if the first char is <, if not add it.
-		if ($messageID[0] !== '<') {
-			$messageID = ('<' . $messageID);
-		}
-
-		// Check if the last char is >, if not add it.
-		if (substr($messageID, -1) !== '>') {
-			$messageID .= '>';
-		}
-		return $messageID;
+		$this->_compressionEnabled = false;
+		$this->_compressionSupported = true;
+		$this->_currentGroup = '';
+		$this->_postingAllowed = false;
+		parent::_resetProperties();
 	}
 
 	/**
-	 * Download an article body (an article without the header).
+	 * Split a string into lines of 510 chars ending with \r\n.
+	 * Usenet limits lines to 512 chars, with \r\n that leaves us 510.
 	 *
-	 * @param string $groupName The name of the group the article is in.
-	 * @param mixed $identifier (string) The message-ID of the article to download.
-	 *                          (int)    The article number.
+	 * @param string $string   The string to split.
+	 * @param bool   $compress Compress the string with gzip?
 	 *
-	 * @return string On success : (string) The article's body.
-	 *               On failure : (object) PEAR_Error.
-	 *
+	 * @return string The split string.
 	 * @access protected
 	 */
-	protected function _getMessage($groupName, $identifier)
+	protected function _splitLines($string, $compress = false): string
 	{
-		// Make sure the requested group is already selected, if not select it.
-		if (parent::group() !== $groupName) {
-			// Select the group.
-			$summary = $this->selectGroup($groupName);
-			// If there was an error selecting the group, return PEAR error object.
-			if ($this->isError($summary)) {
-				if ($this->_debugBool) {
-					$this->_debugging->log(get_class(), __FUNCTION__, $summary->getMessage(), Logger::LOG_WARNING);
-				}
-				return $summary;
-			}
+		// Check if the length is longer than 510 chars.
+		if (strlen($string) > 510) {
+			// If it is, split it @ 510 and terminate with \r\n.
+			$string = chunk_split($string, 510, "\r\n");
 		}
 
-		// Check if this is an article number or message-id.
-		if (!is_numeric($identifier)) {
-			// It's a message-id so check if it has the triangular brackets.
-			$identifier = $this->_formatMessageID($identifier);
-		}
-
-		// Tell the news server we want the body of an article.
-		$response = $this->_sendCommand('BODY ' . $identifier);
-		if ($this->isError($response)) {
-			return $response;
-		}
-
-		$body = '';
-		switch ($response) {
-			// 222, RFC977: 'n <a> article retrieved - body follows'
-			case NET_NNTP_PROTOCOL_RESPONSECODE_BODY_FOLLOWS:
-
-				// Continue until connection is lost
-				while (!feof($this->_socket)) {
-
-					// Retrieve and append up to 1024 characters from the server.
-					$line = fgets($this->_socket, 1024);
-
-					// If the socket is empty/ an error occurs, false is returned.
-					// Since the socket is blocking, the socket should not be empty, so it's definitely an error.
-					if ($line === false) {
-						return $this->throwError('Failed to read line from socket.', null);
-					}
-
-					// Check if the line terminates the text response.
-					if ($line === ".\r\n") {
-						if ($this->_debugBool) {
-							$this->_debugging->log(get_class(),
-								__FUNCTION__, 'Fetched body for article ' . $identifier, Logger::LOG_INFO
-							);
-						}
-						// Attempt to yEnc decode and return the body.
-						return Yenc::decodeIgnore($body);
-					}
-
-					// Check for line that starts with double period, remove one.
-					if ($line[0] === '.' && $line[1] === '.') {
-						$line = substr($line, 1);
-					}
-
-					// Add the line to the rest of the lines.
-					$body .= $line;
-
-				}
-				return $this->throwError('End of stream! Connection lost?', null);
-
-			default:
-				return $this->_handleErrorResponse($response);
-		}
-	}
-
-	/**
-	 * Check if we are still connected. Reconnect if not.
-	 *
-	 * @param  bool $reSelectGroup Select back the group after connecting?
-	 *
-	 * @return mixed On success: (bool)   True;
-	 *               On failure: (object) PEAR_Error
-	 *
-	 * @access protected
-	 */
-	protected function _checkConnection($reSelectGroup = true)
-	{
-		$currentGroup = $this->_currentGroup;
-		// Check if we are connected.
-		if (parent::_isConnected()) {
-			$retVal = true;
-		} else {
-			switch ($this->_currentServer) {
-				case NNTP_SERVER:
-					if (is_resource($this->_socket)) {
-						$this->doQuit(true);
-					}
-					$retVal = $this->doConnect();
-					break;
-				case NNTP_SERVER_A:
-					if (is_resource($this->_socket)) {
-						$this->doQuit(true);
-					}
-					$retVal = $this->doConnect(true, true);
-					break;
-				default:
-					$retVal = $this->throwError('Wrong server constant used in NNTP checkConnection()!');
-			}
-
-			if ($retVal === true && $reSelectGroup) {
-				$group = $this->selectGroup($currentGroup);
-				if ($this->isError($group)) {
-					$retVal = $group;
-				}
-			}
-		}
-		return $retVal;
+		// Compress the string if requested.
+		return ($compress ? gzdeflate($string, 4) : $string);
 	}
 }
