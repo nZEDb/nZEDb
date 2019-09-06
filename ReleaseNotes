@@ -2,6 +2,10 @@ This file details which changes to the code are in which release version. It is 
 ChangeLog file which list *when* changes are made to the dev branches.
 
 
+0.8.19.0 2019-09-06
+Fixed:
+	* PHP 7.3 compatibility changes.
+
 0.8.18.3 2019-07-19
 Fixed:
 	* Issue 2633. SQL Error when updating binaries. Hopefully reduces overhead formatting
