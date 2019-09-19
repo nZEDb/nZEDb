@@ -156,11 +156,11 @@ class Movie
 	public function __construct(array $options = [])
 	{
 		$defaults = [
-				'Echo'         => false,
-				'Logger'    => null,
+				'Echo'		 => false,
+				'Logger'	=> null,
 				'ReleaseImage' => null,
-				'Settings'     => null,
-				'TMDb'         => null,
+				'Settings'	 => null,
+				'TMDb'		 => null,
 		];
 		$options += $defaults;
 
@@ -179,7 +179,7 @@ class Movie
 		$this->imdbLanguage = empty($result) ? (string)$result : 'en';
 
 		$this->fanartapikey = Settings::value('APIs..fanarttvkey');
-		$this->imdburl = (Settings::value('indexer.categorise.imdburl') == 0 ? false : true);
+		$this->imdburl = (Settings::value('indexer.categorise.imdburl') != 0);
 		$result = Settings::value('..maximdbprocessed');
 		$this->movieqty = empty($result) ? 100 : $result;
 		$this->searchEngines = true;
@@ -224,11 +224,11 @@ class Movie
 	public function getMovieInfoMultiImdb($imdbIDs)
 	{
 		return $this->pdo->query(
-			sprintf("
+			sprintf('
 				SELECT DISTINCT movieinfo.*, releases.imdbid AS relimdb
 				FROM movieinfo
 				LEFT OUTER JOIN releases ON releases.imdbid = movieinfo.imdbid
-				WHERE movieinfo.imdbid IN (%s)",
+				WHERE movieinfo.imdbid IN (%s)',
 				str_replace(
 					',,',
 					',',
@@ -242,39 +242,39 @@ class Movie
 		);
 	}
 
-    /**
-     * Retrieves a range of all shows for the show-edit admin list
-     *
-     * @param        $start
-     * @param        $num
-     * @param string $showname
-     *
-     * @return array
-     */
-    public function getRange($start, $num, $movietitle = "")
-    {
-        if ($start === false) {
-            $limit = "";
-        } else {
-            $limit = "LIMIT " . $num . " OFFSET " . $start;
-        }
+	/**
+	 * Retrieves a range of all shows for the show-edit admin list
+	 *
+	 * @param		$start
+	 * @param		$num
+	 * @param string $movietitle
+	 *
+	 * @return array
+	 */
+	public function getRange($start, $num, $movietitle = '')
+	{
+		if ($start === false) {
+			$limit = '';
+		} else {
+			$limit = 'LIMIT ' . $num . ' OFFSET ' . $start;
+		}
 
-        $rsql = '';
-        if ($movietitle != "") {
-            $rsql .= sprintf("AND movieinfo.title LIKE %s ", $this->pdo->escapeString("%" . $movietitle . "%"));
-        }
+		$rsql = '';
+		if ($movietitle !== '') {
+			$rsql .= sprintf('AND movieinfo.title LIKE %s ', $this->pdo->escapeString('%' . $movietitle . '%'));
+		}
 
-        return $this->pdo->query(
-            sprintf("
-                        SELECT *
-                        FROM movieinfo
-                        WHERE 1=1 %s
-                        ORDER BY createddate DESC %s",
-                $rsql,
-                $limit
-            )
-        );
-    }
+		return $this->pdo->query(
+			sprintf('
+						SELECT *
+						FROM movieinfo
+						WHERE 1=1 %s
+						ORDER BY createddate DESC %s',
+				$rsql,
+				$limit
+			)
+		);
+	}
 
 	/**
 	 * Get count of movies for movie-list admin page.
@@ -290,11 +290,11 @@ class Movie
 	/**
 	 * Get movie releases with covers for movie browse page.
 	 *
-	 * @param       $cat
-	 * @param       $start
-	 * @param       $num
-	 * @param       $orderBy
-	 * @param       $maxAge
+	 * @param	   $cat
+	 * @param	   $start
+	 * @param	   $num
+	 * @param	   $orderBy
+	 * @param	   $maxAge
 	 * @param array $excludedCats
 	 *
 	 * @return boolean|\PDOStatement
@@ -311,7 +311,7 @@ class Movie
 		$movies = $this->pdo->queryCalc(
 				sprintf("
 					SELECT SQL_CALC_FOUND_ROWS
-						m.imdbid,
+						TRIM(LEADING '0' FROM m.imdbid) AS imdbid,
 						GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id
 					FROM movieinfo m
 					LEFT JOIN releases r USING (imdbid)
@@ -399,7 +399,7 @@ class Movie
 	 */
 	protected function getMovieOrder($orderBy)
 	{
-		$orderArr = explode('_', (($orderBy == '') ? 'MAX(r.postdate)' : $orderBy));
+		$orderArr = explode('_', (($orderBy === '') ? 'MAX(r.postdate)' : $orderBy));
 		switch ($orderArr[0]) {
 			case 'title':
 				$orderField = 'm.title';
@@ -522,14 +522,14 @@ class Movie
 				'genres'   => $this->checkTraktValue($data['genres']),
 				'imdbid'   => $this->checkTraktValue($imdbid),
 				'language' => $this->checkTraktValue($data['language']),
-				'plot'     => $this->checkTraktValue($data['overview']),
+				'plot'	 => $this->checkTraktValue($data['overview']),
 				'rating'   => round($this->checkTraktValue($data['rating']), 1),
 				'tagline'  => $this->checkTraktValue($data['tagline']),
-				'title'    => $this->checkTraktValue($data['title']),
+				'title'	=> $this->checkTraktValue($data['title']),
 				'tmdbid'   => $this->checkTraktValue($data['ids']['tmdb']),
 				'trailer'  => $this->checkTraktValue($data['trailer']),
-				'cover'    => $cover,
-				'year'     => $this->checkTraktValue($data['year'])
+				'cover'	=> $cover,
+				'year'	 => $this->checkTraktValue($data['year'])
 		]);
 	}
 
@@ -546,7 +546,7 @@ class Movie
 			$temp = '';
 			foreach ($value as $val) {
 				if (!is_array($val) && !is_object($val)) {
-					$temp .= (string)$val;
+					$temp .= $val;
 				}
 			}
 			$value = $temp;
@@ -564,7 +564,7 @@ class Movie
 	 */
 	public function makeFieldLinks($data, $field)
 	{
-		if (!isset($data[$field]) || $data[$field] == '') {
+		if (!isset($data[$field]) || $data[$field] === '') {
 			return '';
 		}
 
@@ -572,7 +572,7 @@ class Movie
 		$newArr = [];
 		$i = 0;
 		foreach ($tmpArr as $ta) {
-			if (trim($ta) == '') {
+			if (trim($ta) === '') {
 				continue;
 			}
 			if ($i > 5) {
@@ -588,7 +588,7 @@ class Movie
 	 * Get array of column names, for inserting / updating.
 	 * @return string[]
 	 */
-	public function getColumnKeys()
+	public function getColumnKeys(): array
 	{
 		return [
 			'actors', 'backdrop', 'cover', 'director', 'genre', 'imdbid', 'language',
@@ -617,7 +617,7 @@ class Movie
 		];
 		$found = 0;
 		foreach ($values as $key => $value) {
-			if (in_array($key, $validKeys) && !empty($value)) {
+			if (!empty($value) && in_array($key, $validKeys, false)) {
 				$found++;
 				$query[0] .= "$key, ";
 				if (in_array($key, ['genre', 'language'])) {
@@ -645,7 +645,7 @@ class Movie
 	 *
 	 * @return boolean
 	 */
-	protected function checkVariable(&$variable)
+	protected function checkVariable(&$variable): bool
 	{
 		if (isset($variable) && $variable != '') {
 			return true;
@@ -681,10 +681,10 @@ class Movie
 	 *
 	 * @return boolean
 	 */
-	public function updateMovieInfo($imdbId)
+	public function updateMovieInfo($imdbId): bool
 	{
 		if ($this->echooutput && $this->service !== '') {
-			$this->pdo->log->doEcho($this->pdo->log->primary("Fetching IMDB info from TMDB using IMDB ID: " . $imdbId));
+			$this->pdo->log::doEcho($this->pdo->log::primary('Fetching IMDB info from TMDB using IMDB ID: ' . $imdbId));
 		}
 
 		// Check TMDB for IMDB info.
@@ -708,7 +708,7 @@ class Movie
 		$mov['type'] = $mov['director'] = $mov['actors'] = $mov['language'] = '';
 
 		$mov['imdb_id'] = $imdbId;
-		$mov['tmdb_id'] = (!isset($tmdb['tmdb_id']) || $tmdb['tmdb_id'] == '') ? 0 : $tmdb['tmdb_id'];
+		$mov['tmdb_id'] = (!isset($tmdb['tmdb_id']) || $tmdb['tmdb_id'] === '') ? 0 : $tmdb['tmdb_id'];
 
 		// Prefer Fanart.tv cover over TMDB and TMDB over IMDB.
 		switch (true) {
@@ -744,9 +744,9 @@ class Movie
 
 		$mov['title']   = $this->setTmdbImdbTraktVar($imdb['title'],   $tmdb['title'],   $trakt['title']);
 		$mov['rating']  = $this->setTmdbImdbTraktVar($imdb['rating'],  $tmdb['rating'],  $trakt['rating']);
-		$mov['plot']    = $this->setTmdbImdbTraktVar($imdb['plot'],    $tmdb['plot'],    $trakt['overview']);
+		$mov['plot']	= $this->setTmdbImdbTraktVar($imdb['plot'],	$tmdb['plot'],	$trakt['overview']);
 		$mov['tagline'] = $this->setTmdbImdbTraktVar($imdb['tagline'], $tmdb['tagline'], $trakt['tagline']);
-		$mov['year']    = $this->setTmdbImdbTraktVar($imdb['year'],    $tmdb['year'],    $trakt['year']);
+		$mov['year']	= $this->setTmdbImdbTraktVar($imdb['year'],	$tmdb['year'],	$trakt['year']);
 		$mov['genre']   = $this->setTmdbImdbTraktVar($imdb['genre'],   $tmdb['genre'],   $trakt['genres']);
 
 		if ($this->checkVariable($imdb['type'])) {
@@ -777,20 +777,20 @@ class Movie
 
 		$mov['title'] = str_replace(['/', '\\'], '', $mov['title']);
 		$movieID = $this->update([
-				'actors'    => html_entity_decode($mov['actors'], ENT_QUOTES, 'UTF-8'),
+				'actors'	=> html_entity_decode($mov['actors'], ENT_QUOTES, 'UTF-8'),
 				'backdrop'  => $mov['backdrop'],
-				'cover'     => $mov['cover'],
+				'cover'	 => $mov['cover'],
 				'director'  => html_entity_decode($mov['director'], ENT_QUOTES, 'UTF-8'),
-				'genre'     => html_entity_decode($mov['genre'], ENT_QUOTES, 'UTF-8'),
-				'imdbid'    => $mov['imdb_id'],
+				'genre'	 => html_entity_decode($mov['genre'], ENT_QUOTES, 'UTF-8'),
+				'imdbid'	=> $mov['imdb_id'],
 				'language'  => html_entity_decode($mov['language'], ENT_QUOTES, 'UTF-8'),
-				'plot'      => html_entity_decode(preg_replace('/\s+See full summary »/', ' ', $mov['plot']), ENT_QUOTES, 'UTF-8'),
-				'rating'    => round($mov['rating'], 1),
+				'plot'	  => html_entity_decode(preg_replace('/\s+See full summary »/u', ' ', $mov['plot']), ENT_QUOTES, 'UTF-8'),
+				'rating'	=> round($mov['rating'], 1),
 				'tagline'   => html_entity_decode($mov['tagline'], ENT_QUOTES, 'UTF-8'),
-				'title'     => $mov['title'],
-				'tmdbid'    => $mov['tmdb_id'],
-				'type'      => html_entity_decode(ucwords(preg_replace('/[\.\_]/', ' ', $mov['type'])), ENT_QUOTES, 'UTF-8'),
-				'year'      => $mov['year']
+				'title'	 => $mov['title'],
+				'tmdbid'	=> $mov['tmdb_id'],
+				'type'	  => html_entity_decode(ucwords(preg_replace('/[\.\_]/', ' ', $mov['type'])), ENT_QUOTES, 'UTF-8'),
+				'year'	  => $mov['year']
 		]);
 
 		if ($this->echooutput && $this->service !== '') {
@@ -833,13 +833,13 @@ class Movie
 				if (isset($art['movieposter'][0]['url'])) {
 					$ret['cover'] = $art['movieposter'][0]['url'];
 				}
-				if (isset($ret['backdrop']) && isset($ret['cover'])) {
+				if (isset($ret['backdrop'], $ret['cover'])) {
 					$ret['title'] = $imdbId;
 					if (isset($art['name'])) {
 						$ret['title'] = $art['name'];
 					}
 					if ($this->echooutput) {
-						$this->pdo->log->doEcho($this->pdo->log->alternateOver("Fanart Found ") .
+						$this->pdo->log->doEcho($this->pdo->log->alternateOver('Fanart Found ') .
 							$this->pdo->log->headerOver($ret['title']));
 					}
 
@@ -964,7 +964,7 @@ class Movie
 				Misc::getUrl(
 					[
 						'url' => 'http://' . ($this->imdburl === false ? 'www' : 'akas') . '.imdb.com/title/tt' . $imdbId . '/',
-						'language' => ((Settings::value('indexer.categorise.imdblanguage') != '') ?
+						'language' => ((Settings::value('indexer.categorise.imdblanguage') !== '') ?
 							Settings::value('indexer.categorise.imdblanguage') : 'en'),
 						'useragent' => 'Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) ' .
 							'Version/4.0.4 Mobile/7B334b Safari/531.21.102011-10-16 20:23:10', 'foo=bar'
@@ -977,7 +977,7 @@ class Movie
 				if (preg_match($regex, $buffer, $matches)) {
 					$match = $matches[1];
 					$match1 = trim(strip_tags($match));
-					if ($match1 != '') {
+					if ($match1 !== '') {
 						$ret[$field] = $match1;
 					}
 				}
@@ -1000,7 +1000,7 @@ class Movie
 				if ($percent < 40) {
 					if ($this->debug) {
 						$this->debugging->log(
-							get_class(),
+							__CLASS__,
 							__FUNCTION__,
 							'Found (' .
 							$ret['title'] .
@@ -1031,7 +1031,7 @@ class Movie
 				}
 			}
 			if ($this->echooutput && isset($ret['title'])) {
-				$this->pdo->log->doEcho($this->pdo->log->headerOver("IMDb Found ") . $this->pdo->log->primaryOver($ret['title']), true);
+				$this->pdo->log->doEcho($this->pdo->log->headerOver('IMDb Found ') . $this->pdo->log->primaryOver($ret['title']), true);
 			}
 			return $ret;
 		}
@@ -1060,7 +1060,7 @@ class Movie
 				return false;
 			}
 			if ($this->echooutput) {
-				$this->pdo->log->doEcho($this->pdo->log->alternateOver("Trakt Found ") . $this->pdo->log->headerOver($ret['title']), true);
+				$this->pdo->log->doEcho($this->pdo->log->alternateOver('Trakt Found ') . $this->pdo->log->headerOver($ret['title']), true);
 			}
 			return $ret;
 		}
@@ -1069,10 +1069,10 @@ class Movie
 	/**
 	 * Update a release with a IMDB id.
 	 *
-	 * @param string $buffer       Data to parse a IMDB id from.
-	 * @param string $service      Method that called this method.
-	 * @param integer    $id           ID of the release.
-	 * @param integer    $processImdb  To get IMDB info on this IMDB id or not.
+	 * @param string $buffer	   Data to parse a IMDB id from.
+	 * @param string $service	  Method that called this method.
+	 * @param integer	$id		   ID of the release.
+	 * @param integer	$processImdb  To get IMDB info on this IMDB id or not.
 	 *
 	 * @return string
 	 */
@@ -1107,9 +1107,9 @@ class Movie
 	/**
 	 * Process releases with no IMDB ID's.
 	 *
-	 * @param string $groupID    (Optional) ID of a group to work on.
+	 * @param string $groupID	(Optional) ID of a group to work on.
 	 * @param string $guidChar   (Optional) First letter of a release GUID to use to get work.
-	 * @param integer    $lookupIMDB (Optional) 0 Don't lookup IMDB, 1 lookup IMDB, 2 lookup IMDB on releases that were renamed.
+	 * @param integer	$lookupIMDB (Optional) 0 Don't lookup IMDB, 1 lookup IMDB, 2 lookup IMDB on releases that were renamed.
 	 */
 	public function processMovieReleases($groupID = '', $guidChar = '', $lookupIMDB = 1)
 	{
@@ -1140,7 +1140,7 @@ class Movie
 				$this->traktTv = new TraktTv(['Settings' => $this->pdo]);
 			}
 			if ($this->echooutput && $movieCount > 1) {
-				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $movieCount . " movie releases."));
+				$this->pdo->log->doEcho($this->pdo->log->header('Processing ' . $movieCount . ' movie releases.'));
 			}
 
 			// Loop over releases.
@@ -1148,7 +1148,7 @@ class Movie
 				// Try to get a name/year.
 				if ($this->parseMovieSearchName($arr['searchname']) === false) {
 					//We didn't find a name, so set to all 0's so we don't parse again.
-					$this->pdo->queryExec(sprintf("UPDATE releases SET imdbid = 0 WHERE id = %d %s", $arr["id"], $this->catWhere));
+					$this->pdo->queryExec(sprintf('UPDATE releases SET imdbid = 0 WHERE id = %d %s', $arr['id'], $this->catWhere));
 					continue;
 
 				} else {
@@ -1160,7 +1160,7 @@ class Movie
 					}
 
 					if ($this->echooutput) {
-						$this->pdo->log->doEcho($this->pdo->log->primaryOver("Looking up: ") . $this->pdo->log->headerOver($movieName), true);
+						$this->pdo->log->doEcho($this->pdo->log->primaryOver('Looking up: ') . $this->pdo->log->headerOver($movieName), true);
 					}
 
 					// Check local DB.
@@ -1214,7 +1214,7 @@ class Movie
 					}
 
 					// We failed to get an IMDB id from all sources.
-					$this->pdo->queryExec(sprintf("UPDATE releases SET imdbid = 0 WHERE id = %d %s", $arr["id"], $this->catWhere));
+					$this->pdo->queryExec(sprintf('UPDATE releases SET imdbid = 0 WHERE id = %d %s', $arr['id'], $this->catWhere));
 				}
 			}
 		}
@@ -1249,7 +1249,7 @@ class Movie
 			$pieces = explode(' ', $this->currentTitle);
 			$tempTitle = '%';
 			foreach ($pieces as $piece) {
-				$tempTitle .= str_replace(["'", "!", '"'], '', $piece) . '%';
+				$tempTitle .= str_replace(["'", '!', '"'], '', $piece) . '%';
 			}
 			$IMDBCheck = $this->pdo->queryOneRow(
 				sprintf("%s WHERE replace(replace(title, \"'\", ''), '!', '') %s %s",
@@ -1273,7 +1273,7 @@ class Movie
 					$pieces = explode(' ', $tempTitle);
 					$tempTitle = '%';
 					foreach ($pieces as $piece) {
-						$tempTitle .= str_replace(["'", "!", '"'], "", $piece) . '%';
+						$tempTitle .= str_replace(["'", '!', '"'], '', $piece) . '%';
 					}
 					$IMDBCheck = $this->pdo->queryOneRow(
 						sprintf("%s WHERE replace(replace(replace(title, \"'\", ''), '!', ''), '\"', '') %s %s",
@@ -1370,7 +1370,7 @@ class Movie
 		$buffer = Misc::getUrl(
 			[
 				'url' =>
-						"http://www.bing.com/search?q=" .
+						'http://www.bing.com/search?q=' .
 						urlencode(
 							'("' .
 							$this->currentTitle .
@@ -1402,7 +1402,7 @@ class Movie
 		$buffer = Misc::getUrl(
 			[
 				'url' =>
-					"http://search.yahoo.com/search?n=10&ei=UTF-8&va_vt=title&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=fp-top&p=" .
+					'http://search.yahoo.com/search?n=10&ei=UTF-8&va_vt=title&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=fp-top&p=' .
 					urlencode(
 						'' .
 						implode('+',
@@ -1490,7 +1490,7 @@ class Movie
 	/**
 	 * Get upcoming movies.
 	 *
-	 * @param        $type
+	 * @param		$type
 	 * @param string $source
 	 *
 	 * @return array|boolean
@@ -1529,11 +1529,11 @@ class Movie
 			$this->_getRTData('dvd', $rt);
 
 			if ($this->echooutput) {
-				$this->pdo->log->doEcho($this->pdo->log->header("Updated successfully."));
+				$this->pdo->log::doEcho($this->pdo->log::header('Updated successfully.'));
 			}
 
 		} else if ($this->echooutput) {
-			$this->pdo->log->doEcho($this->pdo->log->header("Error retrieving your RottenTomato API Key. Exiting..." . PHP_EOL));
+			$this->pdo->log::doEcho($this->pdo->log::header('Error retrieving your RottenTomato API Key. Exiting...' . PHP_EOL));
 		}
 	}
 
@@ -1591,14 +1591,14 @@ class Movie
 
 			if ($this->echooutput) {
 				if ($success !== false) {
-					$this->pdo->log->doEcho($this->pdo->log->header(sprintf("Added/updated movies to the %s list.", $operation)));
+					$this->pdo->log::doEcho($this->pdo->log::header(sprintf('Added/updated movies to the %s list.', $operation)));
 				} else {
-					$this->pdo->log->doEcho($this->pdo->log->primary(sprintf("No new updates for %s list.", $operation)));
+					$this->pdo->log::doEcho($this->pdo->log::primary(sprintf('No new updates for %s list.', $operation)));
 				}
 			}
 
 		} else {
-			exit(PHP_EOL . $this->pdo->log->error("Unable to fetch from Rotten Tomatoes, verify your API Key." . PHP_EOL));
+			exit(PHP_EOL . $this->pdo->log::error('Unable to fetch from Rotten Tomatoes, verify your API Key.' . PHP_EOL));
 		}
 	}
 
@@ -1631,7 +1631,7 @@ class Movie
 	 *
 	 * @return string[]
 	 */
-	public function getGenres()
+	public function getGenres(): array
 	{
 		return [
 			'Action',
