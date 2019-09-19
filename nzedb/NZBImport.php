@@ -297,7 +297,7 @@ class NZBImport
 			// Get the group names, groups_id, check if it's blacklisted.
 			$groupArr = [];
 			foreach ($file->groups->group as $group) {
-				$group = (string)$group;
+				$group = strtolower($group);
 
 				// If groups_id is -1 try to get a groups_id.
 				// why ask if $groupID === -1 when we did not change it since it was set it in line 281?
