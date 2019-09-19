@@ -300,15 +300,18 @@ class NZBImport
 				$group = (string)$group;
 
 				// If groups_id is -1 try to get a groups_id.
+				// why ask if $groupID === -1 when we did not change it since it was set it in line 281?
 				if ($groupID === -1) {
+					// check here if groupname is a valid name, sometimes nzbs contains shorted groupnames like: a.b.something
+					$groupN = Groups::isValidName($group);
+					if($groupN !== false) $group = $groupN;
+					
 					if (array_key_exists($group, $this->allGroups)) {
 						$groupID = $this->allGroups[$group];
-						if (!$groupName) {
-							$groupName = $group;
-						}
+						if (!$groupName) $groupName = $group;
 					} else {
-						$group = Groups::isValidName($group);
 						if ($group !== false) {
+							$group = $groupN;
 							/*$groupID = $this->groups->add([
 								'name' => $group,
 								'description' => 'Added by NZBimport script.',
