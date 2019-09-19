@@ -302,9 +302,16 @@ class NZBImport
 				// If groups_id is -1 try to get a groups_id.
 				// why ask if $groupID === -1 when we did not change it since it was set it in line 281?
 				if ($groupID === -1) {
-					// check here if groupname is a valid name, sometimes nzbs contains shorted groupnames like: a.b.something
-					$groupN = Groups::isValidName($group);
-					if($groupN !== false) $group = $groupN;
+                                        // test if group is a shortname
+                                        // $testgroup = "a.b.something";
+                                        if(preg_match("/^[a-zA-Z0-9]\.[a-zA-Z0-9]\./",$group)) {
+                                                echo "group $group is a shortname\n";
+                                                $groupN = Groups::isValidName($group);
+                                                if($groupN !== false){
+                                                        $group = (string)$groupN;
+                                                        echo "set new group, groupN = $groupN";
+                                                        }
+                                        }
 					
 					if (array_key_exists($group, $this->allGroups)) {
 						$groupID = $this->allGroups[$group];
