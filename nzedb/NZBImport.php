@@ -311,7 +311,6 @@ class NZBImport
 						if (!$groupName) $groupName = $group;
 					} else {
 						if ($group !== false) {
-							$group = $groupN;
 							/*$groupID = $this->groups->add([
 								'name' => $group,
 								'description' => 'Added by NZBimport script.',
