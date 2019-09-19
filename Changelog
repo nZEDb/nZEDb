@@ -9,7 +9,8 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
-
+2019-09-19 niel
+	Fix: Force Movies::getMovieRange() to return imdbid without leading zeroes. (Closes Issue 2637).
 2019-09-06 niel
 	Chg: Updated Lithium framework to official 1.2 version (we've been using a custom version to
 		provide PHP 7.3 support).
