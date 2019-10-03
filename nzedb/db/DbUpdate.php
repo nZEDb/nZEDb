@@ -22,6 +22,7 @@ namespace nzedb\db;
 
 use app\models\Settings as SettingsTable;
 use nzedb\ColorCLI;
+use nzedb\Install;
 use nzedb\db\DB;
 use nzedb\utility\Git;
 use nzedb\utility\Misc;
@@ -82,7 +83,12 @@ class DbUpdate
 		$this->_DbSystem = strtolower($this->pdo->dbSystem());
 	}
 
-	public function loadTables(array $options = [])
+	/**
+	 * @param array $options
+	 *
+	 * @return void
+	 */
+	public function loadTables(array $options = []): void
 	{
 		$defaults = [
 			'enclosedby'	=> null,
@@ -123,7 +129,7 @@ class DbUpdate
 				{
 					$table = $matches['table'];
 					// Get the first line of the file which holds the columns used.
-					$handle = @fopen($file, "r");
+					$handle = @fopen($file, 'r');
 					if (is_resource($handle))
 					{
 						$line = fgets($handle);
@@ -167,7 +173,7 @@ class DbUpdate
 	 *
 	 * @param array $options
 	 */
-	public function newPatches(array $options = [])
+	public function newPatches(array $options = []): void
 	{
 		$defaults = [
 			'data'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
@@ -212,7 +218,12 @@ class DbUpdate
 		}
 	}
 
-	public function processPatches(array $options = [])
+	/**
+	 * @param array $options
+	 *
+	 * @return int
+	 */
+	public function processPatches(array $options = []): int
 	{
 		$patched = 0;
 		$defaults = [
@@ -251,12 +262,12 @@ class DbUpdate
 				) {
 					$patch = (integer)$matches['patch'];
 				} else {
-					throw new \RuntimeException("No patch information available, stopping!!");
+					throw new \RuntimeException('No patch information available, stopping!!');
 				}
 				if ($patch > $currentVersion) {
 					echo $this->log->header('Processing patch file: ' . $file);
-					if ($options['safe'] && !$this->backedUp) {
-						$this->_backupDb();
+					if (!$this->backedUp && $options['safe']) {
+						$this->backupDb();
 					}
 					$this->splitSQL($file, ['local' => $local, 'data' => $data]);
 					if ($setPatch) {
@@ -275,7 +286,12 @@ class DbUpdate
 		return $patched;
 	}
 
-	public function processSQLFile(array $options = [])
+	/**
+	 * @param array $options
+	 *
+	 * @return void
+	 */
+	public function processSQLFile(array $options = []): void
 	{
 		$defaults = [
 			'filepath' => nZEDb_RES . 'db' . DS . 'schema' . DS . $this->_DbSystem . '-ddl.sql',
@@ -287,7 +303,26 @@ class DbUpdate
 		$this->pdo->exec($sql);
 	}
 
-	public function splitSQL($file, array $options = [])
+	/**
+	 * Executes an SQL source file via the mysql client.
+	 *
+	 * @param string         $file	File containing SQL source.
+	 *
+	 * @return bool
+	 */
+	public function sourceSQL(string $file): bool
+	{
+		\passthru("mysql -u {$pdo->user} -p{$pdo->password} --default-character-set=utf8 {$pdo->name} < $file", $status);
+		return $status === 0;
+	}
+
+	/**
+	 * @param       $file
+	 * @param array $options
+	 *
+	 * @return void
+	 */
+	public function splitSQL($file, array $options = []): void
 	{
 		$defaults = [
 			'data'		=> null,
@@ -297,7 +332,7 @@ class DbUpdate
 		$options += $defaults;
 
 		if (!empty($options['vars'])) {
-			extract($options['vars']);
+			extract($options['vars'], \EXTR_OVERWRITE);
 		}
 
 		set_time_limit(0);
@@ -413,7 +448,12 @@ class DbUpdate
 		}
 	}
 
-	public function updateSchemaData(array $options = [])
+	/**
+	 * @param array $options
+	 *
+	 * @return void
+	 */
+	public function updateSchemaData(array $options = []): void
 	{
 		$changed	= false;
 		$default	= [
@@ -455,12 +495,15 @@ class DbUpdate
 		}
 	}
 
-	protected function _backupDb()
+	/**
+	 * @return void
+	 */
+	protected function backupDb(): void
 	{
-		if (Misc::hasCommand("php5")) {
-			$PHP = "php5";
+		if (Misc::hasCommand('php5')) {
+			$PHP = 'php5';
 		} else {
-			$PHP = "php";
+			$PHP = 'php';
 		}
 
 		system("$PHP " . nZEDb_MISC . 'testing' . DS . 'DB' . DS . $this->_DbSystem .
