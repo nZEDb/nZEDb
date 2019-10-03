@@ -308,12 +308,23 @@ class DbUpdate
 	 *
 	 * @param string         $file	File containing SQL source.
 	 *
-	 * @return bool
+	 * @return void
 	 */
-	public function sourceSQL(string $file): bool
+	public function sourceSQL(string $file): void
 	{
-		\passthru("mysql -u {$this->pdo->user} -p{$this->pdo->password} --default-character-set=utf8 {$this->pdo->name} < $file", $status);
-		return $status === 0;
+		$cmd = "mysql -u {$this->pdo->user} -p{$this->pdo->password} --default-character-set=utf8 {$this->pdo->name} < $file";
+		\exec(
+			$cmd,
+			$response,
+			$status
+		);
+
+		//if ($status !== 0) {
+			trigger_error(
+				"Problem creating database.\n" .
+				\implode("\n", $response),
+				E_USER_NOTICE);
+		//}
 	}
 
 	/**
