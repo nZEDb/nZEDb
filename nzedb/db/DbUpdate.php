@@ -306,13 +306,21 @@ class DbUpdate
 	/**
 	 * Executes an SQL source file via the mysql client.
 	 *
-	 * @param string         $file	File containing SQL source.
+	 * @param array $options
 	 *
 	 * @return void
 	 */
-	public function sourceSQL(string $file): void
+	public function sourceSQL(array $options): void
 	{
-		$cmd = "mysql -u {$this->pdo->user} -p{$this->pdo->password} --default-character-set=utf8 {$this->pdo->name} < $file";
+		$default = [
+			'file' => null,
+			'name' => null,
+			'pass' => null,
+			'user' => null,
+		];
+		$options += $default;
+
+		$cmd = "mysql -u {$options['user']} -p{$options['pass']} --default-character-set=utf8 {$options['name']} < {$options['file']}";
 		\exec(
 			$cmd,
 			$response,
@@ -321,7 +329,7 @@ class DbUpdate
 
 		//if ($status !== 0) {
 			trigger_error(
-				"Problem creating database.\n" .
+				"DbUpdate::sourceSQL() output.\nStatus: $status\n" .
 				\implode("\n", $response),
 				E_USER_NOTICE);
 		//}

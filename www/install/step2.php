@@ -169,7 +169,14 @@ if ($page->isPostBack()) {
 		);
 
 		try {
-			$DbSetup->sourceSQL(nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-ddl.sql', $cfg);
+			$DbSetup->sourceSQL(
+				[
+					'file' => nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-ddl.sql',
+					'name' => $cfg->DB_NAME,
+					'pass' => $cfg->DB_PASSWORD,
+					'user' => $cfg->DB_USER,
+				]
+			);
 			//$DbSetup->processSQLFile(); // Setup default schema
 			$DbSetup->processSQLFile( // Process any custom stuff.
 				[
