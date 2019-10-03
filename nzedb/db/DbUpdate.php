@@ -312,7 +312,7 @@ class DbUpdate
 	 */
 	public function sourceSQL(string $file): bool
 	{
-		\passthru("mysql -u {$pdo->user} -p{$pdo->password} --default-character-set=utf8 {$pdo->name} < $file", $status);
+		\passthru("mysql -u {$this->pdo->user} -p{$this->pdo->password} --default-character-set=utf8 {$this->pdo->name} < $file", $status);
 		return $status === 0;
 	}
 
