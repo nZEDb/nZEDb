@@ -1423,6 +1423,7 @@ CREATE TRIGGER insert_MD5 BEFORE INSERT ON release_comments FOR EACH ROW
 #
 # Stored Procedures
 #
+DROP PROCEDURE IF EXISTS loop_cbpm $$
 CREATE PROCEDURE loop_cbpm(IN method CHAR(10))
   COMMENT 'Performs tasks on All CBPM tables one by one -- REPAIR/ANALYZE/OPTIMIZE or DROP/TRUNCATE'
 
@@ -1458,9 +1459,9 @@ CREATE PROCEDURE loop_cbpm(IN method CHAR(10))
       DEALLOCATE PREPARE _stmt;
     END LOOP;
     CLOSE cur1;
-  END;
-$$
+  END; $$
 
+DROP PROCEDURE IF EXISTS delete_release $$
 CREATE PROCEDURE delete_release(IN is_numeric BOOLEAN, IN identifier VARCHAR(40))
   COMMENT 'Cascade deletes release from child tables when parent row is deleted'
   COMMENT 'If is_numeric is true, identifier should be the releases_id, if false the guid'
@@ -1502,7 +1503,6 @@ CREATE PROCEDURE delete_release(IN is_numeric BOOLEAN, IN identifier VARCHAR(40)
     ELSE LEAVE main;
     END IF;
 
-  END main;
-$$
+  END main; $$
 
 DELIMITER ;

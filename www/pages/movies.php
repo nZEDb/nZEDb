@@ -34,18 +34,18 @@ $catarray[] = $category;
 $page->smarty->assign('catlist', $mtmp);
 $page->smarty->assign('category', $category);
 
-$offset = (isset($_REQUEST['offset']) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
+$offset = (isset($_REQUEST['offset']) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST['offset'] : 0;
 $ordering = $movie->getMovieOrdering();
 $orderby = isset($_REQUEST['ob']) && in_array($_REQUEST['ob'], $ordering) ? $_REQUEST['ob'] : '';
 
-$results = $movies = [];
+$movies = [];
 $results = $movie->getMovieRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata['categoryexclusions']);
 
 foreach ($results as $result) {
 	$result['genre'] = $movie->makeFieldLinks($result, 'genre');
 	$result['actors'] = $movie->makeFieldLinks($result, 'actors');
 	$result['director'] = $movie->makeFieldLinks($result, 'director');
-	$result['languages'] = explode(", ", $result['language']);
+	$result['languages'] = explode(', ', $result['language']);
 
 	$movies[] = $result;
 }
@@ -69,7 +69,7 @@ $genre = (isset($_REQUEST['genre']) && in_array($_REQUEST['genre'], $genres)) ? 
 $page->smarty->assign('genres', $genres);
 $page->smarty->assign('genre', $genre);
 
-$years = range(1903, (date("Y") + 1));
+$years = range(1903, (date('Y') + 1));
 rsort($years);
 $year = (isset($_REQUEST['year']) && in_array($_REQUEST['year'], $years)) ? $_REQUEST['year'] : '';
 $page->smarty->assign('years', $years);
@@ -78,17 +78,17 @@ $page->smarty->assign('year', $year);
 $browseby_link = '&amp;title=' . $title . '&amp;actors=' . $actors . '&amp;director=' . $director . '&amp;rating=' . $rating . '&amp;genre=' . $genre . '&amp;year=' . $year;
 
 $page->smarty->assign('pagertotalitems',
-		isset($results[0]['_totalcount']) ? $results[0]['_totalcount'] : 0);
+	$results[0]['_totalcount'] ?? 0);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_COVER_PAGE);
-$page->smarty->assign('pagerquerybase', WWW_TOP . "/movies?t=" . $category . $browseby_link . "&amp;ob=" . $orderby . "&amp;offset=");
-$page->smarty->assign('pagerquerysuffix', "#results");
+$page->smarty->assign('pagerquerybase', WWW_TOP . '/movies?t=' . $category . $browseby_link . '&amp;ob=' . $orderby . '&amp;offset=');
+$page->smarty->assign('pagerquerysuffix', '#results');
 
-$pager = $page->smarty->fetch("pager.tpl");
+$pager = $page->smarty->fetch('pager.tpl');
 $page->smarty->assign('pager', $pager);
 
 if ($category == -1) {
-	$page->smarty->assign("catname", "All");
+	$page->smarty->assign('catname', 'All');
 } else {
 	$cdata = $cat->getById($category);
 	if ($cdata) {
@@ -99,16 +99,16 @@ if ($category == -1) {
 }
 
 foreach ($ordering as $ordertype) {
-	$page->smarty->assign('orderby' . $ordertype, WWW_TOP . "/movies?t=" . $category . $browseby_link . "&amp;ob=" . $ordertype . "&amp;offset=0");
+	$page->smarty->assign('orderby' . $ordertype, WWW_TOP . '/movies?t=' . $category . $browseby_link . '&amp;ob=' . $ordertype . '&amp;offset=0');
 }
 
 $page->smarty->assign('results', $movies);
 
-$page->meta_title = "Browse Movies";
-$page->meta_keywords = "browse,movies,nzb,description,details";
-$page->meta_description = "Browse for Movies";
+$page->meta_title = 'Browse Movies';
+$page->meta_keywords = 'browse,movies,nzb,description,details';
+$page->meta_description = 'Browse for Movies';
 
-if (isset($_GET["imdb"])) {
+if (isset($_GET['imdb'])) {
 	$page->content = $page->smarty->fetch('viewmoviefull.tpl');
 } else {
 	$page->content = $page->smarty->fetch('movies.tpl');

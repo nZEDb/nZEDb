@@ -4,15 +4,16 @@ require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install.php');
 
 use app\extensions\util\Versions;
 use nzedb\db\DB;
+use nzedb\db\DbUpdate;
 use nzedb\Install;
 
 $page = new InstallPage();
-$page->title = "Database Setup";
+$page->title = 'Database Setup';
 
 $cfg = new Install();
 
 if (!$cfg->isInitialized()) {
-	header("Location: index.php");
+	header('Location: index.php');
 	die();
 }
 
@@ -25,13 +26,13 @@ if (!$cfg->isInitialized()) {
  *
  * @return bool
  */
-function databaseCheck($dbName, $dbType, $pdo)
+function databaseCheck($dbName, $dbType, $pdo): bool
 {
 	// Return value.
 	$retVal = false;
 
 	// Prepare queries.
-	$stmt = ($dbType === "mysql" ? 'SHOW DATABASES' : 'SELECT datname AS Database FROM pg_database');
+	$stmt = ($dbType === 'mysql' ? 'SHOW DATABASES' : 'SELECT datname AS Database FROM pg_database');
 	$stmt = $pdo->prepare($stmt);
 	$stmt->setFetchMode(PDO::FETCH_ASSOC);
 
@@ -49,20 +50,23 @@ function databaseCheck($dbName, $dbType, $pdo)
 	foreach ($tablearr as $tab) {
 
 		// Check if the database is found.
-		if (isset($tab["Database"])) {
-			if ($tab["Database"] == $dbName) {
-				$retVal = true;
+		switch (true) {
+			case isset($tab['Database']);
+				$columnName = 'Database';
 				break;
-			}
+			case isset($tab['database']);
+				$columnName = 'database';
+				break;
+			default:
+				$columnName = '';
 		}
 
-		if (isset($tab["database"])) {
-			if ($tab["database"] == $dbName) {
-				$retVal = true;
-				break;
-			}
+		if (isset($columnName) && $tab[$columnName] === $dbName) {
+			$retVal = true;
+			break;
 		}
 	}
+
 	return $retVal;
 }
 
@@ -157,7 +161,7 @@ if ($page->isPostBack()) {
 	if (!$cfg->error) {
 		$cfg->setSession();
 
-		$DbSetup = new \nzedb\db\DbUpdate(
+		$DbSetup = new DbUpdate(
 			[
 				'backup' => false,
 				'db'     => $pdo,
@@ -165,7 +169,15 @@ if ($page->isPostBack()) {
 		);
 
 		try {
-			$DbSetup->processSQLFile(); // Setup default schema
+			$DbSetup->sourceSQL(
+				[
+					'file' => nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-ddl.sql',
+					'name' => $cfg->DB_NAME,
+					'pass' => $cfg->DB_PASSWORD,
+					'user' => $cfg->DB_USER,
+				]
+			);
+			//$DbSetup->processSQLFile(); // Setup default schema
 			$DbSetup->processSQLFile( // Process any custom stuff.
 				[
 					'filepath' => nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-data.sql'
