@@ -2,14 +2,15 @@
 require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'install.php');
 
 use nzedb\Install;
+use nzedb\utility\Misc;
 
 $page = new InstallPage();
-$page->title = "OpenSSL Setup";
+$page->title = 'OpenSSL Setup';
 
 $cfg = new Install();
 
 if (!$cfg->isInitialized()) {
-	header("Location: index.php");
+	header('Location: index.php');
 	die();
 }
 
@@ -39,20 +40,20 @@ if ($page->isPostBack()) {
 	}
 
 	// Make sure the files and all paths are readable.
-	if ($cfg->nZEDb_SSL_CAFILE != '') {
-		if (!checkPathsReadable($cfg->nZEDb_SSL_CAFILE)) {
-			$cfg->error = 'Invalid ca file path or it is not readable or the folders up to it are not readable.';
+	if ($cfg->nZEDb_SSL_CAFILE !== '') {
+		if (!Misc::isPathReadable($cfg->nZEDb_SSL_CAFILE)) {
+			$cfg->error = 'Invalid ca file path or it is not readable or the path up to it are not readable.';
 		} else if (1) {
 
 		}
 	}
-	if ($cfg->nZEDb_SSL_CAPATH != '' && !checkPathsReadable($cfg->nZEDb_SSL_CAPATH)) {
-		$cfg->error = 'Invalid ca folder path or it is not readable or the folders up to it are not readable.';
+	if ($cfg->nZEDb_SSL_CAPATH !== '' && !Misc::isPathReadable($cfg->nZEDb_SSL_CAPATH)) {
+		$cfg->error = 'Invalid ca folder path or it is not readable or the path up to it are not readable.';
 	}
 
 	if (!$cfg->error) {
 		$cfg->setSession();
-		header("Location: ?success");
+		header('Location: ?success');
 		die();
 	}
 }
@@ -62,19 +63,3 @@ $page->smarty->assign('page', $page);
 
 $page->content = $page->smarty->fetch('step3.tpl');
 $page->render();
-
-function checkPathsReadable($location)
-{
-	$paths = preg_split('#\/#', $location);
-	$directory = '';
-	if ($paths && count($paths)) {
-		foreach ($paths as $path) {
-			$directory .= DS . $path;
-			if (!is_readable($directory)) {
-				return false;
-			}
-		}
-		return true;
-	}
-	return false;
-}
