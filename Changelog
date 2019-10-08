@@ -9,6 +9,11 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
+2019-10-07 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.20.0
+
+
 2019-10-02 niel
 	Fix: Install failing to create PROCEDURES during database initialisation.
 	Chg: Update dependencies.
