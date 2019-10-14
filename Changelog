@@ -9,8 +9,12 @@ All entries are dated according to merging into the code in dev branch. THIS MEA
 NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
+
+2019-10-14 niel
+	Fix: Tighten up regex used to Categorise MP3s, to avoid false positives. (Closes Issue 2642).
+
 2019-10-08 niel
-	Fix: Refactor function to check a file path for readabilty. (Closes Issue #2641)
+	Fix: Refactor function to check a file path for readabilty. (Closes Issue 2641)
 2019-10-07 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.20.0
 
