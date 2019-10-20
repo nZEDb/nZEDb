@@ -450,7 +450,7 @@ class Misc
 	 */
 	public static function isWin(): bool
 	{
-		return (\strtolower(substr(PHP_OS, 0, 3)) === 'win');
+		return (stripos(PHP_OS, 'windows') === 0);
 	}
 
 	/**

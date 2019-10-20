@@ -38,17 +38,17 @@ class CopyFileTree
 			if (count($contents) < 3) {
 				throw new \UnexpectedValueException('Source directory does not contain anything to move.');
 			}
-			$source = substr($source, -1) == DS ? $source : $source . DS;
+			$source = substr($source, -1) === DS ? $source : $source . DS;
 			$this->_source = realpath($source);
 		} else {
 			throw new \UnexpectedValueException("Source value is required! It must be a path to an existing directory\nSource: $source\n");
 		}
 
 		if (!empty($target) && file_exists($target) && is_dir($target)) {
-			$target2 = substr($target, -1) == DS ? $target : $target . DS;
-			$target2 = $target2 . basename($source);
-			if (!file_exists($target2) && $moveSourceBase) {
-				if (mkdir($target2)) {
+			$target2 = substr($target, -1) === DS ? $target : $target . DS;
+			$target2 .= basename($source);
+			if ($moveSourceBase && !file_exists($target2)) {
+				if (mkdir($target2) || is_dir($target2)) {
 					$this->_target = realpath($target2);
 				} else {
 					throw new \RuntimeException("Could not create '$target2' directory");
@@ -61,23 +61,25 @@ class CopyFileTree
 		}
 	}
 
-	public function copy($pattern = '')
+	/**
+	 * Copy the source to the target.
+	 *
+	 * @param string $pattern
+	 *
+	 * @return void
+	 */
+	public function copy(string $pattern = ''): void
 	{
 		if (!empty($this->_source)) {
 			$this->_copyDir($pattern);
 		}
 	}
 
-	public function isWIndows()
-	{
-		return strtolower(PHP_OS) == 'windows';
-	}
-
 	protected function _copyDir($pattern = '*')
 	{
 		$pattern = empty($pattern) ? '*' : $pattern;
 		$filespec = $this->_source . $pattern;
-		$cmd = $this->isWIndows() ? 'copy /Y' : 'cp -R';
+		$cmd = Misc::isWin() ? 'copy /Y' : 'cp -R';
 		passthru("$cmd $filespec $this->_target", $status);
 		if ($status) {
 			die("Damn, something went wrong!\n");

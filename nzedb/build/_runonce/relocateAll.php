@@ -22,7 +22,7 @@ require_once realpath(dirname(__FILE__) . '/../www/config.php');
 require_once nZEDb_LIB . 'utility' . DS . 'MoveFileTree.php';
 
 use app\models\Settings;
-use nzedb\db\DB;
+use nzedb\utility\Misc;
 
 $dirs = array(
 	[
@@ -102,12 +102,12 @@ $dirs = array(
 foreach ($dirs as $path) {
 	$source = $path['source'];
 	$target = $path['target'];
-	$basemv = isset($path['basemv']) ? $path['basemv'] : true;
+	$basemv = $path['basemv'] ?? true;
 
 	if (file_exists($source)) {
-		$mover = new \nzedb\utility\MoveFileTree($source, $target, $basemv);
+		$mover = new MoveFileTree($source, $target, $basemv);
 
-		if (!$mover->isWIndows()) {
+		if (!Misc::isWin()) {
 			setPerms($target);
 			setPerms($source);
 		}
@@ -121,7 +121,7 @@ foreach ($dirs as $path) {
 }
 
 //$pdo = new DB();
-if ($dirs['nzb']['source'] == Settings::value('..nzbpathnzbpath')) {
+if ($dirs['nzb']['source'] === Settings::value('..nzbpathnzbpath')) {
 	// Update the nzbpath setting if it is the one in use.
 	Settings::update(['value' => $dirs['nzb']['target']], ['setting' => 'nzbpath']);
 //	$pdo->queryDirect(sprintf('UPDATE settings SET value = %s WHERE setting = %s LIMIT 1',
