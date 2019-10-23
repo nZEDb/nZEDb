@@ -216,6 +216,9 @@
 <!-- jQuery RATY Plugin -->
 <script type="text/javascript"
                 src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.raty.js"></script>
+<!-- jQuery iCheck Plugin -->
+<script type="text/javascript"
+                src="{$smarty.const.WWW_THEMES}/{$theme}/js/icheck.js"></script>
 <!-- Charisma functions -->
 <script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/js/charisma.js"></script>
 <!-- nZEDb default scripts, needed for stuff to work -->
