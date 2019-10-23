@@ -183,8 +183,6 @@
 </div>
 <!--/.fluid-container-->
 <!-- Scripts-->
-<!-- library for iphone style toggles -->
-<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.iphone.toggle.js"></script>
 <!-- jQuery -->
 <script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-2.2.x/dist/jquery.min.js"></script>
@@ -212,6 +210,12 @@
 <!-- tinymce editor -->
 <script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/libs/tinymce-builded/js/tinymce/tinymce.min.js"></script>
+<!-- library for iphone style toggles -->
+<script type="text/javascript" 
+		src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.iphone.toggle.js"></script>
+<!-- jQuery RATY Plugin -->
+<script type="text/javascript"
+                src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.raty.js"></script>
 <!-- Charisma functions -->
 <script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/js/charisma.js"></script>
 <!-- nZEDb default scripts, needed for stuff to work -->
