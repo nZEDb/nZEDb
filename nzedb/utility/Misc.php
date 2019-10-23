@@ -685,19 +685,25 @@ class Misc
 	/**
 	 * Check if MAINTENANCE_MODE_ENABLED constant is set. Return appropriate HTML or XML response
 	 * with status code 503 if it is.
+	 *
+	 * @param bool $outputMessage
+	 *
+	 * @return bool
 	 */
-	public static function maintainanceCheck($outputMessage = true): ?bool
+	public static function maintainanceCheck($outputMessage = true): bool
 	{
-		if (defined('MAINTENANCE_MODE_ENABLED') && MAINTENANCE_MODE_ENABLED === true) {
-			if (!in_array($_SERVER['REMOTE_ADDR'], MAINTENANCE_MODE_IP_EXCEPTIONS) ) {
-				$page = (isset($_GET['page']) ? $_GET['page'] : 'content');
+		$status = false;
+		if (defined('MAINTENANCE_MODE_ENABLED') &&
+			MAINTENANCE_MODE_ENABLED === true &&
+			!in_array($_SERVER['REMOTE_ADDR'], MAINTENANCE_MODE_IP_EXCEPTIONS, false)) {
+				$page = ($_GET['page'] ?? 'content');
 				switch ($page) {
 					case 'api':
 					case 'failed':
 					case 'getnzb':
 						//case 'preinfo':
 					case 'rss':
-						Misc::showApiError(503);
+						self::showApiError(503);
 						break;
 					default:
 						if (MAINTENANCE_MODE_ENABLED &&
@@ -706,11 +712,12 @@ class Misc
 								readfile(MAINTENANCE_MODE_HTML_PATH);
 							}
 
-							return true;
+							$status = true;
 						}
 				}
 			}
-		}
+
+		return $status;
 	}
 
 	/**
