@@ -183,6 +183,8 @@
 </div>
 <!--/.fluid-container-->
 <!-- Scripts-->
+<!-- library for iphone style toggles -->
+<script type="text/javascript" src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.iphone.toggle.js"></script>
 <!-- jQuery -->
 <script type="text/javascript"
 		src="{$smarty.const.WWW_THEMES}/shared/libs/jquery-2.2.x/dist/jquery.min.js"></script>
