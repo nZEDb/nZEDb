@@ -10,6 +10,8 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2019-10-24 niel
+	Fix: Code Style.
 2019-10-18 niel
 	Fix: Another attempt to deal with the bad URL for cover images issue (2637). This time I'm not
 		trying to juggle the output from the db, instead we try to make sure that new images have
