@@ -38,7 +38,7 @@
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/elfinder.min.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/elfinder.theme.css' rel='stylesheet'>
 	<link href='{$smarty.const.WWW_THEMES}/{$theme}/css/jquery.iphone.toggle.css' rel='stylesheet'>
-	<link href="{$smarty.const.WWW_THEMES}/shared/libs/pnotify-3.0.x/dist/notify.css" rel="stylesheet" type="text/css"/>
+	<link href="{$smarty.const.WWW_THEMES}/shared/libs/pnotify-3.0.x/dist/pnotify.css" rel="stylesheet" type="text/css"/>
 	<link href='{$smarty.const.WWW_THEMES}/shared/libs/animate.css/animate.min.css' rel='stylesheet'>
 	<!-- Font Awesome Icons -->
 	<link href="{$smarty.const.WWW_THEMES}/shared/libs/font-awesome-4.5.x/css/font-awesome.min.css" rel="stylesheet"
@@ -216,7 +216,7 @@
 <!-- jQuery RATY Plugin -->
 <script type="text/javascript"
                 src="{$smarty.const.WWW_THEMES}/{$theme}/js/jquery.raty.js"></script>
-<!-- jQuery iCheck Plugin | Disabled due to broken CSS / missing imgs(suspect)
+<!-- jQuery iCheck Plugin | Disabled due to broken CSS / missing (suspect)imgs
 <script type="text/javascript"
                 src="{$smarty.const.WWW_THEMES}/{$theme}/js/icheck.js"></script>
 -->
