@@ -11,6 +11,7 @@ For details of when a commit makes it into the stable branch see the ReleaseNote
 
 
 2019-10-24 niel
+	Mrg: PR 2646, from 	JReming85 - Update Charisma theme's profileedit.tpl.
 	Fix: Code Style.
 2019-10-18 niel
 	Fix: Another attempt to deal with the bad URL for cover images issue (2637). This time I'm not
