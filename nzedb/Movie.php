@@ -692,11 +692,11 @@ class Movie
 		$tmdb = $this->fetchTMDBProperties($imdb->getIdPadded());
 
 		// Check IMDB for movie info.
-		$imdb = $this->fetchIMDBProperties($imdb->getIdPadded());
+		$imdbinfo = $this->fetchIMDBProperties($imdb->getIdPadded());
 
 		// Check TRAKT for movie info
 		$trakt = $this->fetchTraktTVProperties($imdb->getIdPadded());
-		if (!$imdb && !$tmdb && !$trakt) {
+		if (!$imdbinfo && !$tmdb && !$trakt) {
 			return false;
 		}
 
@@ -719,8 +719,8 @@ class Movie
 			case $this->checkVariable($tmdb['cover']):
 				$imgURL = $tmdb['cover'];
 				break;
-			case $this->checkVariable($imdb['cover']):
-				$imgURL = $imdb['cover'];
+			case $this->checkVariable($imdbinfo['cover']):
+				$imgURL = $imdbinfo['cover'];
 				break;
 			default:
 				$imgURL = '';
@@ -743,27 +743,27 @@ class Movie
 			$mov['backdrop'] = $this->releaseImage->saveImage($imdb->getIdPadded() . '-backdrop', $tmdb['backdrop'], $this->imgSavePath, 1920, 1024);
 		}
 
-		$mov['title']   = $this->setTmdbImdbTraktVar($imdb['title'],   $tmdb['title'],   $trakt['title']);
-		$mov['rating']  = $this->setTmdbImdbTraktVar($imdb['rating'],  $tmdb['rating'],  $trakt['rating']);
-		$mov['plot']	= $this->setTmdbImdbTraktVar($imdb['plot'],	$tmdb['plot'],	$trakt['overview']);
-		$mov['tagline'] = $this->setTmdbImdbTraktVar($imdb['tagline'], $tmdb['tagline'], $trakt['tagline']);
-		$mov['year']	= $this->setTmdbImdbTraktVar($imdb['year'],	$tmdb['year'],	$trakt['year']);
-		$mov['genre']   = $this->setTmdbImdbTraktVar($imdb['genre'],   $tmdb['genre'],   $trakt['genres']);
+		$mov['title']   = $this->setTmdbImdbTraktVar($imdbinfo['title'],   $tmdb['title'],   $trakt['title']);
+		$mov['rating']  = $this->setTmdbImdbTraktVar($imdbinfo['rating'],  $tmdb['rating'],  $trakt['rating']);
+		$mov['plot']	= $this->setTmdbImdbTraktVar($imdbinfo['plot'],	$tmdb['plot'],	$trakt['overview']);
+		$mov['tagline'] = $this->setTmdbImdbTraktVar($imdbinfo['tagline'], $tmdb['tagline'], $trakt['tagline']);
+		$mov['year']	= $this->setTmdbImdbTraktVar($imdbinfo['year'],	$tmdb['year'],	$trakt['year']);
+		$mov['genre']   = $this->setTmdbImdbTraktVar($imdbinfo['genre'],   $tmdb['genre'],   $trakt['genres']);
 
-		if ($this->checkVariable($imdb['type'])) {
-			$mov['type'] = $imdb['type'];
+		if ($this->checkVariable($imdbinfo['type'])) {
+			$mov['type'] = $imdbinfo['type'];
 		}
 
-		if ($this->checkVariable($imdb['director'])) {
-			$mov['director'] = (is_array($imdb['director'])) ? implode(', ', array_unique($imdb['director'])) : $imdb['director'];
+		if ($this->checkVariable($imdbinfo['director'])) {
+			$mov['director'] = (is_array($imdbinfo['director'])) ? implode(', ', array_unique($imdbinfo['director'])) : $imdbinfo['director'];
 		}
 
-		if ($this->checkVariable($imdb['actors'])) {
-			$mov['actors'] = (is_array($imdb['actors'])) ? implode(', ', array_unique($imdb['actors'])) : $imdb['actors'];
+		if ($this->checkVariable($imdbinfo['actors'])) {
+			$mov['actors'] = (is_array($imdbinfo['actors'])) ? implode(', ', array_unique($imdbinfo['actors'])) : $imdbinfo['actors'];
 		}
 
-		if ($this->checkVariable($imdb['language'])) {
-			$mov['language'] = (is_array($imdb['language'])) ? implode(', ', array_unique($imdb['language'])) : $imdb['language'];
+		if ($this->checkVariable($imdbinfo['language'])) {
+			$mov['language'] = (is_array($imdbinfo['language'])) ? implode(', ', array_unique($imdbinfo['language'])) : $imdbinfo['language'];
 		}
 
 		if (is_array($mov['genre'])) {
@@ -855,14 +855,14 @@ class Movie
 	/**
 	 * Fetch info for IMDB id from TMDB.
 	 *
-	 * @param string $imdbId
-	 * @param boolean $text
+	 * @param string  $imdbId
+	 * @param boolean $imdb_format	Is the $imdbId in IMDb's normal format (tt(x)xxxxxxx.
 	 *
 	 * @return array|boolean
 	 */
-	public function fetchTMDBProperties($imdbId, $text = false)
+	public function fetchTMDBProperties($imdbId, $imdb_format = false)
 	{
-		$lookupId = ($text === false ? 'tt' . $imdbId : $imdbId);
+		$lookupId = ($imdb_format === false ? 'tt' . $imdbId : $imdbId);
 
 		try {
 			$result = $this->tmdbClient->getMoviesApi()->getMovie($lookupId);
@@ -1044,9 +1044,9 @@ class Movie
 	 *
 	 * @param string $imdbId
 	 *
-	 * @return boolean|array
+	 * @return array|boolean	Array of trakt data on success, false if error occured.
 	 */
-	protected function fetchTraktTVProperties($imdbId)
+	protected function fetchTraktTVProperties(string $imdbId)
 	{
 		if (is_null($this->traktTv)) {
 			$this->traktTv = new TraktTv(['Settings' => $this->pdo]);
