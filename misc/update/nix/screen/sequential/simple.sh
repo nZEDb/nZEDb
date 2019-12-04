@@ -13,7 +13,7 @@ export TEST_PATH="${NZEDB_ROOT}/misc/testing"
 export NZEDB_SLEEP_TIME="60" # in seconds
 LASTOPTIMIZE=`date +%s`
 LASTOPTIMIZE1=`date +%s`
-command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
+command -v php >/dev/null 2>&1 && export PHP=`command -v php` || { export PHP=`command -v php`; }
 
 while :
 
