@@ -19,9 +19,8 @@
 
 namespace nzedb;
 
-/**
+use GuzzleHttp\Exception\InvalidArgumentException;/**
  * Representation of an IMDb entry
- *
  * Currently only the ID is handled.
  *
  * @package nzedb
@@ -30,23 +29,27 @@ class Imdb
 {
 	public const MAX_DIGITS = 8;
 
+	/**
+	 * @var int|null
+	 */
 	private $id = null;
 
-	public function __construct(int $id = null)
+	public function __construct($id = null)
 	{
 		if ($id !== null) {
-			$this->id = $id;
+			$this->setId($id);
 		}
 	}
 
 	/**
 	 * Returns a string version of the IMDb id value.
 	 *
-	 * @return string
+	 * @return string|null
 	 */
 	public function __toString(): string
 	{
-		return (string)$this->getIdPadded();
+		return $this->id === null ? '' :
+			(string)$this->getIdPadded();
 	}
 
 	/**
@@ -60,36 +63,42 @@ class Imdb
 	/**
 	 * Returns the IMDb id padded with leading zeroes.
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getIdPadded(): string
+	public function getIdPadded(): ?string
 	{
-		return (string)\str_pad($this->id, self::MAX_DIGITS, '0', \STR_PAD_LEFT);
+		return $this->id === null ? null :
+			(string)\str_pad($this->id, self::MAX_DIGITS, '0', \STR_PAD_LEFT);
 	}
 
-	public function getIdShortPadded(): string
+	public function getIdShortPadded(): ?string
 	{
-		return (string)\str_pad($this->id, 7, '0', \STR_PAD_LEFT);
+		return $this->id === null ? null :
+			(string)\str_pad($this->id, 7, '0', \STR_PAD_LEFT);
 	}
 
 	/**
 	 * Returns the id formatted as IMDb does (padded to MAX_DIGITS length with leading zeros and
 	 * prefixed with 'tt'.
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getIMDbFormat(): string
+	public function getIMDbFormat(): ?string
 	{
-		return 'tt' . $this->getIdPadded();
+		return $this->id === null ? null : 'tt' . $this->getIdPadded();
 	}
 
 	/**
-	 * @param int $id Value to set $this->id to.
+	 * @param $id Value to set $this->id to.
 	 *
 	 * @return void
 	 */
-	public function setId(int $id ): void
+	public function setId($id): void
 	{
-		$this->id = $id;
+		if (\preg_match('#^(tt)?(?P<imdbid>\d{6,8})$#i', $id, $matches) > 0) {
+			$this->id = (int)$matches['imdbid'];
+		} else {
+			throw new InvalidArgumentException($id . ' is not a valid IMDb identifier. They must be 6-' . self::MAX_DIGITS . ' digits, with or without the "tt" prefix.');
+		}
 	}
 }
