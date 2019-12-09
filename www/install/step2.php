@@ -70,6 +70,22 @@ function databaseCheck($dbName, $dbType, $pdo): bool
 	return $retVal;
 }
 
+function copyFileToTmp(string $file)
+{
+	$fileTarget = '/tmp/' . pathinfo($file, PATHINFO_BASENAME);
+	if (\copy($file, $fileTarget)) // Copy to a directory accessible to all (for mysql user)
+	{
+		$file = $fileTarget;
+		\chmod($file, 0775);
+	} else {
+		echo 'Failed to copy file: ' . $file . '</br>' . \PHP_EOL;
+		//throw new \Exception('Copying file to /tmp failed!');
+		$file = '';
+	}
+
+	return $file;
+}
+
 $cfg = $cfg->getSession();
 
 if ($page->isPostBack()) {
@@ -169,30 +185,32 @@ if ($page->isPostBack()) {
 		);
 
 		try {
+			$file = copyFileToTmp(nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-ddl.sql');
 			$DbSetup->sourceSQL(
 				[
-					'file' => nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-ddl.sql',
+					'file' => $file,
 					'name' => $cfg->DB_NAME,
 					'pass' => $cfg->DB_PASSWORD,
 					'user' => $cfg->DB_USER,
 				]
 			);
 			//$DbSetup->processSQLFile(); // Setup default schema
+			$file = copyFileToTmp(nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-data.sql');
 			$DbSetup->processSQLFile( // Process any custom stuff.
 				[
-					'filepath' => nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-data.sql'
+					'filepath' => $file
 				]
 			);
 			$DbSetup->loadTables(); // Load default data files
 		} catch (\PDOException $err) {
 			$cfg->error = true;
-			$cfg->emessage = "Error inserting: (" . $err->getMessage() . ")";
+			$cfg->emessage = 'Error inserting: (' . $err->getMessage() . ')';
 		}
 
 		if (!$cfg->error) {
 			// Check one of the standard tables was created and has data.
 			$dbInstallWorked = false;
-			$reschk = $pdo->query("SELECT COUNT(id) AS num FROM tmux");
+			$reschk = $pdo->query('SELECT COUNT(id) AS num FROM tmux');
 			if ($reschk === false) {
 				$cfg->dbCreateCheck = false;
 				$cfg->error = true;
