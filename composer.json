@@ -99,6 +99,7 @@
     "ext-zlib": "*",
     "b3rs3rk/steamfront": "dev-master",
     "barracudanetworks/forkdaemon-php": "^1.0.7",
+    "canihavesomecoffee/thetvdbapi": "^1.2.2",
     "composer-plugin-api": "^1.0.0",
     "dborsatto/php-giantbomb": "dev-master",
     "fxp/composer-asset-plugin": "1.4.4",
@@ -140,7 +141,8 @@
     "bower-asset/responsive-tables-js-1.0.x": "~1.0.6",
     "bower-asset/select2-4.0.x": "~4.0.2",
     "bower-asset/slimscroll-1.3.x": "~1.3.7",
-    "bower-asset/tinymce-builded": "^4.4"
+    "bower-asset/tinymce-builded": "^4.4",
+    "phpdocumentor/reflection-docblock": "^5.0@dev"
   },
   "require-dev": {
     "unionofrad/manual": "~1.0.0"
