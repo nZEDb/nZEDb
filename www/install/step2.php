@@ -189,6 +189,7 @@ if ($page->isPostBack()) {
 			$DbSetup->sourceSQL(
 				[
 					'file' => $file,
+					'host' => $cfg->DB_HOST,
 					'name' => $cfg->DB_NAME,
 					'pass' => $cfg->DB_PASSWORD,
 					'user' => $cfg->DB_USER,
