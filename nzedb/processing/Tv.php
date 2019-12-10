@@ -37,6 +37,10 @@ abstract class Tv extends Videos
 
 	public $aliases = [];
 	public $country;
+
+	/**
+	 * @var \nzedb\Imdb;
+	 */
 	public $imdb;
 	public $localzone = "''";
 	public $publisher = '';

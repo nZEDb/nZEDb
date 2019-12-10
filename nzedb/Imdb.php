@@ -48,8 +48,7 @@ class Imdb
 	 */
 	public function __toString(): string
 	{
-		return $this->id === null ? '' :
-			(string)$this->getIdPadded();
+		return $this->id === null ? '' : (string)$this->getIdPadded();
 	}
 
 	/**
