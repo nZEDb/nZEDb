@@ -4,6 +4,7 @@ namespace nzedb\processing\tv;
 use app\models\Settings;
 use nzedb\libraries\TraktAPI;
 use nzedb\ReleaseImage;
+use nzedb\processing\Tv;
 use nzedb\utility\Time;
 
 /**
@@ -11,7 +12,7 @@ use nzedb\utility\Time;
  *
  * Process information retrieved from the Trakt API.
  */
-class TraktTv extends TV
+class TraktTv extends Tv
 {
 	const MATCH_PROBABILITY = 75;
 

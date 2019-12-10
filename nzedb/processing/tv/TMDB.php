@@ -4,13 +4,14 @@ namespace nzedb\processing\tv;
 use app\models\Settings;
 use nzedb\ColorCLI;
 use nzedb\ReleaseImage;
+use nzedb\processing\Tv;
 use Tmdb\ApiToken;
 use Tmdb\Client;
 use Tmdb\Exception\TmdbApiException;
 use Tmdb\Helper\ImageHelper;
 use Tmdb\Repository\ConfigurationRepository;
 
-class TMDB extends TV
+class TMDB extends Tv
 {
 	const MATCH_PROBABILITY = 75;
 

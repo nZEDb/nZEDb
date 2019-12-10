@@ -5,11 +5,12 @@ use Moinax\TvDb\Client;
 use Moinax\TvDb\CurlException;
 use Moinax\TvDb\XmlException;
 use nzedb\ReleaseImage;
+use nzedb\processing\Tv;
 
 /**
  * Class TVDB -- functions used to post process releases against TVDB
  */
-class TVDB extends TV
+class TVDB extends Tv
 {
 	const TVDB_URL = 'http://thetvdb.com';
 	const TVDB_API_KEY = '5296B37AEC35913D';
@@ -69,6 +70,41 @@ class TVDB extends TV
 	}
 
 	/**
+	 * Retrieves the poster art for the processed show
+	 *
+	 * @param int $videoId -- the local Video ID
+	 * @param int $showId  -- the TVDB ID
+	 *
+	 * @return int
+	 */
+	public function getPoster($videoId, $showId): int
+	{
+		$ri = new ReleaseImage($this->pdo);
+
+		// Try to get the Poster
+		$hascover = $ri->saveImage($videoId,
+			sprintf($this->posterUrl, $showId),
+			$this->imgSavePath,
+			'',
+			'');
+
+		// Couldn't get poster, try fan art instead
+		if ($hascover !== 1) {
+			$hascover = $ri->saveImage($videoId,
+				sprintf($this->fanartUrl, $showId),
+				$this->imgSavePath,
+				'',
+				'');
+		}
+		// Mark it retrieved if we saved an image
+		if ($hascover == 1) {
+			$this->setCoverFound($videoId);
+		}
+
+		return $hascover;
+	}
+
+	/**
 	 * Main processing director function for scrapers
 	 * Calls work query function and initiates processing
 	 *
@@ -77,7 +113,7 @@ class TVDB extends TV
 	 * @param      $process
 	 * @param bool $local
 	 */
-	public function processSite($groupID, $guidChar, $process, $local = false)
+	public function processSite($groupID, $guidChar, $process, $local = false): void
 	{
 		$res = $this->getTvReleases($groupID, $guidChar, $process, parent::PROCESS_TVDB);
 
@@ -236,7 +272,7 @@ class TVDB extends TV
 	 *
 	 * @return array|false
 	 */
-	protected function getShowInfo($cleanName, $country = '')
+	protected function getShowInfo(string $cleanName, string $country = '')
 	{
 		$return = $response = false;
 		$highestMatch = 0;
@@ -304,32 +340,6 @@ class TVDB extends TV
 		}
 
 		return $return;
-	}
-
-	/**
-	 * Retrieves the poster art for the processed show
-	 *
-	 * @param int $videoId -- the local Video ID
-	 * @param int $showId  -- the TVDB ID
-	 *
-	 * @return int
-	 */
-	public function getPoster($videoId, $showId)
-	{
-		$ri = new ReleaseImage($this->pdo);
-
-		// Try to get the Poster
-		$hascover = $ri->saveImage($videoId, sprintf($this->posterUrl, $showId), $this->imgSavePath, '', '');
-
-		// Couldn't get poster, try fan art instead
-		if ($hascover !== 1) {
-			$hascover = $ri->saveImage($videoId, sprintf($this->fanartUrl, $showId), $this->imgSavePath, '', '');
-		}
-		// Mark it retrieved if we saved an image
-		if ($hascover == 1) {
-			$this->setCoverFound($videoId);
-		}
-		return $hascover;
 	}
 
 	/**
@@ -411,7 +421,7 @@ class TVDB extends TV
 	 *
 	 * @return array
 	 */
-	protected function formatShowInfo($show)
+	protected function formatShowInfo($show): array
 	{
 		preg_match('/tt(?P<imdbid>\d{6,8})$/i', $show->imdbId, $imdb);
 

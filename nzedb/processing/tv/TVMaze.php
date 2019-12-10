@@ -4,13 +4,14 @@ namespace nzedb\processing\tv;
 
 use JPinkney\TVMaze\TVMaze as Client;
 use nzedb\ReleaseImage;
+use nzedb\processing\Tv;
 
 /**
  * Class TVMaze
  *
  * Process information retrieved from the TVMaze API.
  */
-class TVMaze extends TV
+class TVMaze extends Tv
 {
 	const MATCH_PROBABILITY = 75;
 
