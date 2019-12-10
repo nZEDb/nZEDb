@@ -1,5 +1,5 @@
 <?php
-namespace nzedb\processing\tv;
+namespace nzedb\processing;
 
 use app\models\Settings;
 use nzedb\Category;
@@ -11,7 +11,7 @@ use nzedb\utility\Text;
  * Class TV -- abstract extension of Videos
  * Contains functions suitable for re-use in all TV scrapers
  */
-abstract class TV extends Videos
+abstract class Tv extends Videos
 {
 	// Television Sources
 	const SOURCE_NONE    = 0;   // No Scrape source
@@ -35,25 +35,41 @@ abstract class TV extends Videos
 	const NO_MATCH_FOUND = -6;   // Failed All Methods
 	const FAILED_PARSE   = -100; // Failed Parsing
 
-	/**
-	 * @var int
-	 */
-	public $tvqty;
-
-	/**
-	 * @string Path to Save Images
-	 */
-	public $imgSavePath;
-
-	/**
-	 * @var array Site ID columns for TV
-	 */
-	public $siteColumns;
+	public $aliases = [];
+	public $country;
+	public $imdb;
+	public $localzone = "''";
+	public $publisher = '';
+	public $source;
+	public $started = '';
+	public $summary;
+	public $title = '';
+	public $tmdb = 0;
+	public $trakt = 0;
+	public $tvdb = 0;
+	public $tvmaze = 0;
+	public $tvrage = 0;
+	public $type = self::TYPE_TV;
 
 	/**
 	 * @var string The TV categories_id lookup SQL language
 	 */
-	public $catWhere;
+	protected $catWhere;
+
+	/**
+	 * @string Path to Save Images
+	 */
+	protected $imgSavePath;
+
+	/**
+	 * @var array Fields that the child class uses.
+	 */
+	protected $siteColumns;
+
+	/**
+	 * @var int
+	 */
+	protected $tvqty;
 
 	/**
 	 * @param array $options Class instances / Echo to CLI.
@@ -66,7 +82,6 @@ abstract class TV extends Videos
 		$value = Settings::value('..maxrageprocessed');
 		$this->tvqty = ($value != '') ? (int)$value : 75;
 		$this->imgSavePath = nZEDb_COVERS . 'tvshows' . DS;
-		$this->siteColumns = ['tvdb', 'trakt', 'tvrage', 'tvmaze', 'imdb', 'tmdb'];
 	}
 
 	/**
@@ -107,7 +122,7 @@ abstract class TV extends Videos
 	 *
 	 * @return array|false    False on failure, an array of information fields otherwise.
 	 */
-	abstract protected function getShowInfo($name);
+	abstract protected function getShowInfo(string $name);
 
 	/**
 	 * Assigns API show response values to a formatted array for insertion
@@ -116,6 +131,7 @@ abstract class TV extends Videos
 	 * @param $show
 	 *
 	 * @return array
+	 * @deprecated Use processInfo instead.
 	 */
 	abstract protected function formatShowInfo($show);
 
@@ -129,7 +145,7 @@ abstract class TV extends Videos
 	 */
 	abstract protected function formatEpisodeInfo($episode);
 
-		/**
+	/**
 	 * Retrieve releases for TV processing
 	 * Returns a PDO Object of rows or false if none found
 	 *
@@ -780,7 +796,7 @@ abstract class TV extends Videos
 
 		switch ($type) {
 			case 'tvdbS':
-				$required = ['id', 'name', 'overview', 'firstAired'];
+				$required = ['id', 'seriesName', 'overview', 'firstAired'];
 				break;
 			case 'tvdbE':
 				$required = ['name', 'season', 'number', 'firstAired', 'overview'];
