@@ -5,16 +5,6 @@ namespace nzedb;
 
 class ColorCLI
 {
-	public static $foreground_colors = [
-		'Black' => '30',
-		'Blue' => '34',
-		'Green' => '32',
-		'Cyan' => '36',
-		'Red' => '31',
-		'Purple' => '35',
-		'Yellow' => '33',
-		'Gray' => '37',
-	];
 	// Feel free to add any other colors that you like here.
 	public static $colors256 = [
 		'Gray' => '008', 'Red' => '009',
@@ -142,12 +132,29 @@ class ColorCLI
 		'Grey28' => '252', 'Grey29' => '253',
 		'Grey30' => '254', 'Grey31' => '255',
 	];
+
 	public static $background_colors = [
-		'Black' => '40', 'Red' => '41',
-		'Green' => '42', 'Yellow' => '43',
-		'Blue' => '44', 'Purple' => '45',
-		'Cyan' => '46', 'White' => '47',
+		'Black'  => '40',
+		'Blue'   => '44',
+		'Cyan'   => '46',
+		'Green'  => '42',
+		'Purple' => '45',
+		'Red'    => '41',
+		'White'  => '47',
+		'Yellow' => '43',
 	];
+
+	public static $foreground_colors = [
+		'Black'  => '30',
+		'Blue'   => '34',
+		'Cyan'   => '36',
+		'Green'  => '32',
+		'Purple' => '35',
+		'Red'    => '31',
+		'Yellow' => '33',
+		'Gray'   => '37',
+	];
+
 	public static $options = [
 		'Norm' => '0', 'Bold' => '1',
 		'Dim' => '2', 'Uline' => '4',
@@ -160,29 +167,29 @@ class ColorCLI
 		echo str_repeat("\007", $count);
 	}
 
-	public static function setColor($fg, $opt = "None", $bg = "None")
+	public static function setColor($fg, $opt = 'None', $bg = 'None')
 	{
 		$colored_string = "\033[" . self::$foreground_colors[$fg];
 		if (isset(self::$options[$opt])) {
-			$colored_string .= ";" . self::$options[$opt];
+			$colored_string .= ';' . self::$options[$opt];
 		}
 		if (isset(self::$background_colors[$bg])) {
-			$colored_string .= ";" . self::$background_colors[$bg];
+			$colored_string .= ';' . self::$background_colors[$bg];
 		}
-		$colored_string .= "m";
+		$colored_string .= 'm';
 		return $colored_string;
 	}
 
-	public static function set256($fg, $opt = "None", $bg = "None")
+	public static function set256($fg, $opt = 'None', $bg = 'None')
 	{
 		$colored_string = "\033[38;5;" . self::$colors256[$fg];
 		if (isset(self::$options[$opt]) && $opt != 'Norm') {
-			$colored_string .= ";" . self::$options[$opt];
+			$colored_string .= ';' . self::$options[$opt];
 		}
 		if (isset(self::$background_colors[$bg])) {
-			$colored_string .= ";48;5;" . self::$colors256[$bg];
+			$colored_string .= ';48;5;' . self::$colors256[$bg];
 		}
-		$colored_string .= "m";
+		$colored_string .= 'm';
 		return $colored_string;
 	}
 
@@ -218,19 +225,19 @@ class ColorCLI
 
 	public static function primary($str)
 	{
-		$str = "\033[38;5;" . self::$colors256['Green'] . "m$str\033[0m\n";
+		$str = self::primaryOver($str) . "\n";
 		return $str;
 	}
 
 	public static function header($str)
 	{
-		$str = "\033[38;5;" . self::$colors256['Yellow'] . "m$str\033[0m\n";
+		$str = self::headerOver($str) . "\n";
 		return $str;
 	}
 
 	public static function alternate($str)
 	{
-		$str = "\033[38;5;" . self::$colors256['DeepPink1'] . "m$str\033[0m\n";
+		$str = self::alternateOver($str) . "\n";
 		return $str;
 	}
 
@@ -279,5 +286,18 @@ class ColorCLI
 	public static function doEcho($message, $nl = false)
 	{
 		echo $message . ($nl ? PHP_EOL : '');
+	}
+
+	/**
+	 * @param string $message
+	 * @param bool   $nl
+	 * @param string $style
+	 *
+	 * @return void
+	 */
+	public static function out(string $message = '', $nl = false, string $style = null): void
+	{
+		$message = empty($style) ? $message : self::$style($message);
+		self::doEcho($message, $nl);
 	}
 }
