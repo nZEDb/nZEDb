@@ -83,7 +83,8 @@ class ReleaseImage
 	protected function fetchImage($imgLoc)
 	{
 		$img = false;
-		if (strpos(strtolower($imgLoc), 'http:') === 0 || strpos(strtolower($imgLoc), 'https:') === 0) {
+		if (strncmp(strtolower($imgLoc), 'https:', 6) === 0 ||
+			strncmp(strtolower($imgLoc), 'http:', 5) === 0) {
 			$img = Misc::getUrl(['url' => $imgLoc]);
 		} else if (is_file($imgLoc)) {
 			$img = @file_get_contents($imgLoc);
