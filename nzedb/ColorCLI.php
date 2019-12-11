@@ -162,130 +162,78 @@ class ColorCLI
 		'Hidden' => '8', 'Crossout' => '9',
 	];
 
-	public static function bell($count = 1)
-	{
-		echo str_repeat("\007", $count);
-	}
-
-	public static function setColor($fg, $opt = 'None', $bg = 'None')
-	{
-		$colored_string = "\033[" . self::$foreground_colors[$fg];
-		if (isset(self::$options[$opt])) {
-			$colored_string .= ';' . self::$options[$opt];
-		}
-		if (isset(self::$background_colors[$bg])) {
-			$colored_string .= ';' . self::$background_colors[$bg];
-		}
-		$colored_string .= 'm';
-		return $colored_string;
-	}
-
-	public static function set256($fg, $opt = 'None', $bg = 'None')
-	{
-		$colored_string = "\033[38;5;" . self::$colors256[$fg];
-		if (isset(self::$options[$opt]) && $opt != 'Norm') {
-			$colored_string .= ';' . self::$options[$opt];
-		}
-		if (isset(self::$background_colors[$bg])) {
-			$colored_string .= ';48;5;' . self::$colors256[$bg];
-		}
-		$colored_string .= 'm';
-		return $colored_string;
-	}
-
-	public static function debug($str)
-	{
-		$debugstring = "\033[" . self::$foreground_colors['Gray'] . "mDebug: $str\033[0m\n";
-		return $debugstring;
-	}
-
-	public static function info($str)
-	{
-		$infostring = "\033[" . self::$foreground_colors['Purple'] . "mInfo: $str\033[0m\n";
-		return $infostring;
-	}
-
-	public static function notice($str)
-	{
-		$noticstring = "\033[38;5;" . self::$colors256['Blue'] . "mNotice: $str\033[0m\n";
-		return $noticstring;
-	}
-
-	public static function warning($str)
-	{
-		$warnstring = "\033[" . self::$foreground_colors['Yellow'] . "mWarning: $str\033[0m\n";
-		return $warnstring;
-	}
-
-	public static function error($str)
-	{
-		$errorstring = "\033[" . self::$foreground_colors['Red'] . "mError: $str\033[0m\n";
-		return $errorstring;
-	}
-
-	public static function primary($str)
-	{
-		$str = self::primaryOver($str) . "\n";
-		return $str;
-	}
-
-	public static function header($str)
-	{
-		$str = self::headerOver($str) . "\n";
-		return $str;
-	}
-
 	public static function alternate($str)
 	{
 		$str = self::alternateOver($str) . "\n";
-		return $str;
-	}
 
-	public static function tmuxOrange($str)
-	{
-		$str = "\033[38;5;" . self::$colors256['Orange'] . "m$str\033[0m\n";
-		return $str;
-	}
-
-	public static function primaryOver($str)
-	{
-		$str = "\033[38;5;" . self::$colors256['Green'] . "m$str\033[0m";
-		return $str;
-	}
-
-	public static function headerOver($str)
-	{
-		$str = "\033[38;5;" . self::$colors256['Yellow'] . "m$str\033[0m";
 		return $str;
 	}
 
 	public static function alternateOver($str)
 	{
 		$str = "\033[38;5;" . self::$colors256['DeepPink1'] . "m$str\033[0m";
+
 		return $str;
 	}
 
-	public static function warningOver($str)
+	public static function bell($count = 1)
 	{
-		$str = "\033[38;5;" . self::$colors256['Red'] . "m$str\033[0m";
-		return $str;
+		echo str_repeat("\007", $count);
 	}
 
-	public static function rsetColor()
+	public static function debug($str)
 	{
-		return "\033[0m";
+		$debugstring = "\033[" . self::$foreground_colors['Gray'] . "mDebug: $str\033[0m\n";
+
+		return $debugstring;
 	}
 
 	/**
 	 * Echo message to CLI.
 	 *
 	 * @param string $message The message.
-	 * @param bool $nl Add a new line?
+	 * @param bool   $nl      Add a new line?
+	 *
 	 * @void
 	 */
 	public static function doEcho($message, $nl = false)
 	{
 		echo $message . ($nl ? PHP_EOL : '');
+	}
+
+	public static function error($str)
+	{
+		$errorstring = "\033[" . self::$foreground_colors['Red'] . "mError: $str\033[0m\n";
+
+		return $errorstring;
+	}
+
+	public static function header($str)
+	{
+		$str = self::headerOver($str) . "\n";
+
+		return $str;
+	}
+
+	public static function headerOver($str)
+	{
+		$str = "\033[38;5;" . self::$colors256['Yellow'] . "m$str\033[0m";
+
+		return $str;
+	}
+
+	public static function info($str)
+	{
+		$infostring = "\033[" . self::$foreground_colors['Purple'] . "mInfo: $str\033[0m\n";
+
+		return $infostring;
+	}
+
+	public static function notice($str)
+	{
+		$noticstring = "\033[38;5;" . self::$colors256['Blue'] . "mNotice: $str\033[0m\n";
+
+		return $noticstring;
 	}
 
 	/**
@@ -299,5 +247,86 @@ class ColorCLI
 	{
 		$message = empty($style) ? $message : self::$style($message);
 		self::doEcho($message, $nl);
+	}
+
+	public static function primary(string $text): string
+	{
+		return self::primaryNoNL($text) . "\n";
+	}
+
+	/**
+	 * Wrap supplied text in the primary colour.
+	 *
+	 * @param string $text
+	 *
+	 * @return string
+	 */
+	public static function primaryNoNL(string $text): string
+	{
+		return "\033[38;5;" . self::$colors256['Green'] . "m$text\033[0m";
+	}
+
+	/**
+	 * @param string $text
+	 *
+	 * @return string
+	 * @deprecated Use primaryNoNL() instead
+	 */
+	public static function primaryOver(string $text): string
+	{
+		return self::primaryNoNL($text);
+	}
+
+	public static function rsetColor()
+	{
+		return "\033[0m";
+	}
+
+	public static function setColor($fg, $opt = 'None', $bg = 'None')
+	{
+		$colored_string = "\033[" . self::$foreground_colors[$fg];
+		if (isset(self::$options[$opt])) {
+			$colored_string .= ';' . self::$options[$opt];
+		}
+		if (isset(self::$background_colors[$bg])) {
+			$colored_string .= ';' . self::$background_colors[$bg];
+		}
+		$colored_string .= 'm';
+
+		return $colored_string;
+	}
+
+	public static function set256($fg, $opt = 'None', $bg = 'None')
+	{
+		$colored_string = "\033[38;5;" . self::$colors256[$fg];
+		if (isset(self::$options[$opt]) && $opt != 'Norm') {
+			$colored_string .= ';' . self::$options[$opt];
+		}
+		if (isset(self::$background_colors[$bg])) {
+			$colored_string .= ';48;5;' . self::$colors256[$bg];
+		}
+		$colored_string .= 'm';
+
+		return $colored_string;
+	}
+
+	public static function tmuxOrange($str)
+	{
+		$str = "\033[38;5;" . self::$colors256['Orange'] . "m$str\033[0m\n";
+
+		return $str;
+	}
+
+	public static function warning($str)
+	{
+		$warnstring = "\033[" . self::$foreground_colors['Yellow'] . "mWarning: $str\033[0m\n";
+
+		return $warnstring;
+	}
+
+	public static function warningOver($str)
+	{
+		$str = "\033[38;5;" . self::$colors256['Red'] . "m$str\033[0m";
+		return $str;
 	}
 }
