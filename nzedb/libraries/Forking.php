@@ -116,11 +116,13 @@ class Forking extends \fork_daemon
 		$this->processEndWork();
 
 		if (nZEDb_ECHOCLI) {
-			$this->_colorCLI->doEcho(
-				$this->_colorCLI->header(
-					'Multi-processing for ' . $this->workType . ' finished in ' . (microtime(true) - $startTime) .
-					' seconds at ' . date(DATE_RFC2822) . '.' . PHP_EOL
-				)
+			$this->_colorCLI::out(
+				\sprintf('Multi-processing for %s finished in %d seconds at %s.',
+					$this->workType,
+					(microtime(true) - $startTime),
+					date(DATE_RFC2822)),
+				'header',
+				true
 			);
 		}
 	}
@@ -213,22 +215,22 @@ class Forking extends \fork_daemon
 		if ($this->_workCount > 0) {
 
 			if (nZEDb_ECHOCLI) {
-				$this->_colorCLI->doEcho(
-					$this->_colorCLI->header(
-						'Multi-processing started at ' . date(DATE_RFC2822) . ' for ' . $this->workType . ' with ' . $this->_workCount .
-						' job(s) to do using a max of ' . $this->maxProcesses . ' child process(es).'
-					)
+				$this->_colorCLI::out(
+					\sprintf('Multi-processing started at %s for %s with %d job(s) to do, using a max of %d child process(es).',
+						date(DATE_RFC2822),
+						$this->workType,
+						$this->_workCount,
+						$this->maxProcesses
+					),
+					'header',
+					true
 				);
 			}
 
 			$this->addwork($this->work);
 			$this->process_work(true);
-		} else {
-			if (nZEDb_ECHOCLI) {
-				$this->_colorCLI->doEcho(
-					$this->_colorCLI->header('No work to do!')
-				);
-			}
+		} else if (nZEDb_ECHOCLI) {
+			$this->_colorCLI::out('No work to do!', 'header', true);
 		}
 	}
 
@@ -347,7 +349,7 @@ class Forking extends \fork_daemon
 
 		$data = $this->pdo->queryOneRow(
 			sprintf(
-				"SELECT g.name,
+				/** @lang text */ "SELECT g.name,
 				g.first_record AS our_first,
 				MAX(a.first_record) AS their_first,
 				MAX(a.last_record) AS their_last
@@ -408,7 +410,7 @@ class Forking extends \fork_daemon
 		$this->register_child_run([0 => $this, 1 => 'binariesChildWorker']);
 		$this->work = $this->pdo->query(
 			sprintf(
-				'SELECT name, %d AS max FROM groups WHERE active = 1',
+				/** @lang text */ 'SELECT name, %d AS max FROM groups WHERE active = 1',
 				$this->workTypeOptions[0]
 			)
 		);
@@ -566,7 +568,8 @@ class Forking extends \fork_daemon
 
 		if ($groups instanceof \Traversable) {
 			foreach ($groups as $group) {
-				if ($this->pdo->queryOneRow(sprintf('SELECT id FROM collections_%d  LIMIT 1', $group['id'])) !== false) {
+				if ($this->pdo->queryOneRow(sprintf(/** @lang text */
+						'SELECT id FROM collections_%d  LIMIT 1', $group['id'])) !== false) {
 					$this->work[] = ['id' => $group['id']];
 				}
 			}
@@ -632,8 +635,8 @@ class Forking extends \fork_daemon
 		$this->ppAddMaxSize = ($this->ppAddMaxSize > 0 ? ('AND r.size < ' . ($this->ppAddMaxSize * 1073741824)) : '');
 
 		return (
-		$this->pdo->queryOneRow(
-			sprintf('
+			$this->pdo->queryOneRow(
+				sprintf(/** @lang text */ '
 					SELECT r.id
 					FROM releases r
 					LEFT JOIN categories c ON c.id = r.categories_id
@@ -643,11 +646,11 @@ class Forking extends \fork_daemon
 					AND c.disablepreview = 0
 					%s %s
 					LIMIT 1',
-				NZB::NZB_ADDED,
-				$this->ppAddMaxSize,
-				$this->ppAddMinSize
-			)
-		) === false ? false : true
+					NZB::NZB_ADDED,
+					$this->ppAddMaxSize,
+					$this->ppAddMinSize
+				)
+			) !== false
 		);
 	}
 
@@ -658,7 +661,7 @@ class Forking extends \fork_daemon
 			$this->processAdditional = true;
 			$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
 			$this->work = $this->pdo->query(
-				sprintf('
+				sprintf(/** @lang text */ '
 					SELECT leftguid AS id
 					FROM releases r
 					LEFT JOIN categories c ON c.id = r.categories_id
@@ -737,7 +740,7 @@ class Forking extends \fork_daemon
 		if (Settings::value('..lookupimdb') > 0) {
 			return (
 			$this->pdo->queryOneRow(
-				sprintf('
+				sprintf(/** @lang text */ '
 						SELECT id
 						FROM releases
 						WHERE nzbstatus = %d
@@ -796,8 +799,8 @@ class Forking extends \fork_daemon
 		$lookuptv = Settings::value('..lookuptvrage');
 		if ($lookuptv > 0) {
 			return (
-			$this->pdo->queryOneRow(
-				sprintf('
+				$this->pdo->queryOneRow(
+					sprintf(/** @lang text */ '
 						SELECT id
 						FROM releases
 						WHERE nzbstatus = %d
@@ -806,13 +809,13 @@ class Forking extends \fork_daemon
 						AND categories_id BETWEEN %d AND %d
 						%s %s
 						LIMIT 1',
-					NZB::NZB_ADDED,
-					Category::TV_ROOT,
-					Category::TV_OTHER,
-					($lookuptv == 2 ? 'AND isrenamed = 1' : ''),
-					($this->ppRenamedOnly ? 'AND isrenamed = 1' : '')
-				)
-			) === false ? false : true
+						NZB::NZB_ADDED,
+						Category::TV_ROOT,
+						Category::TV_OTHER,
+						($lookuptv === 2 ? 'AND isrenamed = 1' : ''),
+						($this->ppRenamedOnly ? 'AND isrenamed = 1' : '')
+					)
+				) !== false
 			);
 		}
 
@@ -826,7 +829,7 @@ class Forking extends \fork_daemon
 			$this->processTV = true;
 			$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
 			$this->work = $this->pdo->query(
-				sprintf('
+				sprintf(/** @lang text */ '
 					SELECT leftguid AS id, %d AS renamed
 					FROM releases
 					WHERE nzbstatus = %d
@@ -892,7 +895,7 @@ class Forking extends \fork_daemon
 	{
 		$this->register_child_run([0 => $this, 1 => 'requestIDChildWorker']);
 		$this->work = $this->pdo->query(
-			sprintf('
+			sprintf(/** @lang text */ '
 				SELECT DISTINCT(g.id)
 				FROM groups g
 				INNER JOIN releases r ON r.groups_id = g.id
@@ -1011,12 +1014,14 @@ class Forking extends \fork_daemon
 	public function childExit($pid, $identifier = '')
 	{
 		if (nZEDb_ECHOCLI) {
-			$this->_colorCLI->doEcho(
-				$this->_colorCLI->header(
-					'Process ID #' . $pid . ' has completed.' . PHP_EOL .
-					'There are ' . ($this->forked_children_count - 1) . ' process(es) still active with ' .
-					(--$this->_workCount) . ' job(s) left in the queue.' . PHP_EOL
-				)
+			$this->_colorCLI::out(
+				\sprintf("Process ID %d has completed.\nThere are %s process(es) still active with %d job(s) left in the queue.",
+					$pid,
+					($this->forked_children_count - 1),
+					--$this->_workCount
+				),
+				'header',
+				true
 			);
 		}
 	}

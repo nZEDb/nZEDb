@@ -12,7 +12,7 @@ if (isset($argv[1]) && $argv[1] == "true") {
 	$nzbcount = $brokencount = 0;
 
 	$guids = $pdo->queryDirect("SELECT guid FROM releases WHERE nzbstatus = 1 ORDER BY postdate DESC");
-	echo $pdo->log->primary("Be patient, this WILL take a very long time, make sure to kill all nZEDb scripts first. There are " . number_format($guids->rowCount()) . " NZB files to scan.");
+	echo $pdo->log::primary("Be patient, this WILL take a very long time, make sure to kill all nZEDb scripts first. There are " . number_format($guids->rowCount()) . " NZB files to scan.");
 	$nzb = new NZB($pdo);
 	if ($guids instanceof \Traversable) {
 		foreach ($guids as $guid) {
@@ -43,13 +43,13 @@ if (isset($argv[1]) && $argv[1] == "true") {
 					echo ".";
 				}
 			} else {
-				echo $pdo->log->error("\nWrong permissions on NZB file, or it does not exist.\n");
+				echo $pdo->log::error("\nWrong permissions on NZB file, or it does not exist.\n");
 			}
 			unset($guid);
 		}
 	}
-	echo $pdo->log->header($nzbcount . " NZB files scanned. in " . TIME() - $timestart . " seconds. " . $brokencount . " NZB files were fixed.");
+	echo $pdo->log::header($nzbcount . " NZB files scanned. in " . TIME() - $timestart . " seconds. " . $brokencount . " NZB files were fixed.");
 } else {
-	exit($pdo->log->error("\nThis script can be dangerous, if you are sure you want to run this, STOP ALL OTHER nZEDb SCRIPTS.\n\n"
+	exit($pdo->log::error("\nThis script can be dangerous, if you are sure you want to run this, STOP ALL OTHER nZEDb SCRIPTS.\n\n"
 				. "php $argv[0] true     ...: To remove blank lines from all nzbs.\n"));
 }

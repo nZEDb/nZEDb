@@ -155,7 +155,7 @@ class Backfill
 			}
 
 			if ($this->_echoCLI) {
-				$this->pdo->log->doEcho($this->pdo->log->header($dMessage), true);
+				$this->pdo->log::out($dMessage, 'header', true);
 			}
 
 			$this->_binaries = new Binaries(
@@ -175,7 +175,7 @@ class Backfill
 					}
 
 					if ($this->_echoCLI) {
-						$this->pdo->log->doEcho($this->pdo->log->header($dMessage), true);
+						$this->pdo->log::out($dMessage, 'header', true);
 					}
 				}
 				$this->backfillGroup($groupArr, $groupCount - $counter, $articles);
@@ -188,7 +188,7 @@ class Backfill
 			}
 
 			if ($this->_echoCLI) {
-				$this->pdo->log->doEcho($this->pdo->log->primary($dMessage));
+				$this->pdo->log::out($dMessage, primary, true);
 			}
 		} else {
 			$dMessage = "No groups specified. Ensure groups are added to nZEDb's database for updating.";
@@ -197,7 +197,7 @@ class Backfill
 			}
 
 			if ($this->_echoCLI) {
-				$this->pdo->log->doEcho($this->pdo->log->warning($dMessage), true);
+				$this->pdo->log::out($dMessage, 'warning', true);
 			}
 		}
 	}
@@ -231,7 +231,7 @@ class Backfill
 			}
 
 			if ($this->_echoCLI) {
-				$this->pdo->log->doEcho($this->pdo->log->error($dMessage));
+				$this->pdo->log::out($dMessage, 'error', true);
 			}
 			return;
 		}
@@ -246,11 +246,14 @@ class Backfill
 		}
 
 		if ($this->_echoCLI) {
-			$this->pdo->log->doEcho($this->pdo->log->primary('Processing ' . $groupName), true);
+			$this->pdo->log::out(
+				\sprintf('Processing %s', $groupName),
+				'primary',
+				true);
 		}
 
 		// Check if this is days or post backfill.
-		$postCheck = ($articles === '' ? false : true);
+		$postCheck = $articles !== '';
 
 		// Get target post based on date or user specified number.
 		$targetpost = (string)($postCheck
@@ -281,25 +284,23 @@ class Backfill
 			}
 
 			if ($this->_echoCLI) {
-				$this->pdo->log->doEcho($this->pdo->log->notice($dMessage), true);
+				$this->pdo->log::out($dMessage, 'notice', true);
 			}
 			return;
 		}
 
 		if ($this->_echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary(
-					'Group ' .
-					$groupName .
-					"'s oldest article is " .
-					number_format($data['first']) .
-					', newest is ' .
+			$this->pdo->log::out(
+				\sprintf(
+					"Group %s's oldest article is %d, newest is %d.\nOur target article is %d. Our oldest article is article %d.",
+					$groupName,
+					number_format($data['first']),
 					number_format($data['last']) .
-					".\nOur target article is " .
-					number_format($targetpost) .
-					'. Our oldest article is article ' .
-					number_format($groupArr['first_record']) .
-					'.'
+					number_format($targetpost),
+					number_format($groupArr['first_record']
+				),
+				'primary',
+				true
 				)
 			);
 		}
@@ -318,18 +319,17 @@ class Backfill
 		while ($done === false) {
 
 			if ($this->_echoCLI) {
-				$this->pdo->log->doEcho(
-					$this->pdo->log->set256('Yellow') .
-					"\nGetting " .
-					(number_format($last - $first + 1)) .
-					" articles from " .
-					$groupName .
-					", " .
-					$left .
-					" group(s) left. (" .
-					(number_format($first - $targetpost)) .
-					" articles in queue)." .
-					$this->pdo->log->rsetColor(), true
+				$this->pdo->log::out(
+					$this->pdo->log::set256('Yellow') .
+					\sprintf(
+						"\nGetting %d articles from %s, %d group(s) left. (%d articles in queue)." .
+						$this->pdo->log::rsetColor(),
+					number_format($last - $first + 1),
+					$groupName,
+					$left,
+					number_format($first - $targetpost)),
+					null,
+					true
 				);
 			}
 
@@ -367,15 +367,14 @@ class Backfill
 		}
 
 		if ($this->_echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary(
-					PHP_EOL .
-					'Group ' .
-					$groupName .
-					' processed in ' .
-					number_format(microtime(true) - $startGroup, 2) .
-					" seconds."
-				), true
+			$this->pdo->log::out(
+				PHP_EOL . \sprintf(
+					'Group %s processed in %d seconds.',
+					$groupName,
+					number_format(microtime(true) - $startGroup, 2)
+				),
+				'primary',
+				true
 			);
 		}
 	}
@@ -388,7 +387,7 @@ class Backfill
 	 *
 	 * @return void
 	 */
-	public function safeBackfill($articles = '')
+	public function safeBackfill($articles = ''): void
 	{
 		$groupname = $this->pdo->queryOneRow(
 			sprintf('

@@ -38,7 +38,7 @@ $bool = array(
 
 if (!isset($argv[1]) || !in_array($argv[1], $args) || !isset($argv[2]) || !in_array($argv[2], $bool)) {
 	exit(
-		$pdo->log->error(
+		$pdo->log::error(
 			"\nIncorrect arguments.\n"
 				. "The second argument (true/false) determines wether to echo or not.\n\n"
 				. "php postprocess.php all true         ...: Does all the types of post processing.\n"
@@ -66,7 +66,7 @@ if ($args[$argv[1]] === true) {
 	if ((Settings::value('..alternate_nntp') == 1 ? $nntp->doConnect(true, true) :
 			$nntp->doConnect()) !==
 		true) {
-		exit($pdo->log->error("Unable to connect to usenet." . PHP_EOL));
+		exit($pdo->log::error("Unable to connect to usenet." . PHP_EOL));
 	}
 }
 

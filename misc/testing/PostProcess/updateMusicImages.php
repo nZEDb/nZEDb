@@ -8,7 +8,7 @@ $pdo = new DB();
 $covers = $updated = $deleted = 0;
 
 if ($argc == 1 || $argv[1] != 'true') {
-	exit($pdo->log->error("\nThis script will check all images in covers/music and compare to db->musicinfo.\nTo run:\nphp {$argv[0]} true\n"));
+	exit($pdo->log::error("\nThis script will check all images in covers/music and compare to db->musicinfo.\nTo run:\nphp {$argv[0]} true\n"));
 }
 
 $row = $pdo->queryOneRow("SELECT value FROM settings WHERE setting = 'coverspath'");
@@ -31,7 +31,7 @@ foreach ($itr as $filePath) {
 			} else {
 				$run = $pdo->queryDirect("SELECT id FROM musicinfo WHERE id = " . $match[1]);
 				if ($run->rowCount() == 0) {
-					echo $pdo->log->info($filePath . " not found in db.");
+					echo $pdo->log::info($filePath . " not found in db.");
 				}
 			}
 		}
@@ -43,10 +43,10 @@ if ($qry instanceof \Traversable) {
 	foreach ($qry as $rows) {
 		if (!is_file($path2covers . $rows['id'] . '.jpg')) {
 			$pdo->queryDirect("UPDATE musicinfo SET cover = 0 WHERE cover = 1 AND id = " . $rows['id']);
-			echo $pdo->log->info($path2covers . $rows['id'] . ".jpg does not exist.");
+			echo $pdo->log::info($path2covers . $rows['id'] . ".jpg does not exist.");
 			$deleted++;
 		}
 	}
 }
-echo $pdo->log->header($covers . " covers set.");
-echo $pdo->log->header($deleted . " music unset.");
+echo $pdo->log::header($covers . " covers set.");
+echo $pdo->log::header($deleted . " music unset.");

@@ -19,14 +19,14 @@ $maxHeaders = Settings::value('max.headers.iteration') ?: 1000000;
 $nntp = new NNTP(['Settings' => $pdo]);
 
 if ($nntp->doConnect() !== true) {
-	exit($pdo->log->error('Unable to connect to usenet.'));
+	exit($pdo->log::error('Unable to connect to usenet.'));
 }
 
 $binaries = new Binaries(['NNTP' => $nntp, 'Settings' => $pdo]);
 
 if (isset($argv[1]) && !is_numeric($argv[1])) {
 	$groupName = $argv[1];
-	echo $pdo->log->header("Updating group: $groupName");
+	echo $pdo->log::header("Updating group: $groupName");
 
 	$group = Group::getAllByName($groupName);
 	if (is_array($group)) {

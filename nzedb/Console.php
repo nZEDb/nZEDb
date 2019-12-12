@@ -454,18 +454,16 @@ class Console
 
 				$consoleId = $this->_updateConsoleTable($con);
 
-				if ($this->echooutput) {
-					if ($consoleId !== -2) {
-						$this->pdo->log->doEcho(
-							$this->pdo->log->header("Added/updated game: ") .
-							$this->pdo->log->alternateOver("   Title:    ") .
-							$this->pdo->log->primary($con['title']) .
-							$this->pdo->log->alternateOver("   Platform: ") .
-							$this->pdo->log->primary($con['platform']) .
-							$this->pdo->log->alternateOver("   Genre: ") .
-							$this->pdo->log->primary($con['consolegenre'])
-						);
-					}
+				if ($this->echooutput && $consoleId !== -2) {
+					$this->pdo->log::out(
+						$this->pdo->log::header('Added/updated game: ') .
+						$this->pdo->log::alternate('   Title:    ', false) .
+						$this->pdo->log::primary($con['title']) .
+						$this->pdo->log::alternate('   Platform: ', false) .
+						$this->pdo->log::primary($con['platform']) .
+						$this->pdo->log::alternate('   Genre: ', false) .
+						$this->pdo->log::primary($con['consolegenre'])
+					);
 				}
 			}
 		}
@@ -845,7 +843,11 @@ class Console
 		if ($res instanceof \Traversable && $res->rowCount() > 0) {
 
 			if ($this->echooutput) {
-				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $res->rowCount() . ' console release(s).'));
+				$this->pdo->log::out(
+					$this->pdo->log::header(
+						\sprintf('Processing %d console release(s).', $res->rowCount())
+					)
+				);
 			}
 
 			foreach ($res as $arr) {
@@ -856,12 +858,13 @@ class Console
 
 				if ($gameInfo !== false) {
 						if ($this->echooutput) {
-						$this->pdo->log->doEcho(
-							$this->pdo->log->headerOver('Looking up: ') .
-							$this->pdo->log->primary(
-								$gameInfo['title'] .
-								' (' .
-								$gameInfo['platform'] . ')'
+						$this->pdo->log::out(
+							$this->pdo->log::header('Looking up: ', false) .
+							$this->pdo->log::primary(
+								\sprintf('%s (%s)',
+									$gameInfo['title'],
+									$gameInfo['platform']
+								)
 							)
 						);
 					}
@@ -872,7 +875,7 @@ class Console
 					if ($gameCheck === false && in_array($gameInfo['title'] . $gameInfo['platform'], $this->failCache)) {
 						// Lookup recently failed, no point trying again
 						if ($this->echooutput) {
-							$this->pdo->log->doEcho($this->pdo->log->headerOver('Cached previous failure. Skipping.') . PHP_EOL);
+							$this->pdo->log::out('Cached previous failure. Skipping.', 'header', true);
 						}
 						$gameId = -2;
 					} else if ($gameCheck === false) {
@@ -884,10 +887,14 @@ class Console
 						}
 					} else {
 						if ($this->echooutput) {
-							$this->pdo->log->doEcho(
-									$this->pdo->log->headerOver("Found Local: ") .
-									$this->pdo->log->primary("{$gameCheck['title']} - {$gameCheck['platform']}") .
-									PHP_EOL
+							$this->pdo->log::out(
+								$this->pdo->log::header('Found Local: ', false) .
+								$this->pdo->log::primary(
+									\sprintf('%s - %s',
+										$gameCheck['title'],
+										$gameCheck['platform']
+									)
+								)
 							);
 						}
 						$gameId = $gameCheck['id'];
@@ -917,7 +924,7 @@ class Console
 			}
 
 		} else if ($this->echooutput) {
-			$this->pdo->log->doEcho($this->pdo->log->header('No console releases to process.'));
+			$this->pdo->log::out('No console releases to process.', 'header', true);
 		}
 	}
 

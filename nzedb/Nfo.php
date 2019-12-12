@@ -319,8 +319,8 @@ class Nfo
 		$nfoCount = count($res);
 
 		if ($nfoCount > 0) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary(
+			$this->pdo->log::out(
+				$this->pdo->log::primary(
 					PHP_EOL .
 					($guidChar === '' ? '' : '[' . $guidChar . '] ') .
 					($groupID === '' ? '' : '[' . $groupID . '] ') .
@@ -349,7 +349,7 @@ class Nfo
 					foreach ($nfoStats as $row) {
 						$outString .= ', ' . $row['status'] . ' = ' . number_format($row['count']);
 					}
-					$this->pdo->log->doEcho($this->pdo->log->header($outString . '.'));
+					$this->pdo->log::out($outString . '.', 'header', true);
 				}
 			}
 
@@ -443,7 +443,7 @@ class Nfo
 				echo PHP_EOL;
 			}
 			if ($ret > 0) {
-				$this->pdo->log->doEcho($ret . ' NFO file(s) found/processed.', true);
+				$this->pdo->log::out($ret . ' NFO file(s) found/processed.', true);
 			}
 		}
 		return $ret;

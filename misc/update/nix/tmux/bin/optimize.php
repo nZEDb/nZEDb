@@ -34,13 +34,13 @@ if (isset($argv[1])) {
 
 		//remove folders from smarty
 		if ((count(glob("${smarty}*"))) > 0) {
-			echo $pdo->log->info('Removing old stuff from ' . $smarty);
+			echo $pdo->log::info('Removing old stuff from ' . $smarty);
 			exec('rm -rf ' . $smarty . '*');
 		} else {
-			echo $pdo->log->info('Nothing to remove from ' . $smarty);
+			echo $pdo->log::info('Nothing to remove from ' . $smarty);
 		}
 
-		echo $pdo->log->primary('Patching database - ' . $dbname);
+		echo $pdo->log::primary('Patching database - ' . $dbname);
 		exec("$PHP ${ROOTDIR}/cli/update_db.php true");
 	}
 
@@ -50,7 +50,7 @@ if (isset($argv[1])) {
 	$tablecnt = count($alltables);
 	foreach ($alltables as $table) {
 		if ($table['name'] != 'predb') {
-			echo $pdo->log->primary('Optimizing table: ' . $table['name']);
+			echo $pdo->log::primary('Optimizing table: ' . $table['name']);
 			if (strtolower($table['engine']) == 'myisam') {
 				$pdo->queryDirect('REPAIR TABLE `' . $table['name'] . '`');
 			}
@@ -60,9 +60,9 @@ if (isset($argv[1])) {
 	$pdo->queryDirect('FLUSH TABLES');
 
 	if ($restart == 'true' && $argv[1] == 'true') {
-		echo $pdo->log->info("Starting tmux scripts");
+		echo $pdo->log::info("Starting tmux scripts");
 		$pdo->queryExec('update tmux set value = \'1\' where setting = \'RUNNING\'');
 	}
 } else {
-	exit($pdo->log->notice("\nIf you have set the settings in admin tmux, then this script will automatically do a git pull, patch the DB and delete the smarty folder contents and optimize the database.\nphp optimize.php true\n\nTo run without stopping tmux scripts run: \nphp optimize.php false\n"));
+	exit($pdo->log::notice("\nIf you have set the settings in admin tmux, then this script will automatically do a git pull, patch the DB and delete the smarty folder contents and optimize the database.\nphp optimize.php true\n\nTo run without stopping tmux scripts run: \nphp optimize.php false\n"));
 }

@@ -595,7 +595,7 @@ class Tmux
 		if ($this->isRunning() == 1) {
 			$this->pdo->queryExec("UPDATE tmux SET value = '0' WHERE setting = 'running'");
 			$sleep = $this->get()->monitor_delay;
-			echo $this->pdo->log->header("Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown");
+			echo $this->pdo->log::header("Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown");
 			sleep($sleep);
 			return true;
 		}

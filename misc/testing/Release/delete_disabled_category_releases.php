@@ -32,11 +32,11 @@ if (isset($argv[1]) && $argv[1] == "true") {
 	}
 	$time = TIME() - $timestart;
 	if ($relsdeleted > 0) {
-		echo $pdo->log->header($relsdeleted . " releases deleted in " . $time . " seconds.");
+		echo $pdo->log::header($relsdeleted . " releases deleted in " . $time . " seconds.");
 	} else {
-		exit($pdo->log->info("No releases to delete."));
+		exit($pdo->log::info("No releases to delete."));
 	}
 } else {
-	exit($pdo->log->error("\nDeletes releases in categories you have disabled here : http://localhost/admin/category-list.php\n"
+	exit($pdo->log::error("\nDeletes releases in categories you have disabled here : http://localhost/admin/category-list.php\n"
 			. "php $argv[0] true    ...: run this script.\n"));
 }

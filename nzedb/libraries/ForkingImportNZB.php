@@ -1,6 +1,7 @@
 <?php
 namespace nzedb\libraries;
 
+use nzedb\ColorCLI;
 use nzedb\db\DB;
 
 /**
@@ -48,12 +49,12 @@ class ForkingImportNZB extends Forking
 		$this->_workCount = count($directories);
 
 		if ($this->_workCount == 0) {
-			echo $this->pdo->log->error('No sub-folders were found in your specified folder (' . $folder . ').');
+			echo $this->pdo->log::error('No sub-folders were found in your specified folder (' . $folder . ').');
 			exit();
 		}
 
 		if (nZEDb_ECHOCLI) {
-			echo $this->pdo->log->header(
+			echo $this->pdo->log::header(
 				'Multi-processing started at ' . date(DATE_RFC2822) . ' with ' . $this->_workCount .
 				' job(s) to do using a max of ' . $maxProcesses . ' child process(es).'
 			);
@@ -71,11 +72,13 @@ class ForkingImportNZB extends Forking
 		$this->process_work(true);
 
 		if (nZEDb_ECHOCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->header(
-					'Multi-processing for import finished in ' . (microtime(true) - $startTime) .
-					' seconds at ' . date(DATE_RFC2822) . '.' . PHP_EOL
-				)
+			ColorCLI::out(
+				\sprintf('Multi-processing for import finished in %s seconds at %s',
+					(microtime(true) - $startTime),
+					date(DATE_RFC2822)
+				),
+				'header',
+				true
 			);
 		}
 	}

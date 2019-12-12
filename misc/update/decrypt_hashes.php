@@ -9,7 +9,7 @@ use nzedb\db\DB;
 $pdo = new DB();
 
 if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1]))) {
-	exit($pdo->log->error(
+	exit($pdo->log::error(
 		"\nThis script tries to match hashes of the releases.name or releases.searchname to predb hashes.\n"
 		. "To display the changes, use 'show' as the second argument.\n\n"
 		. "php decrypt_hashes.php 1000		...: to limit to 1000 sorted by newest postdate.\n"
@@ -18,8 +18,8 @@ if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && !is_numeric(
 	));
 }
 
-echo $pdo->log->header("\nDecrypt Hashes (${argv[1]}) Started at " . date('g:i:s'));
-echo $pdo->log->primary("Matching predb hashes to hash(releases.name or releases.searchname)");
+echo $pdo->log::header("\nDecrypt Hashes (${argv[1]}) Started at " . date('g:i:s'));
+echo $pdo->log::primary("Matching predb hashes to hash(releases.name or releases.searchname)");
 
 getPreName($argv);
 
@@ -47,7 +47,7 @@ function getPreName($argv)
 	}
 	$show = (!isset($argv[2]) || $argv[2] !== 'show') ? 0 : 1;
 	if ($total > 0) {
-		echo $pdo->log->header("\n" . number_format($total) . ' releases to process.');
+		echo $pdo->log::header("\n" . number_format($total) . ' releases to process.');
 		sleep(2);
 
 		foreach ($res as $row) {
@@ -69,8 +69,8 @@ function getPreName($argv)
 		}
 	}
 	if ($total > 0) {
-		echo $pdo->log->header("\nRenamed " . $counted . " releases in " . $consoletools->convertTime(TIME() - $timestart) . ".");
+		echo $pdo->log::header("\nRenamed " . $counted . " releases in " . $consoletools->convertTime(TIME() - $timestart) . ".");
 	} else {
-		echo $pdo->log->info("\nNothing to do.");
+		echo $pdo->log::info("\nNothing to do.");
 	}
 }

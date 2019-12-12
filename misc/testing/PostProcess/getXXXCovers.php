@@ -11,10 +11,10 @@ $movie = new XXX(['Echo' => true, 'Settings' => $pdo]);
 
 $movies = $pdo->queryDirect("SELECT title FROM xxxinfo WHERE cover = 0");
 if ($movies instanceof \Traversable) {
-	echo $pdo->log->primary("Updating " . number_format($movies->rowCount()) . " movie covers.");
+	echo $pdo->log::primary("Updating " . number_format($movies->rowCount()) . " movie covers.");
 	foreach ($movies as $mov) {
 		$starttime = microtime(true);
-		echo $pdo->log->primaryOver("Looking up: " . $pdo->log->headerOver($mov['title'])) . "\n";
+		echo $pdo->log::primaryOver("Looking up: " . $pdo->log::headerOver($mov['title'])) . "\n";
 		$mov = $movie->updateXXXInfo($mov['title']);
 		if ($mov > 0) {
 			if (file_exists(nZEDb_COVERS . 'xxx' . DS . $mov . '-cover.jpg')) {

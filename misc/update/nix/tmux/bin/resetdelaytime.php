@@ -25,6 +25,6 @@ foreach ($tables as $row) {
 		}
 	}
 }
-echo $pdo->log->primary(number_format($ran) . " collections reset.");
+echo $pdo->log::primary(number_format($ran) . " collections reset.");
 
 sleep(2);

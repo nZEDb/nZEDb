@@ -187,8 +187,8 @@ class ReleaseRemover
 		$this->deleteReleases();
 
 		if ($this->echoCLI) {
-			echo $this->pdo->log->headerOver(($this->delete ? "Deleted " : "Would have deleted ") . $this->deletedCount . " release(s). This script ran for ");
-			echo $this->pdo->log->header($this->consoleTools->convertTime(TIME() - $this->timeStart));
+			echo $this->pdo->log::headerOver(($this->delete ? "Deleted " : "Would have deleted ") . $this->deletedCount . " release(s). This script ran for ");
+			echo $this->pdo->log::header($this->consoleTools->convertTime(TIME() - $this->timeStart));
 		}
 
 		return ($this->browser
@@ -231,7 +231,7 @@ class ReleaseRemover
 		switch ($time) {
 			case 'full':
 				if ($this->echoCLI) {
-					echo $this->pdo->log->header("Removing " . ($type == '' ? "All crap releases " : $type . " crap releases") . " - no time limit.\n");
+					echo $this->pdo->log::header("Removing " . ($type == '' ? "All crap releases " : $type . " crap releases") . " - no time limit.\n");
 				}
 				break;
 			default:
@@ -241,7 +241,7 @@ class ReleaseRemover
 					return $this->returnError();
 				}
 				if ($this->echoCLI) {
-					echo $this->pdo->log->header("Removing " . ($type == '' ? "All crap releases " : $type . " crap releases") . " from the past " . $time . " hour(s).\n");
+					echo $this->pdo->log::header("Removing " . ($type == '' ? "All crap releases " : $type . " crap releases") . " from the past " . $time . " hour(s).\n");
 				}
 				$this->crapTime = ' AND r.adddate > (NOW() - INTERVAL ' . $time . ' HOUR)';
 				break;
@@ -317,8 +317,8 @@ class ReleaseRemover
 		}
 
 		if ($this->echoCLI) {
-			echo $this->pdo->log->headerOver(($this->delete ? "Deleted " : "Would have deleted ") . $this->deletedCount . " release(s). This script ran for ");
-			echo $this->pdo->log->header($this->consoleTools->convertTime(TIME() - $this->timeStart));
+			echo $this->pdo->log::headerOver(($this->delete ? "Deleted " : "Would have deleted ") . $this->deletedCount . " release(s). This script ran for ");
+			echo $this->pdo->log::header($this->consoleTools->convertTime(TIME() - $this->timeStart));
 		}
 
 		return ($this->browser
@@ -858,7 +858,7 @@ class ReleaseRemover
 				}
 
 				// Provide useful output of operations
-				echo $this->pdo->log->header(sprintf("Finding crap releases for %s: Using %s method against release %s.\n" .
+				echo $this->pdo->log::header(sprintf("Finding crap releases for %s: Using %s method against release %s.\n" .
 						"%s", $this->method, $blType, $opTypeName, $ftUsing
 					)
 				);
@@ -885,7 +885,7 @@ class ReleaseRemover
 
 			}
 		} else {
-			echo $this->pdo->log->error("No regular expressions were selected for blacklist removal. Make sure you have activated REGEXPs in Site Edit and you're specifying a valid ID.\n");
+			echo $this->pdo->log::error("No regular expressions were selected for blacklist removal. Make sure you have activated REGEXPs in Site Edit and you're specifying a valid ID.\n");
 		}
 
 		return true;
@@ -974,7 +974,7 @@ class ReleaseRemover
 				}
 
 				// Provide useful output of operations
-				echo $this->pdo->log->header(sprintf("Finding crap releases for %s: Using %s method against release filenames." . PHP_EOL .
+				echo $this->pdo->log::header(sprintf("Finding crap releases for %s: Using %s method against release filenames." . PHP_EOL .
 						"%s", $this->method, $blType, $ftUsing
 					)
 				);
@@ -1095,10 +1095,10 @@ class ReleaseRemover
 			if ($this->delete) {
 				$this->releases->deleteSingle(['g' => $release['guid'], 'i' => $release['id']], $this->nzb, $this->releaseImage);
 				if ($this->echoCLI) {
-					echo $this->pdo->log->primary('Deleting: ' . $this->method . ': ' . $release['searchname']);
+					echo $this->pdo->log::primary('Deleting: ' . $this->method . ': ' . $release['searchname']);
 				}
 			} elseif ($this->echoCLI) {
-				echo $this->pdo->log->primary('Would be deleting: ' . $this->method . ': ' . $release['searchname']);
+				echo $this->pdo->log::primary('Would be deleting: ' . $this->method . ': ' . $release['searchname']);
 			}
 			$deletedCount++;
 		}
@@ -1335,7 +1335,7 @@ class ReleaseRemover
 		}
 
 		// Print the query to the user, ask them if they want to continue using it.
-		echo $this->pdo->log->primary(
+		echo $this->pdo->log::primary(
 			'This is the query we have formatted using your criteria, you can run it in SQL to see if you like the results:' .
 			self::N . $this->query . ';' . self::N .
 			'If you are satisfied, type yes and press enter. Anything else will exit.'
@@ -1344,7 +1344,7 @@ class ReleaseRemover
 		// Check the users response.
 		$userInput = trim(fgets(fopen('php://stdin', 'r')));
 		if ($userInput !== 'yes') {
-			echo $this->pdo->log->primary('You typed: "' . $userInput . '", the program will exit.');
+			echo $this->pdo->log::primary('You typed: "' . $userInput . '", the program will exit.');
 
 			return false;
 		}
@@ -1394,7 +1394,7 @@ class ReleaseRemover
 			return $this->error . '<br />';
 		} else {
 			if ($this->echoCLI && $this->error !== '') {
-				echo $this->pdo->log->error($this->error);
+				echo $this->pdo->log::error($this->error);
 			}
 
 			return false;

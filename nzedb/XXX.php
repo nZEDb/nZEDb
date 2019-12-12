@@ -399,14 +399,14 @@ class XXX
 		$this->whichclass = 'aebn';
 		$mov = new AEBN();
 		$mov->cookie = $this->cookie;
-		ColorCLI::doEcho(ColorCLI::info('Checking AEBN for movie info'));
+		ColorCLI::out('Checking AEBN for movie info', 'info', true);
 		$res = $mov->processSite($movie);
 
 		if ($res === false) {
 			$this->whichclass = 'pop';
 			$mov = new Popporn();
 			$mov->cookie = $this->cookie;
-			ColorCLI::doEcho(ColorCLI::info('Checking PopPorn for movie info'));
+			ColorCLI::out('Checking PopPorn for movie info', 'info', true);
 			$res = $mov->processSite($movie);
 		}
 
@@ -414,14 +414,14 @@ class XXX
 			$this->whichclass = 'adm';
 			$mov = new ADM();
 			$mov->cookie = $this->cookie;
-			ColorCLI::doEcho(ColorCLI::info('Checking ADM for movie info'));
+			ColorCLI::out('Checking ADM for movie info', 'info', true);
 			$res = $mov->processSite($movie);
 		}
 
 		if ($res === false) {
 			$this->whichclass = 'ade';
 			$mov = new ADE();
-			ColorCLI::doEcho(ColorCLI::info('Checking ADE for movie info'));
+			ColorCLI::out('Checking ADE for movie info', 'info', true);
 			$res = $mov->processSite($movie);
 		}
 
@@ -429,7 +429,7 @@ class XXX
 			$this->whichclass = 'hotm';
 			$mov = new Hotmovies();
 			$mov->cookie = $this->cookie;
-			ColorCLI::doEcho(ColorCLI::info('Checking HotMovies for movie info'));
+			ColorCLI::out('Checking HotMovies for movie info', 'info', true);
 			$res = $mov->processSite($movie);
 		}
 
@@ -457,7 +457,7 @@ class XXX
 					default:
 						$fromstr = '';
 				}
-				ColorCLI::doEcho(ColorCLI::primary('Fetching XXX info from: ' . $fromstr));
+				ColorCLI::out('Fetching XXX info from: ' . $fromstr, 'primary', true);
 			}
 			$res = $mov->getAll();
 		} else {
@@ -539,9 +539,8 @@ class XXX
 		}
 
 		if ($this->echooutput) {
-			ColorCLI::doEcho(
-				ColorCLI::headerOver(($xxxID !== false ? 'Added/updated XXX movie: ' . ColorCLI::primary($mov['title']) : 'Nothing to update for XXX movie: ' . ColorCLI::primary($mov['title'])))
-			);
+			$prefix = $xxxID === false ? 'Nothing to update for XXX movie: ' : 'Added/updated XXX movie: ';
+			ColorCLI::out(ColorCLI::header($prefix, true) . ColorCLI::primary($mov['title']));
 		}
 
 		return $xxxID;
@@ -570,7 +569,13 @@ class XXX
 		if ($movieCount > 0) {
 
 			if ($this->echooutput) {
-				ColorCLI::doEcho(ColorCLI::header('Processing ' . $movieCount . ' XXX releases.'));
+				ColorCLI::out(
+					\sprintf(
+						'Processing %s XXX releases.',
+						\number_format($movieCount)
+					),
+					'header', true
+				);
 			}
 
 			// Loop over releases.
@@ -584,25 +589,32 @@ class XXX
 					if ($check === false) {
 						$this->currentRelID = $arr['id'];
 						if ($this->debug && $this->echooutput) {
-							ColorCLI::doEcho('DB name: ' . $arr['searchname'], true);
-						}
-						if ($this->echooutput) {
-							ColorCLI::doEcho(ColorCLI::primaryOver('Looking up: ') . ColorCLI::headerOver($this ->currentTitle), true);
+							ColorCLI::out('DB name: ' . $arr['searchname'], true);
 						}
 
-						ColorCLI::doEcho(ColorCLI::info('Local match not found, checking web!'), true);
+						if ($this->echooutput) {
+							ColorCLI::out(
+								ColorCLI::primary('Looking up: ', false) .
+								ColorCLI::header($this ->currentTitle, true)
+							);
+						}
+
+						ColorCLI::out('Local match not found, checking web!', 'info', true);
 						$idcheck = $this->updateXXXInfo($this->currentTitle);
 					} else {
-						ColorCLI::doEcho(ColorCLI::info('Local match found for XXX Movie: ' . ColorCLI::headerOver($this->currentTitle)), true);
+						ColorCLI::out(
+							ColorCLI::info('Local match found for XXX Movie: ', false) .
+							ColorCLI::header($this->currentTitle, true)
+						);
 						$idcheck = (int)$check['id'];
 					}
 				} else {
-					ColorCLI::doEcho('.', true);
+					ColorCLI::out('.', null, true);
 				}
 				$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d %s', $idcheck, $arr['id'], $this->catWhere));
 			}
 		} elseif ($this->echooutput) {
-			ColorCLI::doEcho(ColorCLI::header('No xxx releases to process.'));
+			ColorCLI::out('No xxx releases to process.', 'header', true);
 		}
 	}
 
@@ -657,7 +669,7 @@ class XXX
 
 					return true;
 				} else {
-					$this->pdo->log->doEcho(".", false);
+					$this->pdo->log::out('.', mull,false);
 				}
 			}
 

@@ -429,31 +429,16 @@ class AniDB
 				$AniDBAPIArray = $this->getAniDbAPI($anidb['anidbid']);
 
 				if ($this->banned === true) {
-					ColorCLI::doEcho(
-						ColorCLI::error(
-							'AniDB Banned, import will fail, please wait 24 hours before retrying.'
-						),
-						true
-					);
+					ColorCLI::out('AniDB Banned, import will fail, please wait 24 hours before retrying.', 'error', true);
 					exit;
 				}
 
 				if ($AniDBAPIArray === false && $this->echooutput) {
-					ColorCLI::doEcho(
-						ColorCLI::info(
-							'Anime ID: ' . $anidb['anidbid'] . ' not available for update yet.'
-						),
-						true
-					);
+					ColorCLI::out('Anime ID: ' . $anidb['anidbid'] . ' not available for update yet.', 'info', true);
 				} else {
 					$this->updateAniChildTables($AniDBAPIArray, $anidb['anidbid']);
 					if (nZEDb_DEBUG) {
-						ColorCLI::doEcho(
-							ColorCLI::headerOver(
-								'Added/Updated AniDB ID: ' . $anidb['anidbid']
-							),
-							true
-						);
+						ColorCLI::out('Added/Updated AniDB ID: ' . $anidb['anidbid'], 'header', true);
 					}
 				}
 				sleep(random_int(120, 240));
@@ -462,31 +447,16 @@ class AniDB
 			$AniDBAPIArray = $this->getAniDbAPI($anidbId);
 
 			if ($this->banned === true) {
-				ColorCLI::doEcho(
-					ColorCLI::error(
-						'AniDB Banned, import will fail, please wait 24 hours before retrying.'
-					),
-					true
-				);
+				ColorCLI::out('AniDB Banned, import will fail, please wait 24 hours before retrying.', 'error', true);
 				exit;
 			}
 
 			if ($AniDBAPIArray === false && $this->echooutput) {
-				ColorCLI::doEcho(
-					ColorCLI::info(
-						'Anime ID: ' . $anidbId . ' not available for update yet.'
-					),
-					true
-				);
+				ColorCLI::out('Anime ID: ' . $anidbId . ' not available for update yet.', 'info', true);
 			} else {
 				$this->updateAniChildTables($AniDBAPIArray, $anidbId);
 				if (nZEDb_DEBUG) {
-					ColorCLI::doEcho(
-						ColorCLI::headerOver(
-							'Added/Updated AniDB ID: ' . $anidbId
-						),
-						true
-					);
+					ColorCLI::out('Added/Updated AniDB ID: ' . $anidbId, 'header', true);
 				}
 			}
 		}

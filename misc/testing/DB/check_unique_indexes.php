@@ -7,7 +7,7 @@ $pdo = new DB();
 
 if (!isset($argv[1])) {
 	if ($argv[1] !== 'test' || $argv[1] !== 'alter') {
-		exit($pdo->log->error("\nThis script will scan mysql-ddl.sql for all UNIQUE INDEXES.\n"
+		exit($pdo->log::error("\nThis script will scan mysql-ddl.sql for all UNIQUE INDEXES.\n"
 						. "It will verify that you have them. If you do not, you can choose to run manually or allow the script to run them.\n\n"
 						. "php $argv[0] test      ...: To verify all unique indexes.\n"
 						. "php $argv[0] alter     ...: To add missing unique indexes.\n"));
@@ -27,17 +27,17 @@ function run_query($query, $test)
 		try {
 			$qry = $pdo->prepare($query);
 			$qry->execute();
-			echo $pdo->log->alternateOver('SUCCESS: ') . $pdo->log->primary($query);
+			echo $pdo->log::alternateOver('SUCCESS: ') . $pdo->log::primary($query);
 		} catch (\PDOException $e) {
 			if ($e->errorInfo[1] == 1061) {
 				// Duplicate key exists
-				echo $pdo->log->alternateOver('SKIPPED Index name exists: ') . $pdo->log->primary($query);
+				echo $pdo->log::alternateOver('SKIPPED Index name exists: ') . $pdo->log::primary($query);
 			} else {
-				echo $pdo->log->alternateOver('FAILED: ') . $pdo->log->primary($query);
+				echo $pdo->log::alternateOver('FAILED: ') . $pdo->log::primary($query);
 			}
 		}
 	} else {
-		echo $pdo->log->header($query);
+		echo $pdo->log::header($query);
 	}
 }
 
@@ -111,11 +111,11 @@ if ($handle) {
 						run_query($qry, $argv[1]);
 					}
 				} else {
-					echo $pdo->log->primary("A Unique Index exists for " . trim($match['table']) . " on " . trim($match['column']));
+					echo $pdo->log::primary("A Unique Index exists for " . trim($match['table']) . " on " . trim($match['column']));
 				}
 			}
 		}
 	}
 } else {
-	echo $pdo->log->error("\nCan not open mysql-ddl.sql.");
+	echo $pdo->log::error("\nCan not open mysql-ddl.sql.");
 }

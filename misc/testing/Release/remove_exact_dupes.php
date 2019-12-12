@@ -10,7 +10,7 @@ use nzedb\db\DB;
 $pdo = new DB();
 
 if ($argc < 3 || !isset($argv[1]) || (isset($argv[1]) && !is_numeric($argv[1]))) {
-	exit($pdo->log->error("\nIncorrect argument suppplied. This script will delete all duplicate releases matching on name, fromname, groups_id and size.\n"
+	exit($pdo->log::error("\nIncorrect argument suppplied. This script will delete all duplicate releases matching on name, fromname, groups_id and size.\n"
 		. "Unfortunately, I can not guarantee which copy will be deleted.\n\n"
 		. "php remove_exact_dupes.php 10 exact             ...: To delete all duplicates added within the last 10 hours.\n"
 		. "php remove_exact_dupes.php 10 near              ...: To delete all duplicates with size variation of 1% and added within the last 10 hours.\n"
@@ -40,7 +40,7 @@ do {
 	$resrel = $pdo->queryDirect($query);
 	if ($resrel instanceof \Traversable) {
 		$total = $resrel->rowCount();
-		echo $pdo->log->header(number_format($total) . " Releases have Duplicates");
+		echo $pdo->log::header(number_format($total) . " Releases have Duplicates");
 		foreach ($resrel as $rowrel) {
 			$nzbpath = $nzb->getNZBPath($rowrel['guid']);
 			if (isset($argv[3]) && is_dir($argv[3])) {
@@ -50,7 +50,7 @@ do {
 				}
 				if (!file_exists($path . $rowrel['guid'] . ".nzb.gz") && file_exists($nzbpath)) {
 					if (@copy($nzbpath, $path . $rowrel['guid'] . ".nzb.gz") !== true) {
-						exit("\n" . $pdo->log->error("\nUnable to write " . $path . $rowrel['guid'] . ".nzb.gz"));
+						exit("\n" . $pdo->log::error("\nUnable to write " . $path . $rowrel['guid'] . ".nzb.gz"));
 					}
 				}
 			}
@@ -63,4 +63,4 @@ do {
 	$count = 0;
 	echo "\n\n";
 } while ($total > 0);
-echo $pdo->log->header("\nDeleted " . number_format($all) . " Duplicate Releases");
+echo $pdo->log::header("\nDeleted " . number_format($all) . " Duplicate Releases");

@@ -2592,7 +2592,7 @@ class ProcessAdditional
 	protected function _echo($string, $type, $newLine = true)
 	{
 		if ($this->_echoCLI) {
-			$this->pdo->log->doEcho($this->pdo->log->$type($string), $newLine);
+			$this->pdo->log::out($string, $type, $newLine);
 		}
 	}
 

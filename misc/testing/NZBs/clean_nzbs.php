@@ -14,7 +14,7 @@ $pdo = new DB();
 $dir = nZEDb_RES . 'movednzbs/';
 
 if (!isset($argv[1]) || !in_array($argv[1], ['true', 'move'])) {
-	exit($pdo->log->error("\nThis script can remove all nzbs not found in the db and all releases with no nzbs found. It can also move invalid nzbs.\n\n"
+	exit($pdo->log::error("\nThis script can remove all nzbs not found in the db and all releases with no nzbs found. It can also move invalid nzbs.\n\n"
 		. "php $argv[0] true     ...: For a dry run, to see how many would be moved.\n"
 		. "php $argv[0] move     ...: Move NZBs that are possibly bad or have no release. They are moved into this folder: $dir\n"));
 }
@@ -31,8 +31,8 @@ $timestart = date('r');
 $checked = $moved = 0;
 $couldbe = ($argv[1] === 'true') ? 'could be ' : '';
 
-echo $pdo->log->header('Getting List of nzbs to check against db.');
-echo $pdo->log->header("Checked / {$couldbe}moved\n");
+echo $pdo->log::header('Getting List of nzbs to check against db.');
+echo $pdo->log::header("Checked / {$couldbe}moved\n");
 
 $dirItr = new \RecursiveDirectoryIterator(Settings::value('..nzbpath'));
 $itr = new \RecursiveIteratorIterator($dirItr, \RecursiveIteratorIterator::LEAVES_ONLY);

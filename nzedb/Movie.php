@@ -685,7 +685,7 @@ class Movie
 	{
 		$imdb = new Imdb($imdbId);
 		if ($this->echooutput && $this->service !== '') {
-			$this->pdo->log::doEcho($this->pdo->log::primary('Fetching IMDB info from TMDB using IMDB ID: ' . $imdb->getIdPadded()));
+			$this->pdo->log::out('Fetching IMDB info from TMDB using IMDB ID: ' . $imdb->getIdPadded(), 'primary', true);
 		}
 
 		// Check TMDB for IMDB info.
@@ -795,14 +795,16 @@ class Movie
 		]);
 
 		if ($this->echooutput && $this->service !== '') {
-			$this->pdo->log->doEcho(
-					$this->pdo->log->headerOver(($movieID !== 0 ? 'Added/updated movie: ' : 'Nothing to update for movie: ')) .
-					$this->pdo->log->primary($mov['title'] .
-						' (' .
-						$mov['year'] .
-						') - ' .
+			$prefix = $movieID !== 0 ? 'Added/updated movie: ' : 'Nothing to update for movie: ';
+			$this->pdo->log::out(
+				$this->pdo->log::header($prefix, false) .
+				$this->pdo->log::primary(
+					\sprintf('%s (%s) - %s',
+						$mov['title'],
+						$mov['year'],
 						$mov['imdb_id']
 					)
+				)
 			);
 		}
 
@@ -840,8 +842,10 @@ class Movie
 						$ret['title'] = $art['name'];
 					}
 					if ($this->echooutput) {
-						$this->pdo->log->doEcho($this->pdo->log->alternateOver('Fanart Found ') .
-							$this->pdo->log->headerOver($ret['title']));
+						$this->pdo->log::out(
+							$this->pdo->log::alternate('Fanart Found ', false) .
+							$this->pdo->log::header($ret['title'], true)
+						);
 					}
 
 					return $ret;
@@ -934,7 +938,10 @@ class Movie
 			$ret['backdrop'] = 'http://image.tmdb.org/t/p/original' . $result['backdrop_path'];
 		}
 		if ($this->echooutput) {
-			ColorCLI::doEcho(ColorCLI::primaryOver('TMDb Found ') . ColorCLI::headerOver($ret['title']), true);
+			ColorCLI::out(
+				ColorCLI::primary('TMDb Found ', false) .
+				ColorCLI::header($ret['title'])
+			);
 		}
 		return $ret;
 	}
@@ -1032,7 +1039,10 @@ class Movie
 				}
 			}
 			if ($this->echooutput && isset($ret['title'])) {
-				$this->pdo->log->doEcho($this->pdo->log->headerOver('IMDb Found ') . $this->pdo->log->primaryOver($ret['title']), true);
+				$this->pdo->log::out(
+					$this->pdo->log::header('IMDb Found ', false) .
+					$this->pdo->log::primary($ret['title']), true
+				);
 			}
 			return $ret;
 		}
@@ -1061,7 +1071,10 @@ class Movie
 				return false;
 			}
 			if ($this->echooutput) {
-				$this->pdo->log->doEcho($this->pdo->log->alternateOver('Trakt Found ') . $this->pdo->log->headerOver($ret['title']), true);
+				$this->pdo->log::out(
+					$this->pdo->log::alternate('Trakt Found ', false) .
+					$this->pdo->log::header($ret['title'], true)
+				);
 			}
 			return $ret;
 		}
@@ -1088,8 +1101,11 @@ class Movie
 		if ($imdb->getId() !== null) {
 			$this->service = $service;
 			if ($this->echooutput && $this->service !== '') {
-				$this->pdo->log->doEcho($this->pdo->log->headerOver($service . ' found IMDBid: ')
-					. $this->pdo->log->primary($imdb->getIMDbFormat()));
+				$this->pdo->log::out(
+					$this->pdo->log::header($service . ' found IMDBid: ', false)
+					. $this->pdo->log::primary($imdb->getIMDbFormat(), true
+					)
+				);
 			}
 
 			$this->pdo->queryExec(sprintf('UPDATE releases SET imdbid = %s WHERE id = %d %s',
@@ -1144,7 +1160,7 @@ class Movie
 				$this->traktTv = new TraktTv(['Settings' => $this->pdo]);
 			}
 			if ($this->echooutput && $movieCount > 1) {
-				$this->pdo->log->doEcho($this->pdo->log->header('Processing ' . $movieCount . ' movie releases.'));
+				$this->pdo->log::out(\sprintf('Processing %d movie releases.', $movieCount), 'header', true);
 			}
 
 			// Loop over releases.
@@ -1164,7 +1180,10 @@ class Movie
 					}
 
 					if ($this->echooutput) {
-						$this->pdo->log->doEcho($this->pdo->log->primaryOver('Looking up: ') . $this->pdo->log->headerOver($movieName), true);
+						$this->pdo->log::out(
+							$this->pdo->log::primary('Looking up: ', false) .
+							$this->pdo->log::header($movieName, true)
+						);
 					}
 
 					// Check local DB.
@@ -1481,7 +1500,7 @@ class Movie
 			// Check if the name is long enough and not just numbers.
 			if (strlen($name) > 4 && !preg_match('/^\d+$/', $name)) {
 				if ($this->debug && $this->echooutput) {
-					$this->pdo->log->doEcho("DB name: {$releaseName}", true);
+					$this->pdo->log::out("DB name: {$releaseName}", null,  true);
 				}
 				$this->currentTitle = $name;
 				$this->currentYear  = ($year === '' ? false : $year);
@@ -1519,7 +1538,7 @@ class Movie
 	public function updateUpcoming()
 	{
 		if ($this->echooutput) {
-			$this->pdo->log->doEcho($this->pdo->log->header('Updating movie schedule using rotten tomatoes.'));
+			$this->pdo->log::out('Updating movie schedule using rotten tomatoes.', 'headers', true);
 		}
 
 		$rt = new RottenTomato(Settings::value('APIs..rottentomatokey'));
@@ -1533,11 +1552,12 @@ class Movie
 			$this->_getRTData('dvd', $rt);
 
 			if ($this->echooutput) {
-				$this->pdo->log::doEcho($this->pdo->log::header('Updated successfully.'));
+				$this->pdo->log::out('Updated successfully.', 'header', true);
 			}
 
 		} else if ($this->echooutput) {
-			$this->pdo->log::doEcho($this->pdo->log::header('Error retrieving your RottenTomato API Key. Exiting...' . PHP_EOL));
+			$this->pdo->log::out('Error retrieving your RottenTomato API Key. Exiting...', 'header',
+				true);
 		}
 	}
 
@@ -1595,14 +1615,20 @@ class Movie
 
 			if ($this->echooutput) {
 				if ($success !== false) {
-					$this->pdo->log::doEcho($this->pdo->log::header(sprintf('Added/updated movies to the %s list.', $operation)));
+					$this->pdo->log::out(
+							sprintf('Added/updated movies to the %s list.', $operation),
+							'header', true);
 				} else {
-					$this->pdo->log::doEcho($this->pdo->log::primary(sprintf('No new updates for %s list.', $operation)));
+					$this->pdo->log::out(
+							sprintf('No new updates for %s list.', $operation),
+							'primary',
+							true
+					);
 				}
 			}
 
 		} else {
-			exit(PHP_EOL . $this->pdo->log::error('Unable to fetch from Rotten Tomatoes, verify your API Key.' . PHP_EOL));
+			exit(PHP_EOL . $this->pdo->log::out('Unable to fetch from Rotten Tomatoes, verify your API Key.', 'error', true));
 		}
 	}
 

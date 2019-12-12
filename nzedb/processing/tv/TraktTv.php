@@ -97,7 +97,7 @@ class TraktTv extends Tv
 		$tvcount = $res->rowCount();
 
 		if ($this->echooutput && $tvcount > 1) {
-			echo $this->pdo->log->header("Processing TRAKT lookup for " . number_format($tvcount) . " release(s).");
+			echo $this->pdo->log::header("Processing TRAKT lookup for " . number_format($tvcount) . " release(s).");
 		}
 
 		if ($res instanceof \Traversable) {
@@ -112,9 +112,9 @@ class TraktTv extends Tv
 
 					if (in_array($release['cleanname'], $this->titleCache)) {
 						if ($this->echooutput) {
-							echo $this->pdo->log->headerOver("Title: ") .
-								$this->pdo->log->warningOver('"' . $release['cleanname'] . '"') .
-								$this->pdo->log->header(" already failed lookup for this site.  Skipping.");
+							echo $this->pdo->log::headerOver("Title: ") .
+								$this->pdo->log::warningOver('"' . $release['cleanname'] . '"') .
+								$this->pdo->log::header(" already failed lookup for this site.  Skipping.");
 						}
 						$this->setVideoNotFound(parent::PROCESS_IMDB, $row['id']);
 						continue;
@@ -134,9 +134,9 @@ class TraktTv extends Tv
 
 						// If it doesn't exist locally and lookups are allowed lets try to get it.
 						if ($this->echooutput) {
-							echo $this->pdo->log->primaryOver("Checking Trakt for previously failed title: ") .
-								$this->pdo->log->headerOver($release['cleanname']) .
-								$this->pdo->log->primary(".");
+							echo $this->pdo->log::primaryOver("Checking Trakt for previously failed title: ") .
+								$this->pdo->log::headerOver($release['cleanname']) .
+								$this->pdo->log::primary(".");
 						}
 
 						// Get the show from TRAKT
@@ -149,9 +149,9 @@ class TraktTv extends Tv
 
 					} else {
 						if ($this->echooutput) {
-							echo $this->pdo->log->primaryOver("Found local Trakt match for: ") .
-								$this->pdo->log->headerOver($release['cleanname']) .
-								$this->pdo->log->primary(".  Attempting episode lookup!");
+							echo $this->pdo->log::primaryOver("Found local Trakt match for: ") .
+								$this->pdo->log::headerOver($release['cleanname']) .
+								$this->pdo->log::primary(".  Attempting episode lookup!");
 						}
 						$traktid = $this->getSiteIDFromVideoID('trakt', $videoId);
 						$this->localizedTZ = $this->getLocalZoneFromVideoID($videoId);
@@ -167,7 +167,7 @@ class TraktTv extends Tv
 						if ($episodeNo === 'all') {
 							// Set the video ID and leave episode 0
 							$this->setVideoIdFound($videoId, $row['id'], 0);
-							echo $this->pdo->log->primary("Found Trakt Match for Full Season!");
+							echo $this->pdo->log::primary("Found Trakt Match for Full Season!");
 							continue;
 						}
 
@@ -191,7 +191,7 @@ class TraktTv extends Tv
 							// Mark the releases video and episode IDs
 							$this->setVideoIdFound($videoId, $row['id'], $episode);
 							if ($this->echooutput) {
-								echo $this->pdo->log->primary("Found Trakt Match!");
+								echo $this->pdo->log::primary("Found Trakt Match!");
 							}
 							continue;
 						} else {

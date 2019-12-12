@@ -105,7 +105,7 @@ class AniDB
 				}
 			}
 		} else {
-			$this->pdo->log->doEcho($this->pdo->log->info('No work to process.'), true);
+			$this->pdo->log::out('No work to process.', 'info', true);
 		}
 	}
 
@@ -168,10 +168,7 @@ class AniDB
 			$matches['epno'] = (int)$matches['epno'];
 		} else {
 			if (nZEDb_DEBUG) {
-				$this->pdo->log->doEcho(
-					PHP_EOL . "Could not parse searchname '{$cleanName}'.",
-					true
-				);
+				$this->pdo->log::out("\nCould not parse searchname '{$cleanName}'.", null, true);
 			}
 			$this->status = self::PROC_EXTFAIL;
 		}
@@ -220,8 +217,8 @@ class AniDB
 
 		if (\is_array($cleanArr) && isset($cleanArr['title']) && is_numeric($cleanArr['epno'])) {
 
-			echo $this->pdo->log->header(PHP_EOL . 'Looking Up: ') .
-				$this->pdo->log->primary("   Title: {$cleanArr['title']}" . PHP_EOL .
+			echo $this->pdo->log::header(PHP_EOL . 'Looking Up: ') .
+				$this->pdo->log::primary("   Title: {$cleanArr['title']}" . PHP_EOL .
 				"   Episode: {$cleanArr['epno']}");
 
 			// get anidb number for the title of the name
@@ -244,31 +241,28 @@ class AniDB
 						$type = 'Remote';
 					} else {
 						echo PHP_EOL .
-							$this->pdo->log->info('This AniDB ID was not found to be accurate locally, but has been updated too recently to check AniDB.') .
+							$this->pdo->log::info('This AniDB ID was not found to be accurate locally, but has been updated too recently to check AniDB.') .
 							PHP_EOL;
 					}
 				}
 
 				$this->updateRelease($anidbId['anidbid'], $release['id']);
 
-				$this->pdo->log->doEcho(
-					$this->pdo->log->headerOver("Matched {$type} AniDB ID: ") .
-					$this->pdo->log->primary($anidbId['anidbid']) .
-					$this->pdo->log->alternateOver('   Title: ') .
-					$this->pdo->log->primary($anidbId['title']) .
-					$this->pdo->log->alternateOver('   Episode #: ') .
-					$this->pdo->log->primary($cleanArr['epno']) .
-					$this->pdo->log->alternateOver('   Episode Title: ') .
-					$this->pdo->log->primary($updatedAni['episode_title'])
+				$this->pdo->log::out(
+					$this->pdo->log::header("Matched {$type} AniDB ID: ", false) .
+					$this->pdo->log::primary($anidbId['anidbid']) .
+					$this->pdo->log::alternate('   Title: ', false) .
+					$this->pdo->log::primary($anidbId['title']) .
+					$this->pdo->log::alternate('   Episode: ', false) .
+					$this->pdo->log::primary($cleanArr['epno']) .
+					$this->pdo->log::alternate('   Episode Title: ', false) .
+					$this->pdo->log::primary($updatedAni['episode_title'])
 				);
 
 				$matched = true;
 			} else {
 				if (nZEDb_DEBUG) {
-					$this->pdo->log->doEcho(
-						PHP_EOL . "Could not match searchname: {$release['searchname']}.",
-						true
-					);
+					$this->pdo->log::out("\nCould not match searchname: {$release['searchname']}.", null, true);
 				}
 				$this->status = self::PROC_NOMATCH;
 			}

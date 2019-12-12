@@ -158,7 +158,7 @@ class DbUpdate
 						 str_replace('#', '', $options['regex']) . "\n";
 				}
 			} else {
-				echo $this->log->error("  Unable to read file: '$file'");
+				echo $this->log::error("  Unable to read file: '$file'");
 			}
 		}
 	}
@@ -186,21 +186,21 @@ class DbUpdate
 
 		$this->processPatches(['safe' => $options['safe']]); // Make sure we are completely up to date!
 
-		echo $this->log->primaryOver('Looking for new patches...');
+		echo $this->log::primaryOver('Looking for new patches...');
 		$files = Misc::getDirFiles($options);
 
 		$count = count($files);
-		echo $this->log->header(" $count found");
+		echo $this->log::header(" $count found");
 		if ($count > 0) {
-			echo $this->log->header('Processing...');
+			echo $this->log::header('Processing...');
 			natsort($files);
 			$local = $this->pdo->isLocalDb() ? '' : 'LOCAL ';
 
 			foreach ($files as $file) {
 				if (!preg_match($options['regex'], $file, $matches)) {
-					$this->log->error("$file does not match the pattern {$options['regex']}\nPlease fix this before continuing");
+					$this->log::error("$file does not match the pattern {$options['regex']}\nPlease fix this before continuing");
 				} else {
-					echo $this->log->header('Processing patch file: ' . $file);
+					echo $this->log::header('Processing patch file: ' . $file);
 					$this->splitSQL($file, ['local' => $local, 'data' => $options['data']]);
 					$current = (integer)SettingsTable::value('..sqlpatch');
 					$current++;
@@ -246,7 +246,7 @@ class DbUpdate
 			natsort($files);
 			$local = $this->pdo->isLocalDb() ? '' : 'LOCAL ';
 			$data  = $options['data'];
-			echo $this->log->primary('Looking for unprocessed patches...');
+			echo $this->log::primary('Looking for unprocessed patches...');
 			foreach ($files as $file) {
 				$setPatch = false;
 				$fp = fopen($file, 'r');
@@ -265,7 +265,7 @@ class DbUpdate
 					throw new \RuntimeException('No patch information available, stopping!!');
 				}
 				if ($patch > $currentVersion) {
-					echo $this->log->header('Processing patch file: ' . $file);
+					echo $this->log::header('Processing patch file: ' . $file);
 					if (!$this->backedUp && $options['safe']) {
 						$this->backupDb();
 					}
@@ -277,11 +277,11 @@ class DbUpdate
 				}
 			}
 		} else {
-			exit($this->log->error("\nHave you changed the path to the patches folder, or do you have the right permissions?\n"));
+			exit($this->log::error("\nHave you changed the path to the patches folder, or do you have the right permissions?\n"));
 		}
 
 		if ($patched === 0) {
-			echo $this->log->info("Nothing to patch, you are already on version $currentVersion");
+			echo $this->log::info("Nothing to patch, you are already on version $currentVersion");
 		}
 		return $patched;
 	}
@@ -372,7 +372,7 @@ class DbUpdate
 
 					// Skip comments.
 					if (preg_match('!^\s*(#|--|//)\s*(.+?)\s*$!', $line, $matches)) {
-						echo $this->pdo->log->info("COMMENT: " . $matches[2]);
+						echo $this->pdo->log::info("COMMENT: " . $matches[2]);
 						continue;
 					}
 
@@ -380,7 +380,7 @@ class DbUpdate
 					if (preg_match('#^\s*DELIMITER\s+(?P<delimiter>.+)\s*$#i', $line, $matches)) {
 						$delimiter = $matches['delimiter'];
 						if (nZEDb_DEBUG) {
-							echo $this->pdo->log->debug("DEBUG: Delimiter switched to $delimiter");
+							echo $this->pdo->log::debug("DEBUG: Delimiter switched to $delimiter");
 						}
 						if ($delimiter != $options['delimiter']) {
 							continue;
@@ -411,7 +411,7 @@ class DbUpdate
 						try {
 							$qry = $this->pdo->prepare($query);
 							$qry->execute();
-							echo $this->log->alternateOver('SUCCESS: ') . $this->log->primary($query);
+							echo $this->log::alternateOver('SUCCESS: ') . $this->log::primary($query);
 						} catch (\PDOException $e) {
 							// Log the problem and the query.
 							file_put_contents(
@@ -428,12 +428,12 @@ class DbUpdate
 								in_array($e->errorInfo[0], [23505, 42701, 42703, '42P07', '42P16'])
 							) {
 								if ($e->errorInfo[1] == 1060) {
-									echo $this->log->warning(
+									echo $this->log::warning(
 										"$query The column already exists - No need to worry \{" .
 										$e->errorInfo[1] . "}.\n"
 									);
 								} else {
-									echo $this->log->warning(
+									echo $this->log::warning(
 										"$query Skipped - No need to worry \{" .
 										$e->errorInfo[1] . "}.\n"
 									);
@@ -443,12 +443,12 @@ class DbUpdate
 									$this->pdo->queryExec("SET SESSION old_alter_table = 1");
 									try {
 										$this->pdo->exec($query);
-										echo $this->log->alternateOver('SUCCESS: ') . $this->log->primary($query);
+										echo $this->log::alternateOver('SUCCESS: ') . $this->log::primary($query);
 									} catch (\PDOException $e) {
-										exit($this->log->error("$query Failed \{" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
+										exit($this->log::error("$query Failed \{" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
 									}
 								} else {
-									exit($this->log->error("$query Failed \{" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
+									exit($this->log::error("$query Failed \{" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
 								}
 							}
 						}
@@ -493,7 +493,7 @@ class DbUpdate
 			while ($index < $count) {
 				if (preg_match($options['regex'], $file[$index], $matches)) {
 					if (VERBOSE) {
-						echo $this->log->primary("Matched: " . $file[$index]);
+						echo $this->log::primary("Matched: " . $file[$index]);
 					}
 					$index++;
 
@@ -509,7 +509,7 @@ class DbUpdate
 
 		if ($changed) {
 			if (file_put_contents($filespec, implode("\n", $file)) === false) {
-				echo $this->log->error("Error writing file to disc!!");
+				echo $this->log::error("Error writing file to disc!!");
 			}
 		}
 	}

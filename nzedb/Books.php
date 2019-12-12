@@ -417,7 +417,14 @@ class Books
 	{
 		if ($res instanceof \Traversable && $res->rowCount() > 0) {
 			if ($this->echooutput) {
-				$this->pdo->log->doEcho($this->pdo->log->header("\nProcessing " . $res->rowCount() . ' book release(s) for category ID ' . $categoryID));
+				$this->pdo->log::out(
+					$this->pdo->log::header(
+						\sprintf("\nProcessing %d book release(s) for category ID %s",
+							$res->rowCount(),
+							$categoryID
+						)
+					)
+				);
 			}
 
 			foreach ($res as $arr) {
@@ -434,7 +441,10 @@ class Books
 
 				if ($bookInfo !== false) {
 					if ($this->echooutput) {
-						$this->pdo->log->doEcho($this->pdo->log->headerOver('Looking up: ') . $this->pdo->log->primary($bookInfo));
+						$this->pdo->log::out(
+							$this->pdo->log::header('Looking up: ', false) .
+							$this->pdo->log::primary($bookInfo)
+						);
 					}
 
 					// Do a local lookup first
@@ -443,7 +453,9 @@ class Books
 					if ($bookCheck === false && in_array($bookInfo, $this->failCache)) {
 						// Lookup recently failed, no point trying again
 						if ($this->echooutput) {
-							$this->pdo->log->doEcho($this->pdo->log->headerOver('Cached previous failure. Skipping.') . PHP_EOL);
+							$this->pdo->log::out(
+								$this->pdo->log::header('Cached previous failure. Skipping.')
+							);
 						}
 						$bookId = -2;
 					} else if ($bookCheck === false) {
@@ -473,7 +485,13 @@ class Books
 				}
 			}
 		} else if ($this->echooutput) {
-			$this->pdo->log->doEcho($this->pdo->log->header('No book releases to process for category id ' . $categoryID));
+			$this->pdo->log::out(
+				$this->pdo->log::header(
+					\sprintf('No book releases to process for category id %s',
+						$categoryID
+					)
+				)
+			);
 		}
 	}
 
@@ -501,28 +519,32 @@ class Books
 			if (preg_match('/^([a-z0-9] )+$|ArtofUsenet|ekiosk|(ebook|mobi).+collection|erotica|Full Video|ImwithJamie|linkoff org|Mega.+pack|^[a-z0-9]+ (?!((January|February|March|April|May|June|July|August|September|O(c|k)tober|November|De(c|z)ember)))[a-z]+( (ebooks?|The))?$|NY Times|(Book|Massive) Dump|Sexual/i', $releasename)) {
 
 				if ($this->echooutput) {
-					$this->pdo->log->doEcho(
-						$this->pdo->log->headerOver('Changing category to misc books: ') . $this->pdo->log->primary($releasename)
+					$this->pdo->log::out(
+						$this->pdo->log::header('Changing category to misc books: ', false) .
+						$this->pdo->log::primary($releasename)
 					);
 				}
 				$this->pdo->queryExec(sprintf('UPDATE releases SET categories_id = %s WHERE id = %d', Category::BOOKS_UNKNOWN, $releaseID));
 				return false;
-			} else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename)) {
+			} else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/iu', $releasename) && !preg_match('/Part \d+/i', $releasename)) {
 
 				if ($this->echooutput) {
-					$this->pdo->log->doEcho(
-						$this->pdo->log->headerOver('Changing category to magazines: ') . $this->pdo->log->primary($releasename)
+					$this->pdo->log::out(
+						$this->pdo->log::header('Changing category to magazines: ', false) .
+						$this->pdo->log::primary($releasename)
 					);
 				}
 				$this->pdo->queryExec(sprintf('UPDATE releases SET categories_id = %s WHERE id = %d', Category::BOOKS_MAGAZINES, $releaseID));
 				return false;
-			} else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename)) {
+			} else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^(\d+ )+$|Part \d+/i',
+					$releasename)) {
 				return $releasename;
 			} else {
 				return false;
 			}
 		} else if ($releasetype == 'audiobook') {
-			if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename)) {
+			if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^(\dS+ )+$|Part \d+/i',
+					$releasename)) {
 				// we can skip category for audiobooks, since we already know it, so as long as the release name is valid return it so that it is postprocessed by amazon.  In the future, determining the type of audiobook could be added (Lecture or book), since we can skip lookups on lectures, but for now handle them all the same way
 				return $releasename;
 			} else {
@@ -654,24 +676,35 @@ class Books
 
 		if ($bookId) {
 			if ($this->echooutput) {
-				$this->pdo->log->doEcho($this->pdo->log->header("Added/updated book: "));
+				$this->pdo->log::out('Added/updated book: ', 'header');
 				if ($book['author'] !== '') {
-					$this->pdo->log->doEcho($this->pdo->log->alternateOver("   Author: ") . $this->pdo->log->primary($book['author']));
+					$this->pdo->log::out(
+						$this->pdo->log::alternate('   Author: ', false) .
+						$this->pdo->log::primary($book['author'])
+					);
 				}
-				echo $this->pdo->log->alternateOver("   Title: ") . $this->pdo->log->primary(" " . $book['title']);
+				$this->pdo->log::out(
+					$this->pdo->log::alternate('   Title: ', false) .
+					$this->pdo->log::primary(' ' . $book['title'])
+				);
 				if ($book['genre'] !== 'null') {
-					$this->pdo->log->doEcho($this->pdo->log->alternateOver("   Genre: ") . $this->pdo->log->primary(" " . $book['genre']));
+					$this->pdo->log::out(
+						$this->pdo->log::alternate('   Genre: ', false) .
+						$this->pdo->log::primary(' ' . $book['genre'])
+					);
 				}
 			}
 
 			$book['cover'] = $ri->saveImage($bookId, $book['coverurl'], $this->imgSavePath, 250, 250);
 		} else {
 			if ($this->echooutput) {
-				$this->pdo->log->doEcho(
-					$this->pdo->log->header('Nothing to update: ') .
-					$this->pdo->log->primary($book['author'] .
-						' - ' .
-						$book['title']
+				$this->pdo->log::out(
+					$this->pdo->log::header('Nothing to update: ', false) .
+					$this->pdo->log::primary(
+						\sprintf('%s - %s',
+							$book['author'],
+							$book['title']
+						)
 					)
 				);
 			}

@@ -473,16 +473,16 @@ class TmuxOutput extends Tmux
 		);
 
 		$pieces = explode(" ", $this->pdo->getAttribute(\PDO::ATTR_SERVER_INFO));
-		$buffer .= $this->pdo->log->primaryOver("\nThreads = ") .
-			$this->pdo->log->headerOver($pieces[4]) .
-			$this->pdo->log->primaryOver(', Opens = ') .
-			$this->pdo->log->headerOver($pieces[14]) .
-			$this->pdo->log->primaryOver(', Tables = ') .
-			$this->pdo->log->headerOver($pieces[22]) .
-			$this->pdo->log->primaryOver(', Slow = ') .
-			$this->pdo->log->headerOver($pieces[11]) .
-			$this->pdo->log->primaryOver(', QPS = ') .
-			$this->pdo->log->header($pieces[28])
+		$buffer .= $this->pdo->log::primaryOver("\nThreads = ") .
+			$this->pdo->log::headerOver($pieces[4]) .
+			$this->pdo->log::primaryOver(', Opens = ') .
+			$this->pdo->log::headerOver($pieces[14]) .
+			$this->pdo->log::primaryOver(', Tables = ') .
+			$this->pdo->log::headerOver($pieces[22]) .
+			$this->pdo->log::primaryOver(', Slow = ') .
+			$this->pdo->log::headerOver($pieces[11]) .
+			$this->pdo->log::primaryOver(', QPS = ') .
+			$this->pdo->log::header($pieces[28])
 		;
 
 		return $buffer;
@@ -512,11 +512,11 @@ class TmuxOutput extends Tmux
 
 	protected function _setColourMasks()
 	{
-		$this->_colourMasks[1] = $this->pdo->log->headerOver("%-18s") . " " . $this->pdo->log->tmuxOrange("%-48.48s");
-		$this->_colourMasks['2.0'] = $this->pdo->log->alternateOver("%-20s") . " " . $this->pdo->log->tmuxOrange("%-33.33s");
-		$this->_colourMasks['2.1'] = $this->pdo->log->headerOver("%-20s") . " " . $this->pdo->log->tmuxOrange("%-33.33s");
-		$this->_colourMasks[3] = $this->pdo->log->header("%-16.16s %25.25s %25.25s");
-		$this->_colourMasks[4] = $this->pdo->log->primaryOver("%-16.16s") . " " . $this->pdo->log->tmuxOrange("%25.25s %25.25s");
+		$this->_colourMasks[1] = $this->pdo->log::headerOver("%-18s") . " " . $this->pdo->log->tmuxOrange("%-48.48s");
+		$this->_colourMasks['2.0'] = $this->pdo->log::alternateOver("%-20s") . " " . $this->pdo->log->tmuxOrange("%-33.33s");
+		$this->_colourMasks['2.1'] = $this->pdo->log::headerOver("%-20s") . " " . $this->pdo->log->tmuxOrange("%-33.33s");
+		$this->_colourMasks[3] = $this->pdo->log::header("%-16.16s %25.25s %25.25s");
+		$this->_colourMasks[4] = $this->pdo->log::primaryOver("%-16.16s") . " " . $this->pdo->log->tmuxOrange("%25.25s %25.25s");
 		$this->_colourMasks[5] = $this->pdo->log->tmuxOrange("%-16.16s %25.25s %25.25s");
 	}
 }

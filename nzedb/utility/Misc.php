@@ -312,15 +312,16 @@ class Misc
 		} catch (RequestException $e) {
 			if ($e->hasResponse()) {
 				if($e->getCode() === 404) {
-					ColorCLI::doEcho(ColorCLI::notice('Data not available on server'));
+					ColorCLI::out('Data not available on server', 'notice', true);
 				} else if ($e->getCode() === 503) {
-					ColorCLI::doEcho(ColorCLI::notice('Service unavailable'));
+					ColorCLI::out('Service unavailable', 'notice', true);
 				} else {
-					ColorCLI::doEcho(ColorCLI::notice('Unable to fetch data from server, http error reported: ' . $e->getCode()));
+					ColorCLI::out('Unable to fetch data from server, http error reported: ' .
+						$e->getCode(), 'notice', true);
 				}
 			}
 		} catch (\RuntimeException $e) {
-			ColorCLI::doEcho(ColorCLI::notice('Runtime error: ' . $e->getCode()));
+			ColorCLI::out('Runtime error: ' . $e->getCode(), 'notice', true);
 		}
 
 		return $response;

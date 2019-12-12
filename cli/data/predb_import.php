@@ -56,7 +56,7 @@ $table = isset($argv[3]) ? $argv[3] : 'predb';
 $predb = new PreDb();
 $local = ($argv[1] === 'local');
 
-echo $predb->log->info("Clearing import table");
+echo $predb->log::info("Clearing import table");
 
 // Truncate to clear any old data
 $predb->executeTruncate();
@@ -72,7 +72,7 @@ $predb->executeLoadData([
 	]);
 
 // Remove any titles where length <=8
-echo $predb->log->info("Deleting any records where title <=8 from Temporary Table");
+echo $predb->log::info("Deleting any records where title <=8 from Temporary Table");
 
 $predb->executeDeleteShort();
 
@@ -82,7 +82,7 @@ $predb->executeAddGroups();
 // Fill the groups_id
 $predb->executeUpdateGroupID();
 
-echo $predb->log->info("Inserting records from temporary table into predb table");
+echo $predb->log::info("Inserting records from temporary table into predb table");
 $predb->executeInsert();
 
 ?>

@@ -152,7 +152,7 @@ class ProcessReleases
 		$this->processRequestIDs = (int)Settings::value('lookup_reqids');
 		if ($this->completion > 100) {
 			$this->completion = 100;
-			echo $this->pdo->log->error(PHP_EOL . 'You have an invalid setting for completion. It cannot be higher than 100.');
+			echo $this->pdo->log::error(PHP_EOL . 'You have an invalid setting for completion. It cannot be higher than 100.');
 		}
 		$this->collectionTimeout = (int)Settings::value('indexer.processing.collection_timeout');
 	}
@@ -181,14 +181,18 @@ class ProcessReleases
 
 		$processReleases = microtime(true);
 		if ($this->echoCLI) {
-			$this->pdo->log::doEcho($this->pdo->log::header('Starting release update process (' .
-				date('Y-m-d H:i:s', $processReleases) . ')'), true);
+			$this->pdo->log::out(
+				\sprintf('Starting release update process (%s)',
+					date('Y-m-d H:i:s', $processReleases)),
+				'header',
+				true
+			);
 		}
 
 		if (!file_exists(Settings::value('..nzbpath'))) {
 			if ($this->echoCLI) {
-				$this->pdo->log->doEcho(
-					$this->pdo->log->error('Bad or missing nzb directory - ' . Settings::value('..nzbpath')),
+				$this->pdo->log::out('Bad or missing nzb directory - ' . Settings::value('..nzbpath'),
+					'error',
 					true
 				);
 			}
@@ -216,15 +220,15 @@ class ProcessReleases
 			} else if ($this->processRequestIDs === 2) {
 				$requestIDTime = time();
 				if ($this->echoCLI) {
-					$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Request ID Threaded lookup."));
+					$this->pdo->log::out('Process Releases -> Request ID Threaded lookup.', 'header');
 				}
 				passthru("${DIR}update/nix/multiprocessing/requestid.php");
 				if ($this->echoCLI) {
-					$this->pdo->log->doEcho(
-						$this->pdo->log->primary(
-							"\nReleases updated in " .
-							$this->consoleTools->convertTime(time() - $requestIDTime)
-						)
+					$this->pdo->log::out(
+						"\nReleases updated in " .
+						$this->consoleTools->convertTime(time() - $requestIDTime),
+						'primary',
+						true
 					);
 				}
 			}
@@ -259,7 +263,8 @@ class ProcessReleases
 	public function resetCategorize($where = '')
 	{
 		$this->pdo->queryExec(
-			sprintf('UPDATE releases SET categories_id = %d, iscategorized = 0 %s', Category::OTHER_MISC, $where)
+			sprintf(/** @lang text */
+				'UPDATE releases SET categories_id = %d, iscategorized = 0 %s', Category::OTHER_MISC, $where)
 		);
 	}
 
@@ -277,7 +282,7 @@ class ProcessReleases
 		$cat = new Categorize(['Settings' => $this->pdo]);
 		$categorized = $total = 0;
 		$releases = $this->pdo->queryDirect(
-			sprintf('
+			sprintf(/** @lang text */ '
 				SELECT id, %s, groups_id
 				FROM releases %s',
 				$type,
@@ -289,7 +294,7 @@ class ProcessReleases
 			foreach ($releases as $release) {
 				$catId = $cat->determineCategory($release['groups_id'], $release[$type]);
 				$this->pdo->queryExec(
-					sprintf('
+					sprintf(/** @lang text */ '
 						UPDATE releases
 						SET categories_id = %d, iscategorized = 1
 						WHERE id = %d',
@@ -317,7 +322,7 @@ class ProcessReleases
 		$this->initiateTableNames($groupID);
 
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Attempting to find complete collections."));
+			$this->pdo->log::out('Process Releases -> Attempting to find complete collections.', 'header', true);
 		}
 
 		$where = (!empty($groupID) ? ' AND c.groups_id = ' . $groupID . ' ' : ' ');
@@ -332,7 +337,7 @@ class ProcessReleases
 
 		if ($this->echoCLI) {
 			$count = $this->pdo->queryOneRow(
-				sprintf('
+				sprintf(/** @lang text */ '
 					SELECT COUNT(c.id) AS complete
 					FROM %s c
 					WHERE c.filecheck = %d %s',
@@ -341,11 +346,12 @@ class ProcessReleases
 					$where
 				)
 			);
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary(
-					($count === false ? 0 : $count['complete']) . ' collections were found to be complete. Time: ' .
-					$this->consoleTools->convertTime(time() - $startTime)
-				), true
+			$this->pdo->log::out(
+				\sprintf('%s collections were found to be complete. Time: %s',
+				\number_format($count === false ? 0 : $count['complete']),
+				$this->consoleTools->convertTime(time() - $startTime)),
+				'primary',
+				true
 			);
 		}
 	}
@@ -356,11 +362,11 @@ class ProcessReleases
 		$this->initiateTableNames($groupID);
 
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Calculating collection sizes (in bytes)."));
+			$this->pdo->log::out('Process Releases -> Calculating collection sizes (in bytes).', 'header', true);
 		}
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
 		$checked = $this->pdo->queryExec(
-			sprintf('
+			sprintf(/** @lang text */ '
 				UPDATE %s c
 				SET c.filesize =
 				(
@@ -379,12 +385,15 @@ class ProcessReleases
 			)
 		);
 		if ($checked !== false && $this->echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary(
-					$checked->rowCount() . " collections set to filecheck = 3(size calculated)"
-				)
+			$this->pdo->log::out(\sprintf('%s collections set to filecheck = 3(size calculated)',
+				\number_format($checked->rowCount())),
+				'primary',
+				true
 			);
-			$this->pdo->log->doEcho($this->pdo->log->primary($this->consoleTools->convertTime(time() - $startTime)), true);
+			$this->pdo->log::out($this->consoleTools->convertTime(time() - $startTime),
+				'primary',
+				true
+			);
 		}
 	}
 
@@ -394,11 +403,7 @@ class ProcessReleases
 		$this->initiateTableNames($groupID);
 
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->header(
-					"Process Releases -> Delete collections smaller/larger than minimum size/file count from group/site setting."
-				)
-			);
+			$this->pdo->log::out('Process Releases -> Delete collections smaller/larger than minimum size/file count from group/site setting.', 'header', true);
 		}
 
 		if ($groupID == '') {
@@ -428,7 +433,7 @@ class ProcessReleases
 			}
 
 			if ($this->pdo->queryOneRow(
-					sprintf('
+					sprintf(/** @lang text */ '
 						SELECT SQL_NO_CACHE id
 						FROM %s c
 						WHERE c.filecheck = %d
@@ -440,7 +445,7 @@ class ProcessReleases
 			) {
 
 				$deleteQuery = $this->pdo->queryExec(
-					sprintf('
+					sprintf(/** @lang text */ '
 						DELETE c, b, p
 						FROM %s c
 						LEFT JOIN %s b ON c.id = b.collections_id
@@ -466,7 +471,7 @@ class ProcessReleases
 
 				if ($maxSizeSetting > 0) {
 					$deleteQuery = $this->pdo->queryExec(
-						sprintf('
+						sprintf(/** @lang text */ '
 							DELETE c, b, p FROM %s c
 							LEFT JOIN %s b ON c.id = b.collections_id
 							LEFT JOIN %s p ON b.id = p.binaries_id
@@ -485,7 +490,7 @@ class ProcessReleases
 				}
 
 				$deleteQuery = $this->pdo->queryExec(
-					sprintf('
+					sprintf(/** @lang text */ '
 						DELETE c, b, p FROM %s c
 						LEFT JOIN %s b ON c.id = b.collections_id
 						LEFT JOIN %s p ON b.id = p.binaries_id
@@ -509,14 +514,16 @@ class ProcessReleases
 		}
 
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary(
-					'Deleted ' . ($minSizeDeleted + $maxSizeDeleted + $minFilesDeleted) . ' collections: ' . PHP_EOL .
-					$minSizeDeleted . ' smaller than, ' .
-					$maxSizeDeleted . ' bigger than, ' .
-					$minFilesDeleted . ' with less files than site/group settings in: ' .
+			$this->pdo->log::out(
+				\sprintf("Deleted %s collections:\n%s smaller than, %s bigger than, %s with less files than site/group settings in: %s",
+					\number_format($minSizeDeleted + $maxSizeDeleted + $minFilesDeleted),
+					\number_format($minSizeDeleted),
+					\number_format($maxSizeDeleted),
+					\number_format($minFilesDeleted),
 					$this->consoleTools->convertTime(time() - $startTime)
-				), true
+				),
+				'primary',
+				true
 			);
 		}
 	}
@@ -557,14 +564,14 @@ class ProcessReleases
 		$returnCount = $duplicate = 0;
 
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Create releases from complete collections."));
+			$this->pdo->log::out("Process Releases -> Create releases from complete collections.", 'header', true);
 		}
 
 		$this->pdo->ping(true);
 
 		$groupsid = !empty($groupID) ? ' groups_id = ' . $groupID . ' AND ' : ' ';
 		$collections = $this->pdo->queryDirect(
-			sprintf('
+			sprintf(/** @lang text */ '
 				SELECT SQL_NO_CACHE c.*, g.name AS gname
 				FROM %s c
 				INNER JOIN groups g ON c.groups_id = g.id
@@ -579,7 +586,7 @@ class ProcessReleases
 		);
 
 		if ($this->echoCLI && $collections !== false) {
-			echo $this->pdo->log->primary($collections->rowCount() . " Collections ready to be converted to releases.");
+			echo $this->pdo->log::primary($collections->rowCount() . " Collections ready to be converted to releases.");
 		}
 
 		if ($collections instanceof \Traversable) {
@@ -599,7 +606,7 @@ class ProcessReleases
 				// Look for duplicates, duplicates match on releases.name, releases.fromname and releases.size
 				// A 1% variance in size is considered the same size when the subject and poster are the same
 				$dupeCheck = $this->pdo->queryOneRow(
-					sprintf("
+					sprintf(/** @lang text */ "
 						SELECT SQL_NO_CACHE id
 						FROM releases
 						WHERE name = %s
@@ -659,7 +666,7 @@ class ProcessReleases
 					if ($releaseID !== false) {
 						// Update collections table to say we inserted the release.
 						$this->pdo->queryExec(
-							sprintf('
+							sprintf(/** @lang text */ '
 								UPDATE %s
 								SET filecheck = %d, releases_id = %d
 								WHERE id = %d',
@@ -695,7 +702,7 @@ class ProcessReleases
 													"Duplicate entry '$grpTmp' for key 'ix_groups_name'")
 												!== false) {
 												if (\nZEDb_DEBUG || \nZEDb_ECHOCLI) {
-													$this->pdo->log->error("Cannot create group '$grpTmp', as it already exists'!\n");
+													$this->pdo->log::error("Cannot create group '$grpTmp', as it already exists'!\n");
 												}
 											} else {
 												throw new \InvalidArgumentException(
@@ -749,7 +756,7 @@ class ProcessReleases
 				} else {
 					// The release was already in the DB, so delete the collection.
 					$this->pdo->queryExec(
-						sprintf('
+						sprintf(/** @lang text */ '
 							DELETE c, b, p
 							FROM %s c
 							INNER JOIN %s b ON c.id = b.collections_id
@@ -767,15 +774,14 @@ class ProcessReleases
 		}
 
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary(
-					PHP_EOL .
-					number_format($returnCount) .
-					' Releases added and ' .
-					number_format($duplicate) .
-					' duplicate collections deleted in ' .
+			$this->pdo->log::out(
+				\sprintf("\n%s Releases added and %s duplicate collections deleted in %s",
+					number_format($returnCount),
+					number_format($duplicate),
 					$this->consoleTools->convertTime(time() - $startTime)
-				), true
+				),
+				'primary',
+				true
 			);
 		}
 
@@ -796,12 +802,12 @@ class ProcessReleases
 		$this->formFromnamesQuery();
 
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Create the NZB, delete collections/binaries/parts."));
+			$this->pdo->log::out("Process Releases -> Create the NZB, delete collections/binaries/parts.", 'header', true);
 		}
 
 		$groupsid = !empty($groupID) ? ' r.groups_id = ' . $groupID . ' AND ' : ' ';
 		$releases = $this->pdo->queryDirect(
-			sprintf("
+			sprintf(/** @lang text */ "
 				SELECT SQL_NO_CACHE
 					CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title,
 					r.name, r.id, r.guid
@@ -825,7 +831,7 @@ class ProcessReleases
 				if ($this->nzb->writeNZBforReleaseId($release['id'], $release['guid'], $release['name'], $release['title']) === true) {
 					$nzbCount++;
 					if ($this->echoCLI) {
-						echo $this->pdo->log->primaryOver("Creating NZBs and deleting Collections:\t" . $nzbCount . '/' . $total . "\r");
+						echo $this->pdo->log::primaryOver("Creating NZBs and deleting Collections:\t" . $nzbCount . '/' . $total . "\r");
 					}
 				}
 			}
@@ -834,12 +840,14 @@ class ProcessReleases
 		$totalTime = (time() - $startTime);
 
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary(
-					number_format($nzbCount) . ' NZBs created/Collections deleted in ' .
-					$totalTime . ' seconds.' . PHP_EOL .
-					'Total time: ' . $this->pdo->log->primary($this->consoleTools->convertTime($totalTime)) . PHP_EOL
-				)
+			$this->pdo->log::out(
+				\sprintf("%s NZBs created/Collections deleted in %s seconds.\nTotal time: %s",
+					number_format($nzbCount),
+					\number_format($totalTime),
+					$this->consoleTools->convertTime($totalTime)
+				),
+				'primary',
+				true
 			);
 		}
 
@@ -864,14 +872,13 @@ class ProcessReleases
 
 		$startTime = time();
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->header(
-					sprintf(
-						"Process Releases -> Request ID %s lookup -- limit %s",
-						($local === true ? 'local' : 'web'),
-						$limit
-					)
-				)
+			$this->pdo->log::out(
+				sprintf('Process Releases -> Request ID %s lookup -- limit %s',
+					($local === true ? 'local' : 'web'),
+					$limit
+				),
+				'header',
+				true
 			);
 		}
 
@@ -899,12 +906,13 @@ class ProcessReleases
 			)->lookupRequestIDs(['GroupID' => $groupID, 'limit' => $limit, 'time' => 168]);
 		}
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary(
-					number_format($foundRequestIDs) .
-					' releases updated in ' .
+			$this->pdo->log::out(
+				\sprintf('%s releases updated in %s',
+					number_format($foundRequestIDs),
 					$this->consoleTools->convertTime(time() - $startTime)
-				), true
+				),
+				'primary',
+				true
 			);
 		}
 	}
@@ -922,7 +930,7 @@ class ProcessReleases
 	{
 		$startTime = time();
 		if ($this->echoCLI) {
-			echo $this->pdo->log->header("Process Releases -> Categorize releases.");
+			echo $this->pdo->log::header("Process Releases -> Categorize releases.");
 		}
 		switch ((int)$categorize) {
 			case 2:
@@ -942,7 +950,10 @@ class ProcessReleases
 		);
 
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho($this->pdo->log->primary($this->consoleTools->convertTime(time() - $startTime)), true);
+			$this->pdo->log::out($this->consoleTools->convertTime(time() - $startTime),
+				'primary',
+				true
+			);
 		}
 	}
 
@@ -957,15 +968,15 @@ class ProcessReleases
 	 */
 	public function postProcessReleases($postProcess, &$nntp)
 	{
-		if ($postProcess == 1) {
+		if ($postProcess === 1) {
 			(new PostProcess(['Echo' => $this->echoCLI, 'Settings' => $this->pdo, 'Groups' => $this->groups]))->processAll($nntp);
 		} else {
 			if ($this->echoCLI) {
-				$this->pdo->log->doEcho(
-					$this->pdo->log->info(
-						"\nPost-processing is not running inside the Process Releases class.\n" .
-						"If you are using tmux or screen they might have their own scripts running Post-processing."
-					)
+				$this->pdo->log::out(
+					"\nPost-processing is not running inside the Process Releases class.\n" .
+					'If you are using tmux or screen they might have their own scripts running Post-processing.',
+					'info',
+					true
 				);
 			}
 		}
@@ -981,8 +992,8 @@ class ProcessReleases
 		// CBP older than retention.
 		if ($this->echoCLI) {
 			echo (
-				$this->pdo->log->header("Process Releases -> Delete finished collections." . PHP_EOL) .
-				$this->pdo->log->primary(sprintf(
+				$this->pdo->log::header("Process Releases -> Delete finished collections." . PHP_EOL) .
+				$this->pdo->log::primary(sprintf(
 					'Deleting collections/binaries/parts older than %d hours.',
 					Settings::value('..partretentionhours')
 				))
@@ -991,7 +1002,7 @@ class ProcessReleases
 
 		$deleted = 0;
 		$deleteQuery = $this->pdo->queryExec(
-			sprintf('
+			sprintf(/** @lang text */ '
 				DELETE c, b, p
 				FROM %s c
 				LEFT JOIN %s b ON c.id = b.collections_id
@@ -1012,7 +1023,7 @@ class ProcessReleases
 		$firstQuery = $fourthQuery = time();
 
 		if ($this->echoCLI) {
-			echo $this->pdo->log->primary(
+			echo $this->pdo->log::primary(
 				'Finished deleting ' . $deleted . ' old collections/binaries/parts in ' .
 				($firstQuery - $startTime) . ' seconds.' . PHP_EOL
 			);
@@ -1024,14 +1035,14 @@ class ProcessReleases
 			// CBP collection orphaned with no binaries or parts.
 			if ($this->echoCLI) {
 				echo (
-					$this->pdo->log->header("Process Releases -> Remove CBP orphans." . PHP_EOL) .
-					$this->pdo->log->primary('Deleting orphaned collections.')
+					$this->pdo->log::header("Process Releases -> Remove CBP orphans." . PHP_EOL) .
+					$this->pdo->log::primary('Deleting orphaned collections.')
 				);
 			}
 
 			$deleted = 0;
 			$deleteQuery = $this->pdo->queryExec(
-				sprintf('
+				sprintf(/** @lang text */ '
 					DELETE c, b, p
 					FROM %s c
 					LEFT JOIN %s b ON c.id = b.collections_id
@@ -1051,7 +1062,7 @@ class ProcessReleases
 			$secondQuery = time();
 
 			if ($this->echoCLI) {
-				echo $this->pdo->log->primary(
+				echo $this->pdo->log::primary(
 					'Finished deleting ' . $deleted . ' orphaned collections in ' .
 					($secondQuery - $firstQuery) . ' seconds.' . PHP_EOL
 				);
@@ -1060,13 +1071,13 @@ class ProcessReleases
 			// orphaned binaries - binaries with no parts or binaries with no collection
 			// Don't delete currently inserting binaries by checking the max id.
 			if ($this->echoCLI) {
-				echo $this->pdo->log->primary('Deleting orphaned binaries/parts with no collection.');
+				echo $this->pdo->log::primary('Deleting orphaned binaries/parts with no collection.');
 			}
 
 			$deleted = 0;
 			$deleteQuery = $this->pdo->queryExec(
 				sprintf(
-					'DELETE b, p FROM %s b
+					/** @lang text */ 'DELETE b, p FROM %s b
 					LEFT JOIN %s p ON b.id = p.binaries_id
 					LEFT JOIN %s c ON b.collections_id = c.id
 					WHERE (p.binaries_id IS NULL OR c.id IS NULL)
@@ -1086,7 +1097,7 @@ class ProcessReleases
 			$thirdQuery = time();
 
 			if ($this->echoCLI) {
-				echo $this->pdo->log->primary(
+				echo $this->pdo->log::primary(
 					'Finished deleting ' . $deleted . ' binaries with no collections or parts in ' .
 					($thirdQuery - $secondQuery) . ' seconds.'
 				);
@@ -1095,11 +1106,11 @@ class ProcessReleases
 			// orphaned parts - parts with no binary
 			// Don't delete currently inserting parts by checking the max id.
 			if ($this->echoCLI) {
-				echo $this->pdo->log->primary('Deleting orphaned parts with no binaries.');
+				echo $this->pdo->log::primary('Deleting orphaned parts with no binaries.');
 			}
 			$deleted = 0;
 			$deleteQuery = $this->pdo->queryExec(
-				sprintf('
+				sprintf(/** @lang text */ '
 					DELETE p
 					FROM %s p
 					LEFT JOIN %s b ON p.binaries_id = b.id
@@ -1118,7 +1129,7 @@ class ProcessReleases
 			$fourthQuery = time();
 
 			if ($this->echoCLI) {
-					echo $this->pdo->log->primary(
+					echo $this->pdo->log::primary(
 						'Finished deleting ' . $deleted . ' parts with no binaries in ' .
 						($fourthQuery - $thirdQuery) . ' seconds.' . PHP_EOL
 					);
@@ -1126,7 +1137,7 @@ class ProcessReleases
 		} // done cleaning up Binaries/Parts orphans
 
 		if ($this->echoCLI) {
-			echo $this->pdo->log->primary(
+			echo $this->pdo->log::primary(
 				'Deleting collections that were missed after NZB creation.'
 			);
 		}
@@ -1134,7 +1145,7 @@ class ProcessReleases
 		$deleted = 0;
 		// Collections that were missing on NZB creation.
 		$collections = $this->pdo->queryDirect(
-			sprintf('
+			sprintf(/** @lang text */ '
 				SELECT SQL_NO_CACHE c.id
 				FROM %s c
 				INNER JOIN releases r ON r.id = c.releases_id
@@ -1147,7 +1158,7 @@ class ProcessReleases
 			foreach ($collections as $collection) {
 				$deleted++;
 				$this->pdo->queryExec(
-					sprintf('
+					sprintf(/** @lang text */ '
 						DELETE c, b, p
 						FROM %s c
 						LEFT JOIN %s b ON(c.id=b.collections_id)
@@ -1164,15 +1175,15 @@ class ProcessReleases
 		}
 
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary(
-					'Finished deleting ' . $deleted . ' collections missed after NZB creation in ' .
-					(time() - $fourthQuery) . ' seconds.' . PHP_EOL .
-					'Removed ' .
-					number_format($deletedCount) .
-					' parts/binaries/collection rows in ' .
-					$this->consoleTools->convertTime(($fourthQuery - $startTime)) . PHP_EOL
-				)
+			$this->pdo->log::out(
+				\sprintf("Finished deleting %s collections missed after NZB creation in %s seconds.\nRemoved %s parts/binaries/collection rows in %s",
+					\number_format($deleted),
+					\number_format(time() - $fourthQuery),
+					number_format($deletedCount),
+					$this->consoleTools->convertTime(($fourthQuery - $startTime))
+				),
+				'primary',
+				true
 			);
 		}
 	}
@@ -1192,7 +1203,7 @@ class ProcessReleases
 		$minSizeDeleted = $maxSizeDeleted = $minFilesDeleted = 0;
 
 		if ($this->echoCLI) {
-			echo $this->pdo->log->header("Process Releases -> Delete releases smaller/larger than minimum size/file count from group/site setting.");
+			echo $this->pdo->log::header("Process Releases -> Delete releases smaller/larger than minimum size/file count from group/site setting.");
 		}
 
 		if ($groupID == '') {
@@ -1207,13 +1218,13 @@ class ProcessReleases
 
 		foreach ($groupIDs as $groupID) {
 			$releases = $this->pdo->queryDirect(
-				sprintf("
+				sprintf(/** @lang text */ '
 					SELECT SQL_NO_CACHE r.guid, r.id
 					FROM releases r
 					INNER JOIN groups g ON g.id = r.groups_id
 					WHERE r.groups_id = %d
 					AND greatest(IFNULL(g.minsizetoformrelease, 0), %d) > 0
-					AND r.size < greatest(IFNULL(g.minsizetoformrelease, 0), %d)",
+					AND r.size < greatest(IFNULL(g.minsizetoformrelease, 0), %d)',
 					$groupID['id'],
 					$minSizeSetting,
 					$minSizeSetting
@@ -1228,7 +1239,7 @@ class ProcessReleases
 
 			if ($maxSizeSetting > 0) {
 				$releases = $this->pdo->queryDirect(
-					sprintf('
+					sprintf(/** @lang text */ '
 						SELECT SQL_NO_CACHE id, guid
 						FROM releases
 						WHERE groups_id = %d
@@ -1246,7 +1257,7 @@ class ProcessReleases
 			}
 
 			$releases = $this->pdo->queryDirect(
-				sprintf("
+				sprintf(/** @lang text */ "
 					SELECT SQL_NO_CACHE r.id, r.guid
 					FROM releases r
 					INNER JOIN groups g ON g.id = r.groups_id
@@ -1267,14 +1278,16 @@ class ProcessReleases
 		}
 
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary(
-					'Deleted ' . ($minSizeDeleted + $maxSizeDeleted + $minFilesDeleted) .
-					' releases: ' . PHP_EOL .
-					$minSizeDeleted . ' smaller than, ' . $maxSizeDeleted . ' bigger than, ' . $minFilesDeleted .
-					' with less files than site/groups setting in: ' .
+			$this->pdo->log::out(
+				\sprintf("Deleted %s releases: \n%s smaller than, %s bigger than, %s with less files than site/groups setting in: %s",
+					\number_format($minSizeDeleted + $maxSizeDeleted + $minFilesDeleted),
+					\number_format($minSizeDeleted),
+					\number_format($maxSizeDeleted),
+					\number_format($minFilesDeleted),
 					$this->consoleTools->convertTime(time() - $startTime)
-				), true
+				),
+				'primary',
+				true
 			);
 		}
 	}
@@ -1296,13 +1309,14 @@ class ProcessReleases
 
 		// Delete old releases and finished collections.
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho($this->pdo->log->header("Process Releases -> Delete old releases and passworded releases."));
+			$this->pdo->log::out('Process Releases -> Delete old releases and passworded releases.', 'header', true);
 		}
 
 		// Releases past retention.
 		if (Settings::value('..releaseretentiondays') != 0) {
 			$releases = $this->pdo->queryDirect(
 				sprintf(
+					/** @lang text */
 					'SELECT SQL_NO_CACHE id, guid FROM releases WHERE postdate < (NOW() - INTERVAL %d DAY)',
 					Settings::value('..releaseretentiondays')
 				)
@@ -1319,6 +1333,7 @@ class ProcessReleases
 		if (Settings::value('..deletepasswordedrelease') == 1) {
 			$releases = $this->pdo->queryDirect(
 				sprintf(
+					/** @lang text */
 					'SELECT SQL_NO_CACHE id, guid FROM releases WHERE passwordstatus = %d',
 					Releases::PASSWD_RAR
 				)
@@ -1335,6 +1350,7 @@ class ProcessReleases
 		if (Settings::value('..deletepossiblerelease') == 1) {
 			$releases = $this->pdo->queryDirect(
 				sprintf(
+					/** @lang text */
 					'SELECT SQL_NO_CACHE id, guid FROM releases WHERE passwordstatus = %d',
 					Releases::PASSWD_POTENTIAL
 				)
@@ -1351,6 +1367,7 @@ class ProcessReleases
 			// Crossposted releases.
 			$releases = $this->pdo->queryDirect(
 				sprintf(
+					/** @lang text */
 					'SELECT SQL_NO_CACHE id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1',
 					$this->crossPostTime
 				)
@@ -1365,7 +1382,8 @@ class ProcessReleases
 
 		if ($this->completion > 0) {
 			$releases = $this->pdo->queryDirect(
-				sprintf('SELECT SQL_NO_CACHE id, guid FROM releases WHERE completion < %d AND completion > 0', $this->completion)
+				sprintf(/** @lang text */
+					'SELECT SQL_NO_CACHE id, guid FROM releases WHERE completion < %d AND completion > 0', $this->completion)
 			);
 			if ($releases instanceof \Traversable) {
 				foreach ($releases as $release) {
@@ -1380,7 +1398,8 @@ class ProcessReleases
 		if (count($disabledCategories) > 0) {
 			foreach ($disabledCategories as $disabledCategory) {
 				$releases = $this->pdo->queryDirect(
-					sprintf('SELECT SQL_NO_CACHE id, guid FROM releases WHERE categories_id = %d', $disabledCategory['id'])
+					sprintf(/** @lang text */
+						'SELECT SQL_NO_CACHE id, guid FROM releases WHERE categories_id = %d', $disabledCategory['id'])
 				);
 				if ($releases instanceof \Traversable) {
 					foreach ($releases as $release) {
@@ -1404,7 +1423,7 @@ class ProcessReleases
 			foreach ($categories as $category) {
 				if ($category['minsize'] > 0) {
 					$releases = $this->pdo->queryDirect(
-						sprintf('
+						sprintf(/** @lang text */ '
 							SELECT SQL_NO_CACHE r.id, r.guid
 							FROM releases r
 							WHERE r.categories_id = %d
@@ -1429,7 +1448,7 @@ class ProcessReleases
 		if (count($genrelist) > 0) {
 			foreach ($genrelist as $genre) {
 				$releases = $this->pdo->queryDirect(
-					sprintf('
+					sprintf(/** @lang text */ '
 						SELECT SQL_NO_CACHE id, guid
 						FROM releases
 						INNER JOIN
@@ -1453,7 +1472,7 @@ class ProcessReleases
 		// Misc other.
 		if (Settings::value('..miscotherretentionhours') > 0) {
 			$releases = $this->pdo->queryDirect(
-				sprintf('
+				sprintf(/** @lang text */ '
 					SELECT SQL_NO_CACHE id, guid
 					FROM releases
 					WHERE categories_id = %d
@@ -1473,7 +1492,7 @@ class ProcessReleases
 		// Misc hashed.
 		if (Settings::value('..mischashedretentionhours') > 0) {
 			$releases = $this->pdo->queryDirect(
-				sprintf('
+				sprintf(/** @lang text */ '
 					SELECT SQL_NO_CACHE id, guid
 					FROM releases
 					WHERE categories_id = %d
@@ -1491,30 +1510,26 @@ class ProcessReleases
 		}
 
 		if ($this->echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary(
-					'Removed releases: ' .
-					number_format($retentionDeleted) .
-					' past retention, ' .
-					number_format($passwordDeleted) .
-					' passworded, ' .
-					number_format($duplicateDeleted) .
-					' crossposted, ' .
-					number_format($disabledCategoryDeleted) .
-					' from disabled categories, ' .
-					number_format($categoryMinSizeDeleted) .
-					' smaller than category settings, ' .
-					number_format($disabledGenreDeleted) .
-					' from disabled music genres, ' .
-					number_format($miscRetentionDeleted) .
-					' from misc->other' .
-					number_format($miscHashedDeleted) .
-					' from misc->hashed' .
-					($this->completion > 0
-						? ', ' . number_format($completionDeleted) . ' under ' . $this->completion . '% completion.'
-						: '.'
-					)
-				)
+			$suffix = $this->completion > 0
+				? ', ' . number_format($completionDeleted) . ' under ' . $this->completion . '% completion.'
+				: '.';
+			$this->pdo->log::out(
+				\sprintf(
+					'Removed releases: %s past retention, %s passworded, %s crossposted, %s' .
+					' from disabled categories, %s smaller than category settings, %s' .
+					' from disabled music genres, %s from misc->other %s from misc->hashed' . $suffix
+					,
+					number_format($retentionDeleted),
+					number_format($passwordDeleted),
+					number_format($duplicateDeleted),
+					number_format($disabledCategoryDeleted),
+					number_format($categoryMinSizeDeleted),
+					number_format($disabledGenreDeleted),
+					number_format($miscRetentionDeleted),
+					number_format($miscHashedDeleted)
+				),
+				'primary',
+				true
 			);
 
 			$totalDeleted = (
@@ -1523,11 +1538,13 @@ class ProcessReleases
 				$categoryMinSizeDeleted
 			);
 			if ($totalDeleted > 0) {
-				$this->pdo->log->doEcho(
-					$this->pdo->log->primary(
-						"Removed " . number_format($totalDeleted) . ' releases in ' .
+				$this->pdo->log::out(
+					\sprintf('Removed %s releases in %s',
+						number_format($totalDeleted),
 						$this->consoleTools->convertTime(time() - $startTime)
-					)
+					),
+					'primary',
+					true
 				);
 			}
 		}
@@ -1545,7 +1562,7 @@ class ProcessReleases
 	private function maxQueryFormulator($groupName, $difference)
 	{
 		$maxID = $this->pdo->queryOneRow(
-			sprintf('
+			sprintf(/** @lang text */ '
 				SELECT IFNULL(MAX(id),0) AS max
 				FROM %s',
 				$groupName
@@ -1569,7 +1586,7 @@ class ProcessReleases
 	{
 
 		$this->pdo->queryExec(
-			sprintf('
+			sprintf(/** @lang text */ '
 				UPDATE %s c
 				INNER JOIN
 				(
@@ -1608,7 +1625,7 @@ class ProcessReleases
 	private function collectionFileCheckStage2(&$where)
 	{
 		$this->pdo->queryExec(
-			sprintf('
+			sprintf(/** @lang text */ '
 				UPDATE %s c
 				INNER JOIN
 				(
@@ -1630,7 +1647,7 @@ class ProcessReleases
 			)
 		);
 		$this->pdo->queryExec(
-			sprintf('
+			sprintf(/** @lang text */ '
 				UPDATE %s c
 				SET filecheck = %d
 				WHERE filecheck = %d %s',
@@ -1655,7 +1672,7 @@ class ProcessReleases
 	{
 
 		$this->pdo->queryExec(
-			sprintf('
+			sprintf(/** @lang text */ '
 				UPDATE %s b
 				INNER JOIN
 				(
@@ -1678,7 +1695,7 @@ class ProcessReleases
 			)
 		);
 		$this->pdo->queryExec(
-			sprintf('
+			sprintf(/** @lang text */ '
 				UPDATE %s b
 				INNER JOIN
 				(
@@ -1716,7 +1733,7 @@ class ProcessReleases
 	{
 
 		$this->pdo->queryExec(
-			sprintf('
+			sprintf(/** @lang text */ '
 				UPDATE %s c INNER JOIN
 					(SELECT c.id FROM %s c
 					INNER JOIN %s b ON c.id = b.collections_id
@@ -1747,7 +1764,7 @@ class ProcessReleases
 	{
 
 		$this->pdo->queryExec(
-			sprintf('
+			sprintf(/** @lang text */ '
 				UPDATE %s c
 				SET filecheck = %d
 				WHERE filecheck IN (%d, %d) %s',
@@ -1773,7 +1790,7 @@ class ProcessReleases
 	{
 
 		$this->pdo->queryExec(
-			sprintf("
+			sprintf(/** @lang text */ "
 				UPDATE %s c SET filecheck = %d, totalfiles = (SELECT COUNT(b.id) FROM %s b WHERE b.collections_id = c.id)
 				WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR
 				AND c.filecheck IN (%d, %d, 10) %s",
@@ -1817,8 +1834,9 @@ class ProcessReleases
 			)
 		);
 		if ($this->echoCLI && is_object($obj) && $obj->rowCount()) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary('Deleted ' . $obj->rowCount() . ' broken/stuck collections.')
+			$this->pdo->log::out('Deleted ' . $obj->rowCount() . ' broken/stuck collections.',
+				'primary',
+				true
 			);
 		}
 	}

@@ -20,7 +20,7 @@ abstract class Tv extends Videos
 	const SOURCE_TMDB    = 3;   // Scrape source was TMDB
 	const SOURCE_TRAKT   = 4;   // Scrape source was Trakt
 	const SOURCE_IMDB    = 5;   // Scrape source was IMDB
-	const SOURCE_TVRAGE  = 6;   // Scrape source was TvRage
+	const SOURCE_TVRAGE  = 6;   // Scrape source was TvRage - No longer used as TvRage is defunct.
 
 	// Anime Sources
 	const SOURCE_ANIDB   = 10;   // Scrape source was AniDB
@@ -36,7 +36,13 @@ abstract class Tv extends Videos
 	const FAILED_PARSE   = -100; // Failed Parsing
 
 	public $aliases = [];
+	//public $banner;
 	public $country;
+
+	/**
+	 * @var array Episodes array retrieved by getEpisodes.
+	 */
+	public $episodes = [];
 
 	/**
 	 * @var \nzedb\Imdb;
@@ -66,9 +72,9 @@ abstract class Tv extends Videos
 	protected $imgSavePath;
 
 	/**
-	 * @var array Fields that the child class uses.
+	 * @var array Site ID columns for TV.
 	 */
-	protected $siteColumns;
+	protected $siteColumns = ['imdb', 'tmdb', 'trakt', 'tvdb', 'tvmaze', 'tvrage'];
 
 	/**
 	 * @var int
@@ -91,8 +97,8 @@ abstract class Tv extends Videos
 	/**
 	 * Retrieve banner image from site using its API.
 	 *
-	 * @param $videoID
-	 * @param $siteId
+	 * @param $videoID	Our ID as set in the videos table.
+	 * @param $siteId	The site specific id. i.e. imdbid for IMDb, tvdbid for TvDb, etc.
 	 *
 	 * @return mixed
 	 */
@@ -105,7 +111,7 @@ abstract class Tv extends Videos
 	 * @param integer $series
 	 * @param integer $episode
 	 *
-	 * @return array|false    False on failure, an array of information fields otherwise.
+	 * @return bool		False on failure to retrieve results, true otherwise.
 	 */
 	abstract protected function getEpisodeInfo($siteId, $series, $episode);
 
@@ -227,7 +233,7 @@ abstract class Tv extends Videos
 				SET tv_episodes_id = %d
 				WHERE %s
 				AND id = %d',
-				$status,
+				-1,
 				$this->catWhere,
 				$Id
 			)
@@ -241,13 +247,14 @@ abstract class Tv extends Videos
 	 * @param array $show
 	 *
 	 * @return int
+	 * @TODO move to releases model.
 	 */
 	public function add(array $show = [])
 	{
 		$videoId = false;
 
 		// Check if the country is not a proper code and retrieve if not
-		if ($show['country'] !== '' && strlen($show['country']) > 2) {
+		if (!empty($show['country']) && strlen($show['country']) > 2) {
 			$show['country'] = Country::countryCode($show['country'], $this->pdo);
 		}
 
@@ -542,7 +549,7 @@ abstract class Tv extends Videos
 			}
 		}
 		if (nZEDb_DEBUG) {
-			$this->pdo->log->doEcho('Failed to parse release: ' . $relname, true);
+			$this->pdo->log::out('Failed to parse release: ' . $relname, null, true);
 		}
 		return false;
 	}
@@ -680,26 +687,33 @@ abstract class Tv extends Videos
 	 *
 	 * @param string $showName
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	private function parseCountry($showName)
+	private function parseCountry($showName): ?string
 	{
 		// Country or origin matching.
+		// TODO FIXME this is dodgy matching as it can find the country names inside a title - i.e. Coming to America.
 		if (preg_match('/[^a-z0-9](US|UK|AU|NZ|CA|NL|Canada|Australia|America|United[^a-z0-9]States|United[^a-z0-9]Kingdom)/i', $showName, $countryMatch)) {
 			$currentCountry = strtolower($countryMatch[1]);
-			if ($currentCountry == 'canada') {
-				$country = 'CA';
-			} else if ($currentCountry == 'australia') {
-				$country = 'AU';
-			} else if ($currentCountry == 'america' || $currentCountry == 'united states') {
-				$country = 'US';
-			} else if ($currentCountry == 'united kingdom') {
-				$country = 'UK';
-			} else {
-				$country = strtoupper($countryMatch[1]);
+			switch ($currentCountry) {
+				case 'canada':
+					$country = 'CA';
+					break;
+				case 'australia':
+					$country = 'AU';
+					break;
+				case 'america':
+				case 'united states':
+					$country = 'US';
+					break;
+				case 'united kingdom':
+					$country = 'UK';
+					break;
+				default:
+					$country = strtoupper($countryMatch[1]);
 			}
 		} else {
-			$country = '';
+			$country = null;
 		}
 		return $country;
 	}

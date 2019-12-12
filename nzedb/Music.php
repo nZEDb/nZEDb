@@ -631,32 +631,32 @@ class Music
 
 		if ($musicId) {
 			if ($this->echooutput) {
-				$this->pdo->log->doEcho(
-					$this->pdo->log->header("\nAdded/updated album: ") .
-					$this->pdo->log->alternateOver("   Artist: ") .
-					$this->pdo->log->primary($mus['artist']) .
-					$this->pdo->log->alternateOver("   Title:  ") .
-					$this->pdo->log->primary($mus['title']) .
-					$this->pdo->log->alternateOver("   Year:   ") .
-					$this->pdo->log->primary($mus['year'])
+				$this->pdo->log::out(
+					$this->pdo->log::header("\nAdded/updated album: ", false) .
+					$this->pdo->log::alternate('   Artist: ', false) .
+					$this->pdo->log::primary($mus['artist']) .
+					$this->pdo->log::alternate('   Title:  ', false) .
+					$this->pdo->log::primary($mus['title']) .
+					$this->pdo->log::alternate('   Year:   ', false) .
+					$this->pdo->log::primary($mus['year'])
 				);
 			}
 			$mus['cover'] = $ri->saveImage($musicId, $mus['coverurl'], $this->imgSavePath, 250, 250);
 		} else {
 			if ($this->echooutput) {
-				if ($mus["artist"] == "") {
+				if ($mus['artist'] === '') {
 					$artist = "";
 				} else {
-					$artist = "Artist: " . $mus['artist'] . ", Album: ";
+					$artist = 'Artist: ' . $mus['artist'] . ', Album: ';
 				}
-				$this->pdo->log->doEcho(
-					$this->pdo->log->headerOver("Nothing to update: ") .
-					$this->pdo->log->primary(
-						$artist .
-						$mus['title'] .
-						" (" .
-						$mus['year'] .
-						")"
+				$this->pdo->log::out(
+					$this->pdo->log::header('Nothing to update: ', false) .
+					$this->pdo->log::primary(
+						\sprintf('%s %s (%s)',
+							$artist,
+							$mus['title'],
+							$mus['year']
+						)
 					)
 				);
 			}
@@ -737,9 +737,10 @@ class Music
 		);
 		if ($res instanceof \Traversable && $res->rowCount() > 0) {
 			if ($this->echooutput) {
-				$this->pdo->log->doEcho(
-					$this->pdo->log->header("Processing " . $res->rowCount() . ' music release(s).'
-					)
+				$this->pdo->log::out(
+					\sprintf('Processing %d music release(s).', $res->rowCount()),
+					'header'
+					, true
 				);
 			}
 
@@ -751,7 +752,10 @@ class Music
 					$newname = $album["name"] . ' (' . $album["year"] . ')';
 
 					if ($this->echooutput) {
-						$this->pdo->log->doEcho($this->pdo->log->headerOver('Looking up: ') . $this->pdo->log->primary($newname));
+						$this->pdo->log::out(
+							$this->pdo->log::header('Looking up: ', false) .
+							$this->pdo->log::primary($newname)
+						);
 					}
 
 					// Do a local lookup first
@@ -760,7 +764,7 @@ class Music
 					if ($musicCheck === false && in_array($album['name'] . $album['year'], $this->failCache)) {
 						// Lookup recently failed, no point trying again
 						if ($this->echooutput) {
-							$this->pdo->log->doEcho($this->pdo->log->headerOver('Cached previous failure. Skipping.') . PHP_EOL);
+							$this->pdo->log::out('Cached previous failure. Skipping.', 'header', true);
 						}
 						$albumId = -2;
 					} else if ($musicCheck === false && $local === false) {
@@ -795,7 +799,7 @@ class Music
 
 		} else {
 			if ($this->echooutput) {
-				$this->pdo->log->doEcho($this->pdo->log->header('No music releases to process.'));
+				$this->pdo->log::out('No music releases to process.', 'header', true);
 			}
 		}
 	}

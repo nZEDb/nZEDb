@@ -16,7 +16,7 @@ switch ($argv[1]) {
 		if (nZEDb_RELEASE_SEARCH_TYPE == ReleaseSearch::SPHINX) {
 			optimizeForSphinx(new DB());
 		} else {
-			echo PHP_EOL . $pdo->log->error('Error, nZEDb_RELEASE_SEARCH_TYPE in nzedb/config/settings.php must be set to SPHINX to optimize for Sphinx!' . PHP_EOL);
+			echo PHP_EOL . $pdo->log::error('Error, nZEDb_RELEASE_SEARCH_TYPE in nzedb/config/settings.php must be set to SPHINX to optimize for Sphinx!' . PHP_EOL);
 		}
 		break;
 	case 'standard':
@@ -27,13 +27,13 @@ switch ($argv[1]) {
 // Optimize database usage for Sphinx full-text
 function optimizeForSphinx($pdo)
 {
-	echo PHP_EOL . $pdo->log->info('Dropping search triggers to save CPU and lower QPS. (Quick)' . PHP_EOL);
+	echo PHP_EOL . $pdo->log::info('Dropping search triggers to save CPU and lower QPS. (Quick)' . PHP_EOL);
 	dropSearchTriggers($pdo);
 
-	echo $pdo->log->info('Truncating release_search_data table to free up memory pools/buffers.  (Quick)' . PHP_EOL);
+	echo $pdo->log::info('Truncating release_search_data table to free up memory pools/buffers.  (Quick)' . PHP_EOL);
 	$pdo->queryExec('TRUNCATE TABLE release_search_data');
 
-	echo $pdo->log->header('Optimization for Sphinx process complete!' . PHP_EOL);
+	echo $pdo->log::header('Optimization for Sphinx process complete!' . PHP_EOL);
 }
 
 //Revert database to standard schema
@@ -59,7 +59,7 @@ function revertToStandard($pdo)
 		}
 	}
 
-	echo PHP_EOL . $pdo->log->info('Dropping old table data and recreating fresh from schema. (Quick)' . PHP_EOL);
+	echo PHP_EOL . $pdo->log::info('Dropping old table data and recreating fresh from schema. (Quick)' . PHP_EOL);
 	$pdo->queryExec('DROP TABLE IF EXISTS release_search_data');
 	$pdo->queryExec(
 			sprintf("
@@ -85,11 +85,11 @@ function revertToStandard($pdo)
 			)
 	);
 
-	echo $pdo->log->info('Populating the releasearch table with initial data. (Slow)' . PHP_EOL);
+	echo $pdo->log::info('Populating the releasearch table with initial data. (Slow)' . PHP_EOL);
 	$pdo->queryInsert('INSERT INTO release_search_data (releases_id, guid, name, searchname, fromname)
 				SELECT id, guid, name, searchname, fromname FROM releases');
 
-	echo $pdo->log->info('Adding the auto-population triggers. (Quick)' . PHP_EOL);
+	echo $pdo->log::info('Adding the auto-population triggers. (Quick)' . PHP_EOL);
 
 	dropSearchTriggers($pdo);
 
@@ -130,7 +130,7 @@ function revertToStandard($pdo)
 						WHERE releases_id = OLD.id;
 					END;'
 	);
-	echo $pdo->log->header('Standard search should once again be available.' . PHP_EOL);
+	echo $pdo->log::header('Standard search should once again be available.' . PHP_EOL);
 }
 
 //Drops existing triggers

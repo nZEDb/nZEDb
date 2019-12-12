@@ -12,19 +12,19 @@ passthru('clear');
 $pdo = new DB();
 
 if (!isset($argv[1]) || (isset($argv[1]) && $argv[1] !== 'true')) {
-	exit($pdo->log->error("\nThis script removes all releases and release related files. To run:\nphp resetdb.php true\n"));
+	exit($pdo->log::error("\nThis script removes all releases and release related files. To run:\nphp resetdb.php true\n"));
 }
 
-echo $pdo->log->warning("This script removes all releases, nzb files, samples, previews , nfos, truncates all article tables and resets all groups.");
-echo $pdo->log->header("Are you sure you want reset the DB?  Type 'DESTROY' to continue:  \n");
-echo $pdo->log->warningOver("\n");
+echo $pdo->log::warning("This script removes all releases, nzb files, samples, previews , nfos, truncates all article tables and resets all groups.");
+echo $pdo->log::header("Are you sure you want reset the DB?  Type 'DESTROY' to continue:  \n");
+echo $pdo->log::warningOver("\n");
 $line = fgets(STDIN);
 if (trim($line) != 'DESTROY') {
-	exit($pdo->log->error("This script is dangerous you must type DESTROY for it function."));
+	exit($pdo->log::error("This script is dangerous you must type DESTROY for it function."));
 }
 
 echo "\n";
-echo $pdo->log->header("Thank you, continuing...\n\n");
+echo $pdo->log::header("Thank you, continuing...\n\n");
 
 $timestart = time();
 $relcount = 0;
@@ -33,7 +33,7 @@ $nzb = new NZB($pdo);
 $consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 
 $pdo->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL");
-echo $pdo->log->primary("Reseting all groups completed.");
+echo $pdo->log::primary("Reseting all groups completed.");
 
 $arr = [
 		"videos", "tv_episodes", "tv_info", "release_nfos", "release_comments", 'sharing', 'sharing_sites',
@@ -46,15 +46,15 @@ $arr = [
 foreach ($arr as &$value) {
 	$rel = $pdo->queryExec("TRUNCATE TABLE $value");
 	if ($rel !== false) {
-		echo $pdo->log->primary("Truncating ${value} completed.");
+		echo $pdo->log::primary("Truncating ${value} completed.");
 	}
 }
 unset($value);
 
 $sql = "CALL loop_cbpm('truncate')";
-echo $pdo->log->primary("Truncating binaries, collections, missed_parts and parts tables...");
+echo $pdo->log::primary("Truncating binaries, collections, missed_parts and parts tables...");
 $result = $pdo->query($sql);
-echo $pdo->log->primary("Truncating completed.");
+echo $pdo->log::primary("Truncating completed.");
 
 // Truncate Sphinx Index
 (new SphinxSearch())->truncateRTIndex('releases_rt');
@@ -63,7 +63,7 @@ echo $pdo->log->primary("Truncating completed.");
 //$pdo->optimise(false, 'full');
 
 // Delete NZBs
-echo $pdo->log->header("Deleting nzbfiles subfolders.");
+echo $pdo->log::header("Deleting nzbfiles subfolders.");
 try {
 	$files = new \RecursiveIteratorIterator(
 				new \RecursiveDirectoryIterator(
@@ -77,11 +77,11 @@ try {
 		}
 	}
 } catch (UnexpectedValueException $e) {
-	echo $pdo->log->error($e->getMessage());
+	echo $pdo->log::error($e->getMessage());
 }
 
 // Delete all covers, previews, samples
-echo $pdo->log->header("Deleting all images, previews and samples that still remain.");
+echo $pdo->log::header("Deleting all images, previews and samples that still remain.");
 try {
 	$dirItr = new \RecursiveDirectoryIterator(nZEDb_COVERS);
 	$itr = new \RecursiveIteratorIterator($dirItr, \RecursiveIteratorIterator::LEAVES_ONLY);
@@ -92,7 +92,7 @@ try {
 		}
 	}
 } catch (UnexpectedValueException $e) {
-	echo $pdo->log->error($e->getMessage());
+	echo $pdo->log::error($e->getMessage());
 }
 
-echo $pdo->log->header("Deleted all releases, images, previews and samples. This script ran for " . $consoletools->convertTime(TIME() - $timestart));
+echo $pdo->log::header("Deleted all releases, images, previews and samples. This script ran for " . $consoletools->convertTime(TIME() - $timestart));

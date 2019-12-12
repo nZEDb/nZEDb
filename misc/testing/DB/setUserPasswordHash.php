@@ -15,7 +15,7 @@ $pdo = new DB();
 
 if ($argc < 3) {
 	exit(
-		$pdo->log->error(
+		$pdo->log::error(
 			'Not enough parameters!' . PHP_EOL .
 			'Argument 1: New password.' . PHP_EOL .
 			'Argument 2: ID or username of the user.' . PHP_EOL
@@ -26,7 +26,7 @@ if ($argc < 3) {
 $password = $argv[1];
 $identifier = $argv[2];
 if (is_numeric($password)) {
-	exit($pdo->log->error('Password cannot be numbers only!'));
+	exit($pdo->log::error('Password cannot be numbers only!'));
 }
 
 $field = (is_numeric($identifier) ? 'id' : 'username');
@@ -52,10 +52,10 @@ if ($user !== false) {
 	}
 
 	if ($result === false || $hash === false) {
-		echo $pdo->log->error('An error occured during update attempt.' . PHP_EOL . $pdo->errorInfo());
+		echo $pdo->log::error('An error occured during update attempt.' . PHP_EOL . $pdo->errorInfo());
 	} else {
-		echo $pdo->log->headerOver("Updated {$user['username']}'s password hash to: ") . $pdo->log->primary("$hash");
+		echo $pdo->log::headerOver("Updated {$user['username']}'s password hash to: ") . $pdo->log::primary("$hash");
 	}
 } else {
-	echo $pdo->log->error("Unable to find {$field} '{$identifier}' in the users. Cannot change password.");
+	echo $pdo->log::error("Unable to find {$field} '{$identifier}' in the users. Cannot change password.");
 }

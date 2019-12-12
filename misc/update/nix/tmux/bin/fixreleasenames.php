@@ -13,7 +13,7 @@ use nzedb\processing\PostProcess;
 $pdo = new DB();
 
 if (!isset($argv[1])) {
-	exit($pdo->log->error("This script is not intended to be run manually, it is called from fixreleasenames_threaded.py."));
+	exit($pdo->log::error("This script is not intended to be run manually, it is called from fixreleasenames_threaded.py."));
 } else if (isset($argv[1])) {
 	$namefixer = new NameFixer(['Settings' => $pdo]);
 	$pieces = explode(' ', $argv[1]);
@@ -63,7 +63,7 @@ if (!isset($argv[1])) {
 		$nntp = new NNTP(['Settings' => $pdo]);
 		if ((Settings::value('..alternate_nntp') == 1 ? $nntp->doConnect(true, true) :
 				$nntp->doConnect()) !== true) {
-			exit($pdo->log->error("Unable to connect to usenet."));
+			exit($pdo->log::error("Unable to connect to usenet."));
 		}
 
 		$relID = $pieces[1];
@@ -87,7 +87,7 @@ if (!isset($argv[1])) {
 		$nntp = new NNTP(['Settings' => $pdo]);
 		if ((Settings::value('..alternate_nntp') == 1 ? $nntp->doConnect(true, true) :
 				$nntp->doConnect()) !== true) {
-			exit($pdo->log->error("Unable to connect to usenet."));
+			exit($pdo->log::error("Unable to connect to usenet."));
 		}
 
 		$sorter = new MiscSorter(true);

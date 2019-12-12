@@ -57,7 +57,7 @@ $runVar['timers']['query']['tpg1_time'] = 0;
 // Analyze release table if not using innoDB (innoDB uses online analysis)
 $engine = $pdo->queryOneRow(sprintf("SELECT ENGINE FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME = 'releases'", $pdo->escapeString($db_name)));
 if (!in_array(strtolower($engine['engine']), ['innodb', 'tokudb', 'xtradb'])) {
-	printf($pdo->log->info("\nAnalyzing your tables to refresh your indexes."));
+	printf($pdo->log::info("\nAnalyzing your tables to refresh your indexes."));
 	$pdo->optimise(false, 'analyze', false, ['releases']);
 	Misc::clearScreen();
 }
@@ -128,7 +128,7 @@ while ($runVar['counts']['iterations'] > 0) {
 		$runVar['counts']['now']['total_work'] = 0;
 		$runVar['modsettings']['fix_crap'] = explode(', ', ($runVar['settings']['fix_crap']));
 
-		echo $pdo->log->info("\nThe numbers(queries) above are currently being refreshed. \nNo pane(script) can be (re)started until these have completed.\n");
+		echo $pdo->log::info("\nThe numbers(queries) above are currently being refreshed. \nNo pane(script) can be (re)started until these have completed.\n");
 		$timer02 = time();
 
 		$splitqry = $newOldqry = '';
@@ -379,7 +379,7 @@ while ($runVar['counts']['iterations'] > 0) {
 
 function errorOnSQL($pdo)
 {
-	echo $pdo->log->error(PHP_EOL . "Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again." . PHP_EOL);
+	echo $pdo->log::error(PHP_EOL . "Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again." . PHP_EOL);
 	exit;
 }
 

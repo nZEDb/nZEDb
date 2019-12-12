@@ -177,7 +177,7 @@ foreach ($data as $dir => $files) {
 				$verbose = $argv[3] == true ? true : false;
 
 				if ($verbose) {
-					echo $predb->log->info('Clearing import table');
+					echo $predb->log::info('Clearing import table');
 				}
 
 				// Truncate to clear any old data
@@ -194,7 +194,7 @@ foreach ($data as $dir => $files) {
 
 				// Remove any titles where length <=8
 				if ($verbose === true) {
-					echo $predb->log->info('Deleting any records where title <=8 from Temporary Table');
+					echo $predb->log::info('Deleting any records where title <=8 from Temporary Table');
 				}
 				$predb->executeDeleteShort();
 
@@ -204,7 +204,7 @@ foreach ($data as $dir => $files) {
 				// Fill the groups_id
 				$predb->executeUpdateGroupID();
 
-				echo $predb->log->info('Inserting records from temporary table into predb table');
+				echo $predb->log::info('Inserting records from temporary table into predb table');
 				$predb->executeInsert();
 
 				// Delete the dump.

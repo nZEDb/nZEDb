@@ -43,9 +43,13 @@ class Binaries
 	public $messageBuffer;
 
 	/**
-	 * @var ColorCLI
+	 * Logger instance, currently only ColorCLI supported.
+	 *
+	 * @TODO update this to use the PSR loogger interface.
+	 *
+	 * @var \nzedb\ColorCLI
 	 */
-	protected $_colorCLI;
+	protected $log;
 
 	/**
 	 * @var CollectionsCleaning
@@ -262,15 +266,15 @@ class Binaries
 
 		$this->_pdo = ($options['Settings'] instanceof DB ? $options['Settings'] : new DB());
 		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->_pdo]));
-		$this->_colorCLI = ($options['ColorCLI'] instanceof ColorCLI ? $options['ColorCLI'] : new ColorCLI());
-		$this->_nntp = ($options['NNTP'] instanceof NNTP ? $options['NNTP'] : new NNTP(['Echo' => $this->_colorCLI, 'Settings' => $this->_pdo, 'ColorCLI' => $this->_colorCLI]));
+		$this->log = ($options['ColorCLI'] instanceof ColorCLI ? $options['ColorCLI'] : new ColorCLI());
+		$this->_nntp = ($options['NNTP'] instanceof NNTP ? $options['NNTP'] : new NNTP(['Echo' => $this->log, 'Settings' => $this->_pdo, 'ColorCLI' => $this->log]));
 		$this->_collectionsCleaning = ($options['CollectionsCleaning'] instanceof CollectionsCleaning ? $options['CollectionsCleaning'] : new CollectionsCleaning(['Settings' => $this->_pdo]));
 
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 
 		if ($this->_debug) {
 			try {
-				$this->_debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->_colorCLI]));
+				$this->_debugging = ($options['Logger'] instanceof Logger ? $options['Logger'] : new Logger(['ColorCLI' => $this->log]));
 			} catch (LoggerException $error) {
 				$this->_debug = false;
 			}
@@ -388,14 +392,14 @@ class Binaries
 		}
 
 		if ($this->_echoCLI) {
-			$this->_colorCLI->doEcho($this->_colorCLI->primary('Processing ' . $groupMySQL['name']), true);
+			$this->log::out('Processing ' . $groupMySQL['name'], 'primary', true);
 		}
 
 		// Attempt to repair any missing parts before grabbing new ones.
-		if ($groupMySQL['last_record'] != 0) {
+		if ($groupMySQL['last_record'] !== 0) {
 			if ($this->_partRepair) {
 				if ($this->_echoCLI) {
-					$this->_colorCLI->doEcho($this->_colorCLI->primary('Part repair enabled. Checking for missing parts.'), true);
+					$this->log::out('Part repair enabled. Checking for missing parts.', 'primary', true);
 				}
 				$this->partRepair($groupMySQL);
 				$mgrPosters = $this->getMultiGroupPosters();
@@ -404,12 +408,12 @@ class Binaries
 					$this->partRepair($groupMySQL, $tableNames);
 				}
 			} else if ($this->_echoCLI) {
-				$this->_colorCLI->doEcho($this->_colorCLI->primary('Part repair disabled by user.'), true);
+				$this->log::out('Part repair disabled by user.', 'primary', true);
 			}
 		}
 
 		// Generate postdate for first record, for those that upgraded.
-		if (($groupMySQL['first_record_postdate'] === null) && $groupMySQL['first_record'] != 0) {
+		if (($groupMySQL['first_record_postdate'] === null) && $groupMySQL['first_record'] !== 0) {
 			$groupMySQL['first_record_postdate'] = $this->postdate($groupMySQL['first_record'], $groupNNTP);
 
 			$this->_pdo->queryExec(
@@ -424,7 +428,7 @@ class Binaries
 		}
 
 		// Get first article we want aka the oldest.
-		if ($groupMySQL['last_record'] == 0) {
+		if ($groupMySQL['last_record'] === 0) {
 			if ($this->_newGroupScanByDays) {
 				// For new newsgroups - determine here how far we want to go back using date.
 				$first = $this->daytopost($this->_newGroupDaysToScan, $groupNNTP);
@@ -483,21 +487,33 @@ class Binaries
 		if ($total > 0) {
 
 			if ($this->_echoCLI) {
-				$this->_colorCLI->doEcho(
-					$this->_colorCLI->primary(
-						($groupMySQL['last_record'] == 0
-							? 'New group ' . $groupNNTP['group'] . ' starting with ' .
-								($this->_newGroupScanByDays
-									? $this->_newGroupDaysToScan . ' days'
-									: number_format($this->_newGroupMessagesToScan) . ' messages'
-								) . ' worth.'
-							: 'Group ' . $groupNNTP['group'] . ' has ' . number_format($realTotal) . ' new articles.'
-						) .
-						' Leaving ' . number_format($leaveOver) .
-						" for next pass.\nServer oldest: " . number_format($groupNNTP['first']) .
-						' Server newest: ' . number_format($groupNNTP['last']) .
-						' Local newest: ' . number_format($groupMySQL['last_record'])
-					), true
+				if ($groupMySQL['last_record'] === 0) {
+					if ($this->_newGroupScanByDays) {
+						$scanRange = \sprintf('%d days', $this->_newGroupDaysToScan);
+					} else {
+						$scanRange = \sprintf('%d messages worth.',
+							number_format($this->_newGroupMessagesToScan));
+					}
+					$msgPrefix = \sprintf('New group %s starting with %s',
+						$groupNNTP['group'],
+						$scanRange
+						);
+				} else {
+					$msgPrefix = \sprintf('Group %s has %d new articles.',
+						$groupNNTP['group'],
+						number_format($realTotal)
+					);
+				}
+				$this->log::out(
+					$msgPrefix . \sprintf(
+						' Leaving %d for next pass.\nServer oldest: %d. Server newest: %d. Local newest: %d.',
+						number_format($leaveOver),
+						number_format($groupNNTP['first']),
+						number_format($groupNNTP['last']),
+						number_format($groupMySQL['last_record'])
+						),
+					'primary',
+					true
 				);
 			}
 
@@ -517,12 +533,17 @@ class Binaries
 				$first++;
 
 				if ($this->_echoCLI) {
-					$this->_colorCLI->doEcho(
-						$this->_colorCLI->header(
-							"\nGetting " . number_format($last - $first + 1) . ' articles (' . number_format($first) .
-							' to ' . number_format($last) . ') from ' . $groupMySQL['name'] . " - (" .
-							number_format($groupLast - $last) . " articles in queue)."
-						)
+					$this->log::out(
+						sprintf(
+							"\nGetting %d articles (%d to %d) from %s - (%d articles in queue).",
+							number_format($last - $first + 1),
+							number_format($first),
+							number_format($last),
+							$groupMySQL['name'],
+							number_format($groupLast - $last)
+						),
+						'header',
+						true
 					);
 				}
 
@@ -590,21 +611,30 @@ class Binaries
 			}
 
 			if ($this->_echoCLI) {
-				$this->_colorCLI->doEcho(
-					$this->_colorCLI->primary(
-						PHP_EOL . 'Group ' . $groupMySQL['name'] . ' processed in ' .
-						number_format(microtime(true) - $startGroup, 2) . ' seconds.'
-					), true
+				$this->log::out(PHP_EOL .
+					\sprintf('Group %s processed in %d seconds.',
+						$groupMySQL['name'],
+						number_format(microtime(true) - $startGroup, 2)
+					),
+					'primary',
+					true
 				);
 			}
 		} else if ($this->_echoCLI) {
-			$this->_colorCLI->doEcho(
-				$this->_colorCLI->primary(
-					'No new articles for ' . $groupMySQL['name'] . ' (first ' . number_format($first) .
-					', last ' . number_format($last) . ', grouplast ' . number_format($groupMySQL['last_record']) .
-					', total ' . number_format($total) . ")\n" . 'Server oldest: ' . number_format($groupNNTP['first']) .
-					' Server newest: ' . number_format($groupNNTP['last']) . ' Local newest: ' . number_format($groupMySQL['last_record'])
-				), true
+			$this->log::out(
+				\sprintf(
+					'No new articles for %s (first %d, last %d, grouplast %d, total %d)\nServer oldest: %d Server newest: %d Local newest: %d',
+					$groupMySQL['name'],
+					number_format($first),
+					number_format($last),
+					number_format($groupMySQL['last_record']),
+					number_format($total),
+					number_format($groupNNTP['first']),
+					number_format($groupNNTP['last']),
+					number_format($groupMySQL['last_record'])
+				),
+				'primary',
+				true
 			);
 		}
 	}
@@ -846,11 +876,14 @@ class Binaries
 				$this->addMissingParts($rangeNotReceived, $this->tableNames['prname'], $this->groupMySQL['id']);
 
 				if ($this->_echoCLI) {
-					$this->_colorCLI->doEcho(
-						$this->_colorCLI->alternate(
-							'Server did not return ' . $notReceivedCount .
-							' articles from ' . $this->groupMySQL['name'] . '.'
-						), true
+					$this->log::out(
+						\sprintf(
+							'Server did not return %d articles from %d',
+							\number_format($notReceivedCount),
+							$this->groupMySQL['name']
+						),
+						'alternate',
+						true
 					);
 				}
 			}
@@ -1046,11 +1079,14 @@ class Binaries
 		// Check if we got any binaries. If we did, try to insert them.
 		if (((strlen($binariesCheck . $binariesEnd) === strlen($binariesQuery)) ? true : $this->_pdo->queryExec($binariesQuery))) {
 			if ($this->_debug) {
-				$this->_colorCLI->doEcho(
-					$this->_colorCLI->debug(
-						'Sending ' . round(strlen($partsQuery) / 1024, 2) .
-						' KB of' . ($this->multiGroup ? ' MGR' : '') . ' parts to MySQL'
-					)
+				$this->log::out(
+					\sprintf(
+						'Sending %d KB of%s parts to MySQL',
+						round(strlen($partsQuery) / 1024, 2),
+						($this->multiGroup ? ' MGR' : '')
+					),
+					'debug',
+					true
 				);
 			}
 			if (((strlen($partsQuery) === strlen($partsCheck)) ? true : $this->_pdo->queryExec(rtrim($partsQuery, ',')))) {
@@ -1124,33 +1160,40 @@ class Binaries
 	 */
 	protected function outputHeaderInitial()
 	{
-		$this->_colorCLI->doEcho(
-			$this->_colorCLI->primary(
-				'Received ' . count($this->headersReceived) .
-				' articles of ' . (number_format($this->last - $this->first + 1)) . ' requested, ' .
-				$this->headersBlackListed . ' blacklisted, ' . $this->notYEnc . ' not yEnc.'
-			)
+		$this->log::out(
+			\sprintf(
+				'Received %d articles of %d requested, %d blacklisted, %d not yEnc.',
+				\number_format(count($this->headersReceived)),
+				\number_format($this->last - $this->first + 1),
+				\number_format($this->headersBlackListed ),
+				\number_format($this->notYEnc)
+			),
+			'primary',
+			true
 		);
 	}
 
 	/**
 	 * Outputs speed metrics of the scan function to CLI
 	 */
-	protected function outputHeaderDuration()
+	protected function outputHeaderDuration(): void
 	{
 		$currentMicroTime = microtime(true);
 		if ($this->_echoCLI) {
-			$this->_colorCLI->doEcho(
-				$this->_colorCLI->alternateOver($this->timeHeaders . 's') .
-				$this->_colorCLI->primaryOver(' to download articles, ') .
-				$this->_colorCLI->alternateOver($this->timeCleaning . 's') .
-				$this->_colorCLI->primaryOver(' to process collections, ') .
-				$this->_colorCLI->alternateOver($this->timeInsert . 's') .
-				$this->_colorCLI->primaryOver(' to insert binaries/parts, ') .
-				$this->_colorCLI->alternateOver(number_format($currentMicroTime - $this->startPR, 2) . 's') .
-				$this->_colorCLI->primaryOver(' for part repair, ') .
-				$this->_colorCLI->alternateOver(number_format($currentMicroTime - $this->startLoop, 2) . 's') .
-				$this->_colorCLI->primary(' total.')
+			$this->log::out(
+				\sprintf('%s%s%s%s%s%s%s%s%s%s',
+					$this->log::alternate($this->timeHeaders . 's'),
+					$this->log::primary(' to download articles, ', false),
+					$this->log::alternate($this->timeCleaning . 's', false),
+					$this->log::primary(' to process collections, ', false),
+					$this->log::alternate($this->timeInsert . 's', false) .
+					$this->log::primary(' to insert binaries/parts, ', false) .
+					$this->log::alternate(number_format($currentMicroTime - $this->startPR, 2) . 's',
+						false).
+					$this->log::primary(' for part repair, ', false),
+					$this->log::alternate(number_format($currentMicroTime - $this->startLoop, 2) . 's'),
+					$this->log::primary(' total.')
+				)
 			);
 		}
 	}
@@ -1211,12 +1254,12 @@ class Binaries
 		$missingCount = count($missingParts);
 		if ($missingCount > 0) {
 			if ($this->_echoCLI) {
-				$this->_colorCLI->doEcho(
-					$this->_colorCLI->primary(
-						'Attempting to repair ' .
-						number_format($missingCount) .
-						' parts.'
-					), true
+				$this->log::out(
+					$this->log::primary(
+						\sprintf('Attempting to repair %d parts.',
+							number_format($missingCount)
+						)
+					)
 				);
 			}
 
@@ -1295,12 +1338,13 @@ class Binaries
 			}
 
 			if ($this->_echoCLI) {
-				$this->_colorCLI->doEcho(
-					$this->_colorCLI->primary(
-						PHP_EOL .
-						number_format($partsRepaired) .
-						' parts repaired.'
-					), true
+				$this->log::out(
+					$this->log::primary(
+						\sprintf(
+						PHP_EOL . '%d parts repaired.',
+							number_format($partsRepaired)
+						)
+					)
 				);
 			}
 		}
@@ -1389,7 +1433,13 @@ class Binaries
 			$currentPost = $tempPost;
 
 			if ($this->_debug) {
-				$this->_colorCLI->doEcho($this->_colorCLI->debug('Postdate retried ' . $attempts . " time(s)."));
+				$this->log::out(
+					$this->log::debug(
+						\sprintf('Postdate retried %d time(s).',
+							$attempts
+						)
+					)
+				);
 			}
 		} while ($attempts++ <= 20);
 
@@ -1447,9 +1497,13 @@ class Binaries
 		}
 
 		if ($this->_echoCLI) {
-			$this->_colorCLI->doEcho(
-				$this->_colorCLI->primary(
-					'Searching for an approximate article number for group ' . $data['group'] . ' ' . $days . ' days back.'
+			$this->log::out(
+				$this->log::primary(
+					\sprintf(
+						'Searching for an approximate article number for group %s %d days back.',
+						$data['group'],
+					 	$days
+					)
 				)
 			);
 		}
@@ -1507,10 +1561,14 @@ class Binaries
 
 		$wantedArticle = (int)$wantedArticle;
 		if ($this->_echoCLI) {
-			$this->_colorCLI->doEcho(
-				$this->_colorCLI->primary(
-					PHP_EOL . 'Found article #' . $wantedArticle . ' which has a date of ' . date('r', $articleTime) .
-					', vs wanted date of ' . date('r', $goalTime) . '. Difference from goal is ' . round(($goalTime - $articleTime) / 60 / 60 / 24, 1) . ' days.'
+			$this->log::out(
+				$this->log::primary(
+					PHP_EOL . \sprintf('Found article %d which has a date of %s, vs wanted date of %s. Difference from goal is %d days.',
+						$wantedArticle,
+						\date('r', $articleTime),
+						\date('r', $goalTime) ,
+						\number_format(round(($goalTime - $articleTime) / 86400, 1))
+					)
 				)
 			);
 		}
@@ -1796,29 +1854,31 @@ class Binaries
 	 * @param int    $level   Logger severity level constant.
 	 * @param string $color   ColorCLI method name.
 	 */
-	private function log($message, $method, $level, $color)
+	private function log($message, $method, $level, $color): void
 	{
 		if ($this->_echoCLI) {
-			$this->_colorCLI->doEcho(
-				$this->_colorCLI->$color($message . ' [' . get_class() . "::$method]"), true
+			$this->log::out(
+				$this->log::$color($message . ' [' . __CLASS__ . "::$method]"),
+				null,
+				true
 			);
 		}
 
 		if ($this->_debug) {
-			$this->_debugging->log(get_class(), $method, $message, $level);
+			$this->_debugging->log(__CLASS__, $method, $message, $level);
 		}
 	}
 
 	/**
 	 * Check if we should ignore the file count and return true or false.
 	 *
+	 * @param string $groupName
 	 * @param string $subject
 	 *
-	 * @access protected
-	 *
 	 * @return boolean
+	 * @access protected
 	 */
-	protected function _ignoreFileCount($groupName, $subject)
+	protected function _ignoreFileCount($groupName, $subject): bool
 	{
 		$ignore = false;
 		switch ($groupName) {

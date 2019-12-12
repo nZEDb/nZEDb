@@ -35,11 +35,11 @@ $session = shell_exec("tmux list-session | grep $tmux_session");
 // Kill the placeholder
 exec('tmux kill-session -t placeholder');
 if ($session != 0) {
-	exit($pdo->log->error("tmux session: '" . $tmux_session . "' is already running, aborting.\n"));
+	exit($pdo->log::error("tmux session: '" . $tmux_session . "' is already running, aborting.\n"));
 }
 
 //reset collections dateadded to now if dateadded > delay time check
-echo $pdo->log->header("Resetting expired collections dateadded to now. This could take a minute or ten. Really!");
+echo $pdo->log::header("Resetting expired collections dateadded to now. This could take a minute or ten. Really!");
 
 exec("cd {$DIR}/update/nix/tmux/bin/ && php resetdelaytime.php");
 
@@ -131,7 +131,7 @@ function command_exist($cmd)
 $apps = ["time", "tmux", "nice", "python", "tee"];
 foreach ($apps as &$value) {
 	if (!command_exist($value)) {
-		exit($pdo->log->error("Tmux scripts require " . $value . " but it's not installed. Aborting.\n"));
+		exit($pdo->log::error("Tmux scripts require " . $value . " but it's not installed. Aborting.\n"));
 	}
 }
 

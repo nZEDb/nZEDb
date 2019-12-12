@@ -22,7 +22,7 @@ $consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 $DoPartRepair = (Settings::value('..partrepair') == '0') ? false : true;
 
 if ((!isset($argv[1])) || $argv[1] != 'true') {
-	exit($pdo->log->error("\nMandatory argument missing\n\n"
+	exit($pdo->log::error("\nMandatory argument missing\n\n"
 			. "This script will allow you to move from single collections/binaries/parts tables to TPG without having to run reset_truncate.\n"
 			. "Please STOP all update scripts before running this script.\n\n"
 			. "Use the following options to run:\n"
@@ -43,7 +43,7 @@ echo "Creating new collections, binaries, and parts tables for each active group
 
 foreach ($actgroups as $group) {
 	if (Tables::createTPGTablesForId($group['id']) === false) {
-		exit($pdo->log->error("There is a problem creating new parts/files tables for group ${group['name']}."));
+		exit($pdo->log::error("There is a problem creating new parts/files tables for group ${group['name']}."));
 	}
 	$consoletools->overWrite("Tables Created: " . $consoletools->percentString($gdone * 3, $newtables));
 	$gdone++;

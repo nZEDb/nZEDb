@@ -7,7 +7,7 @@ use nzedb\db\DB;
 $pdo = new DB();
 
 if ($argc === 1 || !is_numeric($argv[1])) {
-	exit($pdo->log->error("\nThis script will show table data, index and free space used. The argument needed is numeric.\n\n"
+	exit($pdo->log::error("\nThis script will show table data, index and free space used. The argument needed is numeric.\n\n"
 		. "php $argv[0] 1      ...: To show all tables with data + index space used greater than 1MB or free space greater than 1MB.\n"
 		. "php $argv[0] .01    ...: To show all tables with data + index space used greater than .01MB or free space greater than .01MB.\n"));
 }
@@ -26,7 +26,7 @@ $table_data = "SELECT TABLE_NAME AS 'Table', TABLE_ROWS AS 'Rows', "
 
 $run = $pdo->queryDirect($table_data);
 
-$mask = $pdo->log->headerOver("%-25.25s ") . $pdo->log->primaryOver("%7.7s %10.10s %15.15s %15.15s %15.15s %15.15s\n");
+$mask = $pdo->log::headerOver("%-25.25s ") . $pdo->log::primaryOver("%7.7s %10.10s %15.15s %15.15s %15.15s %15.15s\n");
 printf($mask, 'Table Name', 'Engine', 'Row_Format', 'Data Size', 'Index Size', 'Free Space', 'Total Size');
 printf($mask, '=========================', '=======', '==========', '===============', '===============', '===============', '===============');
 if ($run instanceof \Traversable) {
@@ -84,10 +84,10 @@ if ($bb['value'] >= 1073741824) {
 	$current_b .= "M";
 }
 
-echo $pdo->log->headerOver("\n\nThe recommended minimums are:\n");
-echo $pdo->log->primaryOver("MyISAM: key-buffer-size           = ") . $pdo->log->alternate($a);
-echo $pdo->log->primaryOver("InnoDB: innodb_buffer_pool_size   = ") . $pdo->log->alternate($b);
+echo $pdo->log::headerOver("\n\nThe recommended minimums are:\n");
+echo $pdo->log::primaryOver("MyISAM: key-buffer-size           = ") . $pdo->log::alternate($a);
+echo $pdo->log::primaryOver("InnoDB: innodb_buffer_pool_size   = ") . $pdo->log::alternate($b);
 
-echo $pdo->log->headerOver("\nYour current setting are:\n");
-echo $pdo->log->primaryOver("MyISAM: key-buffer-size           = ") . $pdo->log->alternate($current_a);
-echo $pdo->log->primaryOver("InnoDB: innodb_buffer_pool_size   = ") . $pdo->log->alternate($current_b);
+echo $pdo->log::headerOver("\nYour current setting are:\n");
+echo $pdo->log::primaryOver("MyISAM: key-buffer-size           = ") . $pdo->log::alternate($current_a);
+echo $pdo->log::primaryOver("InnoDB: innodb_buffer_pool_size   = ") . $pdo->log::alternate($current_b);

@@ -3,6 +3,13 @@
 // Modified by ThePeePs.
 namespace nzedb;
 
+/**
+ * Class ColorCLI
+ *
+ * TODO Rewrite this to use the PSR loogger interface.
+ *
+ * @package nzedb
+ */
 class ColorCLI
 {
 	// Feel free to add any other colors that you like here.
@@ -162,96 +169,94 @@ class ColorCLI
 		'Hidden' => '8', 'Crossout' => '9',
 	];
 
-	public static function alternate($str)
+	public static function alternate(string $text, $nl = true): string
 	{
-		$str = self::alternateOver($str) . "\n";
-
-		return $str;
+		return "\033[38;5;" . self::$colors256['DeepPink1'] . "m$text\033[0m" . self::addNewLine($nl);
 	}
 
-	public static function alternateOver($str)
+	public static function alternateNoNL($text)
 	{
-		$str = "\033[38;5;" . self::$colors256['DeepPink1'] . "m$str\033[0m";
-
-		return $str;
+		return self::alternate($text, false);
 	}
 
-	public static function bell($count = 1)
+	/**
+	 * @param $text
+	 *
+	 * @return string
+	 * @deprecated Use alternate($text, false) or alternateNoNL($text) instead.
+	 */
+	public static function alternateOver($text): string
+	{
+		return self::alternate($text, false);
+	}
+
+	public static function bell($count = 1): void
 	{
 		echo str_repeat("\007", $count);
 	}
 
-	public static function debug($str)
+	public static function debug(string $text, $nl = true): string
 	{
-		$debugstring = "\033[" . self::$foreground_colors['Gray'] . "mDebug: $str\033[0m\n";
-
-		return $debugstring;
+		return "\033[" . self::$foreground_colors['Gray'] . "mDebug: $text\033[0m" . self::addNewLine($nl);
 	}
 
-	/**
-	 * Echo message to CLI.
-	 *
-	 * @param string $message The message.
-	 * @param bool   $nl      Add a new line?
-	 *
-	 * @void
-	 */
-	public static function doEcho($message, $nl = false)
+	public static function error(string $text, $nl = true): string
 	{
-		echo $message . ($nl ? PHP_EOL : '');
-	}
-
-	public static function error($str)
-	{
-		$errorstring = "\033[" . self::$foreground_colors['Red'] . "mError: $str\033[0m\n";
+		$errorstring = "\033[" . self::$foreground_colors['Red'] . "mError: $text\033[0m" . self::addNewLine($nl);
 
 		return $errorstring;
 	}
 
-	public static function header($str)
+	public static function header(string $text, $nl = true): string
 	{
-		$str = self::headerOver($str) . "\n";
-
-		return $str;
+		return "\033[38;5;" . self::$colors256['Yellow'] . "m$text\033[0m" . self::addNewLine($nl);
 	}
 
-	public static function headerOver($str)
+	public static function headerNoNL(string $text)
 	{
-		$str = "\033[38;5;" . self::$colors256['Yellow'] . "m$str\033[0m";
-
-		return $str;
+		return self::header($text, false);
 	}
 
-	public static function info($str)
+	/**
+	 * @param $text
+	 *
+	 * @return string
+	 * @deprecated Use headerNoNL($text) or header($text. false) instead.
+	 */
+	public static function headerOver($text): string
 	{
-		$infostring = "\033[" . self::$foreground_colors['Purple'] . "mInfo: $str\033[0m\n";
-
-		return $infostring;
+		return self::header($text, false);
 	}
 
-	public static function notice($str)
+	public static function info(string $text, $nl = true): string
 	{
-		$noticstring = "\033[38;5;" . self::$colors256['Blue'] . "mNotice: $str\033[0m\n";
+		return "\033[" . self::$foreground_colors['Gray'] . "mInfo: $text\033[0m" .
+			self::addNewLine($nl);
+	}
+
+	public static function notice(string $text, $nl = true): string
+	{
+		$noticstring = "\033[38;5;" . self::$colors256['Blue'] . "mNotice: $text\033[0m" . self::addNewLine($nl);
 
 		return $noticstring;
 	}
 
 	/**
-	 * @param string $message
-	 * @param bool   $nl
+	 * @param string $text
 	 * @param string $style
+	 * @param bool   $nl
 	 *
 	 * @return void
 	 */
-	public static function out(string $message = '', $nl = false, string $style = null): void
+	public static function out(string $text = '', string $style = null, $nl = false): void
 	{
-		$message = empty($style) ? $message : self::$style($message);
+		$message = empty($style) ? $text : self::$style($text);
 		self::doEcho($message, $nl);
 	}
 
-	public static function primary(string $text): string
+	public static function primary(string $text, $nl = true): string
 	{
-		return self::primaryNoNL($text) . "\n";
+		return "\033[38;5;" . self::$colors256['Green'] . "m$text\033[0m" . self::addNewLine($nl);
 	}
 
 	/**
@@ -263,26 +268,26 @@ class ColorCLI
 	 */
 	public static function primaryNoNL(string $text): string
 	{
-		return "\033[38;5;" . self::$colors256['Green'] . "m$text\033[0m";
+		return self::primary($text, false);
 	}
 
 	/**
 	 * @param string $text
 	 *
 	 * @return string
-	 * @deprecated Use primaryNoNL() instead
+	 * @deprecated Use primaryNoNL($text) or primary($text, false) instead.
 	 */
 	public static function primaryOver(string $text): string
 	{
-		return self::primaryNoNL($text);
+		return self::primary($text, false);
 	}
 
-	public static function rsetColor()
+	public static function rsetColor(): string
 	{
 		return "\033[0m";
 	}
 
-	public static function setColor($fg, $opt = 'None', $bg = 'None')
+	public static function setColor($fg, $opt = 'None', $bg = 'None'): string
 	{
 		$colored_string = "\033[" . self::$foreground_colors[$fg];
 		if (isset(self::$options[$opt])) {
@@ -296,7 +301,7 @@ class ColorCLI
 		return $colored_string;
 	}
 
-	public static function set256($fg, $opt = 'None', $bg = 'None')
+	public static function set256($fg, $opt = 'None', $bg = 'None'): string
 	{
 		$colored_string = "\033[38;5;" . self::$colors256[$fg];
 		if (isset(self::$options[$opt]) && $opt != 'Norm') {
@@ -310,23 +315,59 @@ class ColorCLI
 		return $colored_string;
 	}
 
-	public static function tmuxOrange($str)
+	public static function tmuxOrange(string $text, $nl = true): string
 	{
-		$str = "\033[38;5;" . self::$colors256['Orange'] . "m$str\033[0m\n";
-
-		return $str;
+		return "\033[38;5;" . self::$colors256['Orange'] . "m$text\033[0m" . self::addNewLine($nl);
 	}
 
-	public static function warning($str)
+	public static function warning(string $text, $nl = true): string
 	{
-		$warnstring = "\033[" . self::$foreground_colors['Yellow'] . "mWarning: $str\033[0m\n";
-
-		return $warnstring;
+		return "\033[" . self::$foreground_colors['Yellow'] . "mWarning: $text\033[0m" . self::addNewLine($nl);
 	}
 
-	public static function warningOver($str)
+	/**
+	 * @param string $text
+	 *
+	 * @return string
+	 */
+	public static function warningNoNL(string $text): string
 	{
-		$str = "\033[38;5;" . self::$colors256['Red'] . "m$str\033[0m";
-		return $str;
+		return self::warning($text, false);
+	}
+
+	/**
+	 * @param string $text
+	 *
+	 * @return string
+	 * @deprecated Use warningNoNL($text) or warning($text, false) instead.
+	 */
+	public static function warningOver(string $text): string
+	{
+		return self::warning($text, false);
+	}
+
+	/**
+	 * Return a new line character if the argument is true.
+	 *
+	 * @param $nl
+	 *
+	 * @return string
+	 */
+	protected static function addNewLine($nl): string
+	{
+		return $nl ? "\n" : '';
+	}
+
+	/**
+	 * Echo message to CLI.
+	 *
+	 * @param string $message The message.
+	 * @param bool   $nl      Add a new line?
+	 *
+	 * @void
+	 */
+	protected static function doEcho($message, $nl = false): void
+	{
+		echo $message . ($nl ? PHP_EOL : '');
 	}
 }

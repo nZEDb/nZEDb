@@ -9,7 +9,7 @@ $pdo = new DB();
 $covers = $updated = $deleted = 0;
 
 if ($argc === 1 || $argv[1] != 'true') {
-	exit($pdo->log->error("\nThis script will check all images in covers/movies and compare to db->movieinfo.\nTo run:\nphp $argv[0] true\n"));
+	exit($pdo->log::error("\nThis script will check all images in covers/movies and compare to db->movieinfo.\nTo run:\nphp $argv[0] true\n"));
 }
 
 $coverspath = Settings::value('..coverspath', true);
@@ -30,7 +30,7 @@ foreach ($itr as $filePath) {
 		} else {
 			$run = $pdo->queryDirect('SELECT imdbid FROM movieinfo WHERE imdbid = ' . $match[1]);
 			if ($run->rowCount() === 0) {
-				echo $pdo->log->info($filePath . ' not found in db.');
+				echo $pdo->log::info($filePath . ' not found in db.');
 			}
 		}
 	}
@@ -45,7 +45,7 @@ foreach ($itr as $filePath) {
 			} else {
 				$run = $pdo->queryDirect('SELECT imdbid FROM movieinfo WHERE imdbid = ' . $match1[1]);
 				if ($run->rowCount() === 0) {
-					echo $pdo->log->info($filePath . ' not found in db.');
+					echo $pdo->log::info($filePath . ' not found in db.');
 				}
 			}
 		}
@@ -57,7 +57,7 @@ if ($qry instanceof \Traversable) {
 	foreach ($qry as $row) {
 		if (!is_file($path2covers . $row['imdbid'] . '-cover.jpg')) {
 			$pdo->queryDirect('UPDATE movieinfo SET cover = 0 WHERE cover = 1 AND imdbid = ' . $row['imdbid']);
-			echo $pdo->log->info($path2covers . $row['imdbid'] . '-cover.jpg does not exist.');
+			echo $pdo->log::info($path2covers . $row['imdbid'] . '-cover.jpg does not exist.');
 			$deleted++;
 		}
 	}
@@ -67,11 +67,11 @@ if ($qry1 instanceof \Traversable) {
 	foreach ($qry1 as $row) {
 		if (!is_file($path2covers . $row['imdbid'] . '-backdrop.jpg')) {
 			$pdo->queryDirect('UPDATE movieinfo SET backdrop = 0 WHERE backdrop = 1 AND imdbid = ' . $row['imdbid']);
-			echo $pdo->log->info($path2covers . $row['imdbid'] . '-backdrop.jpg does not exist.');
+			echo $pdo->log::info($path2covers . $row['imdbid'] . '-backdrop.jpg does not exist.');
 			$deleted++;
 		}
 	}
 }
-echo $pdo->log->header($covers . ' covers set.');
-echo $pdo->log->header($updated . ' backdrops set.');
-echo $pdo->log->header($deleted . ' movies unset.');
+echo $pdo->log::header($covers . ' covers set.');
+echo $pdo->log::header($updated . ' backdrops set.');
+echo $pdo->log::header($deleted . ' movies unset.');

@@ -8,7 +8,7 @@ $count = $groups = 0;
 if (!isset($argv[1])) {
 	passthru("clear");
 	exit(
-		$pdo->log->error(
+		$pdo->log::error(
 			"\nThis script will show all Active Groups. There is 1 required argument and 2 optional arguments.\n"
 			. "The first argument of [date, releases] is used to sort the display by first_record_postdate or by the number of releases.\n"
 			. "The second argument [ASC, DESC] sorts by ascending or descending.\n"
@@ -43,7 +43,7 @@ if (isset($argv[3]) && is_numeric($argv[3])) {
 	$limit = "";
 }
 
-$mask = $pdo->log->primary("%-50.50s %22.22s %22.22s %22.22s %22.22s %22.22s %22.22s %22.22s");
+$mask = $pdo->log::primary("%-50.50s %22.22s %22.22s %22.22s %22.22s %22.22s %22.22s %22.22s");
 $releases = $pdo->queryDirect("SELECT name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days FROM groups");
 if ($releases instanceof \Traversable) {
 	foreach ($releases as $release) {

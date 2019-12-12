@@ -64,7 +64,7 @@ class PreDb
 		$datesql = '';
 
 		if ($this->echooutput) {
-			echo $this->pdo->log->header('Querying DB for release search names not matched with PreDB titles.');
+			echo $this->pdo->log::header('Querying DB for release search names not matched with PreDB titles.');
 		}
 
 		if ($this->dateLimit !== false && is_numeric($this->dateLimit)) {
@@ -83,7 +83,7 @@ class PreDb
 
 		if ($res !== false) {
 			$total = $res->rowCount();
-			echo $this->pdo->log->primary(number_format($total) . ' releases to match.');
+			echo $this->pdo->log::primary(number_format($total) . ' releases to match.');
 
 			if ($res instanceof \Traversable) {
 				foreach ($res as $row) {
@@ -103,7 +103,7 @@ class PreDb
 			}
 
 			if ($this->echooutput) {
-				echo $this->pdo->log->header(
+				echo $this->pdo->log::header(
 					'Matched ' . number_format(($updated > 0) ? $updated : 0) . ' PreDB titles to release search names.'
 				);
 			}
@@ -181,7 +181,7 @@ class PreDb
 			if ($time == 1) {
 				$te = ' in the past 3 hours';
 			}
-			echo $this->pdo->log->header('Fixing search names' . $te . " using the predb hash.");
+			echo $this->pdo->log::header('Fixing search names' . $te . " using the predb hash.");
 		}
 		$regex = "AND (r.ishashed = 1 OR rf.ishashed = 1)";
 
@@ -199,7 +199,7 @@ class PreDb
 
 		$res = $this->pdo->queryDirect($query);
 		$total = $res->rowCount();
-		echo $this->pdo->log->primary(number_format($total) . " releases to process.");
+		echo $this->pdo->log::primary(number_format($total) . " releases to process.");
 		if ($res instanceof \Traversable) {
 			foreach ($res as $row) {
 				if (preg_match('/[a-fA-F0-9]{32,40}/i', $row['name'], $matches)) {
@@ -213,9 +213,9 @@ class PreDb
 			}
 		}
 		if ($echo == 1) {
-			echo $this->pdo->log->header("\n" . $updated . " releases have had their names changed out of: " . number_format($checked) . " files.");
+			echo $this->pdo->log::header("\n" . $updated . " releases have had their names changed out of: " . number_format($checked) . " files.");
 		} else {
-			echo $this->pdo->log->header("\n" . $updated . " releases could have their names changed. " . number_format($checked) . " files were checked.");
+			echo $this->pdo->log::header("\n" . $updated . " releases could have their names changed. " . number_format($checked) . " files were checked.");
 		}
 
 		return $updated;

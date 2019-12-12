@@ -612,12 +612,12 @@ class Games
 							$game['review'] = (string)$this->_gameResults->deck;
 						}
 					} else {
-						ColorCLI::doEcho(ColorCLI::notice('GiantBomb returned no valid results'));
+						ColorCLI::out('GiantBomb returned no valid results', 'notice', true);
 
 						return false;
 					}
 				} else {
-					ColorCLI::doEcho(ColorCLI::notice('GiantBomb found no valid results'));
+					ColorCLI::out('GiantBomb found no valid results', 'notice', true);
 
 					return false;
 				}
@@ -736,11 +736,11 @@ class Games
 
 		if ($gamesId) {
 			if ($this->echoOutput) {
-				ColorCLI::doEcho(
+				ColorCLI::out(
 					ColorCLI::header('Added/updated game: ') .
-					ColorCLI::alternateOver('   Title:    ') .
+					ColorCLI::alternate('   Title:    ', false) .
 					ColorCLI::primary($game['title']) .
-					ColorCLI::alternateOver( '   Source:   ') .
+					ColorCLI::alternate( '   Source:   ', false) .
 					ColorCLI::primary($this->_classUsed)
 				);
 			}
@@ -752,8 +752,8 @@ class Games
 			}
 		} else {
 			if ($this->echoOutput) {
-				ColorCLI::doEcho(
-					ColorCLI::headerOver('Nothing to update: ') .
+				ColorCLI::out(
+					ColorCLI::header('Nothing to update: ', false) .
 					ColorCLI::primary($game['title'] . ' (PC)' )
 				);
 			}
@@ -783,7 +783,7 @@ class Games
 
 		if ($res instanceof \Traversable && $res->rowCount() > 0) {
 			if ($this->echoOutput) {
-				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $res->rowCount() . ' games release(s).'));
+				$this->pdo->log::out(\sprintf('Processing %d games release(s).', $res->rowCount()));
 			}
 
 			foreach ($res as $arr) {
@@ -795,9 +795,9 @@ class Games
 				if ($gameInfo !== false) {
 
 					if ($this->echoOutput) {
-						$this->pdo->log->doEcho(
-							$this->pdo->log->headerOver('Looking up: ') .
-							$this->pdo->log->primary($gameInfo['title'] . ' (PC)')
+						$this->pdo->log::out(
+							$this->pdo->log::header('Looking up: ', false) .
+							$this->pdo->log::primary($gameInfo['title'] . ' (PC)')
 						);
 					}
 
@@ -838,7 +838,7 @@ class Games
 			}
 		} else {
 			if ($this->echoOutput) {
-				$this->pdo->log->doEcho($this->pdo->log->header('No games releases to process.'));
+				$this->pdo->log::out('No games releases to process.', 'header', true);
 			}
 		}
 	}

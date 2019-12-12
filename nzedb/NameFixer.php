@@ -210,7 +210,7 @@ class NameFixer
 
 			if ($total > 0) {
 				$this->_totalReleases = $total;
-				echo $this->pdo->log->primary(number_format($total) . ' releases to process.');
+				echo $this->pdo->log::primary(number_format($total) . ' releases to process.');
 
 				foreach ($releases as $rel) {
 					$releaseRow = $this->pdo->queryOneRow(
@@ -238,7 +238,7 @@ class NameFixer
 				}
 				$this->_echoFoundCount($echo, ' NFO\'s');
 			} else {
-				echo $this->pdo->log->info('Nothing to fix.');
+				echo $this->pdo->log::info('Nothing to fix.');
 			}
 		}
 	}
@@ -290,7 +290,7 @@ class NameFixer
 			$total = $releases->rowCount();
 			if ($total > 0) {
 				$this->_totalReleases = $total;
-				echo $this->pdo->log->primary(number_format($total) . ' file names to process.');
+				echo $this->pdo->log::primary(number_format($total) . ' file names to process.');
 
 				foreach ($releases as $release) {
 					$this->done = $this->matched = false;
@@ -301,7 +301,7 @@ class NameFixer
 
 				$this->_echoFoundCount($echo, ' files');
 			} else {
-				echo $this->pdo->log->info('Nothing to fix.');
+				echo $this->pdo->log::info('Nothing to fix.');
 			}
 		}
 	}
@@ -357,7 +357,7 @@ class NameFixer
 			if ($total > 0) {
 				$this->_totalReleases = $total;
 
-				echo $this->pdo->log->primary(number_format($total) . ' releases to process.');
+				echo $this->pdo->log::primary(number_format($total) . ' releases to process.');
 				$Nfo = new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
 				$nzbContents = new NZBContents(
 					[
@@ -379,7 +379,7 @@ class NameFixer
 				}
 				$this->_echoFoundCount($echo, ' files');
 			} else {
-				echo $this->pdo->log->alternate('Nothing to fix.');
+				echo $this->pdo->log::alternate('Nothing to fix.');
 			}
 		}
 	}
@@ -441,7 +441,7 @@ class NameFixer
 			$total = $releases->rowCount();
 			if ($total > 0) {
 				$this->_totalReleases = $total;
-				echo $this->pdo->log->primary(number_format($total) . ' unique ids to process.');
+				echo $this->pdo->log::primary(number_format($total) . ' unique ids to process.');
 				foreach ($releases as $rel) {
 					$this->checked++;
 					$this->done = $this->matched = false;
@@ -450,7 +450,7 @@ class NameFixer
 				}
 				$this->_echoFoundCount($echo, ' UID\'s');
 			} else {
-				echo $this->pdo->log->info('Nothing to fix.');
+				echo $this->pdo->log::info('Nothing to fix.');
 			}
 		}
 	}
@@ -474,20 +474,20 @@ class NameFixer
 		$queryLimit = ($limit === '') ? '' : ' LIMIT ' . $limit;
 		// 24 hours, other cats
 		if ($time == 1 && $cats == 1) {
-			echo $this->pdo->log->header($query . $this->timeother . $queryLimit . ";\n");
+			echo $this->pdo->log::header($query . $this->timeother . $queryLimit . ";\n");
 			$releases = $this->pdo->queryDirect($query . $this->timeother . $queryLimit);
 		} // 24 hours, all cats
 		else if ($time == 1 && $cats == 2) {
-			echo $this->pdo->log->header($query . $this->timeall . $queryLimit . ";\n");
+			echo $this->pdo->log::header($query . $this->timeall . $queryLimit . ";\n");
 			$releases = $this->pdo->queryDirect($query . $this->timeall . $queryLimit);
 		} //other cats
 		else if ($time == 2 && $cats == 1) {
-			echo $this->pdo->log->header($query . $this->fullother . $queryLimit . ";\n");
+			echo $this->pdo->log::header($query . $this->fullother . $queryLimit . ";\n");
 			$releases = $this->pdo->queryDirect($query . $this->fullother . $queryLimit);
 		}
 		// all cats
 		else if ($time == 2 && $cats == 2) {
-			echo $this->pdo->log->header($query . $this->fullall . $queryLimit . ";\n");
+			echo $this->pdo->log::header($query . $this->fullall . $queryLimit . ";\n");
 			$releases = $this->pdo->queryDirect($query . $this->fullall . $queryLimit);
 		}
 		return $releases;
@@ -502,7 +502,7 @@ class NameFixer
 	protected function _echoFoundCount($echo, $type)
 	{
 		if ($echo == 1) {
-			echo $this->pdo->log->header(
+			echo $this->pdo->log::header(
 				PHP_EOL .
 				number_format($this->fixed) .
 				' releases have had their names changed out of: ' .
@@ -510,7 +510,7 @@ class NameFixer
 				$type . '.'
 			);
 		} else {
-			echo $this->pdo->log->header(
+			echo $this->pdo->log::header(
 				PHP_EOL .
 				number_format($this->fixed) .
 				' releases could have their names changed. ' .
@@ -526,7 +526,7 @@ class NameFixer
 	 */
 	protected function _echoStartMessage($time, $type)
 	{
-		echo $this->pdo->log->header(
+		echo $this->pdo->log::header(
 			sprintf(
 				'Fixing search names %s using %s.',
 				($time == 1 ? 'in the past 6 hours' : 'since the beginning'),
@@ -542,7 +542,7 @@ class NameFixer
 	protected function _echoRenamed($show)
 	{
 		if ($this->checked % 500 == 0 && $show === 1) {
-			echo $this->pdo->log->alternate(PHP_EOL . number_format($this->checked) . ' files processed.' . PHP_EOL);
+			echo $this->pdo->log::alternate(PHP_EOL . number_format($this->checked) . ' files processed.' . PHP_EOL);
 		}
 
 		if ($show === 2) {
@@ -604,26 +604,26 @@ class NameFixer
 					}
 
 					echo
-						$this->pdo->log->headerOver("\nNew name:  ") .
-						$this->pdo->log->primary(substr($newName, 0, 255)) .
-						$this->pdo->log->headerOver("Old name:  ") .
-						$this->pdo->log->primary($release["searchname"]) .
-						$this->pdo->log->headerOver("Use name:  ") .
-						$this->pdo->log->primary($release["name"]) .
-						$this->pdo->log->headerOver("New cat:   ") .
-						$this->pdo->log->primary($newCatName) .
-						$this->pdo->log->headerOver("Old cat:   ") .
-						$this->pdo->log->primary($oldCatName) .
-						$this->pdo->log->headerOver("Group:     ") .
-						$this->pdo->log->primary($groupName) .
-						$this->pdo->log->headerOver("Method:    ") .
-						$this->pdo->log->primary($type . $method) .
-						$this->pdo->log->headerOver("ReleaseID: ") .
-						$this->pdo->log->primary($release["releases_id"]);
+						$this->pdo->log::headerOver("\nNew name:  ") .
+						$this->pdo->log::primary(substr($newName, 0, 255)) .
+						$this->pdo->log::headerOver("Old name:  ") .
+						$this->pdo->log::primary($release["searchname"]) .
+						$this->pdo->log::headerOver("Use name:  ") .
+						$this->pdo->log::primary($release["name"]) .
+						$this->pdo->log::headerOver("New cat:   ") .
+						$this->pdo->log::primary($newCatName) .
+						$this->pdo->log::headerOver("Old cat:   ") .
+						$this->pdo->log::primary($oldCatName) .
+						$this->pdo->log::headerOver("Group:     ") .
+						$this->pdo->log::primary($groupName) .
+						$this->pdo->log::headerOver("Method:    ") .
+						$this->pdo->log::primary($type . $method) .
+						$this->pdo->log::headerOver("ReleaseID: ") .
+						$this->pdo->log::primary($release["releases_id"]);
 					if (isset($release['filename']) && $release['filename'] != "") {
 						echo
-							$this->pdo->log->headerOver("Filename:  ") .
-							$this->pdo->log->primary($release["filename"]);
+							$this->pdo->log::headerOver("Filename:  ") .
+							$this->pdo->log::primary($release["filename"]);
 					}
 
 					if ($type !== "PAR2, ") {
@@ -842,8 +842,8 @@ class NameFixer
 			$limit = "LIMIT 1000000";
 		}
 
-		echo $this->pdo->log->header("\nMatch PreFiles (${args[1]}) Started at " . date('g:i:s'));
-		echo $this->pdo->log->primary("Matching predb filename to cleaned release_files.name.\n");
+		echo $this->pdo->log::header("\nMatch PreFiles (${args[1]}) Started at " . date('g:i:s'));
+		echo $this->pdo->log::primary("Matching predb filename to cleaned release_files.name.\n");
 
 		do {
 			$counter = $counted = 0;
@@ -871,7 +871,7 @@ class NameFixer
 				$total = $query->rowCount();
 
 				if ($total > 0 && $query instanceof \Traversable) {
-					echo $this->pdo->log->header($n . number_format($total) . ' releases to process.');
+					echo $this->pdo->log::header($n . number_format($total) . ' releases to process.');
 
 					foreach ($query as $row) {
 						$success = $this->matchPredbFiles($row, 1, 1, $show);
@@ -885,9 +885,9 @@ class NameFixer
 							$maxrelid = $row['releases_id'];
 						}
 					}
-					echo $this->pdo->log->header($n . "Renamed " . number_format($counted) . " releases in " . $this->consoletools->convertTime(time() - $timestart) . ".");
+					echo $this->pdo->log::header($n . "Renamed " . number_format($counted) . " releases in " . $this->consoletools->convertTime(time() - $timestart) . ".");
 				} else {
-					echo $this->pdo->log->info($n . "Nothing to do.");
+					echo $this->pdo->log::info($n . "Nothing to do.");
 					break;
 				}
 			} else {

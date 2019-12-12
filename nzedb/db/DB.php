@@ -500,7 +500,7 @@ class DB extends \PDO
 						$e->getMessage(),
 						Logger::LOG_INFO);
 				}
-				echo $this->log->error("\n" . $e->getMessage());
+				echo $this->log::error("\n" . $e->getMessage());
 				$result = false;
 			}
 		}
@@ -801,7 +801,7 @@ class DB extends \PDO
 					$e->getMessage(),
 					Logger::LOG_INFO);
 			}
-			echo $this->log->error("\n" . $e->getMessage());
+			echo $this->log::error("\n" . $e->getMessage());
 			$PDOstatement = false;
 		}
 
@@ -1417,7 +1417,7 @@ class DB extends \PDO
 			$this->debugging->log(get_class(), $method, $error, $severity);
 
 			echo(
-			($this->cli ? $this->log->error($error) . PHP_EOL :
+			($this->cli ? $this->log::error($error) . PHP_EOL :
 				'<div class="error">' . $error . '</div>')
 			);
 		}
@@ -1642,7 +1642,7 @@ class DB extends \PDO
 	{
 		$message = $type . ' (' . $tables . ')';
 		if ($web === false) {
-			echo $this->log->primary($message);
+			echo $this->log::primary($message);
 
 		}
 		if ($this->_debug) {

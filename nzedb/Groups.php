@@ -433,10 +433,6 @@ class Groups
 	public function disableIfNotExist($id)
 	{
 		$this->updateStatus($id, 'active', 0);
-		$this->colorCLI->doEcho(
-			$this->colorCLI->error(
-				'Group does not exist on server, disabling'
-			)
-		);
+		$this->colorCLI::out('Group does not exist on server, disabling', 'error', true);
 	}
 }

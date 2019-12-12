@@ -15,7 +15,7 @@ use nzedb\processing\PostProcess;
 $pdo = new DB();
 
 if (!isset($argv[1])) {
-	exit($pdo->log->error("This script is not intended to be run manually, it is called from Multiprocessing."));
+	exit($pdo->log::error("This script is not intended to be run manually, it is called from Multiprocessing."));
 } else if (isset($argv[1])) {
 	$namefixer = new NameFixer(['Settings' => $pdo]);
 	$sorter = new MiscSorter(true, $pdo);
@@ -99,16 +99,16 @@ if (!isset($argv[1])) {
 					$namefixer->checked++;
 					$namefixer->reset();
 
-					echo PHP_EOL . $pdo->log->primaryOver("[{$release['releases_id']}]");
+					echo PHP_EOL . $pdo->log::primaryOver("[{$release['releases_id']}]");
 
 					if ($release['ishashed'] == 1 && $release['dehashstatus'] >= -6 && $release['dehashstatus'] <= 0) {
-						echo $pdo->log->primaryOver('m');
+						echo $pdo->log::primaryOver('m');
 						if (preg_match('/[a-fA-F0-9]{32,40}/i', $release['name'], $matches)) {
 							$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
 						}
 						if ($namefixer->matched === false && !empty($release['filehash'])
 							&& preg_match('/[a-fA-F0-9]{32,40}/i', $release['filehash'], $matches)) {
-							echo $pdo->log->primaryOver('h');
+							echo $pdo->log::primaryOver('h');
 							$namefixer->matchPredbHash($matches[0], $release, 1, 1, true, 1);
 						}
 					}
@@ -120,7 +120,7 @@ if (!isset($argv[1])) {
 
 					if ($release['proc_uid'] == NameFixer::PROC_UID_NONE
 						&& !empty($release['uid'])) {
-						echo $pdo->log->primaryOver('U');
+						echo $pdo->log::primaryOver('U');
 						$namefixer->uidCheck($release, true, 'UID, ', 1, 1);
 					}
 					// Not all gate requirements in query always set column status as PP Add check is in query
@@ -135,7 +135,7 @@ if (!isset($argv[1])) {
 						&& $release['proc_nfo'] == NameFixer::PROC_NFO_NONE) {
 						if (!empty($release['textstring'])
 							&& !preg_match('/^=newz\[NZB\]=\w+/', $release['textstring'])) {
-							echo $pdo->log->primaryOver('n');
+							echo $pdo->log::primaryOver('n');
 							$namefixer->done = $namefixer->matched = false;
 							$namefixer->checkName($release, true, 'NFO, ', 1, 1);
 						}
@@ -148,14 +148,14 @@ if (!isset($argv[1])) {
 					$namefixer->reset();
 
 					if ($release['fileid'] > 0 && $release['proc_files'] == NameFixer::PROC_FILES_NONE) {
-						echo $pdo->log->primaryOver('F');
+						echo $pdo->log::primaryOver('F');
 						$namefixer->done = $namefixer->matched = false;
 						$fileNames = explode('|', $release['filestring']);
 						if (is_array($fileNames)) {
 							$releaseFile = $release;
 							foreach ($fileNames AS $fileName) {
 								if ($namefixer->matched === false) {
-									echo $pdo->log->primaryOver('f');
+									echo $pdo->log::primaryOver('f');
 									$releaseFile['textstring'] = $fileName;
 									$namefixer->checkName($releaseFile, true, 'Filenames, ', 1, 1);
 								}
@@ -171,7 +171,7 @@ if (!isset($argv[1])) {
 					$namefixer->reset();
 
 					if ($release['proc_par2'] == NameFixer::PROC_PAR2_NONE) {
-						echo $pdo->log->primaryOver('p');
+						echo $pdo->log::primaryOver('p');
 						if (!isset($nzbcontents)) {
 							$nntp = new NNTP(['Settings' => $pdo]);
 							if (Settings::value('..alternate_nntp') == '1') {
@@ -181,7 +181,7 @@ if (!isset($argv[1])) {
 							}
 
 							if ($connected !== true) {
-								$pdo->log->error("Unable to connect to usenet.");
+								$pdo->log::error("Unable to connect to usenet.");
 							}
 
 							$Nfo = new Nfo(['Settings' => $pdo, 'Echo' => true]);
@@ -202,7 +202,7 @@ if (!isset($argv[1])) {
 
 					if ($release['nfostatus'] == Nfo::NFO_FOUND
 						&& $release['proc_sorter'] == MiscSorter::PROC_SORTER_NONE) {
-						echo $pdo->log->primaryOver('S');
+						echo $pdo->log::primaryOver('S');
 						$res = $sorter->nfosorter(null, $release['releases_id']);
 						// All gate requirements in query, only set column status if it ran the routine
 						$namefixer->_updateSingleColumn('proc_sorter', MiscSorter::PROC_SORTER_DONE, $release['releases_id']);

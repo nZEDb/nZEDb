@@ -6,7 +6,7 @@ use nzedb\db\DB;
 $pdo = new DB();
 
 if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
-	exit($pdo->log->error("\nThis script monirtors both the threaded and unthreaded update_binaries and backfill scripts.\n"
+	exit($pdo->log::error("\nThis script monirtors both the threaded and unthreaded update_binaries and backfill scripts.\n"
 		. "This will also kill any medianinfo/ffmpeg process running longer than 60 seconds."
 		. "The first argument is the time in minutes to allow before killing.\n"
 		. "The second argument is the time in seconds to sleep between each check.\n"
@@ -41,21 +41,21 @@ if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 					// Disable compressed headers
 					$pdo->queryExec("UPDATE settings SET value = 0 WHERE setting = 'compressedheaders'");
 					// kill pid
-					echo $pdo->log->alternate("PID: $line1[0] USER: $line1[1] TIME: $time[0] CMD: $line");
+					echo $pdo->log::alternate("PID: $line1[0] USER: $line1[1] TIME: $time[0] CMD: $line");
 					usleep(10000);
 					exec("kill " . $line1[0] . " 2>&1 1> /dev/null");
 					// reset good timer
 					$time1 = TIME();
 				} else {
-					echo $pdo->log->primary("PID: $line1[0] USER: $line1[1] TIME: $time[0] CMD: $line");
+					echo $pdo->log::primary("PID: $line1[0] USER: $line1[1] TIME: $time[0] CMD: $line");
 				}
 			}
 		} else {
-			echo $pdo->log->header("update_binaries or backfill does not appear to be running");
+			echo $pdo->log::header("update_binaries or backfill does not appear to be running");
 			$time1 = TIME();
 		}
 
-		echo $pdo->log->header("Monitoring ${threads} threads.");
+		echo $pdo->log::header("Monitoring ${threads} threads.");
 
 		// re-enable compressed haders if good running 10 min
 		if (TIME() - $time1 > ($killtime + 300)) {

@@ -10,7 +10,7 @@ $pdo = new DB();
 // Create the connection here and pass
 $nntp = new NNTP(['Settings' => $pdo]);
 if ($nntp->doConnect() !== true) {
-	exit($pdo->log->error("Unable to connect to usenet."));
+	exit($pdo->log::error("Unable to connect to usenet."));
 }
 
 if (isset($argv[1]) && $argv[1] == 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && !isset($argv[2])) {
@@ -32,7 +32,7 @@ if (isset($argv[1]) && $argv[1] == 'all' && $argv[1] !== 'safe' && $argv[1] !== 
 	$backfill = new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]);
 	$backfill->safeBackfill($argv[2]);
 } else {
-	exit($pdo->log->error("\nWrong set of arguments.\n"
+	exit($pdo->log::error("\nWrong set of arguments.\n"
 			. 'php backfill.php safe 200000		 ...: Backfill an active group alphabetically, x articles, the script stops,' . "\n"
 			. '					 ...: if the group has reached reached 2012-06-24, the next group will backfill.' . "\n"
 			. 'php backfill.php alph 200000  ...: Backfills all groups (sorted alphabetically) by number of articles' . "\n"

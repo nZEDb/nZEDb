@@ -32,14 +32,14 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "check")) {
 	if (isset($argv[2]) && is_numeric($argv[2])) {
 		$limit = $argv[2];
 	}
-	echo $pdo->log->header("Scanning for releases missing previews");
+	echo $pdo->log::header("Scanning for releases missing previews");
 	$res = $pdo->queryDirect("SELECT id, guid FROM releases where nzbstatus = 1 AND haspreview = 1");
 	if ($res instanceof \Traversable) {
 		foreach ($res as $row) {
 			$nzbpath = $path2preview . $row["guid"] . "_thumb.jpg";
 			if (!file_exists($nzbpath)) {
 				$counterfixed++;
-				echo $pdo->log->warning("Missing preview " . $nzbpath);
+				echo $pdo->log::warning("Missing preview " . $nzbpath);
 				if ($argv[1] === "true") {
 					$pdo->queryExec(
 						sprintf("
@@ -60,9 +60,9 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "check")) {
 			} // QUAD!
 		}
 	}
-	echo $pdo->log->header("Total releases missing previews that " . $couldbe . "reset for reprocessing= " . number_format($counterfixed));
+	echo $pdo->log::header("Total releases missing previews that " . $couldbe . "reset for reprocessing= " . number_format($counterfixed));
 } else {
-	exit($pdo->log->header("\nThis script checks if release previews actually exist on disk.\n\n"
+	exit($pdo->log::header("\nThis script checks if release previews actually exist on disk.\n\n"
 			. "Releases without previews may be reset for post-processing, thus regenerating them and related meta data.\n\n"
 			. "Useful for recovery after filesystem corruption, or as an alternative re-postprocessing tool.\n\n"
 			. "Optional LIMIT parameter restricts number of releases to be reset.\n\n"
