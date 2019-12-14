@@ -40,6 +40,11 @@ abstract class Tv extends Videos
 	public $country;
 
 	/**
+	 * @var \nzedb\entity\Episode
+	 */
+	public $episode;
+
+	/**
 	 * @var array Episodes array retrieved by getEpisodes.
 	 */
 	public $episodes = [];
@@ -325,7 +330,7 @@ abstract class Tv extends Videos
 
 		if ($episodeId === false) {
 			$episodeId = $this->pdo->queryInsert(
-				sprintf('
+				sprintf(/** @lang text */ '
 					INSERT INTO tv_episodes (videos_id, series, episode, se_complete, title, firstaired, summary)
 					VALUES (%d, %d, %d, %s, %s, %s, %s)
 					ON DUPLICATE KEY update se_complete = %s',
@@ -334,7 +339,7 @@ abstract class Tv extends Videos
 					$episode['episode'],
 					$this->pdo->escapeString($episode['se_complete']),
 					$this->pdo->escapeString($episode['title']),
-					($episode['firstaired'] != "" ? $this->pdo->escapeString($episode['firstaired']) : "null"),
+					($episode['firstaired'] != '' ? $this->pdo->escapeString($episode['firstaired']) : "null"),
 					$this->pdo->escapeString($episode['summary']),
 					$this->pdo->escapeString($episode['se_complete'])
 				)
@@ -437,10 +442,10 @@ abstract class Tv extends Videos
 	{
 		$return = false;
 		$video = $this->pdo->queryOneRow(
-			sprintf("
+			sprintf(/** @lang text */ '
 				SELECT %s
 				FROM videos
-				WHERE id = %d",
+				WHERE id = %d',
 				$column,
 				$id
 			)

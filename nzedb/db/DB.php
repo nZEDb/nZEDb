@@ -516,6 +516,7 @@ class DB extends \PDO
 	public function getDatabasesList()
 	{
 		$query = ($this->dbSystem === 'mysql' ? 'SHOW DATABASES' :
+			/** @lang text */
 			'SELECT datname AS database FROM pg_database');
 		$result = $this->pdo->query($query);
 
@@ -559,7 +560,8 @@ class DB extends \PDO
 	{
 		$where = $excludeUnsectioned ? "WHERE section != ''" : '';
 
-		$sql = sprintf("SELECT section, subsection, name, value, hint FROM settings %s ORDER BY section, subsection, name",
+		$sql = sprintf(/** @lang text */
+			"SELECT section, subsection, name, value, hint FROM settings %s ORDER BY section, subsection, name",
 			$where);
 		$results = $this->queryArray($sql);
 
@@ -1062,7 +1064,7 @@ class DB extends \PDO
 	 *
 	 * @param string $query
 	 *
-	 * @return integer|false|string
+	 * @return integer|false
 	 */
 	public function queryInsert($query)
 	{
