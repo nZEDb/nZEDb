@@ -27,7 +27,7 @@ interface TvInterface
 	 *
 	 * @return bool True if image was successfully retrieved and saved.
 	 */
-	//public function getBanner(): bool;
+	//public function getBanner(): ?bool;
 
 	/**
 	 * Retrieve poster image for TV episode from site using its API.
@@ -48,6 +48,8 @@ interface TvInterface
 	 * @return bool
 	 */
 	public function processInfo(string $name, string $country = null): bool;
+
+	public function processAll($groupID, $guidChar, $process, $local = false): void;
 
 	/**
 	 * Searches for specified title, returning an array of possible matches or null if none.
