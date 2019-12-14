@@ -17,9 +17,12 @@
  * @copyright 2019 nZEDb
  */
 
-namespace nzedb;
+namespace nzedb\entity;
 
-use GuzzleHttp\Exception\InvalidArgumentException;/**
+use GuzzleHttp\Exception\InvalidArgumentException;
+
+
+/**
  * Representation of an IMDb entry
  * Currently only the ID is handled.
  *

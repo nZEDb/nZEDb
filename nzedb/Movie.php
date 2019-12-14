@@ -3,6 +3,7 @@ namespace nzedb;
 
 use app\models\Settings;
 use nzedb\db\DB;
+use nzedb\entity\Imdb;
 use nzedb\utility\Misc;
 use nzedb\processing\tv\TraktTv;
 use Tmdb\ApiToken;
