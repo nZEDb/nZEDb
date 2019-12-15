@@ -238,11 +238,11 @@ class TvDb extends Tv implements TvInterface
 	 * @inheritDoc
 	 */
 	public function processAll($groupID, $guidChar, $process, $local = false): void
-	{
+	{	//TODO break this into smaller methods
 		$results = $this->getTvReleases($groupID, $guidChar, $process, parent::PROCESS_TVDB);
 
 		if ($results instanceof \PDOStatement) {
-			$tvcount = $res->rowCount();
+			$tvcount = $results->rowCount();
 			if ($tvcount > 0) {
 				if ($this->echooutput) {
 					ColorCLI::out(
@@ -258,7 +258,10 @@ class TvDb extends Tv implements TvInterface
 					$tvdbid = false;
 					// Clean the show name for better match probability
 					$release = $this->parseInfo($row['searchname']);
-					if (!empty($release['name'])) {
+					if (empty($release['name'])) { // Parsing failed, take it out of the queue for examination.
+						$this->setVideoNotFound(parent::FAILED_PARSE, $row['id']);
+						$this->titleCache[] = $release['cleanname'];
+					} else {
 						if (in_array($release['cleanname'], $this->titleCache, true)) {
 							if ($this->echooutput) {
 								ColorCLI::out(
@@ -362,9 +365,6 @@ class TvDb extends Tv implements TvInterface
 							$this->setVideoNotFound(-1, $row['id']);
 							$this->titleCache[] = $release['cleanname'];
 						}
-					} else { // Parsing failed, take it out of the queue for examination.
-						$this->setVideoNotFound(parent::FAILED_PARSE, $row['id']);
-						$this->titleCache[] = $release['cleanname'];
 					}
 				}
 			}
