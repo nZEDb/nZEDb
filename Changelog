@@ -10,6 +10,10 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2019-10-31 niel
+	Fix: Update url for IMDb images.
+
+
 2019-10-24 niel
 	Mrg: PR 2646, from 	JReming85 - Update Charisma theme's profileedit.tpl.
 	Fix: Code Style.
