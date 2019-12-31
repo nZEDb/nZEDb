@@ -952,7 +952,7 @@ class Movie
 				'plot' => '/<p itemprop="description">\s*?(.*?)\s*?<\/p>/i',
 				'rating' => '/"ratingValue">([\d.]+)<\/span>/i',
 				'year' => '/<title>.*?\(.*?(\d{4}).*?<\/title>/i',
-				'cover' => '/<link rel=\'image_src\' href="(http:\/\/ia\.media-imdb\.com.+\.jpg)">/'
+				'cover' => '#<link rel="image_src" href="(http://(?:ia\.media-imdb|m\.media-amazon)\.com.+\.jpg)">#'
 		];
 
 		$imdb_regex_multi = [
