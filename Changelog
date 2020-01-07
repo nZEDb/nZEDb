@@ -10,6 +10,28 @@ NOT BE PRESENT IN THE STABLE BRANCH
 For details of when a commit makes it into the stable branch see the ReleaseNotes file.
 
 
+2020-01-06 niel
+	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.21.0
+
+
+2019-12-31 niel
+	Fix: Update url for IMDb images.
+
+
+2019-10-24 niel
+	Mrg: PR 2646, from 	JReming85 - Update Charisma theme's profileedit.tpl.
+	Fix: Code Style.
+2019-10-18 niel
+	Fix: Another attempt to deal with the bad URL for cover images issue (2637). This time I'm not
+		trying to juggle the output from the db, instead we try to make sure that new images have
+		the correct IMDb id size. I will be writing a script to rename image files with id number
+		less than 8 characters.
+2019-10-15 niel
+	Fix: Further fix the regex to be more specific.
+2019-10-14 niel
+	Fix: Tighten up regex used to Categorise MP3s, to avoid false positives. (Closes Issue 2642).
+2019-10-08 niel
+	Fix: Refactor function to check a file path for readabilty. (Closes Issue 2641)
 2019-10-07 niel
 	Mrg: dev => Latest-testing to prepare for updating stable 0.x to v0.8.20.0
 

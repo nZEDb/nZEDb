@@ -33,18 +33,15 @@ class MoveFileTree
 	private $rItIt;
 
 	/**
-	 *
-	 *
-	 * @param type $source A filepath to a valid directory, or an array of valid
+	 * @param string $source A filepath to a valid directory, or an array of valid
 	 *                     filepaths (not neccessarily in the same directory).
-	 * @param type $target A valid directory that the files and directories will
+	 * @param string $target A valid directory that the files and directories will
 	 *                     be moved to.
 	 * @param bool $moveSourceBase
 	 *
 	 * @throws \UnexpectedValueException
-	 *
 	 */
-	function __construct($source, $target, $moveSourceBase = true)
+	public function __construct(string $source, string $target, $moveSourceBase = true)
 	{
 		if (empty($source)) {
 			throw  new \UnexpectedValueException('Source value cannot be empty! Source is not a path to a directory.');
@@ -53,17 +50,17 @@ class MoveFileTree
 			if (count($contents) < 3) {
 				throw new \UnexpectedValueException('Source directory does not contain anything to move.');
 			}
-			$source = substr($source, -1) == DS ? $source : $source . DS;
+			$source = substr($source, -1) === DS ? $source : $source . DS;
 			$this->_source = realpath($source);
 		} else {
 			throw new \UnexpectedValueException("Source value is required! It must be a path to an existing directory\nSource: $source\n");
 		}
 
 		if (!empty($target) && file_exists($target) && is_dir($target)) {
-			$target2 = substr($target, -1) == DS ? $target : $target . DS;
-			$target2 = $target2 . basename($source);
-			if (!file_exists($target2) && $moveSourceBase) {
-				if (mkdir($target2)) {
+			$target2 = substr($target, -1) === DS ? $target : $target . DS;
+			$target2 .= basename($source);
+			if ($moveSourceBase && !file_exists($target2)) {
+				if (mkdir($target2) || is_dir($target2)) {
 					$this->_target = realpath($target2);
 				} else {
 					throw new \RuntimeException("Could not create '$target2' directory");
@@ -76,7 +73,7 @@ class MoveFileTree
 		}
 	}
 
-	public function clearEmpty()
+	public function clearEmpty(): void
 	{
 		if (empty($this->_dirs)) {
 			if (empty($this->_source)) {
@@ -93,31 +90,31 @@ class MoveFileTree
 		foreach ($this->_dirs as $dir) {
 			echo "Checking '$dir' ";
 			$contents = scandir($dir);
-			if (count($contents) == 2) {
-				echo "is empty - ";
+			if (count($contents) === 2) {
+				echo 'is empty - ';
 				if (rmdir($dir)) {
 					echo "deleting!\n";
 				} else {
 					echo "failed!\n";
 				}
 			} else {
-				echo "has " . (count($contents) - 2) . " files in it\n";
+				echo 'has ' . (count($contents) - 2) . " files in it\n";
 			}
 		}
 	}
 
-	public function move($pattern = '')
+	/**
+	 * @param string $pattern
+	 *
+	 * @return void
+	 */
+	public function move(string $pattern = ''): void
 	{
 		if (!empty($this->_source)) {
 			$this->_moveDir($pattern);
 			$this->_enumerateSource($this->_source);
 		}
 		$this->_moveFiles();
-	}
-
-	public function isWIndows()
-	{
-		return strtolower(PHP_OS) == 'windows';
 	}
 
 	/**
@@ -152,7 +149,7 @@ class MoveFileTree
 	{
 		$pattern = empty($pattern) ? '*' : $pattern;
 		$filespec = $this->_source . $pattern;
-		$cmd = $this->isWIndows() ? 'move /Y' : 'mv';
+		$cmd = Misc::isWin() ? 'move /Y' : 'mv';
 		passthru("$cmd $filespec $this->_target", $status);
 		if ($status) {
 			die("Damn, something went wrong!\n");

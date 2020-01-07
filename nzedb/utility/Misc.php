@@ -50,7 +50,7 @@ class Misc
 		return true;
 	}
 
-	public static function clearScreen()
+	public static function clearScreen(): void
 	{
 		if (self::isCLI()) {
 			if (self::isWin()) {
@@ -72,7 +72,7 @@ class Misc
 	 * @static
 	 * @access public
 	 */
-	public static function curlSslContextOptions($verify = true)
+	public static function curlSslContextOptions($verify = true): array
 	{
 		$options = [];
 		if ($verify && nZEDb_SSL_VERIFY_HOST && (!empty(nZEDb_SSL_CAFILE) || !empty(nZEDb_SSL_CAPATH))) {
@@ -96,7 +96,7 @@ class Misc
 		return $options;
 	}
 
-	public static function  getCoverURL(array $options = [])
+	public static function  getCoverURL(array $options = []): string
 	{
 		$defaults = [
 			'id' => null,
@@ -170,7 +170,7 @@ class Misc
 		return $files;
 	}
 
-	public static function getThemesList()
+	public static function getThemesList(): array
 	{
 		$themes = scandir(nZEDb_THEMES);
 		$themelist = ['None'];
@@ -326,7 +326,7 @@ class Misc
 		return $response;
 	}
 
-	public static function getValidVersionsFile()
+	public static function getValidVersionsFile(): \simpleXMLElement
 	{
 		return (new Versions())->getValidVersionsFile();
 	}
@@ -338,7 +338,7 @@ class Misc
 	 *
 	 * @return bool|null Returns true if found, false if not found, and null if which is not detected.
 	 */
-	public static function hasCommand($cmd)
+	public static function hasCommand($cmd): ?bool
 	{
 		if (HAS_WHICH) {
 			$returnVal = shell_exec("which $cmd");
@@ -352,7 +352,7 @@ class Misc
 	/**
 	 * Check for availability of which command
 	 */
-	public static function hasWhich()
+	public static function hasWhich(): bool
 	{
 		exec('which which', $output, $error);
 
@@ -364,11 +364,16 @@ class Misc
 	 *
 	 * @return bool
 	 */
-	public static function isCLI()
+	public static function isCLI(): bool
 	{
 		return ((strtolower(PHP_SAPI) === 'cli') ? true : false);
 	}
 
+	/**
+	 * @param $filename
+	 *
+	 * @return false|string|null
+	 */
 	public static function isGZipped($filename)
 	{
 		$gzipped = null;
@@ -386,7 +391,10 @@ class Misc
 		return ($gzipped);
 	}
 
-	public static function isPatched()
+	/**
+	 * @return bool
+	 */
+	public static function isPatched(): bool
 	{
 		$versions = self::getValidVersionsFile();
 
@@ -406,12 +414,51 @@ class Misc
 		return true;
 	}
 
-	public static function isWin()
+	/**
+	 * @param string $location
+	 *
+	 * @return bool
+	 */
+	public static function isPathReadable(string $location): bool
 	{
-		return (\strtolower(substr(PHP_OS, 0, 3)) === 'win');
+		$drive = $path = '';
+		$status = false;
+
+		// Check for Windows style path.
+		if (strpos($location, ':') === 1) {
+			$drive = substr($location, 0, 2);
+			$location = substr($location, 2);
+		}
+
+		$directories = preg_split('#' . DS . '#', $location);
+		if ($directories && count($directories)) {
+			foreach ($directories as $directory) {
+				$path .= DS . $directory;
+				if (!is_readable($drive . $path)) {
+					return $status;
+				}
+			}
+
+			$status = true;
+		}
+
+		return $status;
 	}
 
-	public static function setCoversConstant($path)
+	/**
+	 * @return bool
+	 */
+	public static function isWin(): bool
+	{
+		return (stripos(PHP_OS, 'windows') === 0);
+	}
+
+	/**
+	 * @param $path
+	 *
+	 * @return void
+	 */
+	public static function setCoversConstant($path): void
 	{
 		if (!defined('nZEDb_COVERS')) {
 			switch (true) {
@@ -441,7 +488,7 @@ class Misc
 	 * @static
 	 * @access public
 	 */
-	public static function streamSslContextOptions($forceIgnore = false)
+	public static function streamSslContextOptions($forceIgnore = false): array
 	{
 		if (empty(nZEDb_SSL_CAFILE) && empty(nZEDb_SSL_CAPATH)) {
 			$options = [
@@ -510,7 +557,7 @@ class Misc
 	 *
 	 * @return string File info. Empty string on failure.
 	 */
-	public static function fileInfo($path)
+	public static function fileInfo($path): string
 	{
 		$magicPath = Settings::value('apps.indexer.magic_file_path');
 		if (self::hasCommand('file') && (!self::isWin() || !empty($magicPath))) {
@@ -549,7 +596,7 @@ class Misc
 	 *
 	 * @return array
 	 */
-	public static function runCmd($command, $debug = false)
+	public static function runCmd($command, $debug = false): array
 	{
 		if ($debug) {
 			echo '-Running Command: ' . PHP_EOL . '   ' . $command . PHP_EOL;
@@ -574,7 +621,7 @@ class Misc
 	 *
 	 * @return string
 	 */
-	public static function safeFilename($filename)
+	public static function safeFilename($filename): string
 	{
 		return trim(preg_replace('/[^\w\s.-]*/i', '', $filename));
 	}
@@ -606,7 +653,7 @@ class Misc
 	 *
 	 * @return string
 	 */
-	public static function bytesToSizeString($bytes, $precision = 0)
+	public static function bytesToSizeString($bytes, $precision = 0): string
 	{
 		if ($bytes == 0) {
 			return '0B';
@@ -624,7 +671,7 @@ class Misc
 	 *
 	 * @return string
 	 */
-	public static function imdb_trailers($imdbID)
+	public static function imdb_trailers($imdbID): string
 	{
 		$xml = Misc::getUrl(['url' => 'http://api.traileraddict.com/?imdb=' . $imdbID]);
 		if ($xml !== false) {
@@ -638,19 +685,25 @@ class Misc
 	/**
 	 * Check if MAINTENANCE_MODE_ENABLED constant is set. Return appropriate HTML or XML response
 	 * with status code 503 if it is.
+	 *
+	 * @param bool $outputMessage
+	 *
+	 * @return bool
 	 */
-	public static function maintainanceCheck($outputMessage = true)
+	public static function maintainanceCheck($outputMessage = true): bool
 	{
-		if (defined('MAINTENANCE_MODE_ENABLED') && MAINTENANCE_MODE_ENABLED === true) {
-			if (!in_array($_SERVER['REMOTE_ADDR'], MAINTENANCE_MODE_IP_EXCEPTIONS) ) {
-				$page = (isset($_GET['page']) ? $_GET['page'] : 'content');
+		$status = false;
+		if (defined('MAINTENANCE_MODE_ENABLED') &&
+			MAINTENANCE_MODE_ENABLED === true &&
+			!in_array($_SERVER['REMOTE_ADDR'], MAINTENANCE_MODE_IP_EXCEPTIONS, false)) {
+				$page = ($_GET['page'] ?? 'content');
 				switch ($page) {
 					case 'api':
 					case 'failed':
 					case 'getnzb':
 						//case 'preinfo':
 					case 'rss':
-						Misc::showApiError(503);
+						self::showApiError(503);
 						break;
 					default:
 						if (MAINTENANCE_MODE_ENABLED &&
@@ -659,11 +712,12 @@ class Misc
 								readfile(MAINTENANCE_MODE_HTML_PATH);
 							}
 
-							return true;
+							$status = true;
 						}
 				}
 			}
-		}
+
+		return $status;
 	}
 
 	/**
@@ -674,7 +728,7 @@ class Misc
 	 *
 	 * @return array
 	 */
-	public static function objectsIntoArray($arrObjData, array $arrSkipIndices = []) : array
+	public static function objectsIntoArray($arrObjData, array $arrSkipIndices = []): array
 	{
 		$arrData = [];
 
@@ -707,7 +761,8 @@ class Misc
 	 *
 	 * @return array            The associative array of the XML namespaced file
 	 */
-	public static function xmlToArray(\SimpleXMLElement $xml, $options = array()) {
+	public static function xmlToArray(\SimpleXMLElement $xml, $options = array()): array
+	{
 		$defaults = array(
 			'namespaceSeparator' => ':',//you may want this to be something other than a colon
 			'attributePrefix' => '@',   //to distinguish between attributes and nodes with the same name
@@ -792,7 +847,7 @@ class Misc
 	 * @return boolean
 	 * @throws \Exception
 	 */
-	public static function sendEmail($to, $subject, $contents, $from) : bool
+	public static function sendEmail($to, $subject, $contents, $from): bool
 	{
 		// Email *always* uses CRLF for line endings unless the mail agent is broken, like qmail
 		$CRLF = "\r\n";
@@ -823,7 +878,7 @@ class Misc
 	 *
 	 * @return bool
 	 */
-	public static function sendEmailViaPHP($to, $subject, $body, $from) : bool
+	public static function sendEmailViaPHP($to, $subject, $body, $from): bool
 	{
 		$CRLF = "\r\n";
 
@@ -847,7 +902,7 @@ class Misc
 	 * @return bool
 	 * @throws \PHPMailer\PHPMailer\Exception
 	 */
-	public static function sendEmailViaPHPMailer($to, $subject, $body, $from = null) : bool
+	public static function sendEmailViaPHPMailer($to, $subject, $body, $from = null): bool
 	{
 		// Check to make sure the user has their settings correct.
 		if (PHPMAILER_USE_SMTP === true) {
@@ -933,7 +988,7 @@ class Misc
 	 * @param int    $status
 	 * @param string $message
 	 */
-	public static function showApiError($status = 900, $message = '')
+	public static function showApiError($status = 900, $message = ''): void
 	{
 		if ($message === '') {
 			switch ($status) {

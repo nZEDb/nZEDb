@@ -314,13 +314,14 @@ class DbUpdate
 	{
 		$default = [
 			'file' => null,
+			'host' => null,
 			'name' => null,
 			'pass' => null,
 			'user' => null,
 		];
 		$options += $default;
 
-		$cmd = "mysql -u {$options['user']} -p{$options['pass']} --default-character-set=utf8 {$options['name']} < {$options['file']}";
+		$cmd = "mysql -h {$options['host']} -u {$options['user']} -p{$options['pass']} --default-character-set=utf8 {$options['name']} < {$options['file']}";
 		\exec(
 			$cmd,
 			$response,
