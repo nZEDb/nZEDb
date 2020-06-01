@@ -111,7 +111,7 @@
     "nzedb/git.php": "dev-master",
     "php": "~7.1",
     "php-tmdb/api": "^2.1",
-    "phpmailer/phpmailer": "^6.0.2",
+    "phpmailer/phpmailer": "^6.1",
     "robmorgan/phinx": "dev-master",
     "smarty/smarty": "~3.1.29",
     "unionofrad/lithium": "^1.2",
