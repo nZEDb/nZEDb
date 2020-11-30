@@ -938,7 +938,7 @@ class Binaries
 						$timestamp = $now;
 					}
 
-					$xref = ($this->multiGroup === true ? sprintf('xref = CONCAT(xref, "\\n"%s ),', $this->_pdo->escapeString(substr($this->header['Xref'], 2, 255))) : '');
+					$xref = ($this->multiGroup === true ? sprintf('xref = SUBSTRING(CONCAT(xref, "\\n"%s ), 1, 4096),', $this->_pdo->escapeString(substr($this->header['Xref'], 2, 255))) : '');
 
 					$collectionID = $this->_pdo->queryInsert(
 						sprintf("
