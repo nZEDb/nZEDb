@@ -3,7 +3,7 @@ ChangeLog file which list *when* changes are made to the dev branches.
 
 0.8.22.0 2020-06-01
 Changed:
-	* Updated dependencies. Mainly to fix a securoty issue with PHPMailer.
+	* Updated dependencies. Mainly to fix a security issue with PHPMailer.
 
 
 0.8.21.0 2020-01-06
