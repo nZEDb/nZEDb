@@ -530,7 +530,7 @@ class NNTP extends \Net_NNTP_Client
 		$stringLength = strlen($string);
 		// Encode each character of the string one at a time.
 		for ($i = 0; $i < $stringLength; $i++) {
-			$value = ((ord($string{$i}) + 42) % 256);
+			$value = ((ord($string[$i]) + 42) % 256);
 
 			// Escape NULL, TAB, LF, CR, space, . and = characters.
 			if ($value == 0 ||
