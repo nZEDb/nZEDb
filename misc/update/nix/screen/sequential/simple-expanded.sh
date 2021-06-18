@@ -18,7 +18,7 @@ export THREADED_PATH="${NZEDB_ROOT}/misc/update/nix/multiprocessing"
 export NZEDB_SLEEP_TIME="30" # in seconds
 LASTOPTIMIZE=`date +%s`
 LASTOPTIMIZE1=`date +%s`
-command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
+command -v php >/dev/null 2>&1 && export PHP=`command -v php` || { export PHP=`command -v php`; }
 
 ##delete stale tmpunrar folders
 ## we need to have this use the Db setting. No idea how yet, but this fails too often otherwise.
