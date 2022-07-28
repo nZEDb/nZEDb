@@ -291,7 +291,7 @@ if (isset($_GET['type'])) {
 	}
 } else if (isset($_POST['data'])) {
 
-	$reqData = @unserialize($_POST['data']);
+	$reqData = @unserialize($_POST['data'], ['allowed_classes' => false]);
 	if ($reqData !== false && is_array($reqData) && isset($reqData[0]['ident'])) {
 		$pdo = new DB;
 		$preData = [];
