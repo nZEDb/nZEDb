@@ -1451,14 +1451,14 @@ class Movie
 	protected function parseMovieSearchName($releaseName)
 	{
 		$name = $year = '';
-		$followingList = '[^\w]((1080|480|720)p|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid)[^\w]';
+		$followingList = '[^\w]((2160|1080|480|720)p|(BD|DVD|BR|WEB|WEBHD|HDTV|VHS|TV)Rip|German|(x|h)x26(4|5)|xvid|Dubbed|Subbed|AC3(.MD|MD|D|LD)|(HD)CAM|MiC|iNTERNAL|TS|LD|TC|DL|PAL|DVD(R)|3D|Complete|KiNOFASSUNG|Remastered|Proper|Repack|UNCUT|DTS(D|HD)|Unrated|WEB-DL|DD5\.1|Directors([^\w]CUT)?|BluRay|AVC|UHD|Remux|DUAL.COMPLETE|MULTi|HEVC)[^\w]';
 
 		/* Initial scan of getting a year/name.
 		 * [\w. -]+ Gets 0-9a-z. - characters, most scene movie titles contain these chars.
 		 * ie: [61420]-[FULL]-[a.b.foreignEFNet]-[ Coraline.2009.DUTCH.INTERNAL.1080p.BluRay.x264-VeDeTT ]-[21/85] - "vedett-coralien-1080p.r04" yEnc
 		 * Then we look up the year, (19|20)\d\d, so $matches[1] would be Coraline $matches[2] 2009
 		 */
-		if (preg_match('/(?P<name>[\w. -]+)[^\w](?P<year>(19|20)\d\d)/i', $releaseName, $matches)) {
+		if (preg_match('/(?P<name>[\w. -]+)' . $followingList . '(?P<year>(19|20)\d\d)/i', $releaseName, $matches)) {
 			$name = $matches['name'];
 			$year = $matches['year'];
 
